@@ -1,0 +1,9 @@
+[submodule "hakoniwa/third-party/c_library_v2"]
+	path = hakoniwa/third-party/c_library_v2
+	url = https://github.com/mavlink/c_library_v2.git
+[submodule "hakoniwa/third-party/hakoniwa-core-cpp-client"]
+	path = hakoniwa/third-party/hakoniwa-core-cpp-client
+	url = https://github.com/toppers/hakoniwa-core-cpp-client.git
+[submodule "hakoniwa/third-party/hakoniwa-ros2pdu"]
+	path = hakoniwa/third-party/hakoniwa-ros2pdu
+	url = https://github.com/toppers/hakoniwa-ros2pdu.git
