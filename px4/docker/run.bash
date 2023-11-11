@@ -3,6 +3,7 @@
 HOST_WORKDIR=`pwd`
 DOCKER_DIR=/root/workspace
 IMAGE_NAME=`cat docker/image_name.txt`
+IMAGE_NAME_ARG=`cat docker/image_name.txt | awk -F/ '{print $2}'`
 IMAGE_TAG=`cat docker/version.txt`
 DOCKER_IMAGE=${IMAGE_NAME}:${IMAGE_TAG}
 
@@ -23,11 +24,11 @@ then
         -p 14280:14280/udp \
         -p 13030:13030/udp \
         -p 14560:14560/udp \
-        --name ${IMAGE_NAME} ${DOCKER_IMAGE} 
+        --name ${IMAGE_NAME_ARG} ${DOCKER_IMAGE} 
 else
     docker run \
         -v ${HOST_WORKDIR}:${DOCKER_DIR} \
         -it --rm \
         -p 14560:14560/udp \
-        --name ${IMAGE_NAME} ${DOCKER_IMAGE} 
+        --name ${IMAGE_NAME_ARG} ${DOCKER_IMAGE} 
 fi

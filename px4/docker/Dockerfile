@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as px4-build
+FROM ubuntu:20.04 as hakoniwa-px4-runner
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV CMAKE_INSTALL_DIR /usr/local/cmake
