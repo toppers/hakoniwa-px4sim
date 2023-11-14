@@ -54,6 +54,7 @@ typedef struct {
     int inx;
     int max_count;
     int data_num;
+    Vector3Type average_value;
     Vector3Type values[SENSOR_MAX_COUNT_NUM];
 } DroneSensorAverageDataType;
 static inline bool initAverageData(DroneSensorAverageDataType& data, int max_count)
@@ -70,6 +71,9 @@ static inline bool initAverageData(DroneSensorAverageDataType& data, int max_cou
         data.values[i].y = 0.0;
         data.values[i].z = 0.0;
     }
+    data.average_value.x = 0.0;
+    data.average_value.y = 0.0;
+    data.average_value.z = 0.0;
 
     return true;  // 初期化成功
 }
@@ -108,6 +112,10 @@ static inline void calcAverage(DroneSensorAverageDataType& data, Vector3Type& re
         result.x /= data.data_num;
         result.y /= data.data_num;
         result.z /= data.data_num;
+
+        data.average_value.x = result.x;
+        data.average_value.y = result.y;
+        data.average_value.z = result.z;
     }
 }
 

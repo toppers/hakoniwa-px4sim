@@ -57,8 +57,8 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     addAverageData(phys.sensor_rot_vec, phys.current.rot_vec);
     calcAverage(phys.sensor_rot_vec, ave_rot_vec);
     phys.sensor.hil_state_quaternion.rollspeed  = ave_rot_vec.x;
-    phys.sensor.hil_state_quaternion.pitchspeed = ave_rot_vec.y;
-    phys.sensor.hil_state_quaternion.yawspeed   = ave_rot_vec.z;
+    phys.sensor.hil_state_quaternion.pitchspeed = -ave_rot_vec.y;
+    phys.sensor.hil_state_quaternion.yawspeed   = -ave_rot_vec.z;
 #endif
 
 #if 0
@@ -70,8 +70,8 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     addAverageData(phys.sensor_vec, phys.current.vec);
     calcAverage(phys.sensor_vec, ave_vec);
     phys.sensor.hil_state_quaternion.vx = (Hako_int16)(ave_vec.x * 100);
-    phys.sensor.hil_state_quaternion.vy = (Hako_int16)(ave_vec.y * 100);
-    phys.sensor.hil_state_quaternion.vz = (Hako_int16)(ave_vec.z * 100);
+    phys.sensor.hil_state_quaternion.vy = -(Hako_int16)(ave_vec.y * 100);
+    phys.sensor.hil_state_quaternion.vz = -(Hako_int16)(ave_vec.z * 100);
 #endif
     // for acc
     Vector3Type acc_1;
@@ -94,6 +94,8 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     Vector3Type ave_rot;
     addAverageData(phys.sensor_rot, phys.current.rot);
     calcAverage(phys.sensor_rot, ave_rot);
+    ave_rot.y = ave_rot.y;
+    ave_rot.z = ave_rot.z;
     euler2Quaternion(ave_rot, q);
 #endif
     phys.sensor.hil_state_quaternion.attitude_quaternion[0] = q.w;
@@ -123,13 +125,13 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
 static void drone_sensor_run_hil_sensor(DronePhysType &phys)
 {
     phys.sensor.hil_sensor.time_usec = 0;
-    phys.sensor.hil_sensor.xacc = phys.sensor.hil_state_quaternion.xacc / 1000.0f;
-    phys.sensor.hil_sensor.yacc = phys.sensor.hil_state_quaternion.yacc / 1000.0f;
-    phys.sensor.hil_sensor.zacc = (phys.sensor.hil_state_quaternion.zacc / 1000.0f) - phys.param.gravity;
+    phys.sensor.hil_sensor.xacc = phys.sensor_acc.average_value.x;
+    phys.sensor.hil_sensor.yacc = -phys.sensor_acc.average_value.y;
+    phys.sensor.hil_sensor.zacc = (-phys.sensor_acc.average_value.z) - phys.param.gravity;
 
-    phys.sensor.hil_sensor.xgyro = phys.sensor.hil_state_quaternion.rollspeed;
-    phys.sensor.hil_sensor.ygyro = phys.sensor.hil_state_quaternion.pitchspeed;
-    phys.sensor.hil_sensor.zgyro = phys.sensor.hil_state_quaternion.yawspeed;
+    phys.sensor.hil_sensor.xgyro = phys.sensor_rot_vec.average_value.x;
+    phys.sensor.hil_sensor.ygyro = -phys.sensor_rot_vec.average_value.y;
+    phys.sensor.hil_sensor.zgyro = -phys.sensor_rot_vec.average_value.z;
 
     Vector3Type mag = CalcMAVLinkMagnet(phys);
     phys.sensor.hil_sensor.xmag = mag.x;
@@ -162,12 +164,10 @@ static void drone_sensor_run_hil_gps(DronePhysType &phys)
     phys.sensor.hil_gps.ve = phys.current.vec.y;
     phys.sensor.hil_gps.vd = -phys.current.vec.z;
 #else
-    Vector3Type ave_vec;
-    calcAverage(phys.sensor_vec, ave_vec);
-    phys.sensor.hil_gps.vel = vector3_magnitude(ave_vec) * 100.0f;
-    phys.sensor.hil_gps.vn = ave_vec.x;
-    phys.sensor.hil_gps.ve = ave_vec.y;
-    phys.sensor.hil_gps.vd = ave_vec.z;
+    phys.sensor.hil_gps.vel = vector3_magnitude(phys.sensor_vec.average_value) * 100.0f;
+    phys.sensor.hil_gps.vn = phys.sensor_vec.average_value.x;
+    phys.sensor.hil_gps.ve = -phys.sensor_vec.average_value.y;
+    phys.sensor.hil_gps.vd = -phys.sensor_vec.average_value.z;
 #endif
     phys.sensor.hil_gps.cog = 0;
     phys.sensor.hil_gps.satellites_visible = 10;
