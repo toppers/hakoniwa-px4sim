@@ -79,7 +79,7 @@ static void my_task()
 {
 #ifdef DRONE_PX4_CONTROL_ENABLE
     if (hako_read_hil_actuator_controls(drone_phys.actuator.hil_actuator_controls)) {
-#if 1
+#ifndef DRONE_PX4_AIRFRAME_ADJUSTMENT_ENABLE
 #define KEISU   1.0f
         drone_propeller.w[0] = drone_phys.actuator.hil_actuator_controls.controls[0] * KEISU;
         drone_propeller.w[1] = drone_phys.actuator.hil_actuator_controls.controls[1] * KEISU;
@@ -87,7 +87,7 @@ static void my_task()
         drone_propeller.w[3] = drone_phys.actuator.hil_actuator_controls.controls[3] * KEISU;
 #else        
 #define ttsqrt(a) (a)
-#define KEISU   5.0f
+#define KEISU   4.0f
         drone_propeller.w[0] = ttsqrt(KEISU * drone_phys.actuator.hil_actuator_controls.controls[2]);
         drone_propeller.w[1] = ttsqrt(KEISU * drone_phys.actuator.hil_actuator_controls.controls[0]);
         drone_propeller.w[2] = ttsqrt(KEISU * drone_phys.actuator.hil_actuator_controls.controls[3]);
