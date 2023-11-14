@@ -137,6 +137,8 @@ typedef struct {
      * Sensors
      */
     DroneSensorType sensor;
+    DroneSensorAverageDataType sensor_rot;
+    DroneSensorAverageDataType sensor_rot_vec;
     DroneSensorAverageDataType sensor_pos;
     DroneSensorAverageDataType sensor_vec;
     DroneSensorAverageDataType sensor_acc;
