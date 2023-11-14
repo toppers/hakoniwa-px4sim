@@ -20,9 +20,9 @@ static void hako_mavlink_write_data(MavlinkDecodedMessage &message)
             }
             else {
                 hako_px4_asset_time = message.data.hil_actuator_controls.time_usec - px4_boot_time;
-                std::cout << "px4_asset_time : " << hako_px4_asset_time << std::endl;
-                std::cout << "hako_asset_time: " << hako_asset_time << std::endl;
-                std::cout << "diff_time      : " << (long long)(hako_asset_time - hako_px4_asset_time) << std::endl;
+                //std::cout << "px4_asset_time : " << hako_px4_asset_time << std::endl;
+                //std::cout << "hako_asset_time: " << hako_asset_time << std::endl;
+                //std::cout << "diff_time      : " << (long long)(hako_asset_time - hako_px4_asset_time) << std::endl;
             }
             break;
         case MAVLINK_MSG_TYPE_HEARTBEAT:
@@ -50,7 +50,7 @@ void *px4sim_thread_receiver(void *arg)
         int recvDataLen;
         if (clientConnector->recv(recvBuffer, sizeof(recvBuffer), &recvDataLen)) 
         {
-            std::cout << "Received data with length: " << recvDataLen << std::endl;
+            //std::cout << "Received data with length: " << recvDataLen << std::endl;
             mavlink_message_t msg;
             bool ret = mavlink_decode(MAVLINK_CONFIG_CHAN_0, recvBuffer, recvDataLen, &msg);
             if (ret)
@@ -58,13 +58,15 @@ void *px4sim_thread_receiver(void *arg)
                 MavlinkDecodedMessage message;
                 ret = mavlink_get_message(&msg, &message);
                 if (ret) {
+#ifdef DRONE_PX4_RX_DEBUG_ENABLE
                     mavlink_msg_dump(msg);
                     mavlink_message_dump(message);
+#endif
                     hako_mavlink_write_data(message);
                 }
             }
         } else {
-            std::cerr << "Failed to receive data" << std::endl;
+            //std::cerr << "Failed to receive data" << std::endl;
         }
     }
     return NULL;

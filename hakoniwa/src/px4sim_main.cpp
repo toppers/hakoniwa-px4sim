@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
             std::cerr << "Failed to create hako_px4_runner thread!" << std::endl;
             return -1;
         }
-#ifdef DRONE_PX4_CONTROL_ENABLE
+#ifdef DRONE_PX4_ENABLE
         if (pthread_create(&thread_1, NULL, hako_px4_master_thread_run, nullptr) != 0) {
             std::cerr << "Failed to create hako_px4_runner thread!" << std::endl;
             return -1;

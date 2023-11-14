@@ -80,14 +80,12 @@ static void my_task()
 #ifdef DRONE_PX4_CONTROL_ENABLE
     if (hako_read_hil_actuator_controls(drone_phys.actuator.hil_actuator_controls)) {
 #ifndef DRONE_PX4_AIRFRAME_ADJUSTMENT_ENABLE
-#define KEISU   1.0f
         drone_propeller.w[0] = drone_phys.actuator.hil_actuator_controls.controls[0] * KEISU;
         drone_propeller.w[1] = drone_phys.actuator.hil_actuator_controls.controls[1] * KEISU;
         drone_propeller.w[2] = drone_phys.actuator.hil_actuator_controls.controls[2] * KEISU;
         drone_propeller.w[3] = drone_phys.actuator.hil_actuator_controls.controls[3] * KEISU;
 #else        
 #define ttsqrt(a) (a)
-#define KEISU   4.0f
         drone_propeller.w[0] = ttsqrt(KEISU * drone_phys.actuator.hil_actuator_controls.controls[2]);
         drone_propeller.w[1] = ttsqrt(KEISU * drone_phys.actuator.hil_actuator_controls.controls[0]);
         drone_propeller.w[2] = ttsqrt(KEISU * drone_phys.actuator.hil_actuator_controls.controls[3]);
@@ -104,12 +102,18 @@ static void my_task()
 
     do_io_write();
 
-#ifdef DRONE_PX4_CONTROL_ENABLE
+#ifdef DRONE_PX4_ENABLE
     px4sim_sender_do_task();
+#ifdef DRONE_PX4_CONTROL_ENABLE
+    //nothing to do
 #else
     drone_control_run(drone_ctrl);
     convert2RotationRate(drone_ctrl.signal, drone_phys, drone_propeller);
-#endif
+#endif /* DRONE_PX4_CONTROL_ENABLE */
+#else
+    drone_control_run(drone_ctrl);
+    convert2RotationRate(drone_ctrl.signal, drone_phys, drone_propeller);
+#endif /* DRONE_PX4_ENABLE */
     return;
 }
 

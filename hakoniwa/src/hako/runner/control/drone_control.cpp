@@ -91,7 +91,7 @@ void drone_control_run(DroneControlType& ctrl)
         return;
     }
     // PID制御の計算
-    ctrl.signal.thrust = updatePID(ctrl.target_pos.pid_z, hil_state_quaternion.alt, ctrl.delta_t) / 1000.0f;
+    ctrl.signal.thrust = updatePID(ctrl.target_pos.pid_z, -hil_state_quaternion.alt, ctrl.delta_t) / 1000.0f;
 #ifdef ENABLE_DRONE_PHYS_DEBUG
     std::cout << "ctrl.target_pos.pid_z.previous_error= " << ctrl.target_pos.pid_z.previous_error << std::endl;
 #endif
@@ -145,10 +145,10 @@ void drone_control_run(DroneControlType& ctrl)
         roll_power_for_move.y = 0;
     }
     Vector3Type roll_power_for_same;
-    roll_power_for_same.x = updatePID(ctrl.target_rot.pid_roll, angle.x, ctrl.delta_t);    
-    roll_power_for_same.y = updatePID(ctrl.target_rot.pid_pitch, angle.y, ctrl.delta_t);
+    roll_power_for_same.x = updatePID(ctrl.target_rot.pid_roll, angle.x, ctrl.delta_t);
+    roll_power_for_same.y = updatePID(ctrl.target_rot.pid_pitch, -angle.y, ctrl.delta_t);
     ctrl.target_rot.pid_yaw.setpoint = roll_power_for_move.z;
-    roll_power_for_same.z = updatePID(ctrl.target_rot.pid_yaw, angle.z, ctrl.delta_t);
+    roll_power_for_same.z = updatePID(ctrl.target_rot.pid_yaw, -angle.z, ctrl.delta_t);
 
 #ifdef ENABLE_DRONE_PHYS_DEBUG
     std::cout << "roll_power_for_move.x= " << roll_power_for_move.x << std::endl;

@@ -95,7 +95,7 @@ bool TcpCommIO::recv(char* data, int datalen, int* recv_datalen) {
         if (len > 0) {
             received += len;
         } else if (len == 0 || (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)) {
-            std::cout << "Failed to receive MAVLink header: " << strerror(errno) << std::endl;
+            //std::cout << "Failed to receive MAVLink header: " << strerror(errno) << std::endl;
             return false;
         }
     }

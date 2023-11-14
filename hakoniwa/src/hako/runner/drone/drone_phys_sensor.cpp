@@ -3,7 +3,7 @@
 
 #define HIL_GPS_UP_CYCLE                60  /* msec*/
 #define HIL_STATE_QUATERNION_UP_CYCLE    4  /* msec*/
-#define HIL_SENSOR_UP_CYCLE              4 /* msec*/
+#define HIL_SENSOR_UP_CYCLE              8 /* msec*/
 
 // Tokyo
 #define REFERENCE_LATITUDE      35.6895
@@ -94,8 +94,8 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     Vector3Type ave_rot;
     addAverageData(phys.sensor_rot, phys.current.rot);
     calcAverage(phys.sensor_rot, ave_rot);
-    ave_rot.y = ave_rot.y;
-    ave_rot.z = ave_rot.z;
+    ave_rot.y = -ave_rot.y;
+    ave_rot.z = -ave_rot.z;
     euler2Quaternion(ave_rot, q);
 #endif
     phys.sensor.hil_state_quaternion.attitude_quaternion[0] = q.w;
@@ -117,7 +117,7 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     calcAverage(phys.sensor_pos, ave_pos);
     phys.sensor.hil_state_quaternion.lat = CalculateLatitude(ave_pos, REFERENCE_LATITUDE);
     phys.sensor.hil_state_quaternion.lon = CalculateLongitude(ave_pos, REFERENCE_LONGTITUDE);
-    phys.sensor.hil_state_quaternion.alt = CalculateAltitude(ave_pos, REFERENCE_ALTITUDE);
+    phys.sensor.hil_state_quaternion.alt = -CalculateAltitude(ave_pos, REFERENCE_ALTITUDE);
 #endif
 
     return;
@@ -153,7 +153,7 @@ static void drone_sensor_run_hil_gps(DronePhysType &phys)
     phys.sensor.hil_gps.fix_type = 3;
     phys.sensor.hil_gps.lat = phys.sensor.hil_state_quaternion.lat;
     phys.sensor.hil_gps.lon = phys.sensor.hil_state_quaternion.lon;
-    phys.sensor.hil_gps.alt = phys.sensor.hil_state_quaternion.alt;
+    phys.sensor.hil_gps.alt = -phys.sensor.hil_state_quaternion.alt;
 
     phys.sensor.hil_gps.eph = 100;
     phys.sensor.hil_gps.epv = 100;
