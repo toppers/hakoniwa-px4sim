@@ -92,8 +92,8 @@ void Px4Hakoniwa::Run()
 		exit_and_cleanup();
 		return;
 	}
-	if (_vehicle_global_position_sub.updated()) {
-		_vehicle_global_position_sub.copy(&vehicle_global_position);
+	if (_vehicle_local_position_sub.updated()) {
+		_vehicle_local_position_sub.copy(&vehicle_local_position);
 		hrt_abstime curr = hrt_absolute_time();
 		hrt_abstime prev = 0;
 		double delta = _drone_ctrl.delta_t;
@@ -106,7 +106,7 @@ void Px4Hakoniwa::Run()
 		Vector3Type current_pos;
 		current_pos.x = 0;
 		current_pos.y = 0;
-		current_pos.z = vehicle_global_position.alt;
+		current_pos.z = -vehicle_local_position.z;
 		drone_control_run(_drone_ctrl, current_pos, delta);
 		convert2RotationRate(_drone_ctrl.signal, _param, _drone_propeller);
 	#if 1

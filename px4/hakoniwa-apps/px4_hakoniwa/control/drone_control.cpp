@@ -2,7 +2,7 @@
 #include <cstring>
 
 // PIDゲインの定数を定義
-constexpr float DRONE_CONTROL_PID_POS_Z_KP = 3.0f;  // 比例ゲイン
+constexpr float DRONE_CONTROL_PID_POS_Z_KP = 1.5f;  // 比例ゲイン
 constexpr float DRONE_CONTROL_PID_POS_Z_KI = 1.0f;  // 積分ゲイン
 constexpr float DRONE_CONTROL_PID_POS_Z_KD = 0.50f;  // 微分ゲイン
 
