@@ -21,6 +21,28 @@ static void drone_run_rx(const DronePropellerRotationRateType& propeller, DroneP
 static void drone_run_ry(const DronePropellerRotationRateType& propeller, DronePhysType& phys);
 static void drone_run_rz(const DronePropellerRotationRateType& propeller, DronePhysType& phys);
 
+//#define EXPERIMENTAL_CODE_ENABLE
+#ifdef EXPERIMENTAL_CODE_ENABLE
+#define fullThrust  1.0
+#define tau 0.1
+#define DRAG_Z  0.001f
+#define DRAG_X  0.00f
+#define DRAG_Y  0.00f
+#define DRAG_RX  0.0f
+#define DRAG_RY  0.0f
+
+static double thr_weight = 0.0;
+static double getThrust() 
+{
+    return thr_weight * fullThrust;
+}
+static void setControl(double control, double dt)
+{
+    thr_weight += (control - thr_weight) * (1.0 - exp(-dt / tau));
+}
+#endif
+
+
 void drone_run(const DronePropellerRotationRateType& propeller, DronePhysType& phys)
 {
     double u = \
@@ -29,6 +51,10 @@ void drone_run(const DronePropellerRotationRateType& propeller, DronePhysType& p
          + phys.param.p * ( propeller.w[2] * propeller.w[2]) \
          + phys.param.p * ( propeller.w[3] * propeller.w[3]) \
         ;
+#ifdef EXPERIMENTAL_CODE_ENABLE
+    setControl(u, phys.delta_t);
+    u = getThrust();
+#endif
     drone_run_x(u, phys);
     drone_run_y(u, phys);
     drone_run_z(u, phys);
@@ -54,6 +80,9 @@ static void drone_run_x(double u, DronePhysType& phys)
                       sin(phys.current.rot.x)
                     * sin(phys.current.rot.z) 
                   ) 
+#ifdef EXPERIMENTAL_CODE_ENABLE
+                  - (DRAG_X * phys.current.vec.x)
+#endif
                   + phys.current.vec.x;
 
     phys.next.pos.x = (phys.current.vec.x * phys.delta_t) + phys.current.pos.x;
@@ -76,6 +105,9 @@ static void drone_run_y(double u, DronePhysType& phys)
                       sin(phys.current.rot.x) 
                     * cos(phys.current.rot.z) 
                   ) 
+#ifdef EXPERIMENTAL_CODE_ENABLE
+                  - (DRAG_Y * phys.current.vec.y)
+#endif
                   + phys.current.vec.y;
 
     phys.next.pos.y = (phys.current.vec.y * phys.delta_t) + phys.current.pos.y;
@@ -93,6 +125,9 @@ static void drone_run_z(double u, DronePhysType& phys)
                       cos(phys.current.rot.y) 
                     * cos(phys.current.rot.x) 
                   ) 
+#ifdef EXPERIMENTAL_CODE_ENABLE
+                  - (DRAG_Z * phys.current.vec.z)
+#endif
                   - (phys.param.gravity * phys.delta_t )
                   + phys.current.vec.z;
 
@@ -125,7 +160,11 @@ static void drone_run_rx(const DronePropellerRotationRateType& propeller, DroneP
     double torque_phi = - phys.param.l * phys.param.p * propeller.w[1] * propeller.w[1]
                         + phys.param.l * phys.param.p * propeller.w[3] * propeller.w[3];
 #endif
+#ifdef EXPERIMENTAL_CODE_ENABLE
+    phys.next.rot_vec.x = torque_phi * phys.delta_t + ((1.0 - DRAG_RX) * phys.current.rot_vec.x);
+#else
     phys.next.rot_vec.x = torque_phi * phys.delta_t + phys.current.rot_vec.x;
+#endif
     phys.next.rot.x     = (phys.current.rot_vec.x * phys.delta_t) + phys.current.rot.x;
 #ifdef ENABLE_DRONE_PHYS_DEBUG    
     std::cout << "next rot.x = " << phys.next.rot.x << std::endl;
@@ -141,7 +180,11 @@ static void drone_run_ry(const DronePropellerRotationRateType& propeller, DroneP
     double torque_theta = - phys.param.l * phys.param.p * propeller.w[0] * propeller.w[0]
                         + phys.param.l * phys.param.p * propeller.w[2] * propeller.w[2];
 #endif
+#ifdef EXPERIMENTAL_CODE_ENABLE
+    phys.next.rot_vec.y = torque_theta * phys.delta_t + ((1.0 - DRAG_RY) * phys.current.rot_vec.y);
+#else
     phys.next.rot_vec.y = torque_theta * phys.delta_t + phys.current.rot_vec.y;
+#endif
     phys.next.rot.y     = (phys.current.rot_vec.y * phys.delta_t) + phys.current.rot.y;
 #ifdef ENABLE_DRONE_PHYS_DEBUG    
     std::cout << "next rot.y = " << phys.next.rot.y << std::endl;

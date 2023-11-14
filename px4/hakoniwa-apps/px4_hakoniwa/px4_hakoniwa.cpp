@@ -102,7 +102,7 @@ void Px4Hakoniwa::Run()
 			delta = ((double)diff) / 1000000.0; /* sec */
 		}
 		prev = curr;
-		PX4_INFO("time: %ld alt: %f", curr, (double)vehicle_local_position.z);
+		//PX4_INFO("time: %ld alt: %f", curr, (double)vehicle_local_position.z);
 		Vector3Type current_pos;
 		current_pos.x = 0;
 		current_pos.y = 0;
