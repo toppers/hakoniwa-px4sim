@@ -84,7 +84,7 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     addAverageData(phys.sensor_acc, acc);
     calcAverage(phys.sensor_acc, ave_acc);
     phys.sensor.hil_state_quaternion.xacc = (Hako_int16)(ave_acc.x * 1000.0f);
-    phys.sensor.hil_state_quaternion.yacc = (Hako_int16)(ave_acc.y * 1000.0f);
+    phys.sensor.hil_state_quaternion.yacc = -(Hako_int16)(ave_acc.y * 1000.0f);
     phys.sensor.hil_state_quaternion.zacc = -(Hako_int16)(ave_acc.z * 1000.0f);
 
     QuaternionType q;

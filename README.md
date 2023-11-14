@@ -298,3 +298,76 @@ px4_hakoniwa start
 2. PX4のシミュレーションを　CTRL＋Cで止める
 3. 箱庭のシミュレーションを CTRL+C で止める
 
+
+# MAVLINK仕様データ
+
+MAVLINK仕様データは、以下を参照すること。
+
+https://mavlink.io/en/messages/common.html
+
+ただし、座標系が曖昧なものがあるので、ここで定義する。
+
+(現状、仮説であるため、適宜変更対応予定)
+
+## HIL_SENSOR
+
+|名前|座標系|備考|
+|---|---|---|
+|time_usec|-|-|
+|xacc|航空|-|
+|yacc|航空|-|
+|zacc|航空|重力を含む|
+|xgyro|ROS|-|
+|ygyro|ROS|-|
+|zgyro|ROS|-|
+|xmag|-|-|
+|ymag|-|-|
+|zmag|-|-|
+|abs_pressure|-|-|
+|diff_pressure|-|-|
+|pressure_alt|-|-|
+|temperature|-|-|
+|fields_updated|-|-|
+|id|-|-|
+
+## HIL_STATE_QUATERNION
+
+|名前|座標系|備考|
+|---|---|---|
+|time_usec|-|-|
+|attitude_quaternion||-|
+|rollspeed|ROS|-|
+|pitchspeed|ROS|-|
+|yawspeed|ROS|-|
+|lat|ROS|-|
+|lon|ROS|-|
+|alt|ROS|-|
+|vx|ROS|-|
+|vy|ROS|-|
+|vz|ROS|-|
+|ind_airspeed|-|-|
+|true_airspeed|-|-|
+|xacc|航空|-|
+|yacc|航空|-|
+|zacc|航空|重力は含めない|
+
+
+## HIL_GPS
+
+|名前|座標系|備考|
+|---|---|---|
+|time_usec|-|-|
+|fix_type||-|
+|lat|ROS|-|
+|lon|ROS|-|
+|alt|ROS|-|
+|eph|-|-|
+|epv|-|-|
+|vel|-|-|
+|vn|ROS|-|
+|ve|ROS|-|
+|vd|ROS|-|
+|cog|-|-|
+|satelites_visible|-|-|
+|id|-|-|
+|yaw|-|-|
