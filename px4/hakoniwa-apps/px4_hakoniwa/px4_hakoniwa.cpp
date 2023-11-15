@@ -54,6 +54,9 @@
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/actuator_outputs.h>
 
+//#define ENABLE_CONTROL
+#define ENABLE_DEBUG_POS
+#define ENABLE_DEBUG_ROT
 
 extern "C" __EXPORT int px4_hakoniwa_main(int argc, char *argv[])
 {
@@ -85,6 +88,53 @@ bool Px4Hakoniwa::init()
 	return true;
 }
 
+static void debug_info(const char* name, double true_value, double value)
+{
+	//hrt_abstime curr = hrt_absolute_time();
+	//PX4_INFO("%ld %s t_value=%f value=%f diff=%f", curr, name, true_value, value, true_value - value);
+	PX4_INFO("t_value=%f value=%f", true_value, value);
+} 
+
+void Px4Hakoniwa::debug_log_pos()
+{
+	if (_vehicle_global_position_sub.updated()) {
+		_vehicle_global_position_sub.copy(&vehicle_global_position);
+		if (_vehicle_local_position_sub.updated()) {
+			_vehicle_local_position_sub.copy(&vehicle_local_position);
+			Px4Hakoniwa::do_control();
+			debug_info("pos_z", vehicle_global_position.alt, vehicle_local_position.z);
+		}
+	}
+
+}
+void Px4Hakoniwa::debug_log_rot()
+{
+}
+void Px4Hakoniwa::do_control()
+{
+	hrt_abstime curr = hrt_absolute_time();
+	hrt_abstime prev = 0;
+	double delta = _drone_ctrl.delta_t;
+	if (prev != 0) {
+		hrt_abstime diff = curr - prev; /* usec */
+		delta = ((double)diff) / 1000000.0; /* sec */
+	}
+	prev = curr;
+	//PX4_INFO("time: %ld alt: %f", curr, (double)vehicle_local_position.z);
+	Vector3Type current_pos;
+	current_pos.x = 0;
+	current_pos.y = 0;
+	current_pos.z = -vehicle_local_position.z;
+	drone_control_run(_drone_ctrl, current_pos, delta);
+	convert2RotationRate(_drone_ctrl.signal, _param, _drone_propeller);
+	act_outs.timestamp = 1024;
+#define MY_CONST 1.0
+	act_outs.output[0] = (double)_drone_propeller.w[0] * MY_CONST;
+	act_outs.output[1] = (double)_drone_propeller.w[1] * MY_CONST;
+	act_outs.output[2] = (double)_drone_propeller.w[2] * MY_CONST;
+	act_outs.output[3] = (double)_drone_propeller.w[3] * MY_CONST;
+	orb_publish(ORB_ID(actuator_outputs_sim), act_pub, &act_outs);
+}
 void Px4Hakoniwa::Run()
 {
 	if (should_exit()) {
@@ -92,39 +142,18 @@ void Px4Hakoniwa::Run()
 		exit_and_cleanup();
 		return;
 	}
+#ifdef ENABLE_DEBUG_POS
+	debug_log_pos();
+#endif
+#ifdef ENABLE_DEBUG_ROT
+	debug_log_rot();
+#endif
+#ifdef ENABLE_CONTROL	
 	if (_vehicle_local_position_sub.updated()) {
 		_vehicle_local_position_sub.copy(&vehicle_local_position);
-		hrt_abstime curr = hrt_absolute_time();
-		hrt_abstime prev = 0;
-		double delta = _drone_ctrl.delta_t;
-		if (prev != 0) {
-			hrt_abstime diff = curr - prev; /* usec */
-			delta = ((double)diff) / 1000000.0; /* sec */
-		}
-		prev = curr;
-		//PX4_INFO("time: %ld alt: %f", curr, (double)vehicle_local_position.z);
-		Vector3Type current_pos;
-		current_pos.x = 0;
-		current_pos.y = 0;
-		current_pos.z = -vehicle_local_position.z;
-		drone_control_run(_drone_ctrl, current_pos, delta);
-		convert2RotationRate(_drone_ctrl.signal, _param, _drone_propeller);
-	#if 1
-		//PX4_INFO("w[0]: %f", (double)_drone_propeller.w[0]);
-		//PX4_INFO("w[1]: %f", (double)_drone_propeller.w[1]);
-		//PX4_INFO("w[2]: %f", (double)_drone_propeller.w[2]);
-		//PX4_INFO("w[3]: %f", (double)_drone_propeller.w[3]);
-	#endif
-		act_outs.timestamp = 1024;
-	#if 1
-	#define MY_CONST 1.0
-		act_outs.output[0] = (double)_drone_propeller.w[0] * MY_CONST;
-		act_outs.output[1] = (double)_drone_propeller.w[1] * MY_CONST;
-		act_outs.output[2] = (double)_drone_propeller.w[2] * MY_CONST;
-		act_outs.output[3] = (double)_drone_propeller.w[3] * MY_CONST;
-	#endif
-		orb_publish(ORB_ID(actuator_outputs_sim), act_pub, &act_outs);
+		do_control();
 	}
+#endif
 
 }
 

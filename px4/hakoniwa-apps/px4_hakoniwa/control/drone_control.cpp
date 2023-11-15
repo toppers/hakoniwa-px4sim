@@ -18,7 +18,7 @@ constexpr float DRONE_CONTROL_PID_ROT_Z_KP = 2.0f;  // 比例ゲイン
 constexpr float DRONE_CONTROL_PID_ROT_Z_KI = 1.0f;  // 積分ゲイン
 constexpr float DRONE_CONTROL_PID_ROT_Z_KD = 1.0f;  // 微分ゲイン
 
-constexpr float DRONE_THRUST_MAX = 20.0f;
+constexpr float DRONE_THRUST_MAX = 1.0f;
 constexpr float DRONE_THRUST_MIN = 0.0f;
 constexpr float DRONE_TORQUE_X_MAX_RATE = 1.0f;
 constexpr float DRONE_TORQUE_Y_MAX_RATE = 1.0f;
@@ -38,7 +38,7 @@ void drone_control_init(DroneControlType& ctrl, double delta_t)
 {
     std::memset(&ctrl, 0, sizeof(ctrl));  // 構造体の全メンバを0で初期化
     ctrl.delta_t = delta_t;
-    ctrl.target_pos.target.z = 2.5f;   // 単位：m
+    ctrl.target_pos.target.z = 7.5f;   // 単位：m
 
     // Z軸用PIDコントローラの初期化
     initPID(ctrl.target_pos.pid_z, DRONE_CONTROL_PID_POS_Z_KP, DRONE_CONTROL_PID_POS_Z_KI, DRONE_CONTROL_PID_POS_Z_KD, ctrl.target_pos.target.z);

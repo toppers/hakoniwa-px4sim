@@ -46,6 +46,7 @@
 #include "control/drone_control.hpp"
 #include "drone/drone_phys_control.hpp"
 #include <uORB/topics/vehicle_local_position.h>
+#include <uORB/topics/vehicle_global_position.h>
 #include <uORB/topics/actuator_outputs.h>
 
 #define DRONE_PROPELLER_NUM 4
@@ -76,13 +77,19 @@ public:
 	bool init();
 
 private:
-	vehicle_local_position_s vehicle_local_position = {};
 	struct actuator_outputs_s act_outs;
 	orb_advert_t act_pub;
 	DroneControlType _drone_ctrl;
 	DronePhysParamType _param;
 	DronePropellerRotationRateType _drone_propeller;
+	vehicle_local_position_s vehicle_local_position = {};
 	uORB::SubscriptionData<vehicle_local_position_s> _vehicle_local_position_sub{ORB_ID(vehicle_local_position)};
+	vehicle_global_position_s vehicle_global_position = {};
+	uORB::SubscriptionData<vehicle_global_position_s> _vehicle_global_position_sub{ORB_ID(vehicle_global_position_groundtruth)};
+
 	void Run() override;
+	void debug_log_pos();
+	void debug_log_rot();
+	void do_control();
 
 };
