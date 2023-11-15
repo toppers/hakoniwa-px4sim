@@ -30,6 +30,7 @@ static void drone_run_rz(const DronePropellerRotationRateType& propeller, DroneP
 #define DRAG_Y   0.01f
 #define DRAG_RX  0.0001f
 #define DRAG_RY  0.0001f
+#define DRAG_RZ  0.0001f
 
 static double thr_weight = 0.0;
 static double getThrust() 
@@ -198,7 +199,12 @@ static void drone_run_rz(const DronePropellerRotationRateType& propeller, DroneP
                         + phys.param.k * propeller.w[2] * propeller.w[2]
                         - phys.param.k * propeller.w[3] * propeller.w[3];
 
+#ifdef EXPERIMENTAL_CODE_ENABLE
+    phys.next.rot_vec.z = torque_psi * phys.delta_t + ((1.0 - DRAG_RZ) * phys.current.rot_vec.z);
+#else
     phys.next.rot_vec.z = torque_psi * phys.delta_t + phys.current.rot_vec.z;
+#endif
+
     phys.next.rot.z     = (phys.current.rot_vec.z * phys.delta_t) + phys.current.rot.z;
 #ifdef ENABLE_DRONE_PHYS_DEBUG    
     std::cout << "next rot.z = " << phys.next.rot.z << std::endl;

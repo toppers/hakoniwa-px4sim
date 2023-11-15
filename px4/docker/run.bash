@@ -24,6 +24,9 @@ then
         -p 14280:14280/udp \
         -p 13030:13030/udp \
         -p 14560:14560/udp \
+        -e PX4_HOME_LAT 35.6895 \
+        -e PX4_HOME_LON 139.6917 \
+        -e PX4_HOME_ALT 0.0 \
         --name ${IMAGE_NAME_ARG} ${DOCKER_IMAGE} 
 else
     docker run \

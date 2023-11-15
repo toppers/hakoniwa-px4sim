@@ -26,6 +26,6 @@ typedef struct {
 } DroneControlType;
 
 extern void drone_control_init(DroneControlType& ctrl, double delta_t);
-extern void drone_control_run(DroneControlType& ctrl, Vector3Type& current_pos, double delta_t);
+extern void drone_control_run(DroneControlType& ctrl, Vector3Type& current_pos, Vector3Type& current_rot, double delta_t);
 
 #endif /* _DRONE_CONTROL_HPP_ */

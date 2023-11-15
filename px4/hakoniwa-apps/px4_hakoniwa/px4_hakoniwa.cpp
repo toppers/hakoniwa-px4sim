@@ -54,7 +54,7 @@
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/actuator_outputs.h>
 
-//#define ENABLE_CONTROL
+#define ENABLE_CONTROL
 //#define ENABLE_DEBUG_POS
 #define ENABLE_DEBUG_ROT
 
@@ -94,36 +94,43 @@ static void debug_info(const char* name, double true_value, double value)
 	PX4_INFO("%ld %s t_value=%f value=%f diff=%f", curr, name, true_value, value, true_value - value);
 	//PX4_INFO("t_value=%f value=%f", true_value, value);
 }
+static inline void calc_rot(const vehicle_attitude_s& true_rot, const vehicle_attitude_s& rot, Vector3Type& true_rot_value, Vector3Type& rot_value)
+{
+	QuaternionType local_q;
+	local_q.w = rot.q[0];
+	local_q.x = rot.q[1];
+	local_q.y = rot.q[2];
+	local_q.z = rot.q[3];
+	quaternion2Euler(local_q, rot_value);
 
+	QuaternionType truth_q;
+	truth_q.w = true_rot.q[0];
+	truth_q.x = true_rot.q[1];
+	truth_q.y = true_rot.q[2];
+	truth_q.z = true_rot.q[3];
+	quaternion2Euler(truth_q, true_rot_value);	
+}
 void Px4Hakoniwa::debug_log_rot()
 {
-	if (_vehicle_attitude_groundtruth_sub.updated()) {
-		_vehicle_attitude_groundtruth_sub.copy(&vehicle_attitude_grounadtrue);
-		if (_vehicle_attitude_sub.updated()) {
-			_vehicle_attitude_sub.copy(&vehicle_attitude);
-			//Px4Hakoniwa::do_control();
-			QuaternionType local_q;
-			local_q.w = vehicle_attitude.q[0];
-			local_q.x = vehicle_attitude.q[1];
-			local_q.y = vehicle_attitude.q[2];
-			local_q.z = vehicle_attitude.q[3];
-			Vector3Type local_rot;
-			quaternion2Euler(local_q, local_rot);
+	QuaternionType local_q;
+	local_q.w = vehicle_attitude.q[0];
+	local_q.x = vehicle_attitude.q[1];
+	local_q.y = vehicle_attitude.q[2];
+	local_q.z = vehicle_attitude.q[3];
+	Vector3Type local_rot;
+	quaternion2Euler(local_q, local_rot);
 
-			QuaternionType truth_q;
-			truth_q.w = vehicle_attitude_grounadtrue.q[0];
-			truth_q.x = vehicle_attitude_grounadtrue.q[1];
-			truth_q.y = vehicle_attitude_grounadtrue.q[2];
-			truth_q.z = vehicle_attitude_grounadtrue.q[3];
-			Vector3Type truth_rot;
-			quaternion2Euler(truth_q, truth_rot);
+	QuaternionType truth_q;
+	truth_q.w = vehicle_attitude_grounadtrue.q[0];
+	truth_q.x = vehicle_attitude_grounadtrue.q[1];
+	truth_q.y = vehicle_attitude_grounadtrue.q[2];
+	truth_q.z = vehicle_attitude_grounadtrue.q[3];
+	Vector3Type truth_rot;
+	quaternion2Euler(truth_q, truth_rot);
 
-			debug_info("rot_x", truth_rot.x, local_rot.x);
-			debug_info("rot_y", truth_rot.y, local_rot.y);
-			debug_info("rot_z", truth_rot.z, local_rot.z);
-			Px4Hakoniwa::do_control();
-		}
-	}	
+	debug_info("rot_x", truth_rot.x, local_rot.x);
+	debug_info("rot_y", truth_rot.y, local_rot.y);
+	debug_info("rot_z", truth_rot.z, local_rot.z);
 }
 
 void Px4Hakoniwa::debug_log_pos()
@@ -150,10 +157,14 @@ void Px4Hakoniwa::do_control()
 	prev = curr;
 	//PX4_INFO("time: %ld alt: %f", curr, (double)vehicle_local_position.z);
 	Vector3Type current_pos;
-	current_pos.x = 0;
-	current_pos.y = 0;
+	current_pos.x = vehicle_local_position.x;
+	current_pos.y = vehicle_local_position.y;
 	current_pos.z = -vehicle_local_position.z;
-	drone_control_run(_drone_ctrl, current_pos, delta);
+	Vector3Type rot_value;
+	Vector3Type true_rot_value;
+	calc_rot(vehicle_attitude_grounadtrue, vehicle_attitude, true_rot_value, rot_value);
+
+	drone_control_run(_drone_ctrl, current_pos, true_rot_value, delta);
 	convert2RotationRate(_drone_ctrl.signal, _param, _drone_propeller);
 	act_outs.timestamp = 1024;
 #define MY_CONST 1.0
@@ -171,16 +182,29 @@ void Px4Hakoniwa::Run()
 		return;
 	}
 #ifdef ENABLE_DEBUG_POS
-	debug_log_pos();
+	//debug_log_pos();
 #endif
 #ifdef ENABLE_DEBUG_ROT
-	debug_log_rot();
+	//debug_log_rot();
 #endif
 #ifdef ENABLE_CONTROL	
+	if (_vehicle_attitude_sub.updated()) {
+		_vehicle_attitude_sub.copy(&vehicle_attitude);
+	}
+	if (_vehicle_attitude_groundtruth_sub.updated()) {
+		_vehicle_attitude_groundtruth_sub.copy(&vehicle_attitude_grounadtrue);
+	}
+	if (_vehicle_global_position_sub.updated()) {
+		_vehicle_global_position_sub.copy(&vehicle_global_position);
+	}
 	if (_vehicle_local_position_sub.updated()) {
 		_vehicle_local_position_sub.copy(&vehicle_local_position);
 		do_control();
-		debug_log_pos();
+		//debug_info("pos_x", vehicle_global_position.lat - 35.6895, vehicle_local_position.x);
+		//debug_info("pos_y", vehicle_global_position.lon - 139.6917, vehicle_local_position.y);
+		//debug_info("pos_z", vehicle_global_position.alt, vehicle_local_position.z);
+		//debug_log_pos();
+		debug_log_rot();
 	}
 #endif
 

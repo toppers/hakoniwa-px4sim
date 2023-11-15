@@ -103,9 +103,9 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     ave_rot.y = -ave_rot.y;
     ave_rot.z = -ave_rot.z;
     euler2Quaternion(ave_rot, q);
-    std::cout << "rot.x: " << ave_rot.x << std::endl;
-    std::cout << "rot.y: " << ave_rot.y << std::endl;
-    std::cout << "rot.z: " << ave_rot.z << std::endl;
+    //std::cout << "rot.x: " << ave_rot.x << std::endl;
+    //std::cout << "rot.y: " << ave_rot.y << std::endl;
+    //std::cout << "rot.z: " << ave_rot.z << std::endl;
 #endif
     phys.sensor.hil_state_quaternion.attitude_quaternion[0] = q.w;
     phys.sensor.hil_state_quaternion.attitude_quaternion[1] = q.x;
@@ -216,11 +216,85 @@ static int32_t CalculateLatitude(const Vector3Type& dronePosition, double refere
     int32_t latitude = (int32_t)((referenceLatitude + deltaLatitude) * 1e7); // Convert to 1e7 format used by MAVLink
     return latitude;
 }
+
+#if 0
 static Vector3Type CalcMAVLinkMagnet(const DronePhysType &phys)
 {
     QuaternionType rotation;
     Vector3Type rot = phys.sensor_rot.average_value;
+    rot.y = -rot.y;
+    rot.z = -rot.z;
     euler2Quaternion(rot, rotation);
     Vector3Type adjustedMagneticNorth = RotateVectorByQuaternion(rotation, TOKYO_MAGNETIC_NORTH);
     return adjustedMagneticNorth;
 }
+#else
+
+typedef struct {
+    double m[3][3];
+} Matrix3d;
+// ベクトルのスケーリング
+static void scaleVector3(Vector3Type *v, double scale) {
+    v->x *= scale;
+    v->y *= scale;
+    v->z *= scale;
+}
+
+// 行列の転置
+static void transposeMatrix3d(Matrix3d *m) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = i + 1; j < 3; j++) {
+            double temp = m->m[i][j];
+            m->m[i][j] = m->m[j][i];
+            m->m[j][i] = temp;
+        }
+    }
+}
+
+// ベクトルに行列を適用
+static void transformVector3(Matrix3d *m, Vector3Type *v) {
+    Vector3Type result = {
+        m->m[0][0] * v->x + m->m[0][1] * v->y + m->m[0][2] * v->z,
+        m->m[1][0] * v->x + m->m[1][1] * v->y + m->m[1][2] * v->z,
+        m->m[2][0] * v->x + m->m[2][1] * v->y + m->m[2][2] * v->z
+    };
+    *v = result;
+}
+void quaternionToMatrix3d(QuaternionType q, Matrix3d *m) {
+    // クォータニオンから回転行列への変換
+    m->m[0][0] = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
+    m->m[0][1] = 2.0 * (q.x * q.y - q.z * q.w);
+    m->m[0][2] = 2.0 * (q.x * q.z + q.y * q.w);
+    m->m[1][0] = 2.0 * (q.x * q.y + q.z * q.w);
+    m->m[1][1] = 1.0 - 2.0 * (q.x * q.x + q.z * q.z);
+    m->m[1][2] = 2.0 * (q.y * q.z - q.x * q.w);
+    m->m[2][0] = 2.0 * (q.x * q.z - q.y * q.w);
+    m->m[2][1] = 2.0 * (q.y * q.z + q.x * q.w);
+    m->m[2][2] = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+}
+static Vector3Type CalcMAVLinkMagnet(const DronePhysType &phys)
+{
+    double magScale = 1.0;
+    QuaternionType rotation;
+    Matrix3d matrix;
+    Vector3Type rot = phys.sensor_rot.average_value;
+    rot.y = -rot.y;
+    rot.z = -rot.z;
+    euler2Quaternion(rot, rotation);
+    quaternionToMatrix3d(rotation, &matrix);
+    // 地磁気データのコピー
+    Vector3Type mag = TOKYO_MAGNETIC_NORTH;
+
+    // 回転行列の転置
+    transposeMatrix3d(&matrix);
+
+    // 地磁気データに回転行列を適用
+    transformVector3(&matrix, &mag);
+
+    // 磁気スケールの適用
+    scaleVector3(&mag, magScale);
+
+    return mag;
+}
+
+#endif
