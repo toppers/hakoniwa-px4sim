@@ -164,7 +164,7 @@ void Px4Hakoniwa::do_control()
 	Vector3Type true_rot_value;
 	calc_rot(vehicle_attitude_grounadtrue, vehicle_attitude, true_rot_value, rot_value);
 
-	drone_control_run(_drone_ctrl, current_pos, true_rot_value, delta);
+	drone_control_run(_drone_ctrl, current_pos, rot_value, delta);
 	convert2RotationRate(_drone_ctrl.signal, _param, _drone_propeller);
 	act_outs.timestamp = 1024;
 #define MY_CONST 1.0
