@@ -3,7 +3,7 @@
 
 #define HIL_GPS_UP_CYCLE                60  /* msec*/
 #define HIL_STATE_QUATERNION_UP_CYCLE    4  /* msec*/
-#define HIL_SENSOR_UP_CYCLE              8 /* msec*/
+#define HIL_SENSOR_UP_CYCLE              2 /* msec*/
 
 // Tokyo
 #define REFERENCE_LATITUDE      35.6895
