@@ -49,6 +49,8 @@
 #include <uORB/topics/vehicle_global_position.h>
 #include <uORB/topics/actuator_outputs.h>
 
+#include <uORB/topics/vehicle_attitude.h>
+
 #define DRONE_PROPELLER_NUM 4
 #define DRONE_GPS_INIT_LAT  356895000
 #define DRONE_GPS_INIT_LON  1396917000
@@ -86,6 +88,13 @@ private:
 	uORB::SubscriptionData<vehicle_local_position_s> _vehicle_local_position_sub{ORB_ID(vehicle_local_position)};
 	vehicle_global_position_s vehicle_global_position = {};
 	uORB::SubscriptionData<vehicle_global_position_s> _vehicle_global_position_sub{ORB_ID(vehicle_global_position_groundtruth)};
+
+
+	vehicle_attitude_s vehicle_attitude = {};
+	uORB::SubscriptionData<vehicle_attitude_s> _vehicle_attitude_sub{ORB_ID(vehicle_attitude)};
+
+	vehicle_attitude_s vehicle_attitude_grounadtrue = {};
+	uORB::SubscriptionData<vehicle_attitude_s> _vehicle_attitude_groundtruth_sub{ORB_ID(vehicle_attitude_groundtruth)};
 
 	void Run() override;
 	void debug_log_pos();
