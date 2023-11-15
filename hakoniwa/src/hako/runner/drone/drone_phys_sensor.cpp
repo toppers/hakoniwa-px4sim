@@ -9,7 +9,7 @@
 #define REFERENCE_LATITUDE      35.6895
 #define REFERENCE_LONGTITUDE    139.6917
 #define REFERENCE_ALTITUDE      0
-static Vector3Type TOKYO_MAGNETIC_NORTH = {0.5, 0, 0};
+static Vector3Type TOKYO_MAGNETIC_NORTH = {0.5, -0.068493151, 0.0 };
 
 static int32_t CalculateLatitude(const Vector3Type &dronePosition, double referenceLatitude);
 static int32_t CalculateLongitude(const Vector3Type &dronePosition, double referenceLongitude);
@@ -103,6 +103,9 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     ave_rot.y = -ave_rot.y;
     ave_rot.z = -ave_rot.z;
     euler2Quaternion(ave_rot, q);
+    std::cout << "rot.x: " << ave_rot.x << std::endl;
+    std::cout << "rot.y: " << ave_rot.y << std::endl;
+    std::cout << "rot.z: " << ave_rot.z << std::endl;
 #endif
     phys.sensor.hil_state_quaternion.attitude_quaternion[0] = q.w;
     phys.sensor.hil_state_quaternion.attitude_quaternion[1] = q.x;
@@ -124,9 +127,6 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     phys.sensor.hil_state_quaternion.lat = CalculateLatitude(ave_pos, REFERENCE_LATITUDE);
     phys.sensor.hil_state_quaternion.lon = CalculateLongitude(ave_pos, REFERENCE_LONGTITUDE);
     phys.sensor.hil_state_quaternion.alt = -CalculateAltitude(ave_pos, REFERENCE_ALTITUDE);
-    std::cout << "pos.y: " << ave_pos.y << std::endl;
-    std::cout << "lon: " << phys.sensor.hil_state_quaternion.lon << std::endl;
-    std::cout << "pos.z: " << ave_pos.z << std::endl;
 #endif
 
     return;
@@ -219,7 +219,8 @@ static int32_t CalculateLatitude(const Vector3Type& dronePosition, double refere
 static Vector3Type CalcMAVLinkMagnet(const DronePhysType &phys)
 {
     QuaternionType rotation;
-    euler2Quaternion(phys.current.rot, rotation);
+    Vector3Type rot = phys.sensor_rot.average_value;
+    euler2Quaternion(rot, rotation);
     Vector3Type adjustedMagneticNorth = RotateVectorByQuaternion(rotation, TOKYO_MAGNETIC_NORTH);
     return adjustedMagneticNorth;
 }

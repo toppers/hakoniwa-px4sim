@@ -151,6 +151,7 @@ typedef struct {
     DroneSensorAverageDataType sensor_vec;
     DroneSensorAverageDataType sensor_acc;
     Vector3Type prev_vec;
+    Vector3Type prev_rot;
 } DronePhysType;
 
 
