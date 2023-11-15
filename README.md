@@ -309,6 +309,28 @@ https://mavlink.io/en/messages/common.html
 
 (現状、仮説であるため、適宜変更対応予定)
 
+## HIL_STATE_QUATERNION
+
+|名前|座標系|備考|
+|---|---|---|
+|time_usec|-|-|
+|rollspeed|航空|-|
+|pitchspeed|航空|-|
+|yawspeed|航空|-|
+|vx|航空|-|
+|vy|航空|-|
+|vz|航空|-|
+|xacc|航空|-|
+|yacc|航空|-|
+|zacc|航空|重力は含めない|
+|attitude_quaternion|航空|-|
+|lat|航空|-|
+|lon|航空|-|
+|alt|航空|-|
+|ind_airspeed|-|-|
+|true_airspeed|-|-|
+
+
 ## HIL_SENSOR
 
 |名前|座標系|備考|
@@ -330,36 +352,14 @@ https://mavlink.io/en/messages/common.html
 |fields_updated|-|-|
 |id|-|-|
 
-## HIL_STATE_QUATERNION
-
-|名前|座標系|備考|
-|---|---|---|
-|time_usec|-|-|
-|attitude_quaternion|ROS|-|
-|rollspeed|航空|-|
-|pitchspeed|航空|-|
-|yawspeed|航空|-|
-|lat|ROS|-|
-|lon|ROS|-|
-|alt|ROS|-|
-|vx|航空|-|
-|vy|航空|-|
-|vz|航空|-|
-|ind_airspeed|-|-|
-|true_airspeed|-|-|
-|xacc|航空|-|
-|yacc|航空|-|
-|zacc|航空|重力は含めない|
-
-
 ## HIL_GPS
 
 |名前|座標系|備考|
 |---|---|---|
 |time_usec|-|-|
 |fix_type||-|
-|lat|ROS|-|
-|lon|ROS|-|
+|lat|航空|-|
+|lon|航空|-|
 |alt|ROS|-|
 |eph|-|-|
 |epv|-|-|

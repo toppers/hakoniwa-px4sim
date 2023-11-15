@@ -69,9 +69,15 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     Vector3Type ave_vec;
     addAverageData(phys.sensor_vec, phys.current.vec);
     calcAverage(phys.sensor_vec, ave_vec);
+#if 0
+    phys.sensor.hil_state_quaternion.vx = 0;
+    phys.sensor.hil_state_quaternion.vy = 0;
+    phys.sensor.hil_state_quaternion.vz = 0;
+#else
     phys.sensor.hil_state_quaternion.vx = (Hako_int16)(ave_vec.x * 100);
     phys.sensor.hil_state_quaternion.vy = -(Hako_int16)(ave_vec.y * 100);
     phys.sensor.hil_state_quaternion.vz = -(Hako_int16)(ave_vec.z * 100);
+#endif
 #endif
     // for acc
     Vector3Type acc_1;
@@ -118,6 +124,9 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     phys.sensor.hil_state_quaternion.lat = CalculateLatitude(ave_pos, REFERENCE_LATITUDE);
     phys.sensor.hil_state_quaternion.lon = CalculateLongitude(ave_pos, REFERENCE_LONGTITUDE);
     phys.sensor.hil_state_quaternion.alt = -CalculateAltitude(ave_pos, REFERENCE_ALTITUDE);
+    std::cout << "pos.y: " << ave_pos.y << std::endl;
+    std::cout << "lon: " << phys.sensor.hil_state_quaternion.lon << std::endl;
+    std::cout << "pos.z: " << ave_pos.z << std::endl;
 #endif
 
     return;
@@ -164,10 +173,17 @@ static void drone_sensor_run_hil_gps(DronePhysType &phys)
     phys.sensor.hil_gps.ve = phys.current.vec.y;
     phys.sensor.hil_gps.vd = -phys.current.vec.z;
 #else
+#if 0
+    phys.sensor.hil_gps.vel = 0;
+    phys.sensor.hil_gps.vn = 0;
+    phys.sensor.hil_gps.ve = 0;
+    phys.sensor.hil_gps.vd = 0;
+#else
     phys.sensor.hil_gps.vel = vector3_magnitude(phys.sensor_vec.average_value) * 100.0f;
-    phys.sensor.hil_gps.vn = phys.sensor_vec.average_value.x;
-    phys.sensor.hil_gps.ve = -phys.sensor_vec.average_value.y;
-    phys.sensor.hil_gps.vd = -phys.sensor_vec.average_value.z;
+    phys.sensor.hil_gps.vn = (Hako_int16)(phys.sensor_vec.average_value.x * 100.0);
+    phys.sensor.hil_gps.ve = -(Hako_int16)(phys.sensor_vec.average_value.y * 100.0);
+    phys.sensor.hil_gps.vd = -(Hako_int16)(phys.sensor_vec.average_value.z * 100.0);
+#endif
 #endif
     phys.sensor.hil_gps.cog = 0;
     phys.sensor.hil_gps.satellites_visible = 10;
@@ -188,7 +204,7 @@ static int32_t CalculateAltitude(const Vector3Type& dronePosition, double refere
 static int32_t CalculateLongitude(const Vector3Type& dronePosition, double referenceLongitude) 
 {
     // Convert ROS position (in meters) to change in longitude based on reference.
-    double deltaLongitude = dronePosition.y / 111000.0; // ROS's Y axis represents East-West direction.
+    double deltaLongitude = -dronePosition.y / 111000.0; // ROS's Y axis represents East-West direction.
     int32_t longitude = (int32_t)((referenceLongitude + deltaLongitude) * 1e7); // Convert to 1e7 format used by MAVLink
     return longitude;
 }
