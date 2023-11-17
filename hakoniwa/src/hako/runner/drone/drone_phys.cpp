@@ -24,13 +24,13 @@ static void drone_run_rz(const DronePropellerRotationRateType& propeller, DroneP
 //#define EXPERIMENTAL_CODE_ENABLE
 #ifdef EXPERIMENTAL_CODE_ENABLE
 #define fullThrust  KEISU
-#define tau 0.1
-#define DRAG_Z   0.01f
-#define DRAG_X   0.01f
-#define DRAG_Y   0.01f
-#define DRAG_RX  0.0001f
-#define DRAG_RY  0.0001f
-#define DRAG_RZ  0.0001f
+#define tau 1.1
+#define DRAG_Z   0.001f
+#define DRAG_X   0.001f
+#define DRAG_Y   0.001f
+#define DRAG_RX  0.005f
+#define DRAG_RY  0.005f
+#define DRAG_RZ  0.005f
 
 static double thr_weight = 0.0;
 static double getThrust() 
