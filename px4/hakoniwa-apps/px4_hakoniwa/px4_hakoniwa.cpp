@@ -200,8 +200,8 @@ void Px4Hakoniwa::Run()
 	if (_vehicle_local_position_sub.updated()) {
 		_vehicle_local_position_sub.copy(&vehicle_local_position);
 		do_control();
-		//debug_info("pos_x", vehicle_global_position.lat - 35.6895, vehicle_local_position.x);
-		//debug_info("pos_y", vehicle_global_position.lon - 139.6917, vehicle_local_position.y);
+		//debug_info("pos_x", (vehicle_global_position.lat - 35.6895)*111000, vehicle_local_position.x);
+		//debug_info("pos_y", (vehicle_global_position.lon - 139.6917)*111000, vehicle_local_position.y);
 		//debug_info("pos_z", vehicle_global_position.alt, vehicle_local_position.z);
 		//debug_log_pos();
 		debug_log_rot();
