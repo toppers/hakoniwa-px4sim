@@ -314,12 +314,12 @@ https://mavlink.io/en/messages/common.html
 |名前|座標系|備考|
 |---|---|---|
 |time_usec|-|-|
-|rollspeed|航空|-|
-|pitchspeed|航空|-|
-|yawspeed|航空|-|
-|vx|航空|-|
-|vy|航空|-|
-|vz|航空|-|
+|rollspeed|航空|機体座標系|
+|pitchspeed|航空|機体座標系|
+|yawspeed|航空|機体座標系|
+|vx|航空|Ground X Speed (Latitude)|
+|vy|航空|Ground Y Speed (Longitude)|
+|vz|航空|Ground Z Speed (Longitude)|
 |xacc|航空|-|
 |yacc|航空|-|
 |zacc|航空|重力は含めない|
@@ -336,12 +336,12 @@ https://mavlink.io/en/messages/common.html
 |名前|座標系|備考|
 |---|---|---|
 |time_usec|-|-|
-|xacc|航空|-|
-|yacc|航空|-|
-|zacc|航空|重力を含む|
-|xgyro|航空|-|
-|ygyro|航空|-|
-|zgyro|航空|-|
+|xacc|航空|機体座標系|
+|yacc|航空|機体座標系|
+|zacc|航空|機体座標系、重力を含む|
+|xgyro|航空|機体座標系|
+|ygyro|航空|機体座標系|
+|zgyro|航空|機体座標系|
 |xmag|-|-|
 |ymag|-|-|
 |zmag|-|-|
@@ -364,9 +364,9 @@ https://mavlink.io/en/messages/common.html
 |eph|-|-|
 |epv|-|-|
 |vel|-|-|
-|vn|航空|-|
-|ve|航空|-|
-|vd|航空|-|
+|vn|航空|GPS velocity in north direction in earth-fixed NED frame|
+|ve|航空|GPS velocity in east direction in earth-fixed NED frame|
+|vd|航空|GPS velocity in down direction in earth-fixed NED frame|
 |cog|-|-|
 |satelites_visible|-|-|
 |id|-|-|

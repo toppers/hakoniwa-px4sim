@@ -77,7 +77,7 @@ void drone_control_init(DroneControlType& ctrl, double delta_t)
     initPID(ctrl.target_rot.pid_pitch, DRONE_CONTROL_PID_ROT_Y_KP, DRONE_CONTROL_PID_ROT_Y_KI, DRONE_CONTROL_PID_ROT_Y_KD, ctrl.target_rot.target.y);
 
     //Z軸平制御。初期値はゼロで良い。
-    ctrl.target_rot.target.y = 0;
+    ctrl.target_rot.target.z = 0;
     initPID(ctrl.target_rot.pid_yaw, DRONE_CONTROL_PID_ROT_Z_KP, DRONE_CONTROL_PID_ROT_Z_KI, DRONE_CONTROL_PID_ROT_Z_KD, ctrl.target_rot.target.z);
 
     // initPID関数がPIDControllerのインスタンスを適切に初期化することを想定しています。
