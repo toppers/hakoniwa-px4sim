@@ -317,12 +317,12 @@ https://mavlink.io/en/messages/common.html
 |rollspeed|航空|機体座標系|
 |pitchspeed|航空|機体座標系|
 |yawspeed|航空|機体座標系|
-|vx|航空|Ground X Speed (Latitude)|
-|vy|航空|Ground Y Speed (Longitude)|
-|vz|航空|Ground Z Speed (Longitude)|
-|xacc|航空|-|
-|yacc|航空|-|
-|zacc|航空|重力は含めない|
+|vx|航空|地上座標系、Ground X Speed (Latitude)|
+|vy|航空|地上座標系、Ground Y Speed (Longitude)|
+|vz|航空|地上座標系、Ground Z Speed (Longitude)|
+|xacc|航空|地上座標系|
+|yacc|航空|地上座標系|
+|zacc|航空|地上座標系、重力は含めない|
 |attitude_quaternion|航空|-|
 |lat|航空|-|
 |lon|航空|-|
