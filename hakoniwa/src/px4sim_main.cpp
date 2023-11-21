@@ -18,26 +18,30 @@
 #include "hako_capi.h"
 #include "hako/runner/hako_px4_master.hpp"
 #include "hako/runner/common/drone_types.hpp"
+#include "modules/hako_bypass.hpp"
+#include "utils/hako_params.hpp"
 
 typedef enum {
     REPLAY = 0,
     REPLAY_DUMP,
     CAPTURE,
     NORMAL,
-    SIM
+    SIM,
+    BYPASS
 } ModeType;
 
 int main(int argc, char* argv[]) 
 {
     if(argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={replay|replay_dump|capture|normal|sim}> "  << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={replay|replay_dump|capture|normal|sim|bypass}> "  << std::endl;
         return -1;
     }
     ModeType mode = NORMAL;
     const char* serverIp = argv[1];
     int serverPort = std::atoi(argv[2]);
     const char* arg_mode = argv[3];
-
+    hako_param_env_init();
+    
     //std::cout << " HakoHilGps size=" << sizeof(Hako_HakoHilGps) << std::endl;
     //std::cout << " Hako_HakoHilSensor size=" << sizeof(Hako_HakoHilSensor) << std::endl;
     //std::cout << " Hako_HakoHilStateQuaternion size=" << sizeof(Hako_HakoHilStateQuaternion) << std::endl;

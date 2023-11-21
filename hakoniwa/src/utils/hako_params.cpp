@@ -1,6 +1,7 @@
 #include "hako_params.hpp"
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 typedef struct {
     const char *name;
@@ -27,21 +28,23 @@ static HakoParamIntegerType hako_param_integer[HAKO_PARAM_INTEGER_NUM] = {
     },
 };
 
-bool hako_param_env_init()
+void hako_param_env_init()
 {
     for (int i = 0; i < HAKO_PARAM_STRING_NUM; i++) {
         char *value = getenv(hako_param_string[i].name);
-        if (value != NULL) {
+        if ((value != NULL) && (strlen(value) > 0 )) {
             hako_param_string[i].value = value;
         }
+        std::cout << hako_param_string[i].name << " : " << hako_param_string[i].value <<std::endl;
     }
     for (int i = 0; i < HAKO_PARAM_INTEGER_NUM; i++) {
         char *value = getenv(hako_param_integer[i].name);
-        if (value != NULL) {
+        if ((value != NULL) && (strlen(value) > 0 )) {
             hako_param_integer[i].value = atoi(value);
         }
+        std::cout << hako_param_integer[i].name << " : " << hako_param_integer[i].value <<std::endl;
     }
-    return true;
+    return;
 }
 
 const char* hako_param_env_get_string(const char* param_name)
