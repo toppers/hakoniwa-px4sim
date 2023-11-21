@@ -33,6 +33,9 @@ add_executable(
     threads/px4sim_thread_sender.cpp
     threads/px4sim_thread_replay.cpp
     threads/px4sim_thread_capture.cpp
+
+    utils/hako_params.cpp
+
     px4sim_main.cpp
 )
 
