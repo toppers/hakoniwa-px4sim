@@ -7,6 +7,8 @@
 #include "../mavlink/mavlink_dump.hpp"
 #include "../mavlink/mavlink_decoder.hpp"
 #include "../threads/px4sim_thread_sender.hpp"
+#include "../utils/hako_params.hpp"
+#include "../utils/hako_utils.hpp"
 
 #include <iostream>
 #include <unistd.h>
@@ -17,7 +19,11 @@ void *px4sim_thread_replay(void *arg)
 {
     hako::px4::comm::ICommIO *clientConnector = static_cast<hako::px4::comm::ICommIO *>(arg);
     MavlinkCaptureControllerType controller;
-    bool ret = mavlink_capture_load_controller(controller, MAVLINK_CAPTURE_SAVE_FILEPATH);
+    const char* filepath = hako_param_env_get_string(HAKO_CAPTURE_SAVE_FILEPATH);
+    if (filepath == nullptr) {
+        HAKO_ABORT("Failed to get HAKO_CAPTURE_SAVE_FILEPATH");
+    }
+    bool ret = mavlink_capture_load_controller(controller, filepath);
     if (ret == false) {
         std::cout << "ERROR: can not create replay thread " << std::endl;
         exit(1);
@@ -42,10 +48,11 @@ void *px4sim_thread_replay(void *arg)
     uint64_t start_time_usec = std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count();
     while (true) {
         uint8_t recvBuffer[1024];
+        uint32_t owner;
         uint32_t recvDataLen;
         uint64_t timestamp;
 
-        ret = mavlink_capture_load_data(controller, 1024, &recvBuffer[0], &recvDataLen, &timestamp);
+        ret = mavlink_capture_load_data(controller, 1024, &recvBuffer[0], &recvDataLen, &owner, &timestamp);
         if (ret && recvDataLen > 0) 
         {
             //sleep for send timing
@@ -85,7 +92,11 @@ void *px4sim_thread_replay_dump(void *arg)
         //OK
     }
     MavlinkCaptureControllerType controller;
-    bool ret = mavlink_capture_load_controller(controller, MAVLINK_CAPTURE_SAVE_FILEPATH);
+    const char* filepath = hako_param_env_get_string(HAKO_CAPTURE_SAVE_FILEPATH);
+    if (filepath == nullptr) {
+        HAKO_ABORT("Failed to get HAKO_CAPTURE_SAVE_FILEPATH");
+    }
+    bool ret = mavlink_capture_load_controller(controller, filepath);
     if (ret == false) {
         std::cout << "ERROR: can not create replay thread " << std::endl;
         exit(1);
@@ -97,10 +108,11 @@ void *px4sim_thread_replay_dump(void *arg)
     uint64_t start_time_usec = std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count();
     while (true) {
         uint8_t recvBuffer[1024];
+        uint32_t owner;
         uint32_t recvDataLen;
         uint64_t timestamp;
 
-        ret = mavlink_capture_load_data(controller, 1024, &recvBuffer[0], &recvDataLen, &timestamp);
+        ret = mavlink_capture_load_data(controller, 1024, &recvBuffer[0], &recvDataLen, &owner, &timestamp);
         if (ret && recvDataLen > 0) 
         {
             //sleep for send timing

@@ -69,6 +69,5 @@ typedef struct {
 } MavlinkCaptureControllerType;
 
 #define MAVLINK_CAPTURE_INC_DATA_SIZE   8192 /* メモリ拡張サイズ（単位：バイト） */
-#define MAVLINK_CAPTURE_SAVE_FILEPATH "./capture.bin"
 
 #endif /* _MAVLIN_MSG_TYPES_HPP_ */

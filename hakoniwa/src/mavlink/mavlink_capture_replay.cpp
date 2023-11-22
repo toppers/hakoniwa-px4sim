@@ -62,7 +62,8 @@ bool mavlink_capture_load_controller(MavlinkCaptureControllerType &controller, c
     }
     return true;
 }
-bool mavlink_capture_load_data(MavlinkCaptureControllerType &controller, uint32_t dataLength, uint8_t *data, uint32_t *r_dataLength, uint64_t *timestamp) {
+bool mavlink_capture_load_data(MavlinkCaptureControllerType &controller, uint32_t dataLength, uint8_t  *data, uint32_t *r_dataLength, uint32_t *r_owner, uint64_t *timestamp)
+{
     if (controller.data == nullptr || data == nullptr || r_dataLength == nullptr || timestamp == nullptr) {
         std::cerr << "Invalid data or pointers." << std::endl;
         return false;
@@ -91,6 +92,23 @@ bool mavlink_capture_load_data(MavlinkCaptureControllerType &controller, uint32_
         std::cerr << "packet_data_length = " << packet_data_length << std::endl;
         return false;
     }
+    uint32_t packet_owner;
+    if (controller.offset + sizeof(uint32_t) > controller.total_size) {
+        std::cerr << "Incomplete data in the cache." << std::endl;
+        return false;
+    }    
+    memcpy(&packet_owner, controller.data + controller.offset, sizeof(uint32_t));
+    //std::cout << "data_length: controller.offset = " << controller.offset << std::endl;
+    controller.offset += sizeof(uint32_t);
+
+    // Check if there's enough space in the provided data buffer
+    if (dataLength < packet_data_length) {
+        std::cerr << "Data buffer too small." << std::endl;
+        std::cerr << "dataLength = " << dataLength << std::endl;
+        std::cerr << "packet_data_length = " << packet_data_length << std::endl;
+        return false;
+    }
+    *r_owner = packet_owner;
 
     // Read the relative timestamp
     uint64_t packet_timestamp;
@@ -140,8 +158,9 @@ bool mavlink_set_timestamp_for_replay_data(MavlinkDecodedMessage &message, uint6
             break;
         case MAVLINK_MSG_TYPE_LONG:
         case MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS:
+            break;
         default:
-            std::cout << "  Unknown or unsupported MAVLink message type received." << std::endl;
+            std::cout << "  Unknown or unsupported MAVLink message type received. type = " << message.type << std::endl;
             break;
     }
     return true;

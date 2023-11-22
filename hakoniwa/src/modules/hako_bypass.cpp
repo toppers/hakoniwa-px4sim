@@ -2,14 +2,9 @@
 #include "../comm/tcp_connector.hpp"
 #include "../utils/hako_params.hpp"
 #include "../mavlink/mavlink_capture.hpp"
+#include "../utils/hako_utils.hpp"
 #include <stdlib.h>
 #include <iostream>
-
-static inline void HAKO_ABORT(const char* errmsg)
-{
-    std::cerr << "ERROR: " << errmsg << std::endl;
-    exit(1);
-}
 
 typedef struct {
     const char* name;
@@ -75,6 +70,8 @@ void hako_bypass_main(const char* sever_ipaddr, int server_portno)
             HAKO_ABORT("Failed to get HAKO_BYPASS_PORTNO");
         }
         hako::px4::comm::IcommEndpointType physEndpoint = { srv_ip, portno };
+        std::cout << "client ipaddr: " << physEndpoint.ipaddr << std::endl;
+        std::cout << "client portno: " << physEndpoint.portno << std::endl;
         phys_comm = client.client_open(nullptr, &physEndpoint);
         if (phys_comm == nullptr) 
         {

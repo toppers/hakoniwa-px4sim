@@ -14,11 +14,14 @@ void mavlink_msg_dump(mavlink_message_t &msg)
 }
 void mavlink_message_dump(MavlinkDecodedMessage &message)
 {
+    std::cout << "  Message.type: " << message.type << std::endl;
     switch (message.type) {
         case MAVLINK_MSG_TYPE_HEARTBEAT:
             std::cout << "  Type: HEARTBEAT" << std::endl;
-            std::cout << "  Custom mode: " << message.data.heartbeat.custom_mode << std::endl;
+            std::cout << "  Type: " << message.data.heartbeat.type << std::endl;
+            std::cout << "  Autopilot: " << message.data.heartbeat.autopilot << std::endl;
             std::cout << "  Base mode: " << static_cast<int>(message.data.heartbeat.base_mode) << std::endl;
+            std::cout << "  Custom mode: " << message.data.heartbeat.custom_mode << std::endl;
             std::cout << "  System status: " << static_cast<int>(message.data.heartbeat.system_status) << std::endl;
             std::cout << "  MAVLink version: " << static_cast<int>(message.data.heartbeat.mavlink_version) << std::endl;
             px4_data_hb_received = true;
@@ -29,6 +32,14 @@ void mavlink_message_dump(MavlinkDecodedMessage &message)
             std::cout << "  Target component: " << static_cast<int>(message.data.command_long.target_component) << std::endl;
             std::cout << "  Command ID: " << message.data.command_long.command << std::endl;
             std::cout << "  Confirmation: " << static_cast<int>(message.data.command_long.confirmation) << std::endl;
+            std::cout << "  Param1: " << static_cast<int>(message.data.command_long.param1) << std::endl;
+            std::cout << "  Param2: " << static_cast<int>(message.data.command_long.param2) << std::endl;
+            std::cout << "  Param3: " << static_cast<int>(message.data.command_long.param3) << std::endl;
+            std::cout << "  Param4: " << static_cast<int>(message.data.command_long.param4) << std::endl;
+            std::cout << "  Param5: " << static_cast<int>(message.data.command_long.param5) << std::endl;
+            std::cout << "  Param6: " << static_cast<int>(message.data.command_long.param6) << std::endl;
+            std::cout << "  Param7: " << static_cast<int>(message.data.command_long.param7) << std::endl;
+
             //send_ack(*clientConnector, message.data.command_long.command, MAV_RESULT_ACCEPTED, 
             //    message.data.command_long.target_system, message.data.command_long.target_component);
             px4_data_long_received = true;
@@ -58,6 +69,7 @@ void mavlink_message_dump(MavlinkDecodedMessage &message)
             std::cout << "  Zmag: " << message.data.sensor.zmag << std::endl;
             std::cout << "  Abs_pressure: " << message.data.sensor.abs_pressure << std::endl;
             std::cout << "  Diff_pressure: " << message.data.sensor.diff_pressure << std::endl;
+            std::cout << "  Pressure_Alt: " << message.data.sensor.pressure_alt << std::endl;
             std::cout << "  temparature: " << message.data.sensor.temperature << std::endl;
             std::cout << "  fileds_updated: " << message.data.sensor.fields_updated << std::endl;
             //std::cout << "  id: " << message.data.sensor.id << std::endl;
