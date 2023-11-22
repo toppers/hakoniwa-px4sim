@@ -4,6 +4,10 @@
 #include <errno.h>
 #include <iostream>  // Added for error output
 #include <arpa/inet.h>  // for inet_pton
+#include <unistd.h>
+
+#define MAX_ATTEMPTS 600
+#define RETRY_INTERVAL 3
 
 namespace hako::px4::comm {
 
@@ -32,12 +36,17 @@ ICommIO* TcpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) 
     remote_addr.sin_family = AF_INET;
     remote_addr.sin_addr.s_addr = inet_addr(dst->ipaddr);
     remote_addr.sin_port = htons(dst->portno);
-    if (connect(sockfd, (struct sockaddr*)&remote_addr, sizeof(remote_addr)) < 0) {
-        std::cout << "Failed to connect: " << strerror(errno) << std::endl;
-        ::close(sockfd);
-        return nullptr;
-    }
+    int attempt = 0;
+    while (connect(sockfd, (struct sockaddr*)&remote_addr, sizeof(remote_addr)) < 0) {
+        if (++attempt >= MAX_ATTEMPTS) {
+            std::cout << "Failed to connect after " << MAX_ATTEMPTS << " attempts: " << strerror(errno) << std::endl;
+            ::close(sockfd);
+            return nullptr;
+        }
 
+        std::cout << "Connection attempt " << attempt << " failed, retrying..." << std::endl;
+        sleep(RETRY_INTERVAL); // リトライ間隔（秒単位）
+    }
     return new TcpCommIO(sockfd);
 }
 

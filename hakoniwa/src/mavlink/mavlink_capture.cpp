@@ -38,7 +38,7 @@ bool mavlink_capture_create_controller(MavlinkCaptureControllerType &controller,
     return true;
 }
 
-bool mavlink_capture_append_data(MavlinkCaptureControllerType &controller, uint32_t dataLength, const uint8_t *data) {
+bool mavlink_capture_append_data(MavlinkCaptureControllerType &controller, MavlinkCaptureDataOwnerType owner, uint32_t dataLength, const uint8_t *data) {
     auto now = std::chrono::system_clock::now();
     auto duration_since_epoch = now.time_since_epoch();
     uint64_t time_usec = std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count();
@@ -47,8 +47,9 @@ bool mavlink_capture_append_data(MavlinkCaptureControllerType &controller, uint3
     }
     MavlinkCaptureDataType packet;
     packet.dataLength = dataLength;
+    packet.owner = owner;
     packet.relativeTimestamp = time_usec - controller.start_time;
-    uint64_t packet_size = sizeof(packet.dataLength) + sizeof(packet.relativeTimestamp) + dataLength;
+    uint64_t packet_size = sizeof(packet.dataLength) + sizeof(packet.owner) + (packet.relativeTimestamp) + dataLength;
 
     if (controller.offset + packet_size > controller.memsize) {
         controller.memsize += MAVLINK_CAPTURE_INC_DATA_SIZE;
@@ -65,6 +66,11 @@ bool mavlink_capture_append_data(MavlinkCaptureControllerType &controller, uint3
     memcpy(&controller.data[controller.offset], &packet.dataLength, sizeof(packet.dataLength));
     controller.offset += sizeof(packet.dataLength);
     controller.total_size += sizeof(packet.dataLength);
+
+    memcpy(&controller.data[controller.offset], &packet.owner, sizeof(packet.owner));
+    controller.offset += sizeof(packet.owner);
+    controller.total_size += sizeof(packet.owner);
+
     //std::cout << "off: " << controller.offset << " relativeTimestamp=" << packet.relativeTimestamp << std::endl;
     memcpy(&controller.data[controller.offset], &packet.relativeTimestamp, sizeof(packet.relativeTimestamp));
     controller.offset += sizeof(packet.relativeTimestamp);

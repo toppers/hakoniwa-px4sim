@@ -8,11 +8,17 @@
 
 #include "../mavlink/mavlink_msg_types.hpp"
 #include "../mavlink/mavlink_capture.hpp"
+#include "../utils/hako_params.hpp"
+#include "../utils/hako_utils.hpp"
 
 void *px4sim_thread_capture(void *arg)
 {
     MavlinkCaptureControllerType controller;
-    bool ret = mavlink_capture_create_controller(controller, MAVLINK_CAPTURE_SAVE_FILEPATH);
+    const char* filepath = hako_param_env_get_string(HAKO_CAPTURE_SAVE_FILEPATH);
+    if (filepath == nullptr) {
+        HAKO_ABORT("Failed to get HAKO_CAPTURE_SAVE_FILEPATH");
+    }
+    bool ret = mavlink_capture_create_controller(controller, filepath);
     if (ret == false) {
         std::cout << "ERROR: can not create capture thread " << std::endl;
         exit(1);
@@ -25,7 +31,7 @@ void *px4sim_thread_capture(void *arg)
         if (clientConnector->recv(recvBuffer, sizeof(recvBuffer), &recvDataLen)) 
         {
             std::cout << "Capture data with length: " << recvDataLen << std::endl;
-            ret = mavlink_capture_append_data(controller, recvDataLen, (const uint8_t*) recvBuffer);
+            ret = mavlink_capture_append_data(controller, MAVLINK_CAPTURE_DATA_OWNER_PHYSICS, recvDataLen, (const uint8_t*) recvBuffer);
             if (ret == false) {
                 std::cerr << "Failed to capture data" << std::endl;
             }
