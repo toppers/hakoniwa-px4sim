@@ -13,6 +13,7 @@ static inline void HAKO_ABORT(const char* errmsg)
 
 typedef struct {
     const char* name;
+    MavlinkCaptureDataOwnerType owner;
     hako::px4::comm::ICommIO *src_comm;
     hako::px4::comm::ICommIO *dst_comm;
     MavlinkCaptureControllerType *capture;
@@ -30,7 +31,7 @@ static void *hako_bypass_thread(void *argp)
         {
             std::cout << "Capture data with length: " << recvDataLen << std::endl;
             pthread_mutex_lock(bypass_ctrl->mutex);
-            bool ret = mavlink_capture_append_data(*bypass_ctrl->capture, recvDataLen, (const uint8_t*) recvBuffer);
+            bool ret = mavlink_capture_append_data(*bypass_ctrl->capture, bypass_ctrl->owner, recvDataLen, (const uint8_t*) recvBuffer);
             pthread_mutex_unlock(bypass_ctrl->mutex);
             if (ret == false) {
                 std::cerr << "ERROR: " << bypass_ctrl->name << " Failed to capture data" << std::endl;
@@ -101,6 +102,7 @@ void hako_bypass_main(const char* sever_ipaddr, int server_portno)
         phys2ctrl_arg.dst_comm = ctrl_comm;
         phys2ctrl_arg.capture = &capture;
         phys2ctrl_arg.mutex = &capture_mutex;
+        phys2ctrl_arg.owner = MAVLINK_CAPTURE_DATA_OWNER_PHYSICS;
         if (pthread_create(&thread, NULL, hako_bypass_thread, &phys2ctrl_arg) != 0) {
             HAKO_ABORT("Failed to create thread phys2ctrl");
         }
@@ -112,6 +114,7 @@ void hako_bypass_main(const char* sever_ipaddr, int server_portno)
         ctrl2phys_arg.dst_comm = phys_comm;
         ctrl2phys_arg.capture = &capture;
         ctrl2phys_arg.mutex = &capture_mutex;
+        phys2ctrl_arg.owner = MAVLINK_CAPTURE_DATA_OWNER_CONTROL;
         hako_bypass_thread(&ctrl2phys_arg);
     }
     return;

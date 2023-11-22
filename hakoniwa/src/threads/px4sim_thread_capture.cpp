@@ -25,7 +25,7 @@ void *px4sim_thread_capture(void *arg)
         if (clientConnector->recv(recvBuffer, sizeof(recvBuffer), &recvDataLen)) 
         {
             std::cout << "Capture data with length: " << recvDataLen << std::endl;
-            ret = mavlink_capture_append_data(controller, recvDataLen, (const uint8_t*) recvBuffer);
+            ret = mavlink_capture_append_data(controller, MAVLINK_CAPTURE_DATA_OWNER_PHYSICS, recvDataLen, (const uint8_t*) recvBuffer);
             if (ret == false) {
                 std::cerr << "Failed to capture data" << std::endl;
             }

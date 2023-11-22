@@ -34,6 +34,7 @@ typedef struct {
 
 typedef struct {
     uint32_t dataLength;         // 受信データ長: 4バイト
+    uint32_t owner;
     uint64_t relativeTimestamp;  // 受信相対時間: 8バイト
     uint8_t  data[8];           // 受信データ（可変：受信データ長）
 } MavlinkCaptureDataType;
