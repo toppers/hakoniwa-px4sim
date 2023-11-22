@@ -12,7 +12,25 @@
 
 # 通信シーケンス
 
-TODO
+|PX4|メッセージ|AirSim|
+|---|---|---|
+|=>|COMMAND_LONG|>=|
+|=>|HEARTBEAT|>=|
+|=<|COMMAND_LONG|<=|
+|=<|HIL_SENSOR|<=|
+|=<|SYSTEM_TIME|<=|
+|=<|HIL_GPS|<=|
+|=<|:|<=|
+|=>|HIL_ACTUATOR_CONTROLS|>=|
+|=<|HIL_SENSOR|<=|
+|=<|SYSTEM_TIME|<=|
+|=<|HIL_GPS|<=|
+|=<|:|<=|
+|=>|HIL_ACTUATOR_CONTROLS|>=|
+|=<|HIL_SENSOR|<=|
+|=<|SYSTEM_TIME|<=|
+|=<|HIL_GPS|<=|
+
 
 # 通信データの代表値
 
