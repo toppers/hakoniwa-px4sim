@@ -13,7 +13,9 @@
 
 static void px4sim_send_system_time(hako::px4::comm::ICommIO &clientConnector, uint64_t time_unix_usec, uint32_t time_boot_ms);
 static void px4sim_send_hil_gps(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec);
+#if 0
 static void px4sim_send_hil_state_quaternion(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec);
+#endif
 static void px4sim_send_sensor(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec);
 
 static hako::px4::comm::ICommIO *px4_comm_io;
@@ -39,11 +41,11 @@ void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
     start_time_usec = std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count();
 
     memset(&px4sim_sender_timing_config, 0, sizeof(px4sim_sender_timing_config));
-    px4sim_sender_timing_config.heartbeat.cycle = 1000;
-    px4sim_sender_timing_config.system_time.cycle = 3991;
-    px4sim_sender_timing_config.sensor.cycle = 4000;
-    px4sim_sender_timing_config.state_quaternion.cycle = 8000;
-    px4sim_sender_timing_config.gps.cycle = 52000;
+    //px4sim_sender_timing_config.heartbeat.cycle = 1000;
+    px4sim_sender_timing_config.system_time.cycle = 3000;
+    px4sim_sender_timing_config.sensor.cycle = 3000;
+    //px4sim_sender_timing_config.state_quaternion.cycle = 8000;
+    px4sim_sender_timing_config.gps.cycle = 21000;
     return;
 }
 static inline bool is_send_cycle(Px4SimSenderTimingType &timing, uint64_t boot_time_usec)
@@ -66,18 +68,22 @@ void px4sim_sender_do_task(void)
     uint64_t time_usec =  start_time_usec + boot_time_usec;
     //std::cout << "boot_time_usec: " << boot_time_usec  << std::endl;
     //std::cout << "time_usec: " << time_usec << std::endl;
+#if 0
     if (is_send_cycle(px4sim_sender_timing_config.heartbeat, boot_time_usec)) {
         px4sim_send_dummy_heartbeat(*px4_comm_io);
     }
+#endif
     if (is_send_cycle(px4sim_sender_timing_config.system_time, boot_time_usec)) {
         px4sim_send_system_time(*px4_comm_io, time_usec, boot_time_usec/1000);
     }
     if (is_send_cycle(px4sim_sender_timing_config.sensor, boot_time_usec)) {
         px4sim_send_sensor(*px4_comm_io, time_usec);
     }
+#if 0
     if (is_send_cycle(px4sim_sender_timing_config.state_quaternion, boot_time_usec)) {
         px4sim_send_hil_state_quaternion(*px4_comm_io, time_usec);
     }
+#endif
     if (is_send_cycle(px4sim_sender_timing_config.gps, boot_time_usec)) {
         px4sim_send_hil_gps(*px4_comm_io, time_usec);
     }
@@ -165,6 +171,7 @@ static void px4sim_send_hil_gps(hako::px4::comm::ICommIO &clientConnector, uint6
         px4sim_send_message(clientConnector, message);
     }
 }
+#if 0
 static void px4sim_send_hil_state_quaternion(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec)
 {
     static std::default_random_engine generator;
@@ -187,6 +194,7 @@ static void px4sim_send_hil_state_quaternion(hako::px4::comm::ICommIO &clientCon
         px4sim_send_message(clientConnector, message);
     }
 }
+#endif
 static void px4sim_send_sensor(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec)
 {
     // Random noise generator setup
