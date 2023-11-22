@@ -4,6 +4,7 @@
 #include "../mavlink/mavlink_decoder.hpp"
 #include "../mavlink/mavlink_dump.hpp"
 #include "../comm/tcp_connector.hpp"
+#include "../threads/px4sim_thread_sender.hpp"
 #include "../hako/pdu/hako_pdu_data.hpp"
 
 #include <iostream>
@@ -63,6 +64,9 @@ void *px4sim_thread_receiver(void *arg)
                     mavlink_msg_dump(msg);
                     mavlink_message_dump(message);
 #endif
+                    if (message.type == MAVLINK_MSG_TYPE_LONG) {
+                        px4sim_send_dummy_command_long_ack(*clientConnector);
+                    }
                     hako_mavlink_write_data(message);
                 }
             }

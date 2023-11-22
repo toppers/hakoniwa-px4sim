@@ -134,6 +134,28 @@ void px4sim_send_dummy_command_long(hako::px4::comm::ICommIO &clientConnector)
     px4sim_send_message(clientConnector, message);
 }
 
+void px4sim_send_dummy_command_long_ack(hako::px4::comm::ICommIO &clientConnector)
+{
+    MavlinkDecodedMessage message;
+    message.type = MAVLINK_MSG_TYPE_LONG;
+    
+    // Setting up the fields for COMMAND_LONG
+    message.data.command_long.target_system = 1; // The system which should execute the command, for example, 1 for the first MAV
+    message.data.command_long.target_component = 1; // The component which should execute the command, for example, 0 for a generic component
+    message.data.command_long.command = 520;
+    message.data.command_long.confirmation = 1; // 0: First transmission of this command. 1-255: Confirmation transmissions (e.g. for kill command)
+    message.data.command_long.param1 = 0; // Parameter 1, as defined by MAV_CMD enum
+    message.data.command_long.param2 = 0; // Parameter 2, as defined by MAV_CMD enum
+    message.data.command_long.param3 = 0; // Parameter 3, as defined by MAV_CMD enum
+    message.data.command_long.param4 = 0; // Parameter 4, as defined by MAV_CMD enum
+    message.data.command_long.param5 = 0; // Parameter 5, as defined by MAV_CMD enum
+    message.data.command_long.param6 = 0; // Parameter 6, as defined by MAV_CMD enum
+    message.data.command_long.param7 = 0; // Parameter 7, as defined by MAV_CMD enum
+    
+    px4sim_send_message(clientConnector, message);
+    std::cout << "INFO: COMMAND_LONG ack sended" << std::endl;
+}
+
 void px4sim_send_dummy_heartbeat(hako::px4::comm::ICommIO &clientConnector)
 {
     // HEARTBEATメッセージの準備
