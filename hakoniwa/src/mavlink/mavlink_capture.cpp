@@ -38,7 +38,7 @@ bool mavlink_capture_create_controller(MavlinkCaptureControllerType &controller,
     return true;
 }
 
-bool mavlink_capture_append_data(MavlinkCaptureControllerType &controller, MavlinkCaptureDataOwnerType owner, uint32_t dataLength, const uint8_t *data) {
+bool mavlink_capture_append_data(MavlinkCaptureControllerType &controller, uint32_t owner, uint32_t dataLength, const uint8_t *data) {
     auto now = std::chrono::system_clock::now();
     auto duration_since_epoch = now.time_since_epoch();
     uint64_t time_usec = std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count();

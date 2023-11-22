@@ -130,6 +130,12 @@ void *px4sim_thread_replay_dump(void *arg)
                     std::cerr << "Failed to get message data" << std::endl;
                     exit(1);
                 }
+                if (owner == 0) {
+                    std::cout << "Message Owner: Controller: " << owner << std::endl;
+                }
+                else {
+                    std::cout << "Message Owner: Physics: " << owner << std::endl;
+                }
                 mavlink_set_timestamp_for_replay_data(message, start_time_usec + timestamp);
                 mavlink_msg_dump(msg);
                 mavlink_message_dump(message);
