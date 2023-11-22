@@ -1,23 +1,66 @@
 #include "hako_bypass.hpp"
 #include "../comm/tcp_connector.hpp"
 #include "../utils/hako_params.hpp"
-#include "../hako/runner/hako_px4_master.hpp"
-#include "hako_capi.h"
+#include "../mavlink/mavlink_capture.hpp"
 #include <stdlib.h>
 #include <iostream>
 
-static hako::px4::comm::ICommIO *phys_comm  = nullptr;
-static hako::px4::comm::ICommIO *ctrl_comm  = nullptr;
 static inline void HAKO_ABORT(const char* errmsg)
 {
     std::cerr << "ERROR: " << errmsg << std::endl;
     exit(1);
 }
 
+typedef struct {
+    const char* name;
+    hako::px4::comm::ICommIO *src_comm;
+    hako::px4::comm::ICommIO *dst_comm;
+    MavlinkCaptureControllerType *capture;
+    pthread_mutex_t *mutex;
+} HakoBypassCommType;
+
+static void *hako_bypass_thread(void *argp)
+{
+    HakoBypassCommType *bypass_ctrl = (HakoBypassCommType*)argp;
+    std::cout << "INFO: start " << bypass_ctrl->name << std::endl;
+    while (true) {
+        char recvBuffer[1024];
+        int recvDataLen;
+        if (bypass_ctrl->src_comm->recv(recvBuffer, sizeof(recvBuffer), &recvDataLen)) 
+        {
+            std::cout << "Capture data with length: " << recvDataLen << std::endl;
+            pthread_mutex_lock(bypass_ctrl->mutex);
+            bool ret = mavlink_capture_append_data(*bypass_ctrl->capture, recvDataLen, (const uint8_t*) recvBuffer);
+            pthread_mutex_unlock(bypass_ctrl->mutex);
+            if (ret == false) {
+                std::cerr << "ERROR: " << bypass_ctrl->name << " Failed to capture data" << std::endl;
+            }
+            //TODO send
+            int sndLen = 0;
+            ret = bypass_ctrl->dst_comm->send(recvBuffer, recvDataLen, &sndLen);
+            if (ret == false) {
+                std::cerr << "ERROR: " << bypass_ctrl->name << " Failed to send data" << std::endl;
+            }
+        } else {
+            std::cerr << "ERROR: " << bypass_ctrl->name << " Failed to receive data" << std::endl;
+        }
+    }
+    return nullptr;
+}
+
 void hako_bypass_main(const char* sever_ipaddr, int server_portno)
 {
-    if (!hako_master_init()) {
-        HAKO_ABORT("ERROR: hako_master_init() error" );
+    hako::px4::comm::ICommIO *phys_comm  = nullptr;
+    hako::px4::comm::ICommIO *ctrl_comm  = nullptr;
+    MavlinkCaptureControllerType capture;
+    {
+        const char* filepath = hako_param_env_get_string(HAKO_CAPTURE_SAVE_FILEPATH);
+        if (filepath == nullptr) {
+            HAKO_ABORT("Failed to get HAKO_CAPTURE_SAVE_FILEPATH");
+        }
+        if (mavlink_capture_create_controller(capture, filepath) == false) {
+            HAKO_ABORT("Failed to create capture controller");
+        }
     }
     {
         hako::px4::comm::TcpClient client;
@@ -49,6 +92,27 @@ void hako_bypass_main(const char* sever_ipaddr, int server_portno)
         }
         std::cout << "INFO: connected to controller" << std::endl;
     }
-
+    pthread_mutex_t capture_mutex = PTHREAD_MUTEX_INITIALIZER;
+    HakoBypassCommType phys2ctrl_arg;
+    {
+        pthread_t thread;
+        phys2ctrl_arg.name = "phys2ctrl";
+        phys2ctrl_arg.src_comm = phys_comm;
+        phys2ctrl_arg.dst_comm = ctrl_comm;
+        phys2ctrl_arg.capture = &capture;
+        phys2ctrl_arg.mutex = &capture_mutex;
+        if (pthread_create(&thread, NULL, hako_bypass_thread, &phys2ctrl_arg) != 0) {
+            HAKO_ABORT("Failed to create thread phys2ctrl");
+        }
+    }
+    HakoBypassCommType ctrl2phys_arg;
+    {
+        ctrl2phys_arg.name = "ctrl2phys";
+        ctrl2phys_arg.src_comm = ctrl_comm;
+        ctrl2phys_arg.dst_comm = phys_comm;
+        ctrl2phys_arg.capture = &capture;
+        ctrl2phys_arg.mutex = &capture_mutex;
+        hako_bypass_thread(&ctrl2phys_arg);
+    }
     return;
 }
