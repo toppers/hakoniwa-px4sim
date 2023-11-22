@@ -13,17 +13,21 @@ typedef struct {
     int value;
 } HakoParamIntegerType;
 
-#define HAKO_PARAM_STRING_NUM 1
+#define HAKO_PARAM_STRING_NUM 2
 static HakoParamStringType hako_param_string[HAKO_PARAM_STRING_NUM] = {
     {
-        "HAKO_CAPTURE_SAVE_FILEPATH",
+       HAKO_CAPTURE_SAVE_FILEPATH,
         "./capture.bin"
+    },
+    {
+        HAKO_BYPASS_IPADDR,
+        "127.0.0.1"
     },
 };
 #define HAKO_PARAM_INTEGER_NUM 1
 static HakoParamIntegerType hako_param_integer[HAKO_PARAM_INTEGER_NUM] = {
     {
-        "HAKO_BYPASS_PORTNO",
+        HAKO_BYPASS_PORTNO,
         54001
     },
 };
@@ -62,7 +66,7 @@ const char* hako_param_env_get_string(const char* param_name)
     return NULL;
 }
 
-bool hako_param_env_get_int(const char* param_name, int* value)
+bool hako_param_env_get_integer(const char* param_name, int* value)
 {
     size_t param_name_len = strlen(param_name);
     for (int i = 0; i < HAKO_PARAM_INTEGER_NUM; i++) {

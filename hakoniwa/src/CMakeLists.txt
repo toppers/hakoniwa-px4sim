@@ -35,6 +35,7 @@ add_executable(
     threads/px4sim_thread_capture.cpp
 
     utils/hako_params.cpp
+    modules/hako_bypass.cpp
 
     px4sim_main.cpp
 )

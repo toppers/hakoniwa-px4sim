@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     int serverPort = std::atoi(argv[2]);
     const char* arg_mode = argv[3];
     hako_param_env_init();
-    
+
     //std::cout << " HakoHilGps size=" << sizeof(Hako_HakoHilGps) << std::endl;
     //std::cout << " Hako_HakoHilSensor size=" << sizeof(Hako_HakoHilSensor) << std::endl;
     //std::cout << " Hako_HakoHilStateQuaternion size=" << sizeof(Hako_HakoHilStateQuaternion) << std::endl;
@@ -52,6 +52,11 @@ int main(int argc, char* argv[])
     if (strcmp("replay_dump", arg_mode) == 0) {
         comm_io = nullptr;
         mode = REPLAY_DUMP;
+    }
+    else if (strcmp("bypass", arg_mode) == 0) {
+        hako_bypass_main(serverIp, serverPort);
+        //not returned function.
+        //do not pass
     }
     else if (strcmp("sim", arg_mode) == 0) {
         hako::px4::comm::TcpServer server;
