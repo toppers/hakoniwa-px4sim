@@ -62,6 +62,7 @@ int main(int argc, char* argv[])
         hako::px4::comm::TcpServer server;
         comm_io = nullptr;
         mode = SIM;
+#ifndef NOUSE_HAKO_MSTER
         if (!hako_master_init()) {
             std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
             return -1;
@@ -70,6 +71,7 @@ int main(int argc, char* argv[])
             std::cout << "INFO: hako_master_init() success" << std::endl;
         }
         hako_master_set_config_simtime(HAKO_PX4_RUNNER_MASTER_MAX_DELAY_USEC, HAKO_PX4_RUNNER_MASTER_DELTA_USEC);
+#endif
         static HakoPx4RunnerArgType arg;
         arg.asset_name = "px4sim";
         arg.config_path = "../config/custom.json";
@@ -81,10 +83,12 @@ int main(int argc, char* argv[])
             return -1;
         }
 #ifdef DRONE_PX4_ENABLE
+#ifndef NOUSE_HAKO_MSTER
         if (pthread_create(&thread_1, NULL, hako_px4_master_thread_run, nullptr) != 0) {
             std::cerr << "Failed to create hako_px4_runner thread!" << std::endl;
             return -1;
         }
+#endif
         comm_io = server.server_open(&serverEndpoint);
         if (comm_io == nullptr) 
         {
@@ -94,7 +98,13 @@ int main(int argc, char* argv[])
         px4sim_sender_init(comm_io);
         px4sim_thread_receiver(comm_io);
 #else
+#ifndef NOUSE_HAKO_MSTER
         hako_px4_master_thread_run(nullptr);
+#else
+        while (true) {
+            usleep(1000*1000);
+        }
+#endif
 #endif
     }
     else if ((strcmp("replay", arg_mode) == 0) || (strcmp("normal", arg_mode) == 0)) {
@@ -104,6 +114,7 @@ int main(int argc, char* argv[])
         }
         else {
             mode = NORMAL;
+#ifndef NOUSE_HAKO_MASTER            
             if (!hako_master_init()) {
                 std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
                 return -1;
@@ -112,6 +123,7 @@ int main(int argc, char* argv[])
                 std::cout << "INFO: hako_master_init() success" << std::endl;
             }
             hako_master_set_config_simtime(HAKO_PX4_RUNNER_MASTER_MAX_DELAY_USEC, HAKO_PX4_RUNNER_MASTER_DELTA_USEC);
+#endif
             static HakoPx4RunnerArgType arg;
             arg.asset_name = "px4sim";
             arg.config_path = "./custom.json";
@@ -122,11 +134,13 @@ int main(int argc, char* argv[])
                 std::cerr << "Failed to create hako_px4_runner thread!" << std::endl;
                 return -1;
             }
+#ifndef NOUSE_HAKO_MASTER
             if (pthread_create(&thread_1, NULL, hako_px4_master_thread_run, nullptr) != 0) {
                 std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
                 return -1;
             }
         }
+#endif
         comm_io = server.server_open(&serverEndpoint);
         if (comm_io == nullptr) 
         {
