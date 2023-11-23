@@ -2,28 +2,7 @@
 #define _DRONE_TYPES_HPP_
 
 #include <math.h>
-
-#define DRON_LOC_TOKYO
-//#define DRONE_PX4_AIRFRAME_ADJUSTMENT_ENABLE
-//#define DRONE_PX4_RX_DEBUG_ENABLE
-//#define DRONE_PX4_ENABLE
-//#define DRONE_PX4_SENSOR_ENABLE
-//#define DRONE_PX4_CONTROL_ENABLE
-//#define ENABLE_DRONE_PHYS_DEBUG
-
-#ifdef DRONE_PX4_CONTROL_ENABLE
-#define KEISU   4.0f
-#else
-#define KEISU   1.0f
-#endif
-
-#define DRONE_PROPELLER_NUM 4
-
-#define DRONE_PARAM_M       1.0
-#define DRONE_PARAM_L       0.3
-#define DRONE_PARAM_GRAVITY 9.81
-#define DRONE_PARAM_K        0.5
-#define DRONE_PARAM_P       0.25
+#include "../../../config/config.hpp"
 
 typedef struct {
     double x;
