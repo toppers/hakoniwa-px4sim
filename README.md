@@ -34,7 +34,9 @@ git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
 git clone -b px4 --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
 ```
 
-TODO: hakoniwa-unity-drone-model のインストール手順の説明を追加する
+hakoniwa-unity-drone-model のインストール手順は、以下を参照ください。
+
+https://github.com/toppers/hakoniwa-unity-drone-model/tree/px4
 
 
 ## hakoniwa-px4sim のインストール手順
