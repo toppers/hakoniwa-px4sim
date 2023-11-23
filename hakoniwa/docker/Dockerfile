@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as hakoniwa-px4sim
+FROM ubuntu:22.04 as hakoniwa-px4sim
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV CMAKE_INSTALL_DIR /usr/local/cmake
