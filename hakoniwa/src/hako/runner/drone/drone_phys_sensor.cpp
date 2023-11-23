@@ -104,26 +104,18 @@ static Vector3Type convert2pqr(const Vector3Type& rot, const Vector3Type& rot_ve
 static void drone_calc_acc_body(DronePhysType &phys)
 {
     Vector3Type rot;
-    Vector3Type prev_rot;
+
     rot.x = phys.current.rot.x;
     rot.y = -phys.current.rot.y;
     rot.z = -phys.current.rot.z;
 
-    prev_rot.x = prev_rot.x;
-    prev_rot.y = -prev_rot.y;
-    prev_rot.z = -prev_rot.z;
     // for acc
     Vector3Type vec;
-    Vector3Type prev_vec;
 
     vec.x = phys.current.vec.x;
     vec.y = -phys.current.vec.y;
     vec.z = -phys.current.vec.z;
     
-    prev_vec.x = phys.prev_vec.x;
-    prev_vec.y = -phys.prev_vec.y;
-    prev_vec.z = -phys.prev_vec.z;
-
     Vector3Type rvec = convert2uvw(vec, rot);
     Vector3Type prev_rvec = phys.prev_rvec;
 
