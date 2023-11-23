@@ -1,11 +1,21 @@
 #!/bin/bash
 
-cd cmake-build
-
-if [ ! -f ./src/hako-px4sim ]
+if [ ! -f cmake-build/src/hako-px4sim ]
 then
     echo "ERROR: can not find ./src/hako-px4sim"
     exit 1
 fi
-./src/hako-px4sim 127.0.0.1 4560 sim | tee log.txt
-#./src/hako-px4sim 127.0.0.1 4560 bypass | tee log.txt
+OS_TYPE=`uname`
+if [ ${OS_TYPE} = "Linux" ]
+then
+    uname -a | grep WSL2 > /dev/null
+    if [ $? -eq 0 ]
+    then
+        bash run-win.bash
+    else
+        echo "ERROR: not supported OS: `uname -a`"
+    fi
+else
+    bash run-mac.bash
+fi
+

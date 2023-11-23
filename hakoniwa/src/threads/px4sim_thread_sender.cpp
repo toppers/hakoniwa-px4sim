@@ -8,6 +8,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <random>
+#include <chrono>
 
 #include "../mavlink/mavlink_msg_types.hpp"
 //#define DRONE_PX4_SEND_STATE_QUATERNION
@@ -104,7 +105,9 @@ void px4sim_send_message(hako::px4::comm::ICommIO &clientConnector, MavlinkDecod
             if (clientConnector.send(packet, packetLen, &sentDataLen)) 
             {
                 //std::cout << "Sent MAVLink message with length: " << sentDataLen << std::endl;
+#ifdef DRONE_PX4_TX_DEBUG_ENABLE
                 mavlink_message_dump(message);
+#endif
             } 
             else 
             {

@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <math.h>
 #include <iostream>
+#include "../../../config/config.hpp"
 
 void drone_init(double delta_t, const DronePhysParamType&param, const DronePhysStateType& initial_value, DronePhysType& phys)
 {
@@ -21,7 +22,6 @@ static void drone_run_rx(const DronePropellerRotationRateType& propeller, DroneP
 static void drone_run_ry(const DronePropellerRotationRateType& propeller, DronePhysType& phys);
 static void drone_run_rz(const DronePropellerRotationRateType& propeller, DronePhysType& phys);
 
-//#define EXPERIMENTAL_CODE_ENABLE
 #ifdef EXPERIMENTAL_CODE_ENABLE
 #define fullThrust  KEISU
 #define tau 1.1
