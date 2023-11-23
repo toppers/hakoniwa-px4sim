@@ -5,15 +5,20 @@
 #define HIL_STATE_QUATERNION_UP_CYCLE    4  /* msec*/
 #define HIL_SENSOR_UP_CYCLE              2 /* msec*/
 
+#ifdef DRON_LOC_TOKYO
 // Tokyo
 #define REFERENCE_LATITUDE      35.6895
 #define REFERENCE_LONGTITUDE    139.6917
 #define REFERENCE_ALTITUDE      0
-#if 1
 static Vector3Type TOKYO_MAGNETIC_NORTH = {0.5, -0.068493151, 0.0 };
 #else
-#define BUNBO 100000.0
-static Vector3Type TOKYO_MAGNETIC_NORTH = { 29992.0 / BUNBO, -4007 / BUNBO, 35621.0 / BUNBO };
+#define REFERENCE_LATITUDE      47.641468
+#define REFERENCE_LONGTITUDE    -122.140165
+#define REFERENCE_ALTITUDE      121.321
+//https://wdc.kugi.kyoto-u.ac.jp/igrf/point/index-j.html
+#define BUNBO 10000.0
+//北向き (X): 17947.7 nT	東向き (Y): 7776.7 nT	下向き (Z): 55917.3 nT
+static Vector3Type TOKYO_MAGNETIC_NORTH = { 0.249532, 0.0363823, 0.371417 };
 #endif
 
 static int32_t CalculateLatitude(const Vector3Type &dronePosition, double referenceLatitude);
@@ -158,7 +163,7 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     addAverageData(phys.sensor_rot_vec, phys.current.rot_vec);
     calcAverage(phys.sensor_rot_vec, ave_rot_vec);
     drone_calc_gyro_body(phys);
-#if 1
+#if 0
     // 機体座標系
     phys.sensor.hil_state_quaternion.rollspeed  = phys.rot_rvec.x;
     phys.sensor.hil_state_quaternion.pitchspeed = phys.rot_rvec.y;
@@ -238,25 +243,26 @@ static void drone_sensor_run_hil_sensor(DronePhysType &phys)
     phys.sensor.hil_sensor.zacc = phys.sensor_racc.average_value.z;
 #endif
 
+#define RATE   1.0
 #if 0
-    phys.sensor.hil_sensor.xgyro = phys.sensor_rot_vec.average_value.x;
-    phys.sensor.hil_sensor.ygyro = -phys.sensor_rot_vec.average_value.y;
-    phys.sensor.hil_sensor.zgyro = -phys.sensor_rot_vec.average_value.z;
+    phys.sensor.hil_sensor.xgyro = phys.sensor_rot_vec.average_value.x  * RATE;
+    phys.sensor.hil_sensor.ygyro = -phys.sensor_rot_vec.average_value.y * RATE;
+    phys.sensor.hil_sensor.zgyro = -phys.sensor_rot_vec.average_value.z * RATE;
 #else
     //機体座標系
-    phys.sensor.hil_sensor.xgyro = phys.rot_rvec.x;
-    phys.sensor.hil_sensor.ygyro = phys.rot_rvec.y;
-    phys.sensor.hil_sensor.zgyro = phys.rot_rvec.z;
+    phys.sensor.hil_sensor.xgyro = phys.rot_rvec.x * RATE;
+    phys.sensor.hil_sensor.ygyro = phys.rot_rvec.y * RATE;
+    phys.sensor.hil_sensor.zgyro = phys.rot_rvec.z * RATE;
 #endif
     Vector3Type mag = CalcMAVLinkMagnet(phys);
     phys.sensor.hil_sensor.xmag = mag.x;
     phys.sensor.hil_sensor.ymag = mag.y;
     phys.sensor.hil_sensor.zmag = mag.z;
 
-    phys.sensor.hil_sensor.abs_pressure = 1013.25f;  // Standard atmospheric pressure at sea level
+    phys.sensor.hil_sensor.abs_pressure = 997.667;  // Standard atmospheric pressure at sea level
     phys.sensor.hil_sensor.diff_pressure = 0.0f;  // Differential pressure (used for airspeed calculation)
-    phys.sensor.hil_sensor.pressure_alt = 0.0f;  // Pressure altitude
-    phys.sensor.hil_sensor.temperature = 20.0f;  // Assume 20 degrees Celsius by default
+    phys.sensor.hil_sensor.pressure_alt = 130.476;  // Pressure altitude
+    phys.sensor.hil_sensor.temperature = 0;  // Assume 20 degrees Celsius by default
 
     phys.sensor.hil_sensor.fields_updated = 0x1FFF;  // Bitmask indicating which fields are valid (assuming all fields are updated for simplicity)
     phys.sensor.hil_sensor.id = 0;  // Sensor instance ID (use default 0)
@@ -270,15 +276,23 @@ static void drone_sensor_run_hil_gps(DronePhysType &phys)
     phys.sensor.hil_gps.lon = phys.sensor.hil_state_quaternion.lon;
     phys.sensor.hil_gps.alt = -phys.sensor.hil_state_quaternion.alt;
 
-    phys.sensor.hil_gps.eph = 100;
-    phys.sensor.hil_gps.epv = 100;
+    phys.sensor.hil_gps.eph = 10;
+    phys.sensor.hil_gps.epv = 10;
 
     phys.sensor.hil_gps.vel = vector3_magnitude(phys.sensor_vec.average_value) * 100.0f;
     phys.sensor.hil_gps.vn = (Hako_int16)(phys.sensor_vec.average_value.x * 100.0);
     phys.sensor.hil_gps.ve = -(Hako_int16)(phys.sensor_vec.average_value.y * 100.0);
     phys.sensor.hil_gps.vd = -(Hako_int16)(phys.sensor_vec.average_value.z * 100.0);
 
-    phys.sensor.hil_gps.cog = 0;
+    double angle_z = phys.sensor_rot.average_value.z;
+    if (angle_z < 0) {
+        angle_z += M_PI * 2.0; // 負の角度を正の範囲に変換
+    }
+    // ラジアンからセンチ度へ変換し、範囲を正規化
+    double cog = (angle_z * 180.0 / M_PI) * 100.0;
+    cog = fmod(cog, 36000); // 結果を0〜35999の範囲に収める
+
+    phys.sensor.hil_gps.cog = (Hako_uint16)cog; // キャストして割り当て
     phys.sensor.hil_gps.satellites_visible = 10;
     phys.sensor.hil_gps.id = 0;
     phys.sensor.hil_gps.yaw = 0;
@@ -310,7 +324,7 @@ static int32_t CalculateLatitude(const Vector3Type& dronePosition, double refere
     return latitude;
 }
 
-#if 1
+#if 0
 static Vector3Type CalcMAVLinkMagnet(const DronePhysType &phys)
 {
     QuaternionType rotation;

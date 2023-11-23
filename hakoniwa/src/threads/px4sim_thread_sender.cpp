@@ -10,10 +10,11 @@
 #include <random>
 
 #include "../mavlink/mavlink_msg_types.hpp"
+//#define DRONE_PX4_SEND_STATE_QUATERNION
 
 static void px4sim_send_system_time(hako::px4::comm::ICommIO &clientConnector, uint64_t time_unix_usec, uint32_t time_boot_ms);
 static void px4sim_send_hil_gps(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec);
-#if 0
+#ifdef DRONE_PX4_SEND_STATE_QUATERNION
 static void px4sim_send_hil_state_quaternion(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec);
 #endif
 static void px4sim_send_sensor(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec);
@@ -41,7 +42,7 @@ void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
     start_time_usec = std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count();
 
     memset(&px4sim_sender_timing_config, 0, sizeof(px4sim_sender_timing_config));
-    //px4sim_sender_timing_config.heartbeat.cycle = 1000;
+    px4sim_sender_timing_config.heartbeat.cycle = 1000000;
     px4sim_sender_timing_config.system_time.cycle = 3000;
     px4sim_sender_timing_config.sensor.cycle = 3000;
     //px4sim_sender_timing_config.state_quaternion.cycle = 8000;
@@ -79,7 +80,7 @@ void px4sim_sender_do_task(void)
     if (is_send_cycle(px4sim_sender_timing_config.sensor, boot_time_usec)) {
         px4sim_send_sensor(*px4_comm_io, time_usec);
     }
-#if 0
+#ifdef DRONE_PX4_SEND_STATE_QUATERNION
     if (is_send_cycle(px4sim_sender_timing_config.state_quaternion, boot_time_usec)) {
         px4sim_send_hil_state_quaternion(*px4_comm_io, time_usec);
     }
@@ -103,7 +104,7 @@ void px4sim_send_message(hako::px4::comm::ICommIO &clientConnector, MavlinkDecod
             if (clientConnector.send(packet, packetLen, &sentDataLen)) 
             {
                 //std::cout << "Sent MAVLink message with length: " << sentDataLen << std::endl;
-                //mavlink_message_dump(message);
+                mavlink_message_dump(message);
             } 
             else 
             {
@@ -163,7 +164,7 @@ void px4sim_send_dummy_heartbeat(hako::px4::comm::ICommIO &clientConnector)
     message.type = MAVLINK_MSG_TYPE_HEARTBEAT;
     message.data.heartbeat.type = MAV_TYPE_GENERIC;
     message.data.heartbeat.autopilot = 0;
-    message.data.heartbeat.base_mode = 0;
+    message.data.heartbeat.base_mode = 	MAV_MODE_FLAG_HIL_ENABLED;
     message.data.heartbeat.custom_mode = 0;
     message.data.heartbeat.system_status = 0;
 
@@ -193,7 +194,7 @@ static void px4sim_send_hil_gps(hako::px4::comm::ICommIO &clientConnector, uint6
         px4sim_send_message(clientConnector, message);
     }
 }
-#if 0
+#ifdef DRONE_PX4_SEND_STATE_QUATERNION
 static void px4sim_send_hil_state_quaternion(hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec)
 {
     static std::default_random_engine generator;

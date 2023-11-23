@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-
+#define DRON_LOC_TOKYO
 //#define DRONE_PX4_AIRFRAME_ADJUSTMENT_ENABLE
 //#define DRONE_PX4_RX_DEBUG_ENABLE
 //#define DRONE_PX4_ENABLE
@@ -18,8 +18,6 @@
 #endif
 
 #define DRONE_PROPELLER_NUM 4
-#define DRONE_GPS_INIT_LAT  356895000
-#define DRONE_GPS_INIT_LON  1396917000
 
 #define DRONE_PARAM_M       1.0
 #define DRONE_PARAM_L       0.3
