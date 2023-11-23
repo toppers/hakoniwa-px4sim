@@ -4,12 +4,16 @@
 
 * サポートOS
   * Arm系Mac (M1Mac, M2Mac)
+  * Windows 10/11
 * 利用する環境
-  * Docker Desktop
-    * 本環境のインストールを実施する場合は、事前に、Docker Desktop を起動してください。
-  * Python 3.10
-    * pyenvでインストールされたものを推奨
-    * Jinja2 (`pip install -U jinja2`)
+  * Arm系Macの場合
+    * Docker Desktop
+      * 本環境のインストールを実施する場合は、事前に、Docker Desktop を起動してください。
+    * Python 3.10
+      * pyenvでインストールされたものを推奨
+      * Jinja2 (`pip install -U jinja2`)
+  * Windowsの場合
+    * [Windowsの場合の箱庭構成例](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md)と同じです。
 * 利用するドローン
   * https://github.com/toppers/hakoniwa-unity-drone-model/tree/px4
   * 下記のディレクトリ構成のように、本リポジトリと同じ階層でクローンしてください。
@@ -41,16 +45,28 @@ TODO: hakoniwa-unity-drone-model のインストール手順の説明を追加�
 cd hakoniwa-px4sim/px4
 ```
 
+#### Mac版の場合
+
 docker イメージを作成します。
 
 ```
 bash docker/create-image.bash 
 ```
 
-成功すると、以下のように、`docker images`コマンドで、作成された docker イメージを確認できます。
+#### Windows版の場合
+
+docker イメージを作成することもできますが、すでに docker hub にアップ済みのものがありますので、以下のコマンドで pull したほうが早いです。
 
 ```
-docker images
+bash docker/pull-image.bash 
+```
+
+#### 確認
+
+イメージが出来上がると、以下のように、`docker images`コマンドで、docker イメージを確認できます。
+
+```
+$ docker images
 REPOSITORY                            TAG       IMAGE ID       CREATED        SIZE
 toppersjp/hakoniwa-px4-runner         v1.0.0    bca5febae6f5   3 weeks ago    3.7GB
 ```
@@ -60,6 +76,34 @@ toppersjp/hakoniwa-px4-runner         v1.0.0    bca5febae6f5   3 weeks ago    3.
 ```
 cd hakoniwa-px4sim/hakoniwa
 ```
+
+#### Windows版の場合の下準備
+
+Windowsの場合は、docker コンテナ内での作業になります。
+
+以下のコマンドで docker イメージを pull してください。
+
+```
+bash docker/pull-image.bash 
+```
+
+成功した場合は、以下のように`toppersjp/hakoniwa-px4sim`が作成されます。
+
+```
+$ docker images
+REPOSITORY                                TAG       IMAGE ID       CREATED         SIZE
+toppersjp/hakoniwa-px4sim                 v1.0.0    6bd3f5c27966   15 hours ago    4.1GB
+```
+
+なお、イメージは一度作成できればWindows内に残り続けますので、一度だけ実行すればOKです。
+
+次に、以下のコマンドで docker コンテナに入ってください。
+
+```
+bash docker/run.bash 
+```
+
+#### 箱庭のビルド
 
 箱庭環境をビルドします。
 
@@ -181,10 +225,20 @@ INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port
 cd hakoniwa-px4sim/hakoniwa
 ```
 
-箱庭を起動するためのスクリプトを起動します。
+#### Windows版の場合の下準備
+
+Windowsの場合は、docker コンテナ内での作業になりますので、最初に以下のコマンドで docker コンテナに入ってください。
 
 ```
-bash docker/run.bash
+bash docker/run.bash 
+```
+
+#### 箱庭の起動
+
+箱庭を起動するためのスクリプトを実行します。
+
+```
+bash run.bash
 ```
 
 成功すると、こうなります。
@@ -225,7 +279,7 @@ Decoded MAVLink message:
   MAVLink version: 3
 ```
 
-成功すると、端末A側で、以下のように poll timeout のメッセージが出ますが、特に問題ないです。
+この際、端末A側で、以下のように poll timeout のメッセージが出ますが、特に問題ないです。
 
 ```
 ERROR [simulator_mavlink] poll timeout 0, 111
