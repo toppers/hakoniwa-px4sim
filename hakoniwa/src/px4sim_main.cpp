@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 #endif
         static HakoPx4RunnerArgType arg;
         arg.asset_name = "px4sim";
-        arg.config_path = "../config/custom.json";
+        arg.config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);
         arg.delta_time_msec = 1;
         arg.robo_name = "DroneSim";
         pthread_t thread_1;
