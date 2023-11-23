@@ -2,17 +2,18 @@
 #define _CONFIG_HPP_
 
 /*
+ * 有効化すると、PX4と連携できます。
+ * 無効の場合は、内部の制御モデルと連携します。
+ */
+//#define DRONE_PX4_ENABLE
+#ifdef DRONE_PX4_ENABLE
+/*
  * 現行の物理モデル(drone_phys.cpp)には、以下がない。
  * - 空気摩擦
  * - ローター動力の時間遅延
  * 以下を有効化すると、上記が有効化されます。
  */
 #define EXPERIMENTAL_CODE_ENABLE
-/*
- * 有効化すると、PX4と連携できます。
- * 無効の場合は、内部の制御モデルと連携します。
- */
-#define DRONE_PX4_ENABLE
 #define DRONE_PX4_AIRFRAME_ADJUSTMENT_ENABLE
 #define DRONE_PX4_SENSOR_ENABLE
 #define DRONE_PX4_CONTROL_ENABLE
@@ -35,11 +36,13 @@
  */
 //#define ENABLE_DRONE_PHYS_DEBUG
 
+#else
 /*
  * 有効化すると、緯度経度が東京になる
  * 無効の場合は、アメリカ・ワシントン周辺になる(AirSimと同じ構成)
  */
-//#define DRON_LOC_TOKYO
+#define DRON_LOC_TOKYO
+#endif
 
 
 /*
