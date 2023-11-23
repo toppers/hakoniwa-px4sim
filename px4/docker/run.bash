@@ -29,9 +29,17 @@ then
         -e PX4_HOME_ALT=0.0 \
         --name ${IMAGE_NAME_ARG} ${DOCKER_IMAGE} 
 else
+	export RESOLV_IPADDR=`cat /etc/resolv.conf  | grep nameserver | awk '{print $NF}'`
+	NETWORK_INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$' | tr -d '\n')
+	CORE_IPADDR=$(ifconfig "${NETWORK_INTERFACE}" | grep netmask | awk '{print $2}')
     docker run \
-        -v ${HOST_WORKDIR}:${DOCKER_DIR} \
+        -v `pwd`/sim:${DOCKER_DIR}/sim \
+        -v `pwd`/hakoniwa-apps:/root/workspace/px4/hakoniwa-apps \
         -it --rm \
-        -p 14560:14560/udp \
+        --net host \
+        -e PX4_SIM_HOSTNAME=${CORE_IPADDR} \
+        -e PX4_HOME_LAT=47.641468 \
+        -e PX4_HOME_LON=-122.140165 \
+        -e PX4_HOME_ALT=0.0 \
         --name ${IMAGE_NAME_ARG} ${DOCKER_IMAGE} 
 fi
