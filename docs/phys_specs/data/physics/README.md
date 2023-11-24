@@ -96,3 +96,22 @@ This section explains the measurement of the drone's angular velocity, which is 
 Understanding these rates of angular velocity is crucial for controlling the drone's orientation and for stabilizing its flight.
 
 # RotorSpeedVariation
+
+This section details the variation in rotor speed for the drone, an important aspect for understanding and controlling its flight dynamics.
+
+| Attribute            | Description                                                  |
+|----------------------|--------------------------------------------------------------|
+| Unit                 | Revolutions per Second (RPS) or Rotational Speed Change Rate |
+| Description          | Rate of change in rotor speed                                |
+
+## About the Measurement
+- **Rotor Speed Variation Δω**: This represents the change in the rotational speed of the drone's rotors. It is a crucial factor in controlling the drone's lift, stability, and overall maneuverability.
+
+## About the Unit
+- **Revolutions per Second (RPS) or Rotational Speed Change Rate**: The unit measures how quickly the speed of the rotor changes, indicating the rate at which the rotors accelerate or decelerate.
+
+## Interpreting Rotor Speed Variation
+- A positive Δω value indicates an increasing speed of the rotor, which generally translates to an increase in lift or upward force.
+- A negative Δω value shows a decreasing speed of the rotor, leading to a reduction in lift or upward force.
+
+Understanding these variations in rotor speed is key to effectively managing the drone's altitude and stability during flight.
