@@ -69,9 +69,8 @@ This section details the orientation of the drone, described in terms of angles 
 These angular orientations help in understanding the drone's attitude in 3D space, crucial for navigation and control.
 
 
-# AngularVelocity
 
-# Angular Velocity
+# AngularVelocity
 
 This section explains the measurement of the drone's angular velocity, which is the rate of change of its angular position over time.
 
