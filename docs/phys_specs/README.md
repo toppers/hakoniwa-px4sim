@@ -8,11 +8,11 @@ Here is a table summarizing the input/output data and overview of each component
 
 |component|type|overview|input|output|
 |---|---|---|---|---|
-|PX4|Platform|Core flight control platform for the drone| - HIL_SENSOR <br> - HIL_GPS | - HIL_ACTUATOR_CONTROLS|
-|DronePhysics|Physics|Simulates physical dynamics of the drone| - RotorSpeedVariation | - Position<br>- Velocity<br>- Angle<br>- AngularVelocity<br>|
-|RotorDynamics|Actuator|Controls the speed of rotors based on input| - PWMDutyCycle | - RotorSpeedVariation |
-|Acceleration|Sensor|Measures acceleration in 3D space| - Velocity | - HIL_SENSOR/acc |
-|Gyro|Sensor|Measures rotational motion| - AngularVelocity | - HIL_SENSOR/gyro |
-|Geomagnetic|Sensor|Measures Earth's magnetic field for orientation| - Angle | - HIL_SENSOR/mag |
-|Barometric|Sensor|Measures atmospheric pressure for altitude| - Position | - HIL_SENSOR/pressure |
-|GPS|Sensor|Provides location coordinates and velocity| - Velocity | - HIL_GPS |
+|PX4|Platform|Core flight control platform for the drone| HIL_SENSOR <br> HIL_GPS | HIL_ACTUATOR_CONTROLS|
+|DronePhysics|Physics|Simulates physical dynamics of the drone| RotorSpeedVariation | Position<br>Velocity<br>Angle<br>AngularVelocity<br>|
+|RotorDynamics|Actuator|Controls the speed of rotors based on input| PWMDutyCycle | RotorSpeedVariation |
+|Acceleration|Sensor|Measures acceleration in 3D space| Velocity | HIL_SENSOR/acc |
+|Gyro|Sensor|Measures rotational motion| AngularVelocity | HIL_SENSOR/gyro |
+|Geomagnetic|Sensor|Measures Earth's magnetic field for orientation| Angle | HIL_SENSOR/mag |
+|Barometric|Sensor|Measures atmospheric pressure for altitude| Position | HIL_SENSOR/pressure |
+|GPS|Sensor|Provides location coordinates and velocity| Velocity | HIL_GPS |
