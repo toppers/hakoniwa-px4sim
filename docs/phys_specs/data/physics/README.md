@@ -16,6 +16,9 @@ This section describes the coordinate system and units used to determine the pos
 ## About the Origin
 - The origin point is defined by the initial values of latitude, longitude, and altitude (ALT) provided. This origin serves as the reference point for all positional measurements of the drone in the NED coordinate system.
 
+## Interpreting Position Data
+- In the NED coordinate system, positive values in the X and Y axes indicate a position to the North and East of the origin, respectively. For the Z axis, a positive value indicates a position below the origin point, aligning with the downward orientation of the Z axis in the NED system.
+
 ## About the Unit
 - **Meter**: The position of the drone along each axis is measured in meters. This ensures precision in positioning, conforming to international standards.
 
