@@ -105,6 +105,26 @@ toppersjp/hakoniwa-px4sim                 v1.0.0    6bd3f5c27966   15 hours ago 
 bash docker/run.bash 
 ```
 
+#### 箱庭のコンフィグファイルの編集
+
+[config.hpp](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/src/config/config.hpp)を開いて、以下のように変更してください。
+
+変更前：
+
+```
+//#define DRONE_PX4_ENABLE
+```
+
+変更後：
+
+```
+#define DRONE_PX4_ENABLE
+```
+
+上記のように変更すると、PX4との連携が可能になります。
+
+なお、この変更をしない場合は、PX4を起動せずに、箱庭側だけでのシミュレーションとなります。
+
 #### 箱庭のビルド
 
 箱庭環境をビルドします。
@@ -256,29 +276,6 @@ Robot: DroneAvator, PduWriter: DroneAvator_drone_pos
 channel_id: 1 pdu_size: 48
 INFO: DroneAvator create_lchannel: logical_id=1 real_id=1 size=48
 WAIT START
-INFO: px4 reciver start
-Received data with length: 42
-Decoded MAVLink message:
-  Message ID: 76
-  System ID: 1
-  Component ID: 1
-  Sequence: 0
-  Type: COMMAND_LONG
-  Target system: 0
-  Target component: 0
-  Command ID: 511
-  Confirmation: 0
-Received data with length: 21
-Decoded MAVLink message:
-  Message ID: 0
-  System ID: 1
-  Component ID: 1
-  Sequence: 1
-  Type: HEARTBEAT
-  Custom mode: 0
-  Base mode: 0
-  System status: 0
-  MAVLink version: 3
 ```
 
 この際、端末A側で、以下のように poll timeout のメッセージが出ますが、特に問題ないです。
@@ -325,21 +322,7 @@ INFO  [commander] Ready for takeoff!
 ここで、端末Bで以下のコマンドを実行してください。
 
 ```
-mc_rate_control stop
-```
-
-```
-param set COM_DISARM_LAND -1
-```
-
-```
-commander arm
-```
-
-これで準備OKです。では、テイクオフです！
-
-```
-px4_hakoniwa start
+commander takeoff
 ```
 
 成功すると、Unity上のドローンがホバリングしてくれます。
