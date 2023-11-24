@@ -10,6 +10,9 @@ This section describes the coordinate system and units used to determine the pos
 | Y                  | East (Distance towards the East)                 |
 | Z                  | Down (Distance downwards, height from ground)    |
 
+![スクリーンショット 2023-11-24 16 27 52](https://github.com/toppers/hakoniwa-px4sim/assets/164193/4f1a23af-7eb1-41a6-9608-56794593293f)
+
+
 ## About the Coordinate System
 - **Ground Coordinate System (NED)**: The NED coordinate system uses a ground-fixed reference frame, defining positions in terms of North (X), East (Y), and Down (Z) axes. This system is commonly used in aviation and helps in intuitively understanding the position of drones.
 
@@ -54,6 +57,9 @@ This section details the orientation of the drone, described in terms of angles 
 | Roll               | Rotation around the X-axis (North)               |
 | Pitch              | Rotation around the Y-axis (East)                |
 | Yaw                | Rotation around the Z-axis (Down)                |
+
+![スクリーンショット 2023-11-24 16 33 07](https://github.com/toppers/hakoniwa-px4sim/assets/164193/fcd1339a-c0b0-448d-9e9d-14fecc58f6df)
+
 
 ## About the Coordinate System
 - **Ground Coordinate System (NED)**: The NED system is used to describe the orientation of the drone. In this system, roll, pitch, and yaw angles are defined relative to the North (X), East (Y), and Down (Z) axes respectively.
