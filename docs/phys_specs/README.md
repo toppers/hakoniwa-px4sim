@@ -9,10 +9,10 @@ Here is a table summarizing the input/output data and overview of each component
 |component|type|overview|input|output|
 |---|---|---|---|---|
 |PX4|Platform|Core flight control platform for the drone| HIL_SENSOR <br> HIL_GPS | HIL_ACTUATOR_CONTROLS|
-|DronePhysics|Physics|Simulates physical dynamics of the drone| RotorSpeedVariation | Position<br>Velocity<br>Angle<br>AngularVelocity<br>|
-|RotorDynamics|Actuator|Controls the speed of rotors based on input| PWMDutyCycle | RotorSpeedVariation |
-|Acceleration|Sensor|Measures acceleration in 3D space| Velocity | HIL_SENSOR/acc |
-|Gyro|Sensor|Measures rotational motion| AngularVelocity | HIL_SENSOR/gyro |
-|Geomagnetic|Sensor|Measures Earth's magnetic field for orientation| Angle | HIL_SENSOR/mag |
-|Barometric|Sensor|Measures atmospheric pressure for altitude| Position | HIL_SENSOR/pressure |
-|GPS|Sensor|Provides location coordinates and velocity| Velocity | HIL_GPS |
+|DronePhysics|Physics|Simulates physical dynamics of the drone| [RotorSpeedVariation](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#rotorspeedvariation) | [Position](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#position)<br>[Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity)<br>[Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle)<br>[AngularVelocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angularvelocity)<br>|
+|RotorDynamics|Actuator|Controls the speed of rotors based on input| PWMDutyCycle | [RotorSpeedVariation](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#rotorspeedvariation) |
+|Acceleration|Sensor|Measures acceleration in 3D space| [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity) | HIL_SENSOR/acc |
+|Gyro|Sensor|Measures rotational motion| [AngularVelocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angularvelocity) | HIL_SENSOR/gyro |
+|Geomagnetic|Sensor|Measures Earth's magnetic field for orientation| [Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle) | HIL_SENSOR/mag |
+|Barometric|Sensor|Measures atmospheric pressure for altitude| [Position](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#position) | HIL_SENSOR/pressure |
+|GPS|Sensor|Provides location coordinates and velocity| [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity) | HIL_GPS |
