@@ -7,7 +7,7 @@
 
 ## Output
 
-The output is [[xyz]acc](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_SENSOR/README.md#xyzacc) of HIL_SENSOR.
+* [[xyz]acc](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_SENSOR/README.md#xyzacc) of HIL_SENSOR.
 
 ## External Parameters
 
