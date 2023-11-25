@@ -37,7 +37,16 @@ The table below is a replica of the MAVLink specification:
 
 ## [xyz]acc
 
-TODO
+
+In this section, we discuss the handling of accelerometer data in our simulation environment:
+
+- **Accurate Position and Speed Understanding**: In the simulation, we have precise knowledge of the physical model's position and speed, allowing for ideal accelerometer data generation.
+
+- **Considering Noise**: Similar to real-world sensors, we assume a certain level of noise in the simulated accelerometer data. This assumption helps in mimicking real flight conditions more accurately.
+
+- **Coordinate System and Body Frame**: The accelerometer data in the simulation is represented in the NED (North, East, Down) coordinate system, relative to the body frame of the drone. This representation aligns the simulated data with real-world drone movements.
+
+These factors play a crucial role in the operation and data interpretation of the accelerometer in the simulation environment. Details on data processing methods will be discussed in a separate section.
 
 ## [xyz]gyro
 
