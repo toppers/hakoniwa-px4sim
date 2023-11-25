@@ -1,20 +1,12 @@
 # Accelerometer Sensor Component Specification
 
-## Input Specifications
+## Input 
 
-- **Coordinate System**: Ground Coordinate System (NED)
-- **Unit of Measurement**: Meters per Second Squared (m/s²)
-- **Input Parameters**:
-  - **X**: Velocity towards the North
-  - **Y**: Velocity towards the East
-  - **Z**: Velocity downwards (towards the ground)
+Drone's [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity).
 
 ## Output Specifications
 
-- **Output Data ([xyz]acc)**: 
-  - **xacc**: Acceleration along the X-axis in the body coordinate system
-  - **yacc**: Acceleration along the Y-axis in the body coordinate system
-  - **zacc**: Acceleration along the Z-axis in the body coordinate system
+Acceermeter Sensor output is [[xyz]acc](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_SENSOR/README.md#xyzacc) of HIL_SENSOR.
 
 ## External Parameters
 
