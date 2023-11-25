@@ -50,7 +50,17 @@ These factors play a crucial role in the operation and data interpretation of th
 
 ## [xyz]gyro
 
-TODO
+This section focuses on the simulation handling of the gyroscope data, which is crucial for understanding the rotational movement of the drone.
+
+- **Accurate Angular Velocity Measurement**: In the simulation environment, the gyroscope data accurately captures the drone's angular velocity, providing precise information about its rotational movements around the X, Y, and Z axes.
+
+- **Noise Consideration in Simulation**: Just like in real-world scenarios, the simulated gyroscope data includes a realistic level of noise. This enhances the authenticity of the simulation, replicating real flight dynamics more closely.
+
+- **NED Coordinate System and Body Frame Orientation**: The gyroscope data is represented in the NED (North, East, Down) coordinate system within the drone's body frame. This orientation ensures that the data corresponds closely with the actual rotational behavior of a drone in flight.
+
+- **Application in Flight Dynamics**: Gyroscope data is essential for various flight control algorithms, particularly in stabilization and navigation tasks. In the simulation, this data helps in accurately mimicking the drone's response to control inputs and environmental factors.
+
+The handling of gyroscope data in the simulation is a key component in creating a realistic and responsive flight experience. This data is vital for testing and refining drone control systems in a simulated environment before real-world implementation.
 
 ## [xyz]mag
 
