@@ -2,12 +2,12 @@
 
 ## Input Specifications
 
-- **Position (Ground Coordinate)**: Represents the drone's current location in terms of latitude, longitude, and altitude.
-- **Velocity (Ground Coordinate)**: Reflects the drone's current velocity vector components in the north, east, and down directions.
+* [Position](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#position).
+* [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity).
 
 ## Output Specifications
 
-- **GPS Data**: Outputs the processed GPS data which includes the position and velocity information, along with the course over ground (cog).
+- [GPS Data](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_GPS/README.md)
 
 ## External Parameters
 
