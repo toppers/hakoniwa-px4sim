@@ -70,7 +70,7 @@ This section covers the simulation of magnetometer data within the Hakoniwa envi
 
 - **Drone's Attitude Impact**: The magnetometer readings, denoted by `xmag`, `ymag`, and potentially `zmag`, are calculated by considering the drone's roll, pitch, and yaw angles relative to Magnetic North. These readings simulate the interaction between the onboard magnetometer and the Earth's magnetic field, factoring in the drone's orientation.
 
-![Magnetometer Readings Simulation Diagram](https://github.com/toppers/hakoniwa-px4sim/assets/164193/ef9a6457-55f8-47b0-84e3-ce163783e5a4)
+![Magnetometer Readings Simulation Diagram](https://github.com/toppers/hakoniwa-px4sim/assets/164193/40d7d3db-e930-49c4-8c9d-e3920378cd84)
 
 - **Realism through Noise**: Realistic noise is introduced to the magnetometer data to mirror the natural inaccuracies and environmental variations experienced by real-world sensors.
 
