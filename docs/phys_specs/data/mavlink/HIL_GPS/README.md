@@ -62,19 +62,24 @@ By accurately simulating these velocities and incorporating noise, the simulator
 
 ## cog
 
-The `cog`, or Course over Ground, is an essential aspect in our drone simulation, representing the actual trajectory of the drone over the Earth's surface. It differs from the drone's heading, which is the direction the drone is pointing or facing.
+The `cog`, or Course over Ground, in our drone simulation, signifies the drone's actual trajectory over the Earth's surface. It is distinct from the drone's heading and becomes particularly relevant when the drone is in motion.
 
-- **Definition of Course over Ground**: The `cog` is the actual path the drone follows over the ground, which can be different from its heading due to factors like wind or air currents. This value is especially significant when the drone is in motion, as it indicates the real direction of travel.
+- **Course over Ground Definition**: `cog` represents the actual path the drone follows over the ground, differing from its heading due to environmental factors like wind. It's calculated from the drone's movement vector, derived from its northward (vn) and eastward (ve) velocities, and is expressed in degrees from 0 to 359.99, with 0 degrees indicating true north.
 
-- **Calculation of COG**: When the drone is moving, `cog` is calculated based on its movement vector. It is derived from the combination of the northward (vn) and eastward (ve) velocities, determining the angle of travel relative to true north. The `cog` is measured in degrees, ranging from 0 to 359.99, with 0 degrees representing true north.
+- **COG During Stationary Conditions**: When the drone is not moving, `cog` is undefined since there is no ground movement to determine a travel direction. In such scenarios, `cog` is set to `UINT16_MAX` to indicate that the value is unknown or invalid. This helps in data interpretation, signaling to systems that the drone is stationary or the `cog` data is unavailable.
 
-- **COG in Stationary Conditions**: When the drone is not moving, the course over ground is undefined, as there is no movement to indicate a direction of travel. In such cases, `cog` may not provide meaningful data.
+- **Realistic Noise Integration**: To mimic real-world conditions, noise is introduced in the `cog` calculations, simulating natural variations due to sensor inaccuracies and environmental factors.
 
-- **Incorporating Realistic Noise**: To simulate real-world conditions accurately, noise is added to the `cog` calculations. This accounts for the natural variabilities and inaccuracies inherent in real-world navigation, such as sensor errors and environmental factors.
-
-Understanding and accurately simulating the `cog` is crucial for realistic drone navigation in the simulation. It ensures that the navigation systems developed are robust and capable of handling the discrepancies between the intended heading and the actual path of movement.
+Accurate simulation of `cog` is crucial for realistic drone navigation. It ensures that developed navigation systems can effectively differentiate between the drone's intended heading and its actual movement path, even when faced with external variabilities.
 
 
 ## others
 
-TODO
+As of the current state, the following data has been simplified and fixed values have been set. The set values have been chosen based on observations of communication data between PX4 and AirSim to select appropriate representative values.
+
+- fix_type: 3
+- eph: 10
+- epv: 10
+- satellites_visible: 10
+- id: 0
+- yaw: 0
