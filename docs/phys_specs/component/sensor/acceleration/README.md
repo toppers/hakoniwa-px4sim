@@ -2,7 +2,8 @@
 
 ## Input 
 
-Drone's [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity).
+* [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity).
+* [Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle)
 
 ## Output
 
@@ -26,7 +27,7 @@ The integration of zero-mean noise ensures that any bias is minimized, allowing 
 
 ## Operational Details
 
-![スクリーンショット 2023-11-25 16 29 30](https://github.com/toppers/hakoniwa-px4sim/assets/164193/c0f3699b-b674-4a17-a081-96626f649afa)
+![スクリーンショット 2023-11-25 16 38 37](https://github.com/toppers/hakoniwa-px4sim/assets/164193/4ed00e11-c35f-45df-899c-91c3f872c37c)
 
 - **Data Transformation and Coordinate System**: The velocity data in the NED coordinate system is transformed into acceleration data in the drone's body coordinate system, accounting for the drone's orientation.
 
