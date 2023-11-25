@@ -64,17 +64,19 @@ The handling of gyroscope data in the simulation is a key component in creating 
 
 ## [xyz]mag
 
-This section addresses the handling of magnetometer (magnetic sensor) data in the simulation, taking into account the variation in Earth's magnetic field based on geographic location.
+This section delves into the simulation of magnetometer data, considering the Earth's magnetic field variations and the introduction of realistic noise.
 
-- **Variation in Magnetic North**: The Earth's magnetic field varies depending on latitude and longitude, which means the magnetic north changes with the drone's position. In our Hakoniwa simulation, we provide magnetic north as a parameter based on the initial geographic location of the drone.
+- **Geographic Variability in Magnetic North**: The Earth's magnetic field varies with latitude and longitude, influencing the magnetic north based on the drone's position. In our Hakoniwa simulation, magnetic north is defined as a parameter, determined by the initial geographic coordinates of the drone.
 
-- **Determining Magnetic North**: For our simulation, the magnetic north is calculated using the data obtained from the [Geospatial Information Authority of Japan's geomagnetic calculation service](https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html). This ensures that the simulation reflects realistic magnetic conditions based on the set geographic coordinates.
+- **Source for Magnetic North Calculation**: The magnetic north for our simulation is calculated using data from the [Geospatial Information Authority of Japan's geomagnetic calculation service](https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html). This ensures the simulation reflects accurate magnetic conditions for the provided coordinates.
 
-- **Calculating [xyz]mag Values**: The values for [xyz]mag are derived based on the drone's attitude angles (φ, θ, ψ) relative to the provided vector of magnetic north. This approach allows the simulation to accurately represent how the drone's onboard magnetometer would react to Earth's magnetic field during flight.
+- **Calculating [xyz]mag with Drone's Attitude**: The [xyz]mag values are calculated based on the drone's attitude angles (φ, θ, ψ) in relation to the vector of magnetic north. This mimics how the drone's onboard magnetometer would interact with the Earth's magnetic field.
 
-- **Importance in Orientation and Navigation**: Accurate magnetometer data is crucial for determining the drone's orientation relative to the Earth's magnetic field, playing a vital role in navigation systems, especially in compass functionalities.
+- **Incorporating Noise**: To enhance realism, a level of noise is introduced into the magnetometer data. This noise simulates the inaccuracies and variations that would be present in real-world sensor data, making the simulation more authentic and robust for testing purposes.
 
-Incorporating realistic magnetic north data based on the drone's initial position and its attitude angles provides a more accurate and immersive simulation experience. This level of detail is essential for developing and testing navigation algorithms that rely on magnetometer data in real-world scenarios.
+- **Role in Orientation and Navigation**: Accurate magnetometer data, complete with realistic noise, is essential for determining the drone's orientation in relation to the Earth's magnetic field. This is particularly important for navigation systems and compass functionality.
+
+By simulating realistic magnetic conditions, including variations based on location and noise, we ensure a more comprehensive and true-to-life experience in the simulation. This detail is critical for the development and testing of navigation algorithms that utilize magnetometer data in real-world applications.
 
 ## abs_pressure
 
