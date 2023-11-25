@@ -80,27 +80,15 @@ The method assumes a constant vector for Magnetic North, against which the drone
 
 By integrating both the geographic dependence of Magnetic North and the drone's relative orientation, our simulation provides a comprehensive platform for developing and testing navigation algorithms that rely on magnetometer data.
 
+## others
 
-## abs_pressure
+As of the current state, the following data has been simplified and fixed values have been set. The set values have been chosen based on observations of communication data between PX4 and AirSim to select appropriate representative values.
 
-TODO
+- abs_pressure: 997.667
+- diff_pressure: 0
+- pressure_alt: 130.476
+- temperature: 0
+- fields_updated: 0x1FFF
+- id: 0
 
-## diff_pressure
 
-TODO
-
-## pressure_alt
-
-TODO
-
-## temperature
-
-TODO
-
-## fields_updated
-
-TODO
-
-## id
-
-TODO
