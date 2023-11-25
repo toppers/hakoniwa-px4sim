@@ -17,3 +17,12 @@ Here is a table summarizing the input/output data and overview of each component
 |Geomagnetic|Sensor|Measures Earth's magnetic field for orientation| [Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle) | [HIL_SENSOR](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_SENSOR/README.md)/mag |
 |Barometric|Sensor|Measures atmospheric pressure for altitude| [Position](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#position) | [HIL_SENSOR](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_SENSOR/README.md)/pressure |
 |GPS|Sensor|Provides location coordinates and velocity| [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity) | [HIL_GPS](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/mavlink/HIL_GPS/README.md) |
+
+Here is a table of the sending intervals for the simulator's MAVLink messages, as observed in AirSim:
+
+| Sensor Data  | Sending Interval (ms) |
+|--------------|-----------------------|
+| SYSTEM_TIME  | 3                     |
+| HIL_SENSOR   | 3                     |
+| HIL_GPS      | 21                    |
+
