@@ -63,7 +63,16 @@ By accurately simulating these velocities and incorporating noise, the simulator
 
 ## cog
 
-TODO
+The `cog` parameter, which stands for Course over Ground, is a crucial navigational data point in our simulator. It represents the drone's current travel direction relative to true north and is measured in degrees.
+
+- **Course over Ground (cog)**: This value indicates the drone's directional heading over the earth's surface. It's expressed in degrees, with a range from 0 to 359.99, where 0 degrees corresponds to a northward trajectory.
+
+- **Directional Accuracy**: The `cog` is calculated using the drone's horizontal velocity vectors (`vn` and `ve`). It provides an essential bearing for navigation, especially when planning waypoints or following a predetermined path.
+
+- **Integration of Noise**: To simulate the real-world operational conditions, a degree of variance or 'noise' is added to the `cog` value. This reflects the minor fluctuations that can be expected due to factors like wind, air pressure changes, or compass inaccuracies.
+
+The `cog` value, enhanced with noise, helps develop navigation systems that are capable of accurate heading determination even when faced with environmental uncertainties. This makes the simulated flight experience as close to reality as possible, which is invaluable for testing and refining drone navigation algorithms.
+
 
 ## others
 
