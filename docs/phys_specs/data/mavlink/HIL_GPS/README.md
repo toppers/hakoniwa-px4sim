@@ -60,18 +60,19 @@ Additionally, realistic noise is applied to these velocity readings to simulate 
 
 By accurately simulating these velocities and incorporating noise, the simulator can effectively replicate the conditions a drone would encounter in real flight, aiding in the development of more sophisticated and resilient flight control algorithms.
 
-
 ## cog
 
-The `cog` parameter, which stands for Course over Ground, is a crucial navigational data point in our simulator. It represents the drone's current travel direction relative to true north and is measured in degrees.
+The `cog`, or Course over Ground, is an essential aspect in our drone simulation, representing the actual trajectory of the drone over the Earth's surface. It differs from the drone's heading, which is the direction the drone is pointing or facing.
 
-- **Course over Ground (cog)**: This value indicates the drone's directional heading over the earth's surface. It's expressed in degrees, with a range from 0 to 359.99, where 0 degrees corresponds to a northward trajectory.
+- **Definition of Course over Ground**: The `cog` is the actual path the drone follows over the ground, which can be different from its heading due to factors like wind or air currents. This value is especially significant when the drone is in motion, as it indicates the real direction of travel.
 
-- **Directional Accuracy**: The `cog` is calculated using the drone's horizontal velocity vectors (`vn` and `ve`). It provides an essential bearing for navigation, especially when planning waypoints or following a predetermined path.
+- **Calculation of COG**: When the drone is moving, `cog` is calculated based on its movement vector. It is derived from the combination of the northward (vn) and eastward (ve) velocities, determining the angle of travel relative to true north. The `cog` is measured in degrees, ranging from 0 to 359.99, with 0 degrees representing true north.
 
-- **Integration of Noise**: To simulate the real-world operational conditions, a degree of variance or 'noise' is added to the `cog` value. This reflects the minor fluctuations that can be expected due to factors like wind, air pressure changes, or compass inaccuracies.
+- **COG in Stationary Conditions**: When the drone is not moving, the course over ground is undefined, as there is no movement to indicate a direction of travel. In such cases, `cog` may not provide meaningful data.
 
-The `cog` value, enhanced with noise, helps develop navigation systems that are capable of accurate heading determination even when faced with environmental uncertainties. This makes the simulated flight experience as close to reality as possible, which is invaluable for testing and refining drone navigation algorithms.
+- **Incorporating Realistic Noise**: To simulate real-world conditions accurately, noise is added to the `cog` calculations. This accounts for the natural variabilities and inaccuracies inherent in real-world navigation, such as sensor errors and environmental factors.
+
+Understanding and accurately simulating the `cog` is crucial for realistic drone navigation in the simulation. It ensures that the navigation systems developed are robust and capable of handling the discrepancies between the intended heading and the actual path of movement.
 
 
 ## others
