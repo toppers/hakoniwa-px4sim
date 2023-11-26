@@ -100,24 +100,24 @@ This section explains the measurement of the drone's angular velocity, which is 
 - **Yaw Rate**: A positive value signifies a clockwise rotation around the Z-axis when viewed from above.
 
 Understanding these rates of angular velocity is crucial for controlling the drone's orientation and for stabilizing its flight.
+# Rotor Speed
 
-# RotorSpeedVariation
+This section describes the variation in rotor speed, a critical parameter for understanding and managing the drone's flight dynamics.
 
-This section details the variation in rotor speed for the drone, an important aspect for understanding and controlling its flight dynamics.
-
-| Attribute            | Description                                                  |
-|----------------------|--------------------------------------------------------------|
-| Unit                 | Revolutions per Second (RPS)                                 |
-| Description          | Rate of change in rotor speed                                |
+| Attribute   | Description |
+|-------------|-------------|
+| **Unit**    | Revolutions per Second (RPS) |
+| **Description** | The rate of change in the drone's rotor speed, directly influencing lift and flight stability |
 
 ## About the Measurement
-- **Rotor Speed Variation Δω**: This represents the change in the rotational speed of the drone's rotors. It is a crucial factor in controlling the drone's lift, stability, and overall maneuverability.
+- **Rotor Speed**: Indicates the rate of change in the rotational speed of the drone's rotors. It is a key determinant of the drone's lifting capability, stability, and agility.
 
 ## About the Unit
-- **Revolutions per Second (RPS)**: The unit measures how quickly the speed of the rotor changes, indicating the rate at which the rotors accelerate or decelerate.
+- **Revolutions per Second (RPS)**: Measures the frequency of the rotor's complete revolutions in one second. This unit provides a direct indication of how quickly the rotor speed is increasing or decreasing.
 
 ## Interpreting Rotor Speed Variation
-- A positive Δω value indicates an increasing speed of the rotor, which generally translates to an increase in lift or upward force.
-- A negative Δω value shows a decreasing speed of the rotor, leading to a reduction in lift or upward force.
+- A positive **RotorSpeed** value signifies an increase in rotor speed, typically associated with an increase in lift and the drone's potential to ascend.
+- A negative **RotorSpeed** value indicates a decrease in rotor speed, corresponding to a reduction in lift and the drone's potential to descend.
 
-Understanding these variations in rotor speed is key to effectively managing the drone's altitude and stability during flight.
+Comprehending these changes in rotor speed is crucial for the effective control of the drone's altitude and stability during various flight maneuvers.
+
