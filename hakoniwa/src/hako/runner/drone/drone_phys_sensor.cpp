@@ -106,16 +106,24 @@ static void drone_calc_acc_body(DronePhysType &phys)
     Vector3Type rot;
 
     rot.x = phys.current.rot.x;
+#ifdef ENABLE_AIR_FRAME
+    rot.y = phys.current.rot.y;
+    rot.z = phys.current.rot.z;
+#else
     rot.y = -phys.current.rot.y;
     rot.z = -phys.current.rot.z;
-
+#endif
     // for acc
     Vector3Type vec;
 
     vec.x = phys.current.vec.x;
+#ifdef ENABLE_AIR_FRAME
+    vec.y = phys.current.vec.y;
+    vec.z = phys.current.vec.z;
+#else
     vec.y = -phys.current.vec.y;
     vec.z = -phys.current.vec.z;
-    
+#endif
     Vector3Type rvec = convert2uvw(vec, rot);
     Vector3Type prev_rvec = phys.prev_rvec;
 
@@ -136,6 +144,15 @@ static void drone_calc_gyro_body(DronePhysType &phys)
 {
     Vector3Type rot_vec;
     Vector3Type rot;
+#ifdef ENABLE_AIR_FRAME
+    rot.x = phys.current.rot.x;
+    rot.y = phys.current.rot.y;
+    rot.z = phys.current.rot.z;
+
+    rot_vec.x = phys.sensor_rot_vec.average_value.x;
+    rot_vec.y = phys.sensor_rot_vec.average_value.y;
+    rot_vec.z = phys.sensor_rot_vec.average_value.z;
+#else
     rot.x = phys.current.rot.x;
     rot.y = -phys.current.rot.y;
     rot.z = -phys.current.rot.z;
@@ -143,6 +160,7 @@ static void drone_calc_gyro_body(DronePhysType &phys)
     rot_vec.x = phys.sensor_rot_vec.average_value.x;
     rot_vec.y = -phys.sensor_rot_vec.average_value.y;
     rot_vec.z = -phys.sensor_rot_vec.average_value.z;
+#endif
     phys.rot_rvec = convert2pqr(rot, rot_vec);
     return;
 }
@@ -162,17 +180,26 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     phys.sensor.hil_state_quaternion.yawspeed   = phys.rot_rvec.z;
 #else
     phys.sensor.hil_state_quaternion.rollspeed  = ave_rot_vec.x;
+#ifdef ENABLE_AIR_FRAME
+    phys.sensor.hil_state_quaternion.pitchspeed = ave_rot_vec.y;
+    phys.sensor.hil_state_quaternion.yawspeed   = ave_rot_vec.z;
+#else
     phys.sensor.hil_state_quaternion.pitchspeed = -ave_rot_vec.y;
     phys.sensor.hil_state_quaternion.yawspeed   = -ave_rot_vec.z;
+#endif
 #endif
 
     Vector3Type ave_vec;
     addAverageData(phys.sensor_vec, phys.current.vec);
     calcAverage(phys.sensor_vec, ave_vec);
     phys.sensor.hil_state_quaternion.vx = (Hako_int16)(ave_vec.x * 100);
+#ifdef ENABLE_AIR_FRAME
+    phys.sensor.hil_state_quaternion.vy = (Hako_int16)(ave_vec.y * 100);
+    phys.sensor.hil_state_quaternion.vz = (Hako_int16)(ave_vec.z * 100);
+#else
     phys.sensor.hil_state_quaternion.vy = -(Hako_int16)(ave_vec.y * 100);
     phys.sensor.hil_state_quaternion.vz = -(Hako_int16)(ave_vec.z * 100);
-
+#endif
     // for acc
     drone_calc_acc_body(phys);
 #if 0
@@ -199,8 +226,13 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     Vector3Type ave_rot;
     addAverageData(phys.sensor_rot, phys.current.rot);
     calcAverage(phys.sensor_rot, ave_rot);
+#ifdef ENABLE_AIR_FRAME
+    ave_rot.y = ave_rot.y;
+    ave_rot.z = ave_rot.z;
+#else
     ave_rot.y = -ave_rot.y;
     ave_rot.z = -ave_rot.z;
+#endif
     euler2Quaternion(ave_rot, q);
 
     phys.sensor.hil_state_quaternion.attitude_quaternion[0] = q.w;
@@ -216,8 +248,11 @@ static void drone_sensor_run_hil_state_quaternion(DronePhysType &phys)
     calcAverage(phys.sensor_pos, ave_pos);
     phys.sensor.hil_state_quaternion.lat = CalculateLatitude(ave_pos, REFERENCE_LATITUDE);
     phys.sensor.hil_state_quaternion.lon = CalculateLongitude(ave_pos, REFERENCE_LONGTITUDE);
+#ifdef ENABLE_AIR_FRAME
+    phys.sensor.hil_state_quaternion.alt = CalculateAltitude(ave_pos, REFERENCE_ALTITUDE);
+#else
     phys.sensor.hil_state_quaternion.alt = -CalculateAltitude(ave_pos, REFERENCE_ALTITUDE);
-
+#endif
     return;
 }
 
@@ -266,16 +301,23 @@ static void drone_sensor_run_hil_gps(DronePhysType &phys)
     phys.sensor.hil_gps.fix_type = 3;
     phys.sensor.hil_gps.lat = phys.sensor.hil_state_quaternion.lat;
     phys.sensor.hil_gps.lon = phys.sensor.hil_state_quaternion.lon;
+#ifdef ENABLE_AIR_FRAME
+    phys.sensor.hil_gps.alt = phys.sensor.hil_state_quaternion.alt;
+#else
     phys.sensor.hil_gps.alt = -phys.sensor.hil_state_quaternion.alt;
-
+#endif
     phys.sensor.hil_gps.eph = 10;
     phys.sensor.hil_gps.epv = 10;
 
     phys.sensor.hil_gps.vel = vector3_magnitude(phys.sensor_vec.average_value) * 100.0f;
     phys.sensor.hil_gps.vn = (Hako_int16)(phys.sensor_vec.average_value.x * 100.0);
+#ifdef ENABLE_AIR_FRAME
+    phys.sensor.hil_gps.ve = (Hako_int16)(phys.sensor_vec.average_value.y * 100.0);
+    phys.sensor.hil_gps.vd = (Hako_int16)(phys.sensor_vec.average_value.z * 100.0);
+#else
     phys.sensor.hil_gps.ve = -(Hako_int16)(phys.sensor_vec.average_value.y * 100.0);
     phys.sensor.hil_gps.vd = -(Hako_int16)(phys.sensor_vec.average_value.z * 100.0);
-
+#endif
     double angle_z = phys.sensor_rot.average_value.z;
     if (angle_z < 0) {
         angle_z += M_PI * 2.0; // 負の角度を正の範囲に変換
@@ -303,7 +345,11 @@ static int32_t CalculateAltitude(const Vector3Type& dronePosition, double refere
 static int32_t CalculateLongitude(const Vector3Type& dronePosition, double referenceLongitude) 
 {
     // Convert ROS position (in meters) to change in longitude based on reference.
+#ifdef ENABLE_AIR_FRAME
+    double deltaLongitude = dronePosition.y / 111000.0; // ROS's Y axis represents East-West direction.
+#else
     double deltaLongitude = -dronePosition.y / 111000.0; // ROS's Y axis represents East-West direction.
+#endif
     int32_t longitude = (int32_t)((referenceLongitude + deltaLongitude) * 1e7); // Convert to 1e7 format used by MAVLink
     return longitude;
 }
@@ -377,8 +423,11 @@ static Vector3Type CalcMAVLinkMagnet(const DronePhysType &phys)
     QuaternionType rotation;
     Matrix3d matrix;
     Vector3Type rot = phys.sensor_rot.average_value;
+#ifdef ENABLE_AIR_FRAME
+#else
     rot.y = -rot.y;
     rot.z = -rot.z;
+#endif
     euler2Quaternion(rot, rotation);
     quaternionToMatrix3d(rotation, &matrix);
     // 地磁気データのコピー

@@ -5,6 +5,7 @@
 #include "../hako/pdu/hako_pdu_data.hpp"
 #include "../hako/runner/hako_px4_runner.hpp"
 #include "../mavlink/mavlink_dump.hpp"
+#include "../config/config.hpp"
 #include <iostream>
 #include <unistd.h>
 #include <random>

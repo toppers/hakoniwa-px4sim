@@ -71,6 +71,22 @@ void drone_run(const DronePropellerRotationRateType& propeller, DronePhysType& p
 
 static void drone_run_x(double u, DronePhysType& phys)
 {
+#ifdef ENABLE_AIR_FRAME
+    phys.next.vec.x = - ( phys.delta_t /  phys.param.m ) * (  u ) 
+                * 
+                  ( 
+                      cos(phys.current.rot.x)
+                    * sin(phys.current.rot.y)
+                    * cos(phys.current.rot.z)
+                    +
+                      sin(phys.current.rot.x)
+                    * sin(phys.current.rot.z) 
+                  ) 
+#ifdef EXPERIMENTAL_CODE_ENABLE
+                  - (DRAG_X * phys.current.vec.x)
+#endif
+                  + phys.current.vec.x;
+#else
     phys.next.vec.x = ( phys.delta_t /  phys.param.m ) * u 
                 * 
                   ( 
@@ -85,7 +101,7 @@ static void drone_run_x(double u, DronePhysType& phys)
                   - (DRAG_X * phys.current.vec.x)
 #endif
                   + phys.current.vec.x;
-
+#endif
     phys.next.pos.x = (phys.current.vec.x * phys.delta_t) + phys.current.pos.x;
 #ifdef ENABLE_DRONE_PHYS_DEBUG    
     std::cout << "next pos.x = " << phys.next.pos.x << std::endl;
@@ -96,6 +112,22 @@ static void drone_run_x(double u, DronePhysType& phys)
 
 static void drone_run_y(double u, DronePhysType& phys)
 {
+#ifdef ENABLE_AIR_FRAME
+    phys.next.vec.y =  - ( phys.delta_t /  phys.param.m ) * ( u ) 
+                * 
+                  ( 
+                      cos(phys.current.rot.x) 
+                    * sin(phys.current.rot.y) 
+                    * sin(phys.current.rot.z) 
+                    - 
+                      sin(phys.current.rot.x) 
+                    * cos(phys.current.rot.z) 
+                  ) 
+#ifdef EXPERIMENTAL_CODE_ENABLE
+                  - (DRAG_Y * phys.current.vec.y)
+#endif
+                  + phys.current.vec.y;
+#else
     phys.next.vec.y = ( phys.delta_t /  phys.param.m ) * u 
                 * 
                   ( 
@@ -110,6 +142,7 @@ static void drone_run_y(double u, DronePhysType& phys)
                   - (DRAG_Y * phys.current.vec.y)
 #endif
                   + phys.current.vec.y;
+#endif
 
     phys.next.pos.y = (phys.current.vec.y * phys.delta_t) + phys.current.pos.y;
 #ifdef ENABLE_DRONE_PHYS_DEBUG    
@@ -120,16 +153,38 @@ static void drone_run_y(double u, DronePhysType& phys)
 }
 static void drone_run_z(double u, DronePhysType& phys)
 {
-    phys.next.vec.z = ( phys.delta_t /  phys.param.m ) * u 
+#ifdef ENABLE_AIR_FRAME
+    phys.next.vec.z =   - (( phys.delta_t /  phys.param.m ) * ( u ) 
                 * 
                   ( 
                       cos(phys.current.rot.y) 
                     * cos(phys.current.rot.x) 
                   ) 
+                  - (phys.param.gravity * phys.delta_t ) ) 
 #ifdef EXPERIMENTAL_CODE_ENABLE
                   - (DRAG_Z * phys.current.vec.z)
 #endif
-                  - (phys.param.gravity * phys.delta_t )
+                  + phys.current.vec.z;
+
+    phys.next.pos.z = (phys.current.vec.z * phys.delta_t) + phys.current.pos.z;
+    /*
+     * 境界条件：地面から下には落ちない
+     */
+    if (phys.next.pos.z > 0) {
+      phys.next.pos.z = 0;
+      phys.next.vec.z = 0;
+    }
+#else
+    phys.next.vec.z = ( ( phys.delta_t /  phys.param.m ) * u 
+                * 
+                  ( 
+                      cos(phys.current.rot.y) 
+                    * cos(phys.current.rot.x) 
+                  ) 
+                  - (phys.param.gravity * phys.delta_t ) )
+#ifdef EXPERIMENTAL_CODE_ENABLE
+                  - (DRAG_Z * phys.current.vec.z)
+#endif
                   + phys.current.vec.z;
 
     phys.next.pos.z = (phys.current.vec.z * phys.delta_t) + phys.current.pos.z;
@@ -140,6 +195,7 @@ static void drone_run_z(double u, DronePhysType& phys)
       phys.next.pos.z = 0;
       phys.next.vec.z = 0;
     }
+#endif
     //std::cout << "u = " << u << std::endl;
     //std::cout << "curr rot.y = " << phys.current.rot.y << std::endl;
     //std::cout << "curr rot.x = " << phys.current.rot.x << std::endl;

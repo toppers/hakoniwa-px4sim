@@ -64,8 +64,11 @@ void drone_control_init(DroneControlType& ctrl, double delta_t)
     key_init();
     std::memset(&ctrl, 0, sizeof(ctrl));  // 構造体の全メンバを0で初期化
     ctrl.delta_t = delta_t;
+#ifdef ENABLE_AIR_FRAME
+    ctrl.target_pos.target.z = -7500.0f;   // 単位：mm
+#else    
     ctrl.target_pos.target.z = 7500.0f;   // 単位：mm
-
+#endif
     // Z軸用PIDコントローラの初期化
     initPID(ctrl.target_pos.pid_z, DRONE_CONTROL_PID_POS_Z_KP, DRONE_CONTROL_PID_POS_Z_KI, DRONE_CONTROL_PID_POS_Z_KD, ctrl.target_pos.target.z);
 
@@ -91,24 +94,15 @@ void drone_control_run(DroneControlType& ctrl)
         return;
     }
     // PID制御の計算
+#ifdef ENABLE_AIR_FRAME
+    ctrl.signal.thrust = -updatePID(ctrl.target_pos.pid_z, hil_state_quaternion.alt, ctrl.delta_t) / 1000.0f;
+#else
     ctrl.signal.thrust = updatePID(ctrl.target_pos.pid_z, -hil_state_quaternion.alt, ctrl.delta_t) / 1000.0f;
+#endif
 #ifdef ENABLE_DRONE_PHYS_DEBUG
     std::cout << "ctrl.target_pos.pid_z.previous_error= " << ctrl.target_pos.pid_z.previous_error << std::endl;
 #endif
-    ctrl.signal.thrust = get_value_with_limit(ctrl.signal.thrust, DRONE_THRUST_MAX, DRONE_THRUST_MIN);
-    QuaternionType q;
-    Vector3Type angle;
-    q.w = hil_state_quaternion.attitude_quaternion[0];
-    q.x = hil_state_quaternion.attitude_quaternion[1];
-    q.y = hil_state_quaternion.attitude_quaternion[2];
-    q.z = hil_state_quaternion.attitude_quaternion[3];
-    quaternion2Euler(q, angle);
-#ifdef ENABLE_DRONE_PHYS_DEBUG
-    std::cout << "angle.x = " << angle.x << std::endl;
-    std::cout << "angle.y = " << angle.y << std::endl;
-    std::cout << "angle.z = " << angle.z << std::endl;
-    std::cout << "hil_state_quaternion.lon= " << hil_state_quaternion.lon << std::endl;
-#endif
+    ctrl.signal.thrust = get_value_with_limit(ctrl.signal.thrust, DRONE_THRUST_MAX, DRONE_THRUST_MIN);    
     // roll power
     static Vector3Type roll_power_for_move = { 0, 0, 0 };
 #ifdef ENABLE_DRONE_PHYS_DEBUG
@@ -125,19 +119,35 @@ void drone_control_run(DroneControlType& ctrl)
     }
     else if (c == 'i') { // move forward
         std::cout << "MOVE FORWARD: key=" << c << std::endl;
+#ifdef ENABLE_AIR_FRAME
+        roll_power_for_move.y= -1.0;
+#else
         roll_power_for_move.y= 1.0;
+#endif
     }
     else if (c == 'm') { // move back
         std::cout << "MOVE BACK: key=" << c << std::endl;
+#ifdef ENABLE_AIR_FRAME
+        roll_power_for_move.y= 1.0;
+#else
         roll_power_for_move.y= -1.0;
+#endif
     }
     else if (c == 'g') { //turn right
         std::cout << "TURN RIGHT: key=" << c << std::endl;
+#ifdef ENABLE_AIR_FRAME
+        roll_power_for_move.z += 90.0 * (M_PI / 180.0);
+#else
         roll_power_for_move.z -= 90.0 * (M_PI / 180.0);
+#endif
     }
     else if (c == 'f') { //turn left
         std::cout << "TURN LEFT: key=" << c << std::endl;
+#ifdef ENABLE_AIR_FRAME
+        roll_power_for_move.z -= 90.0 * (M_PI / 180.0);
+#else
         roll_power_for_move.z += 90.0 * (M_PI / 180.0);
+#endif
     }
     else if (c == ' ') {
         std::cout << "RESET: key=" << c << std::endl;
@@ -145,11 +155,10 @@ void drone_control_run(DroneControlType& ctrl)
         roll_power_for_move.y = 0;
     }
     Vector3Type roll_power_for_same;
-    roll_power_for_same.x = updatePID(ctrl.target_rot.pid_roll, angle.x, ctrl.delta_t);
-    roll_power_for_same.y = updatePID(ctrl.target_rot.pid_pitch, -angle.y, ctrl.delta_t);
+    roll_power_for_same.x = updatePID(ctrl.target_rot.pid_roll, ctrl.phys->current.rot.x, ctrl.delta_t);
+    roll_power_for_same.y = updatePID(ctrl.target_rot.pid_pitch, ctrl.phys->current.rot.y, ctrl.delta_t);
     ctrl.target_rot.pid_yaw.setpoint = roll_power_for_move.z;
-    roll_power_for_same.z = updatePID(ctrl.target_rot.pid_yaw, -angle.z, ctrl.delta_t);
-
+    roll_power_for_same.z = updatePID(ctrl.target_rot.pid_yaw, ctrl.phys->current.rot.z, ctrl.delta_t);
 #ifdef ENABLE_DRONE_PHYS_DEBUG
     std::cout << "roll_power_for_move.x= " << roll_power_for_move.x << std::endl;
     std::cout << "roll_power_for_same.x= " << roll_power_for_same.x << std::endl;

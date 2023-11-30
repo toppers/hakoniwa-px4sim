@@ -44,6 +44,7 @@ static void my_setup()
     drone_init(DRONE_PHYS_DELTA_TIME, param, initial_value, drone_phys);
     drone_sensor_init(drone_phys);
     drone_control_init(drone_ctrl, DRONE_PHYS_DELTA_TIME);
+    drone_ctrl.phys = &drone_phys;
     std::cout << "INFO: setup done" << std::endl;
     return;
 }
@@ -60,12 +61,21 @@ static void do_io_write()
     if (!hako_asset_runner_pdu_write(hako_sim_control.arg->robo_name, HAKO_AVATOR_CHANNLE_ID_MOTOR, (const char*)&hil_actuator_controls, sizeof(hil_actuator_controls))) {
         std::cerr << "ERROR: can not write pdu data: hil_actuator_controls" << std::endl;
     }
+#ifdef ENABLE_AIR_FRAME
+    pos.linear.x = drone_phys.current.pos.x;
+    pos.linear.y = -drone_phys.current.pos.y;
+    pos.linear.z = -drone_phys.current.pos.z;
+    pos.angular.x = drone_phys.current.rot.x * (180.0 / M_PI);
+    pos.angular.y = -drone_phys.current.rot.y * (180.0 / M_PI);
+    pos.angular.z = -drone_phys.current.rot.z * (180.0 / M_PI);
+#else
     pos.linear.x = drone_phys.current.pos.x;
     pos.linear.y = drone_phys.current.pos.y;
     pos.linear.z = drone_phys.current.pos.z;
     pos.angular.x = drone_phys.current.rot.x * (180.0 / M_PI);
     pos.angular.y = drone_phys.current.rot.y * (180.0 / M_PI);
     pos.angular.z = drone_phys.current.rot.z * (180.0 / M_PI);
+#endif
     if (!hako_asset_runner_pdu_write(hako_sim_control.arg->robo_name, HAKO_AVATOR_CHANNLE_ID_POS, (const char*)&pos, sizeof(pos))) {
         std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
     }

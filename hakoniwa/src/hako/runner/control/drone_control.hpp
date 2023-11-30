@@ -3,6 +3,7 @@
 
 #include "../common/drone_types.hpp"
 #include "drone_control_pid.hpp"
+#include "../drone/drone_phys.hpp"
 
 typedef struct {
     double delta_t;
@@ -23,6 +24,7 @@ typedef struct {
      * 制御信号
      */
     DroneControlSignalType signal;
+    DronePhysType *phys;
 } DroneControlType;
 
 extern void drone_control_init(DroneControlType& ctrl, double delta_t);
