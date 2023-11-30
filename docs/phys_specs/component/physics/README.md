@@ -4,6 +4,7 @@ The following equations describe the motion of a drone, considering a system wit
 
 <img width="464" alt="スクリーンショット 2023-12-01 7 19 07" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/3f101a80-df0a-4122-b6ed-e8ba8a927a59">
 
+The equations is aeronautical coordinate system.
 
 ## Explanation of the Drone Equations
 
