@@ -34,6 +34,8 @@ add_executable(
     threads/px4sim_thread_replay.cpp
     threads/px4sim_thread_capture.cpp
 
+    assets/drone/physics/drone_dynamics.cpp
+
     utils/hako_params.cpp
     modules/hako_bypass.cpp
 
@@ -48,6 +50,8 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/src
     PRIVATE ${HAKONIWA_PDU_SOURCE_DIR}
     PRIVATE ${HAKONIWA_SOURCE_DIR}
+    PRIVATE ${PROJECT_SOURCE_DIR}/assets/drone/include
+    PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
 )
 

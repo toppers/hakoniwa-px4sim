@@ -57,22 +57,22 @@ typedef struct {
 
 /*
  * Unit: Revolutions per Second (RPS)
- * rps: The rate of change in the drone's rotor speed, directly influencing lift and flight stability
+ * data: The rate of change in the drone's rotor speed, directly influencing lift and flight stability
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#rotor-speed
  */
 typedef struct {
-    double rps;
+    double data;
 } DroneRotorSpeedType;
 
 /*
  * Unit: Newton (N)
- * thrust: The force exerted by the rotors to lift the drone against gravity
+ * data: The force exerted by the rotors to lift the drone against gravity
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#thrust
  */
 typedef struct {
-    double thrust;
+    double data;
 } DroneThrustype;
 
 /*

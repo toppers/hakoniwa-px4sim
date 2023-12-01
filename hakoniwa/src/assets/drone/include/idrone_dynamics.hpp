@@ -1,9 +1,11 @@
-#ifndef _DRONE_DYNAMICS_HPP_
-#define _DRONE_DYNAMICS_HPP_
+#ifndef _IDRONE_DYNAMICS_HPP_
+#define _IDRONE_DYNAMICS_HPP_
 
 #include "drone_primitive_types.hpp"
 
 namespace hako::assets::drone {
+
+const double GRAVITY = 9.81;
 
 class IDroneDynamics {
 public:
@@ -24,4 +26,4 @@ public:
 
 }
 
-#endif /* _DRONE_DYNAMICS_HPP_ */
+#endif /* _IDRONE_DYNAMICS_HPP_ */
