@@ -15,6 +15,7 @@
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
 #define HAKO_AVATOR_CHANNLE_ID_POS      1
 #define HAKO_AVATOR_CHANNLE_ID_CTRL     2
+#define HAKO_PHYS_DRAG          0.001
 
 #define HAKO_ROBO_NAME "px4sim"
 
@@ -47,7 +48,7 @@ static void my_setup()
 {
     drone_dynamics = new DroneDynamics(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics->set_drag(0.0);
+    drone_dynamics->set_drag(HAKO_PHYS_DRAG);
 
     std::cout << "INFO: setup done" << std::endl;
     return;

@@ -50,6 +50,10 @@ while true; do
     echo "Press ENTER to stop..."
     read input
     if [ -z "$input" ]; then
+        hako-cmd stop
+        sleep 1
+        hako-cmd reset
+        sleep 1
         kill_process
         break
     fi
