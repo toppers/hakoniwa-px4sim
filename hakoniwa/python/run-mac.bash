@@ -25,7 +25,6 @@ function kill_process()
     fi
     kill -9 $HAKO_RUN_PID
     echo "INFO: STOP DONE"
-    exit 0
 }
 trap signal_handler SIGINT
 
@@ -59,4 +58,4 @@ while true; do
     fi
 done
 
-
+python3 python/graph.py

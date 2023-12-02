@@ -41,7 +41,7 @@ class DronePidControl(HakoAplOps):
         if (self.time - self.last_sync_time) > 1.0:
             self.last_sync_time = self.time
             self.csv_file.flush()
-            print("U: ", cmd_vel['linear']['z'], "H: ", height)
+            print(f"T: {self.time:.3f}, U: {cmd_vel['linear']['z']:.3f}, H: {height:.3f}")
 
     def reset(self):
         self.csv_file.close()
@@ -60,9 +60,9 @@ if __name__ == "__main__":
 
     # PIDコントローラのパラメータ設定
     Kp = 1.0  # 比例ゲイン
-    Ki = 0.0  # 積分ゲイン
-    Kd = 0.05  # 微分ゲイン
-    s = 4.5  # 目標高度（メートル）
+    Ki = 0.01  # 積分ゲイン
+    Kd = 0.01  # 微分ゲイン
+    s = 10.0  # 目標高度（メートル）
 
     # PIDコントローラの作成
     pid_controller = PID(Kp, Ki, Kd, setpoint = s)
