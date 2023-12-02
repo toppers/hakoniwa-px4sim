@@ -38,6 +38,7 @@ add_executable(
 
     utils/hako_params.cpp
     modules/hako_bypass.cpp
+    modules/hako_phys.cpp
 
     px4sim_main.cpp
 )
