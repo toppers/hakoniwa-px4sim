@@ -34,9 +34,8 @@ void DroneDynamics::run_z(const DroneThrustype &thrust, const DroneTorqueType &t
 {
     (void)torque;
 
-    this->next_velocity.data.y = 
-        ( - (thrust.data * this->delta_time_sec) /  this->param_mass ) * 
-        ( cos(this->angle.data.y) * cos(this->angle.data.x) - ( GRAVITY * this->delta_time_sec) ) 
+    this->next_velocity.data.z = 
+        - ( (thrust.data  /  this->param_mass ) *  cos(this->angle.data.y) * cos(this->angle.data.x) - GRAVITY ) * this->delta_time_sec
         +
         (1.0 - this->param_drag) * this->velocity.data.z;
 

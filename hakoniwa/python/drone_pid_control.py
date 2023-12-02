@@ -14,9 +14,10 @@ class DronePidControl(HakoAplOps):
     def step(self):
         #GET PDU
         read_data = self.pdu.get_read_pdu_json(self.read_channel)
-        #print("read_data: ", read_data['linear']['z'])
+        print("Z: ", read_data['linear']['z'])
 
-        cmd_vel = self.pdu.get_write_pdu_json(self.write_channel)        
+        cmd_vel = self.pdu.get_write_pdu_json(self.write_channel)
+        cmd_vel["linear"]['z'] = 9.81
         #print(str(cmd_vel))
         #WRITE PDU
         self.pdu.update_write_buffer(self.write_channel, cmd_vel)

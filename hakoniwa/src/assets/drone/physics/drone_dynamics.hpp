@@ -100,9 +100,9 @@ public:
         run_rz(thrust, torque);
 
         //boundary condition
-        if (this->position.data.z > 0) {
-            this->position.data.z = 0;
-            this->velocity.data.z = 0;
+        if (this->next_position.data.z > 0) {
+            this->next_position.data.z = 0;
+            this->next_velocity.data.z = 0;
         }
 
         this->position = this->next_position;
