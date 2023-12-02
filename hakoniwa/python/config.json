@@ -1,0 +1,6 @@
+{
+    "asset_name": "PythonAsset",
+    "apl_config_path": "./config/custom_python.json",
+    "offset_path": "./third-party/hakoniwa-python-simasset-plugin/data/ros_types/offset",
+    "delta_msec": 1
+}
