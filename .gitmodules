@@ -10,6 +10,3 @@
 [submodule "hakoniwa/third-party/glm"]
 	path = hakoniwa/third-party/glm
 	url = git@github.com:g-truc/glm.git
-[submodule "hakoniwa/third-party/hakoniwa-python-simasset-plugin"]
-	path = hakoniwa/third-party/hakoniwa-python-simasset-plugin
-	url = https://github.com/toppers/hakoniwa-pybullet-simasset-plugin.git
