@@ -58,4 +58,3 @@ while true; do
     fi
 done
 
-python3 python/graph.py
