@@ -88,7 +88,7 @@ typedef struct {
 } DroneTorqueType;
 
 typedef struct {
-    bool cw;
+    int ccw; /* CW: -1 or CCW: 1 */
     glm::dvec3 data;
 } RotorConfigType;
 

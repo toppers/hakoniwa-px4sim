@@ -43,17 +43,11 @@ private:
             // ローターによる推力ベクトルを生成（Z方向にのみ作用すると仮定）
             glm::dvec3 thrust_vector = glm::dvec3(0.0, 0.0, this->T[i]);
             
-            // ローターによるトルクを計算（推力ベクトルとローターの位置ベクトルの外積）
+            // ローターの位置ベクトルと推力ベクトルとの外積
             glm::dvec3 torque_vector = glm::cross(this->rotor_config[i].data, thrust_vector);
             
-            // CWのローターはトルクを逆向きにする
-            if (rotor_config[i].cw) {
-                torque_vector = -torque_vector;
-            }
-            
-            // 反トルクを加える
-            torque_vector += glm::dvec3(0.0, 0.0, this->counter_torque[i]);
-            
+            // 反トルク
+            torque_vector += glm::dvec3(0.0, 0.0, this->rotor_config[i].ccw * this->counter_torque[i]);
             // 合計トルクを計算
             total_torque += torque_vector;
         }
