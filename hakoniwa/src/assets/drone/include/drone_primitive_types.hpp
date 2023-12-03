@@ -87,4 +87,9 @@ typedef struct {
     glm::dvec3 data;
 } DroneTorqueType;
 
+typedef struct {
+    bool cw;
+    glm::dvec3 data;
+} RotorConfigType;
+
 #endif /* _DRONE_DATA_TYPES_HPP_ */
