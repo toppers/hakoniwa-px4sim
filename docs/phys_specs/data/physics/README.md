@@ -107,14 +107,14 @@ This section describes the variation in rotor speed, a critical parameter for un
 
 | Attribute   | Description |
 |-------------|-------------|
-| **Unit**    | Revolutions per Second (RPS) |
+| **Unit**    | Revolutions per Minute (RPM) |
 | **Description** | The rate of change in the drone's rotor speed, directly influencing lift and flight stability |
 
 ## About the Measurement
 - **Rotor Speed**: Indicates the rate of change in the rotational speed of the drone's rotors. It is a key determinant of the drone's lifting capability, stability, and agility.
 
 ## About the Unit
-- **Revolutions per Second (RPS)**: Measures the frequency of the rotor's complete revolutions in one second. This unit provides a direct indication of how quickly the rotor speed is increasing or decreasing.
+- **Revolutions per Minute (RPM)**: Measures the frequency of the rotor's complete revolutions in one minute. This unit provides a direct indication of how quickly the rotor speed is increasing or decreasing.
 
 ## Interpreting Rotor Speed Variation
 - A positive **RotorSpeed** value signifies an increase in rotor speed, typically associated with an increase in lift and the drone's potential to ascend.
