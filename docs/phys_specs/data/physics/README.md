@@ -46,6 +46,30 @@ This section outlines the coordinate system and units used for measuring the dro
 ## Interpreting Velocity Data
 - The velocity data represents the rate of change of position along each axis of the NED coordinate system. Positive values in the X and Y axes indicate movement towards North and East, respectively. For the Z axis, a positive value indicates movement downwards (towards the ground), in line with the orientation of the NED coordinate system.
 
+# Velocity in Body Coordinate System
+
+This section outlines the coordinate system and units used for measuring the drone's velocity in relation to its body frame, along with relevant details.
+
+| Attribute          | Description                                       |
+|--------------------|---------------------------------------------------|
+| Coordinate System  | Body Coordinate System (FRD)                      |
+| Unit               | Meters per Second (m/s)                           |
+| X                  | Velocity in the forward direction (nose)          |
+| Y                  | Velocity towards the right wing                   |
+| Z                  | Velocity downwards (relative to aircraft body)    |
+
+## About the Coordinate System
+- **Body Coordinate System (FRD)**: For velocity measurements relative to the drone's body, the FRD coordinate system is used. This system is oriented Forward (X), Right (Y), and Down (Z), directly corresponding to the drone's own axes and the pilot's perspective.
+
+## About the Unit
+- **Meters per Second (m/s)**: The drone's velocity is measured in meters per second relative to its own body axes. This measurement is crucial for understanding the drone's movement with respect to its current orientation.
+
+## Interpreting Velocity Data
+- Velocity data in the body frame represents the rate of change of position along the drone's own axes. A positive X-axis value indicates forward movement, a positive Y-axis value indicates a movement to the right, and a positive Z-axis value denotes a downward movement, all relative to the aircraft's body.
+
+Understanding the drone's velocity in the body frame is essential for flight control systems, autopilot navigation, and stabilization algorithms.
+
+
 # Angle
 
 This section details the orientation of the drone, described in terms of angles along the NED coordinate system axes, and measured in radians.
