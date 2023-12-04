@@ -56,7 +56,7 @@ typedef struct {
 } DroneAngularVelocityType;
 
 /*
- * Unit: Revolutions per Second (RPS)
+ * Unit: Revolutions per Second (RPM)
  * data: The rate of change in the drone's rotor speed, directly influencing lift and flight stability
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#rotor-speed
