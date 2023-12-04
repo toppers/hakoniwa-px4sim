@@ -4,22 +4,13 @@
 
 This fundamental equation represents the motor dynamics, using a time constant and a gain to translate PWM duty cycle to rotational speed change:
    
-![スクリーンショット 2023-11-26 8 39 19](https://github.com/toppers/hakoniwa-px4sim/assets/164193/ac0612e4-9dbf-45b3-8abe-6c48c87227fb)
+![スクリーンショット 2023-12-04 11 19 59](https://github.com/toppers/hakoniwa-px4sim/assets/164193/b5c3f274-0dd7-4742-981f-7ac61d0f9d74)
 
 Where:
  - **Ω** is the rotor's angular velocity in revolutions per second (RPS).
  - **k** is the conversion factor (gain) from PWM duty cycle to angular velocity.
  - **τ** is the motor's time constant, indicating its responsiveness.
 
-## Resistance Loss
-
-The model that accounts for the increasing aerodynamic drag as the rotor's angular velocity rises:
-
-![スクリーンショット 2023-11-26 8 40 08](https://github.com/toppers/hakoniwa-px4sim/assets/164193/6436c91b-316d-439a-a26d-91273da375cc)
-
-Where:
- - **c** is the aerodynamic drag coefficient.
- - **f(Ω)** is the function representing the resistance effect as a function of angular velocity.
 
 ## Saturation Effect
 
