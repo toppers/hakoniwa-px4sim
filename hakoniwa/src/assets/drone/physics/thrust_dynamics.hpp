@@ -10,7 +10,6 @@ namespace hako::assets::drone {
 class ThrustDynamics : public hako::assets::drone::IThrustDynamics {
 private:
     double delta_time_sec;
-    double param_L;
     double param_A;
     double param_B;
     double param_Jr;
@@ -40,13 +39,16 @@ private:
     {
         glm::dvec3 total_torque = glm::dvec3(0.0, 0.0, 0.0);
         for (int i = 0; i < ROTOR_NUM; i++) {
-            // ローターによる推力ベクトルを生成（Z方向にのみ作用すると仮定）
-            glm::dvec3 thrust_vector = glm::dvec3(0.0, 0.0, this->T[i]);
+            // ローターによる推力ベクトルを生成（Z方向にのみ作用する）
+            // 航空座標系では重力の反対方向はマイナス
+            glm::dvec3 thrust_vector = glm::dvec3(0.0, 0.0, -this->T[i]);
             
             // ローターの位置ベクトルと推力ベクトルとの外積
             glm::dvec3 torque_vector = glm::cross(this->rotor_config[i].data, thrust_vector);
             
             // 反トルク
+            // CCW:　時計回り（Z軸方向の回転に対してプラス方向）
+            //  CW:反時計回り（Z軸方向の回転に対してマイナス方向）
             torque_vector += glm::dvec3(0.0, 0.0, this->rotor_config[i].ccw * this->counter_torque[i]);
             // 合計トルクを計算
             total_torque += torque_vector;
@@ -57,25 +59,23 @@ public:
     ThrustDynamics(double dt)
     {
         this->delta_time_sec = dt;
-        this->param_L = 0.3;
         this->param_A = 1.0;
-        this->param_B = 1.0;
-        this->param_Jr = 1.0;
+        this->param_B = 0.1;
+        this->param_Jr = 0.1;
 
-        this->rotor_config[0].cw = true;
+        this->rotor_config[0].ccw = -1;
         this->rotor_config[0].data = { 0.3, 0.0, 0 };
-        this->rotor_config[1].cw = false;
+        this->rotor_config[1].ccw = 1;
         this->rotor_config[1].data = { 0.0, -0.3, 0 };
-        this->rotor_config[2].cw = true;
+        this->rotor_config[2].ccw = -1;
         this->rotor_config[2].data = { -0.3, 0.0, 0 };
-        this->rotor_config[3].cw = false;
+        this->rotor_config[3].ccw = 1;
         this->rotor_config[3].data = { 0.0, 0.3, 0 };
     }
     virtual ~ThrustDynamics() {}
 
-    void set_params(double l, double a, double b, double jr)
+    void set_params(double a, double b, double jr)
     {
-        this->param_L = l;
         this->param_A = a;
         this->param_B = b;
         this->param_Jr = jr;
