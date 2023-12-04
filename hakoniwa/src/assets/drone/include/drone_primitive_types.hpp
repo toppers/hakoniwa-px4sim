@@ -29,6 +29,20 @@ typedef struct {
     glm::dvec3 data;
 } DroneVelocityType;
 
+
+/*
+ * Coordinate System: Body Coordinate System (FRD)
+ * Unit: Meters per Second (m/s)
+ * x: Velocity in the forward direction (nose)
+ * y: Velocity towards the right wing
+ * z: Velocity downwards (relative to aircraft body)
+ * 
+ * REF: https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity-in-body-coordinate-system
+ */
+typedef struct {
+    glm::dvec3 data;
+} DroneVelocityBodyFrameType;
+
 /*
  * Coordinate System: Ground Coordinate System (NED)
  * Unit: Radian
@@ -54,6 +68,20 @@ typedef struct {
 typedef struct {
     glm::dvec3 data;
 } DroneAngularVelocityType;
+
+
+/*
+ * Coordinate System: Body Coordinate System (FRD)
+ * Unit: Radian per Second (rad/s)
+ * x: Angular velocity around the forward (X) axis
+ * y: Angular velocity around the right (Y) axis
+ * z: Angular velocity around the downward (Z) axis
+ * 
+ * REF: https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angular-velocity-in-body-coordinate-system
+ */
+typedef struct {
+    glm::dvec3 data;
+} DroneAngularVelocityBodyFrameType;
 
 /*
  * Unit: Revolutions per Second (RPM)
