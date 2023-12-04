@@ -46,6 +46,14 @@ public:
         this->next_speed.data =   ( this->param_k * control * this->delta_time_sec ) 
                                 - ( this->delta_time_sec / this->param_tau ) * this->speed.data
                                 + this->speed.data;
+        // Cap the next speed at the maximum RPM if it exceeds it
+        if (this->next_speed.data > this->param_rpm_max) {
+            this->next_speed.data = this->param_rpm_max;
+        }
+        // Ensure the next speed does not fall below the minimum RPM (assuming 0 for this example)
+        else if (this->next_speed.data < 0) {
+            this->next_speed.data = 0;
+        }
         this->speed.data = this->next_speed.data;
         this->total_time_sec += this->delta_time_sec;
     }
