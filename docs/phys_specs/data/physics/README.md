@@ -125,6 +125,32 @@ This section explains the measurement of the drone's angular velocity, which is 
 
 Understanding these rates of angular velocity is crucial for controlling the drone's orientation and for stabilizing its flight.
 
+# Angular Velocity in Body Coordinate System
+
+This section explains the measurement of the drone's angular velocity in the body coordinate system, which is the rate of change of its angular position over time, relative to its own body axes.
+
+| Attribute          | Description                                           |
+|--------------------|-------------------------------------------------------|
+| Coordinate System  | Body Coordinate System (FRD)                          |
+| Unit               | Radian per Second (rad/s)                             |
+| Roll Rate          | Angular velocity around the forward (X) axis          |
+| Pitch Rate         | Angular velocity around the right (Y) axis            |
+| Yaw Rate           | Angular velocity around the downward (Z) axis         |
+
+## About the Coordinate System
+- **Body Coordinate System (FRD)**: In this system, angular velocity is measured relative to the aircraft's own Forward (X), Right (Y), and Downward (Z) axes, which align with the fuselage of the aircraft.
+
+## About the Unit
+- **Radian per Second (rad/s)**: Angular velocity is measured in radians per second. This unit quantifies the rate at which the drone is rotating about its own body axes.
+
+## Interpreting Angular Velocity Data
+- **Roll Rate**: A positive value indicates a rotation to the right around the drone's longitudinal axis.
+- **Pitch Rate**: A positive value denotes a nose-down rotation around the drone's lateral axis.
+- **Yaw Rate**: A positive value signifies a rotation to the right around the drone's vertical axis.
+
+Understanding the drone's angular velocity in the body frame is essential for maneuvers, orientation control, and the stabilization of the aircraft during flight.
+
+
 # Rotor Speed
 
 This section describes the variation in rotor speed, a critical parameter for understanding and managing the drone's flight dynamics.
