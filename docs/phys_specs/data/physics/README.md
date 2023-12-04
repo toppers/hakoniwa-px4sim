@@ -145,7 +145,7 @@ This section explains the measurement of the drone's angular velocity in the bod
 
 ## Interpreting Angular Velocity Data
 - **Roll Rate**: A positive value indicates a rotation to the right around the drone's longitudinal axis.
-- **Pitch Rate**: A positive value denotes a nose-down rotation around the drone's lateral axis.
+- **Pitch Rate**: A positive value denotes a nose-up rotation around the drone's lateral axis.
 - **Yaw Rate**: A positive value signifies a rotation to the right around the drone's vertical axis.
 
 Understanding the drone's angular velocity in the body frame is essential for maneuvers, orientation control, and the stabilization of the aircraft during flight.
