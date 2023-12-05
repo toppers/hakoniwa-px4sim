@@ -3,6 +3,8 @@
 
 #include "idrone_dynamics.hpp"
 #include <math.h>
+#include <iostream>
+
 namespace hako::assets::drone {
 
 
@@ -82,7 +84,7 @@ private:
     {
         this->position.data.x += src.data.x * this->delta_time_sec;
         this->position.data.y += src.data.y * this->delta_time_sec;
-        this->position.data.z += src.data.y * this->delta_time_sec;
+        this->position.data.z += src.data.z * this->delta_time_sec;
     }
     void integral(DroneAngularVelocityType const src)
     {
@@ -175,6 +177,7 @@ public:
         if (this->position.data.z > 0) {
             this->position.data.z = 0;
             this->velocity.data.z = 0;
+            this->velocityBodyFrame.data.z = 0;
         }        
         this->total_time_sec += this->delta_time_sec;
     }

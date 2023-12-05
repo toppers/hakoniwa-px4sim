@@ -34,7 +34,7 @@ void DroneDynamicsBodyFrame::run_z(const DroneThrustType &thrust, const DroneTor
 
     this->next_velocityBodyFrame.data.z = 
         + this->delta_time_sec * (
-              (thrust.data/this->param_mass)
+            - (thrust.data/this->param_mass)
             + (GRAVITY * cos(this->angle.data.y) * cos(this->angle.data.x))
             - (this->param_drag * this->velocityBodyFrame.data.z))
         + this->velocityBodyFrame.data.z;

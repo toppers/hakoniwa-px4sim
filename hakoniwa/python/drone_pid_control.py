@@ -152,7 +152,7 @@ if __name__ == "__main__":
     Kp_phi = 0.5  # 比例ゲイン
     Ki_phi = 0.01  # 積分ゲイン
     Kd_phi = 0.01  # 微分ゲイン
-    setpoint_phi = 0.2  # 目標ロール角（ラジアン）
+    setpoint_phi = 0.0  # 目標ロール角（ラジアン）
 
     # ロール角用のPIDコントローラの作成
     pid_phi = PID(Kp_phi, Ki_phi, Kd_phi, setpoint=setpoint_phi)
@@ -161,12 +161,12 @@ if __name__ == "__main__":
     Kp_theta = 0.5  # 比例ゲイン
     Ki_theta = 0.01  # 積分ゲイン
     Kd_theta = 0.01  # 微分ゲイン
-    setpoint_theta = 0.2  # 目標ピッチ角（ラジアン）
+    setpoint_theta = 0.0  # 目標ピッチ角（ラジアン）
 
     Kp_psi = 0.5  # 比例ゲイン
     Ki_psi = 0.01  # 積分ゲイン
     Kd_psi = 0.01  # 微分ゲイン
-    setpoint_psi = 0.2  # 目標ヨー角（ラジアン）
+    setpoint_psi = 0.0  # 目標ヨー角（ラジアン）
 
     # thetaとpsiのPIDコントローラの作成
     pid_theta = PID(Kp_theta, Ki_theta, Kd_theta, setpoint=setpoint_theta)
