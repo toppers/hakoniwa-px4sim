@@ -2,6 +2,9 @@
 
 Drone Dynamics encompasses the mathematical and computational models that simulate the physical behavior of a drone during flight. These models incorporate the forces, moments, and kinematic equations that govern the movement of the drone through three-dimensional space. Dynamics are typically analyzed in two reference frames: the Body Frame, which moves with the drone, and the Ground Frame, which is stationary relative to the Earth.
 
+![スクリーンショット 2023-12-05 9 44 22](https://github.com/toppers/hakoniwa-px4sim/assets/164193/3de3616c-cd78-4878-8eb0-98ad2bda9c18)
+
+
 ## BodyFrameDroneDynamics
 
 `BodyFrameDroneDynamics` component models the drone's behavior and motion from the perspective of its own body frame. It accounts for the linear and angular velocities, the impact of the propellers' thrust and torque, and the drone's attitude, which is its orientation in space. The body frame dynamics are essential for direct drone control and for understanding the immediate effects of control inputs on the drone's movement.
