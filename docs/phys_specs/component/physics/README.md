@@ -9,9 +9,10 @@ Drone Dynamics encompasses the mathematical and computational models that simula
 
 `BodyFrameDroneDynamics` component models the drone's behavior and motion from the perspective of its own body frame. It accounts for the linear and angular velocities, the impact of the propellers' thrust and torque, and the drone's attitude, which is its orientation in space. The body frame dynamics are essential for direct drone control and for understanding the immediate effects of control inputs on the drone's movement.
 
-![スクリーンショット 2023-12-05 9 53 33](https://github.com/toppers/hakoniwa-px4sim/assets/164193/5c59bd35-99e3-45cd-b508-85b49e9c0049)
+![スクリーンショット 2023-12-05 11 26 04](https://github.com/toppers/hakoniwa-px4sim/assets/164193/bff0a861-b0ea-43cc-90fd-e9460901aeb9)
 
 * u,v,w are the drone's velocities along its body-frame axes.
+* T is  the thrust produced by the drone's propulsion system.
 * g is the acceleration due to gravity.
 * θ and φ are the pitch and roll angles, respectively.
 * c is the air friction coefficient, affecting the velocity terms.
