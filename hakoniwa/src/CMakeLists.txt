@@ -34,7 +34,7 @@ add_executable(
     threads/px4sim_thread_replay.cpp
     threads/px4sim_thread_capture.cpp
 
-    assets/drone/physics/drone_dynamics.cpp
+    assets/drone/physics/body_frame/drone_dynamics.cpp
 
     utils/hako_params.cpp
     modules/hako_bypass.cpp

@@ -4,7 +4,7 @@
 #include "hako_asset_runner.h"
 #include "../hako/pdu/hako_pdu_data.hpp"
 #include "../hako/runner/hako_px4_master.hpp"
-#include "../assets/drone/physics/drone_dynamics.hpp"
+#include "../assets/drone/physics/body_frame/drone_dynamics.hpp"
 #include <unistd.h>
 #include <memory.h>
 #include <iostream>
