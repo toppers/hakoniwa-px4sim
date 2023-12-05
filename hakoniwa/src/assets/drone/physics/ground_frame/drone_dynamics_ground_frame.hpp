@@ -1,12 +1,12 @@
-#ifndef _DRON_DYNAMICS_HPP_
-#define _DRON_DYNAMICS_HPP_
+#ifndef _DRON_DYNAMICS_GROUND_FRAME_HPP_
+#define _DRON_DYNAMICS_GROUND_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
 
 namespace hako::assets::drone {
 
 
-class DroneDynamics : public hako::assets::drone::IDroneDynamics {
+class DroneDynamicsGroundFrame : public hako::assets::drone::IDroneDynamics {
 private:
     /*
      * parameters
@@ -41,14 +41,14 @@ private:
 
 public:
     // Constructor with zero initialization
-    DroneDynamics(double dt)
+    DroneDynamicsGroundFrame(double dt)
     {
         this->total_time_sec = 0;
         this->delta_time_sec = dt;
         this->param_mass = 1;
         this->param_drag = 0;
     }
-    virtual ~DroneDynamics() {}
+    virtual ~DroneDynamicsGroundFrame() {}
 
     void set_mass(double mass)
     {
@@ -126,4 +126,4 @@ public:
 }
 
 
-#endif /* _DRON_DYNAMICS_HPP_ */
+#endif /* _DRON_DYNAMICS_GROUND_FRAME_HPP_ */

@@ -1,4 +1,4 @@
-#include "drone_dynamics.hpp"
+#include "drone_dynamics_body_frame.hpp"
 #include <math.h>
 
 using hako::assets::drone::DroneDynamicsBodyFrame;

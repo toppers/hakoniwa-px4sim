@@ -4,7 +4,8 @@
 #include "hako_asset_runner.h"
 #include "../hako/pdu/hako_pdu_data.hpp"
 #include "../hako/runner/hako_px4_master.hpp"
-#include "../assets/drone/physics/ground_frame/drone_dynamics.hpp"
+#include "../assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
+#include "../assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include <unistd.h>
 #include <memory.h>
 #include <iostream>
@@ -20,8 +21,8 @@
 #define HAKO_ROBO_NAME "px4sim"
 
 static void asset_runner();
-//using hako::assets::drone::DroneDynamicsBodyFrame;
-using hako::assets::drone::DroneDynamics;
+using hako::assets::drone::DroneDynamicsBodyFrame;
+using hako::assets::drone::DroneDynamicsGroundFrame;
 using hako::assets::drone::IDroneDynamics;
 
 void hako_phys_main()
@@ -48,8 +49,8 @@ static IDroneDynamics *drone_dynamics = nullptr;
 
 static void my_setup()
 {
-    //drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
-    drone_dynamics = new DroneDynamics(HAKO_RUNNER_DELTA_TIME_SEC);
+    drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
+    //drone_dynamics = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
     drone_dynamics->set_drag(HAKO_PHYS_DRAG);
 

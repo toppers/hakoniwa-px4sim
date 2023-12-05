@@ -1,5 +1,5 @@
-#ifndef _DRON_DYNAMICS_HPP_
-#define _DRON_DYNAMICS_HPP_
+#ifndef _DRON_DYNAMICS_BODY_FRAME_HPP_
+#define _DRON_DYNAMICS_BODY_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
 #include <math.h>
@@ -183,4 +183,4 @@ public:
 }
 
 
-#endif /* _DRON_DYNAMICS_HPP_ */
+#endif /* _DRON_DYNAMICS_BODY_FRAME_HPP_ */
