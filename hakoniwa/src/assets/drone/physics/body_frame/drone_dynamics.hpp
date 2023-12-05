@@ -13,6 +13,9 @@ private:
      */
     double param_mass;
     double param_drag;
+    double param_cx;
+    double param_cy;
+    double param_cz;
     /*
      * internal state
      */
@@ -28,6 +31,8 @@ private:
 
     DroneVelocityBodyFrameType velocityBodyFrame;
     DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
+    DroneVelocityBodyFrameType next_velocityBodyFrame;
+    DroneAngularVelocityBodyFrameType next_angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -47,6 +52,9 @@ public:
         this->delta_time_sec = dt;
         this->param_mass = 1;
         this->param_drag = 0;
+        this->param_cx = 1;
+        this->param_cy = 1;
+        this->param_cz = 1;
     }
     virtual ~DroneDynamicsBodyFrame() {}
 
@@ -107,6 +115,9 @@ public:
         run_rx(thrust, torque);
         run_ry(thrust, torque);
         run_rz(thrust, torque);
+
+        this->velocityBodyFrame = this->next_velocityBodyFrame;
+        this->angularVelocityBodyFrame = this->next_angularVelocityBodyFrame;
 
         //boundary condition
         if (this->next_position.data.z > 0) {
