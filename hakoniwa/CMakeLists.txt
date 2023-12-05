@@ -25,5 +25,9 @@ message(STATUS "HAKO_CLIENT_OPTION_FILEPATH" ${HAKO_CLIENT_OPTION_FILEPATH})
 message(STATUS "BUILD_TYPE" ${BUILD_TYPE})
 message(STATUS "GCOV" ${GCOV})
 
+if (DO_TEST)
+    add_subdirectory(test)
+endif()
+
 add_subdirectory(third-party/hakoniwa-core-cpp-client)
 add_subdirectory(src)
