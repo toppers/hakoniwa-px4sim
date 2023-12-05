@@ -32,12 +32,12 @@ private:
     double delta_time_sec;
     double total_time_sec;
 
-    void run_x(const DroneThrustype &thrust, const DroneTorqueType &torque);
-    void run_y(const DroneThrustype &thrust, const DroneTorqueType &torque);
-    void run_z(const DroneThrustype &thrust, const DroneTorqueType &torque);
-    void run_rx(const DroneThrustype &thrust, const DroneTorqueType &torque);
-    void run_ry(const DroneThrustype &thrust, const DroneTorqueType &torque);
-    void run_rz(const DroneThrustype &thrust, const DroneTorqueType &torque);
+    void run_x(const DroneThrustType &thrust, const DroneTorqueType &torque);
+    void run_y(const DroneThrustType &thrust, const DroneTorqueType &torque);
+    void run_z(const DroneThrustType &thrust, const DroneTorqueType &torque);
+    void run_rx(const DroneThrustType &thrust, const DroneTorqueType &torque);
+    void run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque);
+    void run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque);
 
 public:
     // Constructor with zero initialization
@@ -99,7 +99,7 @@ public:
     }
 
     // Implementation for the run function is required
-    void run(DroneThrustype &thrust, DroneTorqueType &torque) override 
+    void run(DroneThrustType &thrust, DroneTorqueType &torque) override 
     {
         run_x(thrust, torque);
         run_y(thrust, torque);

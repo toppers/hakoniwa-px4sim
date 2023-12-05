@@ -101,7 +101,7 @@ typedef struct {
  */
 typedef struct {
     double data;
-} DroneThrustype;
+} DroneThrustType;
 
 /*
  * Unit: Newton-meter (Nm)

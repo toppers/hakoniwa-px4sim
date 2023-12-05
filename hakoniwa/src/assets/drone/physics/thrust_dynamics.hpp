@@ -13,7 +13,7 @@ private:
     double param_A;
     double param_B;
     double param_Jr;
-    DroneThrustype thrust;
+    DroneThrustType thrust;
     DroneTorqueType torque;
     double counter_torque[ROTOR_NUM];
     double T[ROTOR_NUM];
@@ -87,7 +87,7 @@ public:
             this->rotor_config[i] = rotor_config[i];
         }
     }
-    void set_thrust(const DroneThrustype &thrust) override 
+    void set_thrust(const DroneThrustType &thrust) override 
     {
         this->thrust = thrust;
     }
@@ -96,7 +96,7 @@ public:
         this->torque = torque;
     }
 
-    DroneThrustype get_thrust() const override
+    DroneThrustType get_thrust() const override
     {
         return this->thrust;
     }

@@ -3,7 +3,7 @@
 
 using hako::assets::drone::DroneDynamicsBodyFrame;
 
-void DroneDynamicsBodyFrame::run_x(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_x(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     (void)torque;
@@ -16,7 +16,7 @@ void DroneDynamicsBodyFrame::run_x(const DroneThrustype &thrust, const DroneTorq
     return;
 }
 
-void DroneDynamicsBodyFrame::run_y(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_y(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     (void)torque;
@@ -28,7 +28,7 @@ void DroneDynamicsBodyFrame::run_y(const DroneThrustype &thrust, const DroneTorq
         + this->velocityBodyFrame.data.y;
 }
 
-void DroneDynamicsBodyFrame::run_z(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_z(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)torque;
 
@@ -40,7 +40,7 @@ void DroneDynamicsBodyFrame::run_z(const DroneThrustype &thrust, const DroneTorq
         + this->velocityBodyFrame.data.z;
 }
 
-void DroneDynamicsBodyFrame::run_rx(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_rx(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     this->next_angularVelocityBodyFrame.data.x = 
@@ -48,7 +48,7 @@ void DroneDynamicsBodyFrame::run_rx(const DroneThrustype &thrust, const DroneTor
             + this->angularVelocityBodyFrame.data.x;
 }
 
-void DroneDynamicsBodyFrame::run_ry(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     this->next_angularVelocityBodyFrame.data.y = 
@@ -56,7 +56,7 @@ void DroneDynamicsBodyFrame::run_ry(const DroneThrustype &thrust, const DroneTor
             + this->angularVelocityBodyFrame.data.y;
 }
 
-void DroneDynamicsBodyFrame::run_rz(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     this->next_angularVelocityBodyFrame.data.z = 

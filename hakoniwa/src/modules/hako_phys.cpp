@@ -74,7 +74,7 @@ static void do_io_write()
 
 static void my_task()
 {
-    DroneThrustype thrust;
+    DroneThrustType thrust;
     DroneTorqueType torque;
     {
         Hako_Twist control;
