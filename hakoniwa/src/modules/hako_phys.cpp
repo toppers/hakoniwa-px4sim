@@ -20,7 +20,8 @@
 #define HAKO_ROBO_NAME "px4sim"
 
 static void asset_runner();
-using hako::assets::drone::DroneDynamics;
+using hako::assets::drone::DroneDynamicsBodyFrame;
+using hako::assets::drone::IDroneDynamics;
 
 void hako_phys_main()
 {
@@ -42,11 +43,11 @@ void hako_phys_main()
     return;
 }
 
-static DroneDynamics *drone_dynamics = nullptr;
+static IDroneDynamics *drone_dynamics = nullptr;
 
 static void my_setup()
 {
-    drone_dynamics = new DroneDynamics(HAKO_RUNNER_DELTA_TIME_SEC);
+    drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
     drone_dynamics->set_drag(HAKO_PHYS_DRAG);
 

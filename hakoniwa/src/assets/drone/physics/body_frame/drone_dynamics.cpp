@@ -1,9 +1,9 @@
 #include "drone_dynamics.hpp"
 #include <math.h>
 
-using hako::assets::drone::DroneDynamics;
+using hako::assets::drone::DroneDynamicsBodyFrame;
 
-void DroneDynamics::run_x(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_x(const DroneThrustype &thrust, const DroneTorqueType &torque) 
 {
     (void)torque;
 
@@ -17,7 +17,7 @@ void DroneDynamics::run_x(const DroneThrustype &thrust, const DroneTorqueType &t
     return;
 }
 
-void DroneDynamics::run_y(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_y(const DroneThrustype &thrust, const DroneTorqueType &torque) 
 {
     (void)torque;
 
@@ -30,7 +30,7 @@ void DroneDynamics::run_y(const DroneThrustype &thrust, const DroneTorqueType &t
     this->next_position.data.y = (this->velocity.data.y * this->delta_time_sec) + this->position.data.y;
 }
 
-void DroneDynamics::run_z(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_z(const DroneThrustype &thrust, const DroneTorqueType &torque) 
 {
     (void)torque;
 
@@ -42,21 +42,21 @@ void DroneDynamics::run_z(const DroneThrustype &thrust, const DroneTorqueType &t
     this->next_position.data.z = (this->velocity.data.z * this->delta_time_sec) + this->position.data.z;
 }
 
-void DroneDynamics::run_rx(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_rx(const DroneThrustype &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     this->next_angularVelocity.data.x = (torque.data.x * this->delta_time_sec) + this->angularVelocity.data.x;
     this->next_angle.data.x           = (this->angularVelocity.data.x * this->delta_time_sec) + this->angle.data.x;
 }
 
-void DroneDynamics::run_ry(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_ry(const DroneThrustype &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     this->next_angularVelocity.data.y = (torque.data.y * this->delta_time_sec) + this->angularVelocity.data.y;
     this->next_angle.data.y           = (this->angularVelocity.data.y * this->delta_time_sec) + this->angle.data.y;
 }
 
-void DroneDynamics::run_rz(const DroneThrustype &thrust, const DroneTorqueType &torque) 
+void DroneDynamicsBodyFrame::run_rz(const DroneThrustype &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
     this->next_angularVelocity.data.z = (torque.data.z * this->delta_time_sec) + this->angularVelocity.data.z;

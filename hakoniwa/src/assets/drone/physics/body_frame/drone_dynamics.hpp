@@ -6,7 +6,7 @@
 namespace hako::assets::drone {
 
 
-class DroneDynamics : public hako::assets::drone::IDroneDynamics {
+class DroneDynamicsBodyFrame : public hako::assets::drone::IDroneDynamics {
 private:
     /*
      * parameters
@@ -16,15 +16,18 @@ private:
     /*
      * internal state
      */
-    DronePositionType position;           // Initialized to zero by default (glm::dvec3)
-    DroneVelocityType velocity;           // Initialized to zero by default (glm::dvec3)
-    DroneAngleType angle;                 // Initialized to zero by default (glm::dvec3)
-    DroneAngularVelocityType angularVelocity; // Initialized to zero by default (glm::dvec3)
+    DronePositionType position;
+    DroneVelocityType velocity;
+    DroneAngleType angle;
+    DroneAngularVelocityType angularVelocity;
 
-    DronePositionType next_position;           // Initialized to zero by default (glm::dvec3)
-    DroneVelocityType next_velocity;           // Initialized to zero by default (glm::dvec3)
-    DroneAngleType next_angle;                 // Initialized to zero by default (glm::dvec3)
-    DroneAngularVelocityType next_angularVelocity; // Initialized to zero by default (glm::dvec3)
+    DronePositionType next_position;
+    DroneVelocityType next_velocity;
+    DroneAngleType next_angle;
+    DroneAngularVelocityType next_angularVelocity;
+
+    DroneVelocityBodyFrameType velocityBodyFrame;
+    DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -38,20 +41,20 @@ private:
 
 public:
     // Constructor with zero initialization
-    DroneDynamics(double dt)
+    DroneDynamicsBodyFrame(double dt)
     {
         this->total_time_sec = 0;
         this->delta_time_sec = dt;
         this->param_mass = 1;
         this->param_drag = 0;
     }
-    virtual ~DroneDynamics() {}
+    virtual ~DroneDynamicsBodyFrame() {}
 
     void set_mass(double mass)
     {
         this->param_mass = mass;
     }
-    void set_drag(double drag)
+    void set_drag(double drag) override
     {
         this->param_drag = drag;
     }
@@ -87,6 +90,12 @@ public:
 
     DroneAngularVelocityType get_angular_vel() const override {
         return angularVelocity;
+    }
+    DroneVelocityBodyFrameType get_vel_body_frame() const override {
+        return velocityBodyFrame;
+    }
+    DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
+        return angularVelocityBodyFrame;
     }
 
     // Implementation for the run function is required

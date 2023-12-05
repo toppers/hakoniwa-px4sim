@@ -26,6 +26,9 @@ private:
     DroneAngleType next_angle;                 // Initialized to zero by default (glm::dvec3)
     DroneAngularVelocityType next_angularVelocity; // Initialized to zero by default (glm::dvec3)
 
+    DroneVelocityBodyFrameType velocityBodyFrame;
+    DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
+
     double delta_time_sec;
     double total_time_sec;
 
@@ -51,7 +54,7 @@ public:
     {
         this->param_mass = mass;
     }
-    void set_drag(double drag)
+    void set_drag(double drag) override
     {
         this->param_drag = drag;
     }
@@ -87,6 +90,12 @@ public:
 
     DroneAngularVelocityType get_angular_vel() const override {
         return angularVelocity;
+    }
+    DroneVelocityBodyFrameType get_vel_body_frame() const override {
+        return velocityBodyFrame;
+    }
+    DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
+        return angularVelocityBodyFrame;
     }
 
     // Implementation for the run function is required
