@@ -2,7 +2,7 @@
 
 This architectural diagram represents the simulation configuration of a drone, including the PX4 platform and related sensors and actuators. Each component processes a specific type of data and passes this data to other parts within the system. This interaction simulates the real-world operation of the drone.
 
-![スクリーンショット 2023-11-26 12 50 03](https://github.com/toppers/hakoniwa-px4sim/assets/164193/7ff9b640-b23b-4083-b82c-8a5833fc6145)
+![スクリーンショット 2023-12-05 9 45 49](https://github.com/toppers/hakoniwa-px4sim/assets/164193/dff76773-3f51-4fbd-a4a1-948ec4621754)
 
 
 Here is a table summarizing the input/output data and overview of each component in the aforementioned architecture.
