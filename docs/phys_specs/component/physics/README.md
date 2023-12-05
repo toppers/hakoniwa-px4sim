@@ -1,35 +1,15 @@
 # Drone Dynamics
 
-The following equations describe the motion of a drone, considering a system with six degrees of freedom. These equations account for the drone's position in 3D space (x, y, z) and its orientation (roll (φ), pitch (θ), and yaw (ψ)). The motion is influenced by the drone's thrust, mass, attitude, and air resistance. The equations are:
+Drone Dynamics encompasses the mathematical and computational models that simulate the physical behavior of a drone during flight. These models incorporate the forces, moments, and kinematic equations that govern the movement of the drone through three-dimensional space. Dynamics are typically analyzed in two reference frames: the Body Frame, which moves with the drone, and the Ground Frame, which is stationary relative to the Earth.
 
-<img width="464" alt="スクリーンショット 2023-12-01 7 19 07" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/3f101a80-df0a-4122-b6ed-e8ba8a927a59">
+## BodyFrameDroneDynamics
 
-The equations are an aeronautical coordinate system.
+`BodyFrameDroneDynamics` component models the drone's behavior and motion from the perspective of its own body frame. It accounts for the linear and angular velocities, the impact of the propellers' thrust and torque, and the drone's attitude, which is its orientation in space. The body frame dynamics are essential for direct drone control and for understanding the immediate effects of control inputs on the drone's movement.
 
-## Explanation of the Drone Equations
+## GroundFrameVelocityConverter
 
-1. **X-Axis Acceleration**:
-   - Represents acceleration along the drone's x-axis.
-   - Dependent on the thrust ( u ), drone's mass ( m ), its attitude (roll (φ) and pitch (θ)), and air resistance coefficient ( c ).
+`GroundFrameVelocityConverter` is tasked with translating the drone's velocity vectors and angular velocities from the body frame to the ground frame. This transformation is essential for navigation and control, allowing for the drone's movement to be interpreted and managed in relation to the Earth. This facilitates essential functions such as waypoint navigation, collision avoidance, and maintaining a stable hover.
 
-2. **Y-Axis Acceleration**:
-   - Represents acceleration along the y-axis.
-   - Influenced by similar factors as the x-axis acceleration.
+## Integrator
 
-3. **Z-Axis Acceleration**:
-   - Represents vertical (z-axis) acceleration.
-   - Includes the effect of gravity ( g ) along with thrust and attitude, and air resistance coefficient ( c ).
-
-4. **Roll Angle Acceleration**:
-   - Describes the acceleration of the roll angle (φ).
-   - Controlled by the torque ( τφ ).
-
-5. **Pitch Angle Acceleration**:
-   - Describes the acceleration of the pitch angle (θ).
-   - Dependent on the torque ( τθ ).
-
-6. **Yaw Angle Acceleration**:
-   - Describes the acceleration of the yaw angle (ψ).
-   - Influenced by the torque ( τψ ).
-
-These equations are fundamental for understanding and controlling the motion of a drone, particularly in tasks involving attitude control and trajectory planning.
+The `Integrator` function numerically integrates time-dependent variables, such as velocity to determine position, or angular velocity to ascertain orientation angles. Within drone dynamics, it is utilized to compile incremental changes over time, thereby updating the drone's state, including its position and orientation in the ground coordinate frame. This continuous integration is crucial for plotting the drone's trajectory and for the feedback control systems that depend on the knowledge of the drone's historical path.
