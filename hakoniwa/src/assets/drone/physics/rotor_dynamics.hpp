@@ -38,7 +38,9 @@ public:
     }
     DroneRotorSpeedType get_rotor_speed() const override
     {
-        return this->speed;
+        DroneRotorSpeedType value;
+        value.data = this->speed.data * this->param_rpm_max;
+        return value;
     }
 
     void run(double control) override
