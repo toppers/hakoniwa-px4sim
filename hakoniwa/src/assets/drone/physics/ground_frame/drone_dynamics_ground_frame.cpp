@@ -7,10 +7,10 @@ void DroneDynamicsGroundFrame::run_x(const DroneThrustType &thrust, const DroneT
 {
     (void)torque;
 
-    this->next_velocity.data.x = 
-        ( - (thrust.data * this->delta_time_sec) /  this->param_mass ) * 
-        (     cos(this->angle.data.x) * sin(this->angle.data.y) * cos(this->angle.data.z) 
-            + sin(this->angle.data.x) * sin(this->angle.data.z) 
+    this->next_velocity.data.x =
+        this->delta_time_sec *  
+        ( 
+            - (thrust.data /  this->param_mass ) *  ( cos(this->angle.data.x) * sin(this->angle.data.y) * cos(this->angle.data.z) + sin(this->angle.data.x) * sin(this->angle.data.z) )
             - this->param_drag * this->velocity.data.x
         ) 
         +
@@ -25,11 +25,11 @@ void DroneDynamicsGroundFrame::run_y(const DroneThrustType &thrust, const DroneT
     (void)torque;
 
     this->next_velocity.data.y = 
-        ( - (thrust.data * this->delta_time_sec) /  this->param_mass ) * 
-            (     cos(this->angle.data.x) * sin(this->angle.data.y) * sin(this->angle.data.z) 
-                - sin(this->angle.data.x) * cos(this->angle.data.z) 
-                - this->param_drag * this->velocity.data.y
-            ) 
+        this->delta_time_sec *  
+        ( 
+            - (thrust.data /  this->param_mass ) * ( cos(this->angle.data.x) * sin(this->angle.data.y) * sin(this->angle.data.z) - sin(this->angle.data.x) * cos(this->angle.data.z) )
+            - this->param_drag * this->velocity.data.y
+        ) 
         +
         this->velocity.data.y;
 
