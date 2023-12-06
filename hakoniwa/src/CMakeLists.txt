@@ -37,6 +37,8 @@ add_executable(
     assets/drone/physics/body_frame/drone_dynamics_body_frame.cpp
     assets/drone/physics/ground_frame/drone_dynamics_ground_frame.cpp
 
+    assets/drone/controller/drone_pid_control.cpp
+
     utils/hako_params.cpp
     modules/hako_bypass.cpp
     modules/hako_phys.cpp
