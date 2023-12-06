@@ -101,6 +101,7 @@ public:
     // Implementation for the run function is required
     void run(DroneThrustType &thrust, DroneTorqueType &torque) override 
     {
+        this->cache = drone_phys_calc_cache(this->angle);
         run_x(thrust, torque);
         run_y(thrust, torque);
         run_z(thrust, torque);

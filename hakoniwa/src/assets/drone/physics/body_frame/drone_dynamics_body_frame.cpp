@@ -10,7 +10,7 @@ void DroneDynamicsBodyFrame::run_x(const DroneThrustType &thrust, const DroneTor
 
     this->next_velocityBodyFrame.data.x = 
         this->delta_time_sec * (
-            - GRAVITY * sin(this->angle.data.y) 
+            - GRAVITY * this->cache.sin_theta 
             - (this->param_drag * this->velocityBodyFrame.data.x))
         + this->velocityBodyFrame.data.x;
     return;
@@ -23,7 +23,7 @@ void DroneDynamicsBodyFrame::run_y(const DroneThrustType &thrust, const DroneTor
 
     this->next_velocityBodyFrame.data.y = 
         this->delta_time_sec * (
-            GRAVITY * cos(this->angle.data.y) * sin(this->angle.data.x) 
+            GRAVITY * this->cache.cos_theta * this->cache.sin_phi 
             - (this->param_drag * this->velocityBodyFrame.data.y))
         + this->velocityBodyFrame.data.y;
 }
@@ -35,7 +35,7 @@ void DroneDynamicsBodyFrame::run_z(const DroneThrustType &thrust, const DroneTor
     this->next_velocityBodyFrame.data.z = 
         + this->delta_time_sec * (
             - (thrust.data/this->param_mass)
-            + (GRAVITY * cos(this->angle.data.y) * cos(this->angle.data.x))
+            + (GRAVITY * this->cache.cos_theta * this->cache.cos_phi)
             - (this->param_drag * this->velocityBodyFrame.data.z))
         + this->velocityBodyFrame.data.z;
 }

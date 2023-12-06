@@ -44,12 +44,12 @@ private:
     DroneVelocityType convert(DroneVelocityBodyFrameType const src)
     {
         DroneVelocityType earthFrameVelocity;
-        double cos_phi = cos(this->angle.data.x);
-        double cos_theta = cos(this->angle.data.y);
-        double cos_psi = cos(this->angle.data.z);
-        double sin_phi = sin(this->angle.data.x);
-        double sin_theta = sin(this->angle.data.y);
-        double sin_psi = sin(this->angle.data.z);
+        const double cos_phi = this->cache.cos_phi;
+        const double cos_theta = this->cache.cos_theta;
+        const double cos_psi = this->cache.cos_psi;
+        const double sin_phi = this->cache.sin_phi;
+        const double sin_theta = this->cache.sin_theta;
+        const double sin_psi = this->cache.sin_psi;
 
         earthFrameVelocity.data.x = cos_theta * cos_psi * src.data.x +
                                     (sin_phi * sin_theta * cos_psi - cos_phi * sin_psi) * src.data.y +
@@ -69,10 +69,10 @@ private:
     DroneAngularVelocityType convert(DroneAngularVelocityBodyFrameType const src)
     {
         DroneAngularVelocityType eulerRate;
-        double sin_phi = sin(this->angle.data.x);
-        double cos_phi = cos(this->angle.data.x);
-        double tan_theta = tan(this->angle.data.y);
-        double sec_theta = 1 / cos(this->angle.data.y); // sec is the reciprocal of cos
+        const double sin_phi = this->cache.sin_phi;
+        const double cos_phi = this->cache.cos_phi;
+        const double tan_theta = this->cache.tan_theta;
+        const double sec_theta = this->cache.sec_theta;
 
         eulerRate.data.x = src.data.x + sin_phi * tan_theta * src.data.y + cos_phi * tan_theta * src.data.z;
         eulerRate.data.y = cos_phi * src.data.y - sin_phi * src.data.z;
@@ -158,6 +158,7 @@ public:
     // Implementation for the run function is required
     void run(DroneThrustType &thrust, DroneTorqueType &torque) override 
     {
+        this->cache = drone_phys_calc_cache(this->angle);
         run_x(thrust, torque);
         run_y(thrust, torque);
         run_z(thrust, torque);
