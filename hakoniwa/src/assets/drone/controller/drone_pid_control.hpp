@@ -1,7 +1,7 @@
 #ifndef _DRONE_PID_CONTROL_HPP_
 #define _DRONE_PID_CONTROL_HPP_
 
-//#define DRONE_PID_CONTROL_CPP
+#define DRONE_PID_CONTROL_CPP
 
 #include <iostream>
 #include <string>
