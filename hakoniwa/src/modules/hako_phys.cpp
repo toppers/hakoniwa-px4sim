@@ -45,14 +45,16 @@ void hako_phys_main()
     return;
 }
 
-static IDroneDynamics *drone_dynamics = nullptr;
+static IDroneDynamics *drone_dynamics_ground = nullptr;
+static IDroneDynamics *drone_dynamics_body = nullptr;
 
 static void my_setup()
 {
-    drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
-    //drone_dynamics = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
+    drone_dynamics_ground = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
+    drone_dynamics_body = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics->set_drag(HAKO_PHYS_DRAG);
+    drone_dynamics_ground->set_drag(HAKO_PHYS_DRAG);
+    drone_dynamics_body->set_drag(HAKO_PHYS_DRAG);
 
     std::cout << "INFO: setup done" << std::endl;
     return;
@@ -62,8 +64,8 @@ static void do_io_write()
 {
     Hako_Twist pos;
 
-    DronePositionType dpos = drone_dynamics->get_pos();
-    DroneAngleType dangle = drone_dynamics->get_angle();
+    DronePositionType dpos = drone_dynamics_body->get_pos();
+    DroneAngleType dangle = drone_dynamics_body->get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;
@@ -72,6 +74,22 @@ static void do_io_write()
     pos.angular.z = dangle.data.z;
     if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_POS, (const char*)&pos, sizeof(pos))) {
         std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
+    }
+}
+
+#define POSITION_DIFF_MAX   0.1
+static void cross_check_position(void)
+{
+    const DronePositionType ground_pos = drone_dynamics_ground->get_pos();
+    const DronePositionType body_pos = drone_dynamics_body->get_pos();
+    if (std::abs(ground_pos.data.x - body_pos.data.x) > POSITION_DIFF_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR ground_x: " << ground_pos.data.x << " body_x: " << body_pos.data.x << std::endl;
+    }
+    if (std::abs(ground_pos.data.y - body_pos.data.y) > POSITION_DIFF_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR ground_y: " << ground_pos.data.y << " body_y: " << body_pos.data.y << std::endl;
+    }
+    if (std::abs(ground_pos.data.z - body_pos.data.z) > POSITION_DIFF_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR ground_z: " << ground_pos.data.z << " body_z: " << body_pos.data.z << std::endl;
     }
 }
 
@@ -91,7 +109,9 @@ static void my_task()
         torque.data.y = control.angular.y;
         torque.data.z = control.angular.z;
     }
-    drone_dynamics->run(thrust, torque);
+    drone_dynamics_ground->run(thrust, torque);
+    drone_dynamics_body->run(thrust, torque);
+    cross_check_position();
     do_io_write();
     return;
 }
