@@ -77,19 +77,34 @@ static void do_io_write()
     }
 }
 
-#define POSITION_DIFF_MAX   0.1
+#define POSITION_DIFF_POS_MAX   0.1
+#define POSITION_DIFF_ANG_MAX   0.1
 static void cross_check_position(void)
 {
     const DronePositionType ground_pos = drone_dynamics_ground->get_pos();
     const DronePositionType body_pos = drone_dynamics_body->get_pos();
-    if (std::abs(ground_pos.data.x - body_pos.data.x) > POSITION_DIFF_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR ground_x: " << ground_pos.data.x << " body_x: " << body_pos.data.x << std::endl;
+    if (std::abs(ground_pos.data.x - body_pos.data.x) > POSITION_DIFF_POS_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR<Pos> ground_x: " << ground_pos.data.x << " body_x: " << body_pos.data.x << std::endl;
     }
-    if (std::abs(ground_pos.data.y - body_pos.data.y) > POSITION_DIFF_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR ground_y: " << ground_pos.data.y << " body_y: " << body_pos.data.y << std::endl;
+    if (std::abs(ground_pos.data.y - body_pos.data.y) > POSITION_DIFF_POS_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR<Pos> ground_y: " << ground_pos.data.y << " body_y: " << body_pos.data.y << std::endl;
     }
-    if (std::abs(ground_pos.data.z - body_pos.data.z) > POSITION_DIFF_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR ground_z: " << ground_pos.data.z << " body_z: " << body_pos.data.z << std::endl;
+    if (std::abs(ground_pos.data.z - body_pos.data.z) > POSITION_DIFF_POS_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR<Pos> ground_z: " << ground_pos.data.z << " body_z: " << body_pos.data.z << std::endl;
+    }
+}
+static void cross_check_angle(void)
+{
+    const DroneAngleType ground_angle = drone_dynamics_ground->get_angle();
+    const DroneAngleType body_angle = drone_dynamics_body->get_angle();
+    if (std::abs(ground_angle.data.x - body_angle.data.x) > POSITION_DIFF_ANG_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR<Angle> ground_x: " << ground_angle.data.x << " body_x: " << body_angle.data.x << std::endl;
+    }
+    if (std::abs(ground_angle.data.y - body_angle.data.y) > POSITION_DIFF_ANG_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR<Angle> ground_y: " << ground_angle.data.y << " body_y: " << body_angle.data.y << std::endl;
+    }
+    if (std::abs(ground_angle.data.z - body_angle.data.z) > POSITION_DIFF_ANG_MAX) {
+        std::cerr << "WARNING: CROSS_CHECK ERROR<Angle> ground_z: " << ground_angle.data.z << " body_z: " << body_angle.data.z << std::endl;
     }
 }
 
@@ -112,6 +127,7 @@ static void my_task()
     drone_dynamics_ground->run(thrust, torque);
     drone_dynamics_body->run(thrust, torque);
     cross_check_position();
+    cross_check_angle();
     do_io_write();
     return;
 }
