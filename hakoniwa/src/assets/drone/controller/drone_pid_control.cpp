@@ -18,11 +18,11 @@ void drone_pid_control_init()
 {
     // PIDコントローラのパラメータ設定
     // ここでは例として固定値を使用していますが、実際には設定ファイルやコマンドライン引数から読み込むことを推奨します。
-    double Kp_height = 1.0, Ki_height = 0.0, Kd_height = 0.01;
+    double Kp_height = 1.0, Ki_height = 0.01, Kd_height = 0.01;
     double setpoint_height = 10.0;  // 目標高さ
 
-    double Kp_phi = 0.5, Ki_phi = 0.01, Kd_phi = 0.01;
-    double setpoint_phi = 0.0;  // 目標ロール角
+    double Kp_phi = 0.5, Ki_phi = 0.01, Kd_phi = 100;
+    double setpoint_phi = 0.2;  // 目標ロール角
 
     double Kp_theta = 0.5, Ki_theta = 0.01, Kd_theta = 0.01;
     double setpoint_theta = 0.0;  // 目標ピッチ角
@@ -94,6 +94,7 @@ void drone_pid_control_run()
     current_time += DELTA_TIME;
     if ((current_time - last_time) > 1) {
         std::cout << "T: " << current_time <<  "U: " << height_output << " H: " << height_input << std::endl;
+        std::cout << "T: " << current_time <<  "Tx: " << phi_output << " Phi: " << phi_input << std::endl;
         last_time = current_time;
     }
 

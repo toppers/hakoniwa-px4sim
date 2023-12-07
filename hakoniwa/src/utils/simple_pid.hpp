@@ -2,6 +2,7 @@
 #define _SIMPLE_PID_HPP_
 
 #include <iostream>
+#define SIMPLE_PID_INUM 10
 
 class PID {
 private:
@@ -14,6 +15,9 @@ private:
     double prev_error; // 前回の誤差
     bool first_time; // 初回フラグ
 
+    int i_inx = 0;
+    int i_num = 0;
+    double i_values[SIMPLE_PID_INUM];
 public:
     // コンストラクタ
     PID(double Kp, double Ki, double Kd, double setpoint)
@@ -27,11 +31,23 @@ public:
     // PID制御を行うメソッド
     double calculate(double input) {
         double error = setpoint - input;
-        integral += error;
+        i_values[i_inx++] = error;
+
         double derivative = (first_time) ? 0.0 : error - prev_error;
         first_time = false;
         prev_error = error;
 
+        if (i_num < SIMPLE_PID_INUM) {
+            i_num++;
+        }
+        if (i_inx >= SIMPLE_PID_INUM) {
+            i_inx = 0;
+        }
+        double integral = 0;
+        for (int i = 0; i < i_num; i++) {
+            integral += i_values[i];
+        }
+        //integral = integral / i_num;
         return Kp * error + Ki * integral + Kd * derivative;
     }
 
