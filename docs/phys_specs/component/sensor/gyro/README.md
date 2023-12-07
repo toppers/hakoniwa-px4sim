@@ -2,7 +2,7 @@
 
 ## Input 
 
-* [AngularVelocity](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angularvelocity)
+* [AngularVelocity](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angular-velocity-in-body-coordinate-system)
 * [Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle)
 
 ## Output
@@ -23,10 +23,8 @@ The integration of zero-mean noise is crucial for ensuring that simulated gyrosc
 
 ## Operational Details
 
-![スクリーンショット 2023-11-26 7 30 57](https://github.com/toppers/hakoniwa-px4sim/assets/164193/b87f8101-e137-4635-a6dc-9ea1ba1a0afd)
+<img width="760" alt="スクリーンショット 2023-12-08 6 09 39" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/352f7875-f690-4a7c-a18d-13d188002a21">
 
-
-- **Data Transformation and Coordinate System**: Angular velocity data in the NED coordinate system is transformed into the drone's body coordinate system, taking into account the drone's current orientation.
 - **Noise Integration**: Noise characterized by a zero mean and defined variance is integrated into the gyroscope data to simulate the random inaccuracies and variations found in real-world sensors, without introducing directional bias.
 
 These operational details ensure that the simulated gyroscope data is realistic and provides an essential tool for assessing the drone's orientation and rotational behavior under actual flight conditions.
