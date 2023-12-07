@@ -41,7 +41,7 @@ private:
     void run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque);
     void run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque);
 
-    DroneVelocityType convert(DroneVelocityBodyFrameType const src)
+    DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
         DroneVelocityType earthFrameVelocity;
         const double cos_phi = this->cache.cos_phi;
@@ -66,7 +66,7 @@ private:
         return earthFrameVelocity;
     }
 
-    DroneAngularVelocityType convert(DroneAngularVelocityBodyFrameType const src)
+    DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
     {
         DroneAngularVelocityType eulerRate;
         const double sin_phi = this->cache.sin_phi;
@@ -80,13 +80,13 @@ private:
 
         return eulerRate;
     }
-    void integral(DroneVelocityType const src)
+    void integral(const DroneVelocityType& src)
     {
         this->position.data.x += src.data.x * this->delta_time_sec;
         this->position.data.y += src.data.y * this->delta_time_sec;
         this->position.data.z += src.data.z * this->delta_time_sec;
     }
-    void integral(DroneAngularVelocityType const src)
+    void integral(const DroneAngularVelocityType& src)
     {
         this->angle.data.x += src.data.x * this->delta_time_sec;
         this->angle.data.y += src.data.y * this->delta_time_sec;
@@ -116,19 +116,19 @@ public:
         this->param_drag = drag;
     }
     // Setters
-    void set_pos(DronePositionType &pos) override {
+    void set_pos(const DronePositionType &pos) override {
         position = pos;
     }
 
-    void set_vel(DroneVelocityType &vel) override {
+    void set_vel(const DroneVelocityType &vel) override {
         velocity = vel;
     }
 
-    void set_angle(DroneAngleType &ang) override {
+    void set_angle(const DroneAngleType &ang) override {
         angle = ang;
     }
 
-    void set_angular_vel(DroneAngularVelocityType &angularVel) override {
+    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -156,7 +156,7 @@ public:
     }
 
     // Implementation for the run function is required
-    void run(DroneThrustType &thrust, DroneTorqueType &torque) override 
+    void run(const DroneThrustType &thrust, const DroneTorqueType &torque) override 
     {
         this->cache = drone_phys_calc_cache(this->angle);
         run_x(thrust, torque);

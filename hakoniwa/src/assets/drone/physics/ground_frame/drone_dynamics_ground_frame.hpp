@@ -59,19 +59,19 @@ public:
         this->param_drag = drag;
     }
     // Setters
-    void set_pos(DronePositionType &pos) override {
+    void set_pos(const DronePositionType &pos) override {
         position = pos;
     }
 
-    void set_vel(DroneVelocityType &vel) override {
+    void set_vel(const DroneVelocityType &vel) override {
         velocity = vel;
     }
 
-    void set_angle(DroneAngleType &ang) override {
+    void set_angle(const DroneAngleType &ang) override {
         angle = ang;
     }
 
-    void set_angular_vel(DroneAngularVelocityType &angularVel) override {
+    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -99,7 +99,7 @@ public:
     }
 
     // Implementation for the run function is required
-    void run(DroneThrustType &thrust, DroneTorqueType &torque) override 
+    void run(const DroneThrustType &thrust, const DroneTorqueType &torque) override 
     {
         this->cache = drone_phys_calc_cache(this->angle);
         run_x(thrust, torque);
