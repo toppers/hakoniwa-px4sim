@@ -122,6 +122,10 @@ typedef struct {
 } RotorConfigType;
 
 typedef struct {
+    glm::dvec3 data;
+} DroneAccelerationBodyFrameType;
+
+typedef struct {
     double cos_phi;
     double cos_theta;
     double cos_psi;
