@@ -2,7 +2,7 @@
 
 ## Input 
 
-* [Velocity](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity).
+* [Velocity](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#velocity-in-body-coordinate-system).
 * [Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle)
 
 ## Output
@@ -27,9 +27,7 @@ The integration of zero-mean noise ensures that any bias is minimized, allowing 
 
 ## Operational Details
 
-![スクリーンショット 2023-11-25 16 38 37](https://github.com/toppers/hakoniwa-px4sim/assets/164193/4ed00e11-c35f-45df-899c-91c3f872c37c)
-
-- **Data Transformation and Coordinate System**: The velocity data in the NED coordinate system is transformed into acceleration data in the drone's body coordinate system, accounting for the drone's orientation.
+<img width="775" alt="スクリーンショット 2023-12-08 6 06 27" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/5b20bd10-2146-4c2d-80ae-da2cad82ab97">
 
 - **Acceleration Calculation Methodology**: Acceleration is calculated as the rate of change of velocity over each interval Δt. To reduce transient fluctuations and improve data stability, a moving average is applied. This involves averaging the acceleration values over multiple samples (spanning N times Δt) to provide a more consistent and reliable measurement.
 
