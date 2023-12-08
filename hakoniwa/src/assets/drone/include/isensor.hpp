@@ -9,8 +9,14 @@
 namespace hako::assets::drone {
 
 class ISensor {
+protected:
+    ISensorNoise *noise;
 public:
     virtual ~ISensor() {}
+    virtual void set_noise(ISensorNoise *n)
+    {
+        this->noise = n;
+    }
 };
 
 }

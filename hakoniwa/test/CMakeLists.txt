@@ -13,6 +13,7 @@ add_executable(
     src/assets/physics/rotor_dynamics_test.cpp
     src/assets/utils/utils_test.cpp
     src/assets/sensor/acc_test.cpp
+    src/assets/sensor/gyro_test.cpp
     main.cpp
 )
 
