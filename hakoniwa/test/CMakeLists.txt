@@ -11,6 +11,7 @@ include(GoogleTest)
 add_executable(
     hako-px4sim-test
     src/assets/physics/rotor_dynamics_test.cpp
+    src/assets/utils/utils_test.cpp
     main.cpp
 )
 
@@ -22,6 +23,7 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/../src
     PRIVATE ${HAKONIWA_PDU_SOURCE_DIR}
     PRIVATE ${HAKONIWA_SOURCE_DIR}
+    PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone
     PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone/physics
     PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone/include
     PRIVATE ${GLM_SOURCE_DIR}

@@ -22,7 +22,7 @@ public:
         // 新しいデータをベクターに追加
         data_vector.push_back(data);
         // 必要に応じて、古いデータを削除
-        if (data_vector.size() > sample_num) {
+        if (data_vector.size() > (unsigned long)sample_num) {
             data_vector.erase(data_vector.begin());
         }
     }
