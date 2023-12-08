@@ -132,6 +132,21 @@ typedef struct {
 } DroneBarometricPressureType;
 
 typedef struct {
+    double lat;
+    double lon;
+    double alt;
+    double vel;
+    double vn;
+    double ve;
+    double vd;
+    double cog;
+
+    int num_satelites_visible;
+    int eph;
+    int epv;
+} DroneGpsDataType;
+
+typedef struct {
     double cos_phi;
     double cos_theta;
     double cos_psi;

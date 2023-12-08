@@ -41,15 +41,15 @@ TEST_F(GyroTest, SensorGyro_001)
 
     DroneAngularVelocityBodyFrameType result = gyro.sensor_value();
 
-    EXPECT_EQ(2000, result.data.x);
-    EXPECT_EQ(3000, result.data.y);
-    EXPECT_EQ(4000, result.data.z);
+    EXPECT_EQ(2, result.data.x);
+    EXPECT_EQ(3, result.data.y);
+    EXPECT_EQ(4, result.data.z);
 }
 
 TEST_F(GyroTest, SensorGyro_002) 
 {
     SensorGyro gyro(0.001, 3);
-    SensorNoise noise(10);
+    SensorNoise noise(10/1000);
     gyro.set_noise(&noise);
     DroneAngularVelocityBodyFrameType value;
     value.data.x = 1;
@@ -67,12 +67,12 @@ TEST_F(GyroTest, SensorGyro_002)
 
     DroneAngularVelocityBodyFrameType result = gyro.sensor_value();
 
-    EXPECT_GT(result.data.x, 1980);
-    EXPECT_LT(result.data.x, 2020);
+    EXPECT_GT(result.data.x, 1.980);
+    EXPECT_LT(result.data.x, 2.020);
 
-    EXPECT_GT(result.data.y, 2980);
-    EXPECT_LT(result.data.y, 3020);
+    EXPECT_GT(result.data.y, 2.980);
+    EXPECT_LT(result.data.y, 3.020);
 
-    EXPECT_GT(result.data.z, 3980);
-    EXPECT_LT(result.data.z, 4020);
+    EXPECT_GT(result.data.z, 3.980);
+    EXPECT_LT(result.data.z, 4.020);
 }
