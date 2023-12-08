@@ -27,7 +27,7 @@ void DroneDynamicsGroundFrame::run_y(const DroneThrustType &thrust, const DroneT
     this->next_velocity.data.y = 
         this->delta_time_sec *  
         ( 
-            - (thrust.data /  this->param_mass ) * ( this->cache.cos_phi * this->cache.sin_theta * this->cache.sin_psi - this->cache.sin_phi * this->cache.sin_psi )
+            - (thrust.data /  this->param_mass ) * ( this->cache.cos_phi * this->cache.sin_theta * this->cache.sin_psi - this->cache.sin_phi * this->cache.cos_psi )
             - this->param_drag * this->velocity.data.y
         ) 
         +
