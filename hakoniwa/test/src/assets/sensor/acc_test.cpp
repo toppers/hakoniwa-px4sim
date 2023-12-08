@@ -67,7 +67,13 @@ TEST_F(AccTest, SensorAcceleration_002)
 
     DroneAccelerationBodyFrameType result = acc.sensor_value();
 
-    EXPECT_NEAR(980, result.data.x, 1020);
-    EXPECT_NEAR(980, result.data.y, 1020);
-    EXPECT_NEAR(980, result.data.z, 1020);
+    EXPECT_GT(result.data.x, 980);
+    EXPECT_LT(result.data.x, 1020);
+
+    EXPECT_GT(result.data.y, 980);
+    EXPECT_LT(result.data.y, 1020);
+
+    EXPECT_GT(result.data.z, 980);
+    EXPECT_LT(result.data.z, 1020);
+
 }

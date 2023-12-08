@@ -67,7 +67,12 @@ TEST_F(GyroTest, SensorGyro_002)
 
     DroneAngularVelocityBodyFrameType result = gyro.sensor_value();
 
-    EXPECT_NEAR(980, result.data.x, 1020);
-    EXPECT_NEAR(1980, result.data.y, 2020);
-    EXPECT_NEAR(2980, result.data.z, 3020);
+    EXPECT_GT(result.data.x, 1980);
+    EXPECT_LT(result.data.x, 2020);
+
+    EXPECT_GT(result.data.y, 2980);
+    EXPECT_LT(result.data.y, 3020);
+
+    EXPECT_GT(result.data.z, 3980);
+    EXPECT_LT(result.data.z, 4020);
 }

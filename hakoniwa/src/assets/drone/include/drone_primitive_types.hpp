@@ -126,6 +126,12 @@ typedef struct {
 } DroneAccelerationBodyFrameType;
 
 typedef struct {
+    double abs_pressure;
+    double diff_pressure;
+    double pressure_alt;
+} DroneBarometricPressureType;
+
+typedef struct {
     double cos_phi;
     double cos_theta;
     double cos_psi;
