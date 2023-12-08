@@ -8,7 +8,7 @@ namespace hako::assets::drone {
 class ISensorAcceleration : public hako::assets::drone::ISensor {
 protected:
     bool has_prev_data;
-    DroneAngularVelocityBodyFrameType prev_data;
+    DroneVelocityBodyFrameType prev_data;
     ISensorNoise *noise;
 public:
     virtual ~ISensorAcceleration() {}
@@ -16,8 +16,8 @@ public:
     {
         this->noise = n;
     }
-    virtual void run(const DroneAngularVelocityBodyFrameType& data) = 0;
-    virtual DroneAccelerationBodyFrameType sensor_value() const = 0;
+    virtual void run(const DroneVelocityBodyFrameType& data) = 0;
+    virtual DroneAccelerationBodyFrameType sensor_value() = 0;
 };
 
 }
