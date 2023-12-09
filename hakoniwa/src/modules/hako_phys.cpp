@@ -65,8 +65,8 @@ static void do_io_write()
 {
     Hako_Twist pos;
 
-    DronePositionType dpos = drone_dynamics_body->get_pos();
-    DroneAngleType dangle = drone_dynamics_body->get_angle();
+    DronePositionType dpos = drone_dynamics_ground->get_pos();
+    DroneAngleType dangle = drone_dynamics_ground->get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;

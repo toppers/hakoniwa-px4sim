@@ -25,6 +25,7 @@ public:
 
         double theta = angle.data.y + params_I;
         double psi = angle.data.z - params_D;
+        //std::cout << "theta: " << theta << " psi: " << psi << std::endl;
 
         double x =   params_F * (cos(theta) * cos(psi));
         double y = - params_F * (cos(theta) * sin(psi));
