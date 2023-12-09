@@ -64,21 +64,26 @@ The handling of gyroscope data in the simulation is a key component in creating 
 
 ## [xyz]mag
 
-This section covers the simulation of magnetometer data within the Hakoniwa environment, reflecting the Earth's magnetic field variations and the drone's orientation.
+This section details the process of simulating magnetometer data within the Hakoniwa environment, reflecting the complexities of the Earth's magnetic field and its interaction with the drone's orientation.
 
-- **Magnetic North Calculation**: Based on the initial geographic coordinates of the drone, Magnetic North is determined using data from the [Geospatial Information Authority of Japan's geomagnetic calculation service](https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html), ensuring an accurate representation of the Earth's magnetic conditions.
+![スクリーンショット 2023-12-09 10 58 16](https://github.com/toppers/hakoniwa-px4sim/assets/164193/31bce2f9-cfc6-4aff-a2d6-06075344c2e7)
 
-- **Drone's Attitude Impact**: The magnetometer readings, denoted by `xmag`, `ymag`, and potentially `zmag`, are calculated by considering the drone's roll, pitch, and yaw angles relative to Magnetic North. These readings simulate the interaction between the onboard magnetometer and the Earth's magnetic field, factoring in the drone's orientation.
 
-![Magnetometer Readings Simulation Diagram](https://github.com/toppers/hakoniwa-px4sim/assets/164193/40d7d3db-e930-49c4-8c9d-e3920378cd84)
+### Magnetic North Calculation
+Magnetic North is determined based on the drone's initial geographic coordinates, utilizing data from the [Geospatial Information Authority of Japan's geomagnetic calculation service](https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html). This ensures an accurate portrayal of Earth's magnetic conditions within the simulation.
 
-- **Realism through Noise**: Realistic noise is introduced to the magnetometer data to mirror the natural inaccuracies and environmental variations experienced by real-world sensors.
+### Drone's Attitude Impact
+The onboard magnetometer readings, labeled as `xmag`, `ymag`, and `zmag`, are influenced by the drone's roll, pitch, and yaw. These values are crucial for simulating the magnetometer's interaction with the Earth's magnetic field, considering the drone's changing orientation.
 
-- **Navigation and Orientation**: The magnetometer data, inclusive of realistic noise, are critical for determining the drone's orientation, crucial for navigation systems and compass functionality in simulation.
+### Realism through Noise
+To enhance the realism of the simulation, noise is introduced to the magnetometer data. This mimics the natural inaccuracies and the environmental variations that affect real-world sensors.
 
-The method assumes a constant vector for Magnetic North, against which the drone's orientation-induced variations are measured. This ensures that `xmag` and `ymag` reflect the relative intensity and direction of the Earth's magnetic field as it would be perceived by the drone in real flight conditions.
+### Navigation and Orientation
+The magnetometer data, with the added layer of realistic noise, are indispensable in determining the drone's heading. This data is crucial for the operation of navigation systems and compass functionalities in the simulation.
 
-By integrating both the geographic dependence of Magnetic North and the drone's relative orientation, our simulation provides a comprehensive platform for developing and testing navigation algorithms that rely on magnetometer data.
+The simulation assumes a fixed vector for Magnetic North, which serves as a reference for measuring the drone's orientation-induced variations. This ensures that `xmag` and `ymag` accurately reflect the relative intensity and direction of the Earth's magnetic field, as it would be perceived by a real drone in flight.
+
+By incorporating both the geographic influence on Magnetic North and the drone's relative orientation, the Hakoniwa simulation provides an extensive platform for the development and testing of navigation algorithms that utilize magnetometer data.
 
 ## others
 
