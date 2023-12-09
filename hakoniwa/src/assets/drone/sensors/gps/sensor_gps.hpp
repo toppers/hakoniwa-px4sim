@@ -46,7 +46,7 @@ private:
         double vn = v.data.x;
         double ve = v.data.y;
 
-        if (vn == 0 || ve == 0) {
+        if (vn == 0 && ve == 0) {
             return;
         }
         // 角度を-πからπで範囲で返す
