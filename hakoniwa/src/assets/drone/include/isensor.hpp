@@ -17,6 +17,7 @@ public:
     {
         this->noise = n;
     }
+    virtual void print() = 0;
 };
 
 }

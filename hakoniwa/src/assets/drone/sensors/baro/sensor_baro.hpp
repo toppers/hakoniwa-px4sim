@@ -4,6 +4,7 @@
 
 #include "isensor_baro.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
+#include <iostream>
 
 namespace hako::assets::drone {
 
@@ -37,6 +38,19 @@ public:
         }
         return value;
     }
+    void print() override
+    {
+        auto result = sensor_value();
+        std::cout << "baro( abs_p: "
+                    << result.abs_pressure
+                    << ", diff_p: "
+                    << result.diff_pressure
+                    << ", p_alt: "
+                    << result.pressure_alt
+                    << " )" 
+                    << std::endl;
+    }
+
 };
 
 }

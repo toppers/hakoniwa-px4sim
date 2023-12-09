@@ -16,6 +16,7 @@ add_executable(
     src/assets/sensor/gyro_test.cpp
     src/assets/sensor/baro_test.cpp
     src/assets/sensor/gps_test.cpp
+    src/assets/sensor/mag_test.cpp
     main.cpp
 )
 
