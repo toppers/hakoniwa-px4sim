@@ -4,6 +4,7 @@
 
 #include "isensor_gps.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
+#include <iostream>
 
 namespace hako::assets::drone {
 
@@ -105,6 +106,30 @@ public:
         value.epv = 10;
         value.num_satelites_visible = 10;
         return value;
+    }
+    void print() override
+    {
+        auto result = sensor_value();
+        std::cout << "gps.pos( lat: "
+                    << result.lat
+                    << ", lon: "
+                    << result.lon
+                    << ", alt: "
+                    << result.alt
+                    << " )" 
+                    << std::endl;
+        std::cout << "gps.velocity( vel: "
+                    << result.vel
+                    << ", vn: "
+                    << result.vn
+                    << ", ve: "
+                    << result.ve
+                    << ", vd: "
+                    << result.vd
+                    << ", cog: "
+                    << result.cog
+                    << " )" 
+                    << std::endl;
     }
 
 };

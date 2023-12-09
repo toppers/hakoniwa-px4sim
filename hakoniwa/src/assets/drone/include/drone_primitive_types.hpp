@@ -147,6 +147,10 @@ typedef struct {
 } DroneGpsDataType;
 
 typedef struct {
+    glm::dvec3 data;
+} DroneMagDataType;
+
+typedef struct {
     double cos_phi;
     double cos_theta;
     double cos_psi;

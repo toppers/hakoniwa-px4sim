@@ -45,6 +45,19 @@ public:
         }
         return value;
     }
+
+    void print() override
+    {
+        auto result = sensor_value();
+        std::cout << "acc( "
+                    << result.data.x
+                    << ", "
+                    << result.data.y
+                    << ", "
+                    << result.data.z
+                    << " )" 
+                    << std::endl;
+    }
 };
 
 }
