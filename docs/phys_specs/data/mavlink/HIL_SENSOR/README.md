@@ -70,7 +70,26 @@ This section details the process of simulating magnetometer data within the Hako
 
 
 ### Magnetic North Calculation
-Magnetic North is determined based on the drone's initial geographic coordinates, utilizing data from the [Geospatial Information Authority of Japan's geomagnetic calculation service](https://vldb.gsi.go.jp/sokuchi/geomag/menu_04/index.html). This ensures an accurate portrayal of Earth's magnetic conditions within the simulation.
+Magnetic North is determined based on the drone's initial geographic coordinates, utilizing data from the [IGRF-13](https://wdc.kugi.kyoto-u.ac.jp/igrf/point/index-j.html). This ensures an accurate portrayal of Earth's magnetic conditions within the simulation.
+
+#### Example
+
+Location:
+
+* Lat: 47.641468
+* Lon: -122.140165
+* Alt: 121.321
+
+
+Data:
+* Total Magnetic Field (F): 53045.1 nT
+* Northward (X): 18348.5 nT
+* Eastward (Y): 5021.6 nT
+* Downward (Z): 49516.6 nT
+* Horizontal (H): 19023.3 nT
+* Declination (D): 15.306 degrees
+* Inclination (I): 68.984 degrees
+
 
 ### Drone's Attitude Impact
 The onboard magnetometer readings, labeled as `xmag`, `ymag`, and `zmag`, are influenced by the drone's roll, pitch, and yaw. These values are crucial for simulating the magnetometer's interaction with the Earth's magnetic field, considering the drone's changing orientation.
