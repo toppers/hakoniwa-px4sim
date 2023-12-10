@@ -125,34 +125,170 @@ typedef struct {
     glm::dvec3 data;
 } RotorConfigType;
 
+/*
+ * Unit: Meters per second squared (m/s^2)
+ * Description: Represents the acceleration of the drone in its body frame.
+ * The 'data' field is a 3-dimensional vector (glm::dvec3) where:
+ *   - data.x: Acceleration along the drone's forward axis (front to back).
+ *   - data.y: Acceleration along the drone's lateral axis (side to side).
+ *   - data.z: Acceleration along the drone's vertical axis (up and down).
+ *
+ * This structure is used to quantify the rate of change of the drone's velocity in its body frame,
+ * accounting for movements in all three spatial dimensions.
+ */
 typedef struct {
     glm::dvec3 data;
 } DroneAccelerationBodyFrameType;
 
+/*
+ * Description: Represents the barometric pressure data for the drone.
+ * This structure mirrors the barometric pressure-related members of the MAVLink HIL_SENSOR message.
+ *
+ * For detailed information and descriptions of each field, refer to:
+ * https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/mavlink/HIL_SENSOR
+ *
+ * Fields:
+ *   - abs_pressure: Absolute pressure (double)
+ *   - diff_pressure: Differential pressure (double)
+ *   - pressure_alt: Pressure-based altitude (double)
+ */
 typedef struct {
-    double abs_pressure;
-    double diff_pressure;
-    double pressure_alt;
+    double abs_pressure;    // Absolute pressure
+    double diff_pressure;   // Differential pressure
+    double pressure_alt;    // Pressure altitude
 } DroneBarometricPressureType;
 
-typedef struct {
-    double lat;
-    double lon;
-    double alt;
-    double vel;
-    double vn;
-    double ve;
-    double vd;
-    double cog;
 
-    int num_satelites_visible;
-    int eph;
-    int epv;
+/*
+ * Description: Represents the GPS data for the drone.
+ * This structure is designed to capture various aspects of GPS data, with specific units for each field.
+ *
+ * Fields:
+ *   - lat: Latitude in degrees (double). Not scaled by degE7.
+ *   - lon: Longitude in degrees (double). Not scaled by degE7.
+ *   - alt: Altitude in meters (double).
+ *   - vel: GPS velocity in meters per second (m/s) (double).
+ *   - vn: GPS ground speed (North) in meters per second (m/s) (double).
+ *   - ve: GPS ground speed (East) in meters per second (m/s) (double).
+ *   - vd: GPS ground speed (Down) in meters per second (m/s) (double).
+ *   - cog: Course over ground in centidegrees (cdeg) (double). A value of -1 indicates undefined.
+ *   - num_satelites_visible: Number of GPS satellites visible (int), same as satelites_visible.
+ *   - eph: GPS horizontal dilution of position (double).
+ *   - epv: GPS vertical dilution of position (double).
+ *
+ * Note: For more information on the structure and units, refer to the MAVLink HIL_GPS message specifications.
+ * URL: https://mavlink.io/en/messages/common.html#HIL_GPS
+ */
+typedef struct {
+    double lat;                  // Latitude in degrees
+    double lon;                  // Longitude in degrees
+    double alt;                  // Altitude in meters
+    double vel;                  // GPS velocity in m/s
+    double vn;                   // North speed in m/s
+    double ve;                   // East speed in m/s
+    double vd;                   // Down speed in m/s
+    double cog;                  // Course over ground in cdeg (-1 if undefined)
+
+    int num_satelites_visible;   // Number of satellites visible
+    double eph;                  // Horizontal dilution of position
+    double epv;                  // Vertical dilution of position
 } DroneGpsDataType;
 
+/*
+ * Conversion Macros for GPS Data to MAVLink Format
+ *
+ * - LAT_LON_TO_DEGE7: Converts latitude/longitude in degrees to MAVLink's degE7 format.
+ *   1 deg = 10^7 degE7.
+ * - ALT_TO_MM: Converts altitude in meters to MAVLink's mm format.
+ *   1 meter = 1000 mm.
+ */
+
+#define LAT_LON_TO_DEGE7(deg) (static_cast<int32_t>((deg) * 1e7))
+#define ALT_TO_MM(meters) (static_cast<int32_t>((meters) * 1000))
+
+// Example usage:
+// int32_t mavlink_lat = LAT_LON_TO_DEGE7(drone_gps_data.lat);
+// int32_t mavlink_lon = LAT_LON_TO_DEGE7(drone_gps_data.lon);
+// int32_t mavlink_alt = ALT_TO_MM(drone_gps_data.alt);
+
+/*
+ * Conversion Macros for GPS DOP Data to MAVLink Format
+ *
+ * - DOP_TO_UINT16: Converts DOP value in double to MAVLink's uint16_t format.
+ *   The DOP value is multiplied by 100 and cast to uint16_t.
+ *   If the DOP value is unknown, UINT16_MAX is used.
+ */
+
+#define DOP_TO_UINT16(dop) ((dop) >= 0 ? static_cast<uint16_t>((dop) * 100) : UINT16_MAX)
+
+// Example usage:
+// uint16_t mavlink_eph = DOP_TO_UINT16(drone_gps_data.eph);
+// uint16_t mavlink_epv = DOP_TO_UINT16(drone_gps_data.epv);
+
+/*
+ * Conversion Macros for GPS Velocity Data to MAVLink Format
+ *
+ * - VELOCITY_TO_UINT16: Converts velocity in m/s (double) to MAVLink's uint16_t format (cm/s).
+ *   If the velocity is unknown, UINT16_MAX is used.
+ * - VELOCITY_TO_INT16: Converts velocity in m/s (double) to MAVLink's int16_t format (cm/s).
+ */
+
+#define VELOCITY_TO_UINT16(vel) ((vel) >= 0 ? static_cast<uint16_t>((vel) * 100) : UINT16_MAX)
+#define VELOCITY_TO_INT16(vel) (static_cast<int16_t>((vel) * 100))
+
+// Example usage:
+// uint16_t mavlink_vel = VELOCITY_TO_UINT16(drone_gps_data.vel);
+// int16_t mavlink_vn = VELOCITY_TO_INT16(drone_gps_data.vn);
+// int16_t mavlink_ve = VELOCITY_TO_INT16(drone_gps_data.ve);
+// int16_t mavlink_vd = VELOCITY_TO_INT16(drone_gps_data.vd);
+
+/*
+ * Conversion Macro for GPS Course Over Ground to MAVLink Format
+ *
+ * - COG_TO_UINT16: Converts course over ground in degrees (double) to MAVLink's uint16_t format (cdeg).
+ *   The course value is multiplied by 100 and cast to uint16_t.
+ *   If the course value is unknown or invalid, UINT16_MAX is used.
+ */
+
+#define COG_TO_UINT16(cog) ((cog) >= 0 && (cog) < 360 ? static_cast<uint16_t>((cog) * 100) : UINT16_MAX)
+
+// Example usage:
+// uint16_t mavlink_cog = COG_TO_UINT16(drone_gps_data.cog);
+
+/*
+ * Conversion Macro for GPS Satellites Visible to MAVLink Format
+ *
+ * - SATELLITES_VISIBLE_TO_UINT8: Converts the number of satellites visible (int) to MAVLink's uint8_t format.
+ *   If the number of satellites is unknown, UINT8_MAX is used.
+ */
+
+#define SATELLITES_VISIBLE_TO_UINT8(num) ((num) >= 0 ? static_cast<uint8_t>(num) : UINT8_MAX)
+
+// Example usage:
+// uint8_t mavlink_satellites_visible = SATELLITES_VISIBLE_TO_UINT8(drone_gps_data.satellites_visible);
+
+/*
+ * Description: Represents the magnetic field data for the drone.
+ * This structure is designed to capture the magnetic field vector measured by the drone's magnetometer.
+ * The data is aligned with the MAVLink HIL_SENSOR message's magnetometer data.
+ * 
+ * Unit: NanoTesla (nT)
+ * The 'data' field is a 3-dimensional vector (glm::dvec3) where:
+ *   - data.x: Magnetic field strength along the drone's x-axis.
+ *   - data.y: Magnetic field strength along the drone's y-axis.
+ *   - data.z: Magnetic field strength along the drone's z-axis.
+ *
+ * For detailed information on the structure and units, refer to the MAVLink HIL_SENSOR message specifications:
+ * https://mavlink.io/en/messages/common.html#HIL_SENSOR
+ */
 typedef struct {
-    glm::dvec3 data;
+    glm::dvec3 data;  // Magnetic field vector in nT
 } DroneMagDataType;
+/*
+ * Conversion Macro: Convert nT to G
+ * 1 nT = 1e-5 G
+ */
+#define NT_TO_G(nT) ((nT) * 1e-5)
 
 typedef struct {
     double cos_phi;

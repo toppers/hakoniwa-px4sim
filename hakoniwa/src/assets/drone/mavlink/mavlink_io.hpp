@@ -12,25 +12,25 @@ private:
     {
         //TODO 単位変換チェック
         sensor.time_usec = 0;
-        auto acc = drone.get_acc().sensor_value();
-        sensor.xacc = acc.data.x;
-        sensor.yacc = acc.data.y;
-        sensor.zacc = acc.data.z;
+        DroneAccelerationBodyFrameType acc = drone.get_acc().sensor_value();
+        sensor.xacc = static_cast<float>(acc.data.x);
+        sensor.yacc = static_cast<float>(acc.data.y);
+        sensor.zacc = static_cast<float>(acc.data.z);
 
-        auto gyro = drone.get_gyro().sensor_value();
-        sensor.xgyro = gyro.data.x;
-        sensor.ygyro = gyro.data.y;
-        sensor.zgyro = gyro.data.z;
+        DroneAngularVelocityBodyFrameType gyro = drone.get_gyro().sensor_value();
+        sensor.xgyro = static_cast<float>(gyro.data.x);
+        sensor.ygyro = static_cast<float>(gyro.data.y);
+        sensor.zgyro = static_cast<float>(gyro.data.z);
 
-        auto mag = drone.get_mag().sensor_value();
-        sensor.xmag = mag.data.x;
-        sensor.yacc = mag.data.y;
-        sensor.zmag = mag.data.z;
+        DroneMagDataType mag = drone.get_mag().sensor_value();
+        sensor.xmag = static_cast<float>(NT_TO_G(mag.data.x));
+        sensor.yacc = static_cast<float>(NT_TO_G(mag.data.y));
+        sensor.zmag = static_cast<float>(NT_TO_G(mag.data.z));
 
-        auto baro = drone.get_baro().sensor_value();
-        sensor.abs_pressure = baro.abs_pressure;
-        sensor.diff_pressure = baro.diff_pressure;
-        sensor.pressure_alt = baro.pressure_alt;
+        DroneBarometricPressureType baro = drone.get_baro().sensor_value();
+        sensor.abs_pressure = static_cast<float>(baro.abs_pressure);
+        sensor.diff_pressure = static_cast<float>(baro.diff_pressure);
+        sensor.pressure_alt = static_cast<float>(baro.pressure_alt);
 
         sensor.temperature = 0;
         sensor.fields_updated = 0x1FFF;  // Bitmask indicating which fields are valid (assuming all fields are updated for simplicity)
@@ -42,20 +42,20 @@ private:
         sensor.time_usec = 0;
         sensor.fix_type = 3;
 
-        auto gps = drone.get_gps().sensor_value();
-        sensor.lat = gps.lat;
-        sensor.lon = gps.lon;
-        sensor.alt = gps.alt;
+        DroneGpsDataType gps = drone.get_gps().sensor_value();
+        sensor.lat = LAT_LON_TO_DEGE7(gps.lat);
+        sensor.lon = LAT_LON_TO_DEGE7(gps.lon);
+        sensor.alt = ALT_TO_MM(gps.alt);
 
-        sensor.eph = gps.eph;
-        sensor.epv = gps.epv;
+        sensor.eph = DOP_TO_UINT16(gps.eph);
+        sensor.epv = DOP_TO_UINT16(gps.epv);
 
-        sensor.vel = gps.vel;
-        sensor.vn  = gps.vn;
-        sensor.ve  = gps.ve;
-        sensor.vd  = gps.vd;
-        sensor.cog = gps.cog;
-        sensor.satellites_visible = gps.num_satelites_visible;
+        sensor.vel = VELOCITY_TO_UINT16(gps.vel);
+        sensor.vn  = VELOCITY_TO_INT16(gps.vn);
+        sensor.ve  = VELOCITY_TO_INT16(gps.ve);
+        sensor.vd  = VELOCITY_TO_INT16(gps.vd);
+        sensor.cog = COG_TO_UINT16(gps.cog);
+        sensor.satellites_visible = SATELLITES_VISIBLE_TO_UINT8(gps.num_satelites_visible);
 
         sensor.id = 0;
         sensor.yaw = 0;
