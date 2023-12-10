@@ -38,10 +38,12 @@ add_executable(
     assets/drone/physics/ground_frame/drone_dynamics_ground_frame.cpp
 
     assets/drone/controller/drone_pid_control.cpp
+    assets/drone/aircraft/aircraft_factory.cpp
 
     utils/hako_params.cpp
     modules/hako_bypass.cpp
     modules/hako_phys.cpp
+    modules/hako_sim.cpp
 
     px4sim_main.cpp
 )
@@ -51,7 +53,7 @@ target_include_directories(
     PRIVATE /usr/local/include
     PRIVATE /mingw64/include
     PRIVATE ${MAVLINK_SOURCE_DIR}/all
-    PRIVATE ${PROJECT_SOURCE_DIR}/src
+    PRIVATE ${PROJECT_SOURCE_DIR}
     PRIVATE ${HAKONIWA_PDU_SOURCE_DIR}
     PRIVATE ${HAKONIWA_SOURCE_DIR}
     PRIVATE ${PROJECT_SOURCE_DIR}/assets/drone/include

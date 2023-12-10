@@ -31,6 +31,10 @@ public:
     {
         this->drone_dynamics = src;
     }
+    IDroneDynamics& get_drone_dynamics()
+    {
+        return *drone_dynamics;
+    }
     void set_rotor_dynamics(IRotorDynamics *src[ROTOR_NUM])
     {
         for (int i = 0; i < ROTOR_NUM; i++) {
@@ -45,22 +49,44 @@ public:
     {
         this->acc = src;
     }
+    ISensorAcceleration& get_acc()
+    {
+        return *acc;
+    }
     void set_gps(ISensorGps *src)
     {
         this->gps = src;
+    }
+    ISensorGps& get_gps()
+    {
+        return *gps;
     }
     void set_baro(ISensorBaro *src)
     {
         this->baro = src;
     }
+    ISensorBaro& get_baro()
+    {
+        return *baro;
+    }
     void set_gyro(ISensorGyro *src)
     {
         this->gyro = src;
     }
+    ISensorGyro& get_gyro()
+    {
+        return *gyro;
+    }
+
     void set_mag(ISensorMag *src)
     {
         this->mag = src;
-    }   
+    }
+    ISensorMag& get_mag()
+    {
+        return *mag;
+    }
+
 };
 }
 

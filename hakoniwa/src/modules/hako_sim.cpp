@@ -1,29 +1,28 @@
 #include "hako_sim.hpp"
 #include "hako_capi.h"
-#include "../utils/hako_params.hpp"
+#include "assets/drone/mavlink/mavlink_io.hpp"
+#include "assets/drone/aircraft/aircraft_factory.hpp"
+#include "utils/hako_params.hpp"
 #include "hako_asset_runner.h"
-#include "../hako/pdu/hako_pdu_data.hpp"
-#include "../hako/runner/hako_px4_master.hpp"
-#include "../assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
-#include "../assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
+#include "hako/pdu/hako_pdu_data.hpp"
+#include "hako/runner/hako_px4_master.hpp"
+#include "threads/px4sim_thread_sender.hpp"
+
 #include <unistd.h>
 #include <memory.h>
 #include <iostream>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
 #define HAKO_RUNNER_MASTER_DELTA_USEC           1000 /* usec*/
-#define HAKO_RUNNER_DELTA_TIME_SEC              0.001
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
 #define HAKO_AVATOR_CHANNLE_ID_POS      1
 #define HAKO_AVATOR_CHANNLE_ID_CTRL     2
-#define HAKO_PHYS_DRAG          0.01
 
 #define HAKO_ROBO_NAME "px4sim"
 
 static void asset_runner();
-using hako::assets::drone::DroneDynamicsBodyFrame;
-using hako::assets::drone::DroneDynamicsGroundFrame;
-using hako::assets::drone::IDroneDynamics;
+
+static IAirCraft *drone;
 
 void hako_sim_main()
 {
@@ -45,16 +44,11 @@ void hako_sim_main()
     return;
 }
 
-static IDroneDynamics *drone_dynamics_ground = nullptr;
-static IDroneDynamics *drone_dynamics_body = nullptr;
 
 static void my_setup()
 {
-    drone_dynamics_ground = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
-    drone_dynamics_body = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics_ground->set_drag(HAKO_PHYS_DRAG);
-    drone_dynamics_body->set_drag(HAKO_PHYS_DRAG);
+    drone = hako::assets::drone::create_aircraft("default");
 
     std::cout << "INFO: setup done" << std::endl;
     return;
@@ -64,8 +58,8 @@ static void do_io_write()
 {
     Hako_Twist pos;
 
-    DronePositionType dpos = drone_dynamics_body->get_pos();
-    DroneAngleType dangle = drone_dynamics_body->get_angle();
+    DronePositionType dpos = drone->get_drone_dynamics().get_pos();
+    DroneAngleType dangle = drone->get_drone_dynamics().get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;
@@ -80,23 +74,19 @@ static void do_io_write()
 
 static void my_task()
 {
-    DroneThrustType thrust;
-    DroneTorqueType torque;
-    {
-        Hako_Twist control;
+    static hako::assets::drone::MavlinkIO mavlink_io;
+    static double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 
-        if (!hako_asset_runner_pdu_read(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_CTRL, (char*)&control, sizeof(control))) {
-            std::cerr << "ERROR: can not read pdu data: control" << std::endl;
-            return;
-        }
-        thrust.data = control.linear.z;
-        torque.data.x = control.angular.x;
-        torque.data.y = control.angular.y;
-        torque.data.z = control.angular.z;
-    }
-    drone_dynamics_body->run(thrust, torque);
+    //read Mavlink Message
+    mavlink_io.read_actuator_data(controls);
+
+    drone->run(controls);
+
+    //write Mavlink Message
+    mavlink_io.write_sensor_data(*drone);
 
     do_io_write();
+    px4sim_sender_do_task();
     return;
 }
 
