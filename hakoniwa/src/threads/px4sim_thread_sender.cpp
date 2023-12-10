@@ -242,6 +242,8 @@ static void px4sim_send_sensor(hako::px4::comm::ICommIO &clientConnector, uint64
         //std::cout << "HIL_SENSOR: time_usec: " <<  ctime << std::endl;
 
         message.data.sensor.time_usec = time_usec;
+#ifdef ENABLE_LATEST_ARCHITECTURE
+#else
         message.data.sensor.fields_updated = 7167; 
         message.data.sensor.id = 0;
 
@@ -257,7 +259,7 @@ static void px4sim_send_sensor(hako::px4::comm::ICommIO &clientConnector, uint64
         message.data.sensor.xmag += distribution(generator);
         message.data.sensor.ymag += distribution(generator);
         message.data.sensor.zmag += distribution(generator);
-
+#endif
         //dummy
         //message.data.sensor.xmag = 0.217065 + distribution(generator);
         //message.data.sensor.ymag = 0.0063418 + distribution(generator);

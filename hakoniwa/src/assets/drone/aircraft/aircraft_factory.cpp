@@ -10,6 +10,7 @@
 #include "assets/drone/sensors/gyro/sensor_gyro.hpp"
 #include "assets/drone/sensors/mag/sensor_mag.hpp"
 #include "assets/drone/aircraft/aricraft.hpp"
+#include "assets/drone/utils/sensor_noise.hpp"
 
 using hako::assets::drone::AirCraft;
 using hako::assets::drone::DroneDynamicsBodyFrame;
@@ -21,6 +22,7 @@ using hako::assets::drone::SensorMag;
 using hako::assets::drone::SensorGyro;
 using hako::assets::drone::RotorDynamics;
 using hako::assets::drone::ThrustDynamics;
+using hako::assets::drone::SensorNoise;
 
 #define DELTA_TIME_SEC              0.001
 #define HAKO_PHYS_DRAG              0.01
@@ -81,6 +83,9 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     //sensor mag
     auto mag = new SensorMag(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(mag != nullptr);
+    auto mag_noise = new SensorNoise(0.0001);
+    HAKO_ASSERT(mag_noise != nullptr);
+    mag->set_noise(mag_noise);
     mag->set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
     drone->set_mag(mag);
 
