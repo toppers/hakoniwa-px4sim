@@ -25,6 +25,12 @@ static void asset_runner();
 using hako::assets::drone::DroneDynamicsBodyFrame;
 using hako::assets::drone::DroneDynamicsGroundFrame;
 using hako::assets::drone::IDroneDynamics;
+using hako::assets::drone::DronePositionType;
+using hako::assets::drone::DroneAngleType;
+using hako::assets::drone::DroneVelocityType;
+using hako::assets::drone::DroneAngularVelocityType;
+using hako::assets::drone::DroneTorqueType;
+using hako::assets::drone::DroneThrustType;
 
 void hako_phys_main()
 {

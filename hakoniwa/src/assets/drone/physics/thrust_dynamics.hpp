@@ -4,8 +4,11 @@
 #include "drone_primitive_types.hpp"
 #include "ithrust_dynamics.hpp"
 #include <glm/glm.hpp>
+#include <iostream>
 
 namespace hako::assets::drone {
+
+const int HOVERING_ROTOR_RPM = 6000;
 
 class ThrustDynamics : public hako::assets::drone::IThrustDynamics {
 private:
@@ -24,6 +27,9 @@ private:
         double u = 0;
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->T[i] = this->param_A * (rotor_speed[i].data * rotor_speed[i].data);
+            //std::cout << "A: " << param_A << std::endl;
+            //std::cout << "R[" << i << "]: " << rotor_speed[i].data << std::endl;
+            //std::cout << "T[" << i << "]: " << T[i] << std::endl;
             u += this->T[i];
         }
         this->thrust.data = u;
@@ -37,6 +43,7 @@ private:
     }
     void run_torque(const DroneRotorSpeedType rotor_speed[ROTOR_NUM])
     {
+        (void)rotor_speed;
         glm::dvec3 total_torque = glm::dvec3(0.0, 0.0, 0.0);
         for (int i = 0; i < ROTOR_NUM; i++) {
             // ローターによる推力ベクトルを生成（Z方向にのみ作用する）
@@ -59,8 +66,12 @@ public:
     ThrustDynamics(double dt)
     {
         this->delta_time_sec = dt;
-        this->param_A = 1.0;
-        this->param_B = 0.1;
+        // 1kg の機体が 6000 rpm でホバリングする定数
+        // A = mg / (Ω0^2 * ROTOR_NUM)
+        this->param_A =  GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+        // 1kg の機体が 6000 rpm でホバリングする場合に、1Nmで反トルクがかかる定数
+        // B = 1 / (Ω0^2 * ROTOR_NUM)
+        this->param_B = 1.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
         this->param_Jr = 0.1;
 
         this->rotor_config[0].ccw = -1;
@@ -113,6 +124,15 @@ public:
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->prev_rotor_speed[i] = rotor_speed[i];
         }
+    }
+
+    void print() override
+    {
+        std::cout << "thrust: " << this->thrust.data << std::endl;
+        std::cout << "torque( " << this->torque.data.x 
+                  << " , " << this->torque.data.y
+                  << " , " << this->torque.data.z 
+                  << " )" << std::endl;
     }
 };
 

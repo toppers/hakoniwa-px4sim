@@ -4,6 +4,10 @@
 #include <glm/vec3.hpp>
 #include <math.h>
 
+namespace hako::assets::drone {
+
+const double GRAVITY = 9.81;
+
 /*
  * Coordinate System: Ground Coordinate System (NED)
  * Unit: Meter
@@ -175,4 +179,5 @@ static inline DronePhysCalcCacheType drone_phys_calc_cache(DroneAngleType angle)
     return cache;
 }
 
+}
 #endif /* _DRONE_DATA_TYPES_HPP_ */

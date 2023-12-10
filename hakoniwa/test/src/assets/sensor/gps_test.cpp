@@ -21,6 +21,9 @@ protected:
 };
 using hako::assets::drone::SensorGps;
 using hako::assets::drone::SensorNoise;
+using hako::assets::drone::DronePositionType;
+using hako::assets::drone::DroneVelocityType;
+using hako::assets::drone::DroneGpsDataType;
 
 TEST_F(GpsTest, SensorGps_001) 
 {

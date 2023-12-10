@@ -5,8 +5,6 @@
 
 namespace hako::assets::drone {
 
-const double GRAVITY = 9.81;
-
 class IDroneDynamics {
 protected:
     DronePhysCalcCacheType cache;

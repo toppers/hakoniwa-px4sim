@@ -21,6 +21,7 @@ protected:
 };
 using hako::assets::drone::SensorGyro;
 using hako::assets::drone::SensorNoise;
+using hako::assets::drone::DroneAngularVelocityBodyFrameType;
 
 TEST_F(GyroTest, SensorGyro_001) 
 {

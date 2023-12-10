@@ -21,6 +21,8 @@ protected:
 };
 using hako::assets::drone::SensorAcceleration;
 using hako::assets::drone::SensorNoise;
+using hako::assets::drone::DroneVelocityBodyFrameType;
+using hako::assets::drone::DroneAccelerationBodyFrameType;
 
 TEST_F(AccTest, SensorAcceleration_001) 
 {

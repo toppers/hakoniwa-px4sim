@@ -19,6 +19,7 @@ protected:
 
 };
 using hako::assets::drone::RotorDynamics;
+using hako::assets::drone::DroneRotorSpeedType;
 
 #define DELTA_TIME_SEC 0.001
 TEST_F(RotorDynamicsTest, test_01)

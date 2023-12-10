@@ -21,6 +21,7 @@ protected:
 };
 using hako::assets::drone::SensorMag;
 using hako::assets::drone::SensorNoise;
+using hako::assets::drone::DroneAngleType;
 
 #define REFERENCE_LATITUDE      47.641468
 #define REFERENCE_LONGTITUDE    -122.140165

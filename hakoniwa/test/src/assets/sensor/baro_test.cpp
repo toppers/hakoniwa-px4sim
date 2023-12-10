@@ -21,6 +21,9 @@ protected:
 };
 using hako::assets::drone::SensorBaro;
 using hako::assets::drone::SensorNoise;
+using hako::assets::drone::DronePositionType;
+using hako::assets::drone::DroneBarometricPressureType;
+using hako::assets::drone::DronePositionType;
 
 TEST_F(BaroTest, SensorBaro_001) 
 {

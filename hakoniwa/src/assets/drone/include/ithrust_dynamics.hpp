@@ -19,6 +19,8 @@ public:
     virtual DroneTorqueType get_torque() const = 0;
 
     virtual void run(const DroneRotorSpeedType rotor_speed[ROTOR_NUM]) = 0;
+
+    virtual void print() = 0;
 };
 
 }

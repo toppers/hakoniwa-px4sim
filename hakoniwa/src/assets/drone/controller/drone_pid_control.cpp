@@ -4,6 +4,11 @@
 #include "../../../hako/pdu/hako_pdu_data.hpp"
 #include "hako_asset_runner.h"
 
+using hako::assets::drone::DronePositionType;
+using hako::assets::drone::DroneAngleType;
+using hako::assets::drone::DroneThrustType;
+using hako::assets::drone::DroneTorqueType;
+
 static DronePidControl *pid_height;
 static DronePidControl *pid_phi;
 static DronePidControl *pid_theta;
