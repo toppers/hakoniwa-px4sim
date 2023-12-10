@@ -45,7 +45,7 @@ TEST_F(AccTest, SensorAcceleration_001)
 
     EXPECT_EQ(1000, result.data.x);
     EXPECT_EQ(1000, result.data.y);
-    EXPECT_EQ(1000, result.data.z);
+    EXPECT_EQ(1000-9.81, result.data.z);
 }
 
 TEST_F(AccTest, SensorAcceleration_002) 

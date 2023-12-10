@@ -92,7 +92,7 @@ void px4sim_sender_do_task(void)
     }
 }
 
-
+#define DRONE_PX4_TX_DEBUG_ENABLE
 void px4sim_send_message(hako::px4::comm::ICommIO &clientConnector, MavlinkDecodedMessage &message)
 {
     mavlink_message_t mavlinkMsg;

@@ -38,6 +38,7 @@ public:
         value.data.x = this->acc_x.get_calculated_value() / this->delta_time_sec;
         value.data.y = this->acc_y.get_calculated_value() / this->delta_time_sec;
         value.data.z = this->acc_z.get_calculated_value() / this->delta_time_sec;
+        value.data.z -= GRAVITY;
         if (this->noise != nullptr) {
             value.data.x = this->noise->add_noise(value.data.x);
             value.data.y = this->noise->add_noise(value.data.y);

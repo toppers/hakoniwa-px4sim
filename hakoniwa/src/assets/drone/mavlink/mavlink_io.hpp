@@ -3,6 +3,7 @@
 
 #include "iaircraft.hpp"
 #include "hako/pdu/hako_pdu_data.hpp"
+#include <iostream>
 
 namespace hako::assets::drone {
 
@@ -56,7 +57,6 @@ private:
         sensor.vd  = VELOCITY_TO_INT16(gps.vd);
         sensor.cog = COG_TO_UINT16(gps.cog);
         sensor.satellites_visible = SATELLITES_VISIBLE_TO_UINT8(gps.num_satelites_visible);
-
         sensor.id = 0;
         sensor.yaw = 0;
     }

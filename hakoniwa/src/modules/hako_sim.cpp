@@ -21,7 +21,7 @@
 
 #define HAKO_ROBO_NAME "px4sim"
 
-static void asset_runner();
+static void* asset_runner(void*);
 
 static IAirCraft *drone;
 
@@ -41,6 +41,11 @@ void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint)
         std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
         return;
     }
+    if (pthread_create(&thread, NULL, asset_runner, nullptr) != 0) {
+        std::cerr << "Failed to create asset_runner thread!" << std::endl;
+        return;
+    }
+
     auto comm_io = server.server_open(&serverEndpoint);
     if (comm_io == nullptr) 
     {
@@ -48,11 +53,7 @@ void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint)
         return;
     }
     px4sim_sender_init(comm_io);
-    if (pthread_create(&thread, NULL, px4sim_thread_receiver, comm_io) != 0) {
-        std::cerr << "Failed to create px4sim_thread_receiver thread!" << std::endl;
-        return;
-    }
-    asset_runner();
+    px4sim_thread_receiver(comm_io);
     //not reached
     return;
 }
@@ -116,13 +117,13 @@ static hako_asset_runner_callback_t my_callbacks = {
 };
 
 static hako_time_t hako_sim_asset_time = 0;
-static void asset_runner()
+static void* asset_runner(void*)
 {
     hako_asset_runner_register_callback(&my_callbacks);
     const char* config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);
     if (hako_asset_runner_init(HAKO_ROBO_NAME, config_path, HAKO_RUNNER_MASTER_DELTA_USEC) == false) {
         std::cerr << "ERROR: " << "hako_asset_runner_init() error" << std::endl;
-        return;
+        return nullptr;
     }
     while (true) {
         hako_sim_asset_time = 0;
@@ -140,6 +141,6 @@ static void asset_runner()
     std::cout << "INFO: end simulation" << std::endl;
     hako_asset_runner_fin();
 
-    return;
+    return nullptr;
 }
 
