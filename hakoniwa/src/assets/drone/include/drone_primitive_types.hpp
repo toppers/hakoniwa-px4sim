@@ -215,11 +215,11 @@ typedef struct {
  * Conversion Macros for GPS DOP Data to MAVLink Format
  *
  * - DOP_TO_UINT16: Converts DOP value in double to MAVLink's uint16_t format.
- *   The DOP value is multiplied by 100 and cast to uint16_t.
+ *   The DOP value is multiplied by 1 and cast to uint16_t.
  *   If the DOP value is unknown, UINT16_MAX is used.
  */
 
-#define DOP_TO_UINT16(dop) ((dop) >= 0 ? static_cast<uint16_t>((dop) * 100) : UINT16_MAX)
+#define DOP_TO_UINT16(dop) ((dop) >= 0 ? static_cast<uint16_t>((dop) * 1) : UINT16_MAX)
 
 // Example usage:
 // uint16_t mavlink_eph = DOP_TO_UINT16(drone_gps_data.eph);
