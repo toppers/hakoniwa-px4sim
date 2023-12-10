@@ -7,6 +7,7 @@
 #include "hako/pdu/hako_pdu_data.hpp"
 #include "hako/runner/hako_px4_master.hpp"
 #include "threads/px4sim_thread_sender.hpp"
+#include "threads/px4sim_thread_receiver.hpp"
 
 #include <unistd.h>
 #include <memory.h>
@@ -24,8 +25,9 @@ static void asset_runner();
 
 static IAirCraft *drone;
 
-void hako_sim_main()
+void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint)
 {
+    hako::px4::comm::TcpServer server;
     if (!hako_master_init()) {
         std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
         return;
@@ -37,6 +39,17 @@ void hako_sim_main()
     pthread_t thread;
     if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
         std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
+        return;
+    }
+    auto comm_io = server.server_open(&serverEndpoint);
+    if (comm_io == nullptr) 
+    {
+        std::cerr << "Failed to open TCP server" << std::endl;
+        return;
+    }
+    px4sim_sender_init(comm_io);
+    if (pthread_create(&thread, NULL, px4sim_thread_receiver, comm_io) != 0) {
+        std::cerr << "Failed to create px4sim_thread_receiver thread!" << std::endl;
         return;
     }
     asset_runner();
@@ -102,7 +115,7 @@ static hako_asset_runner_callback_t my_callbacks = {
     my_reset    // reset
 };
 
-static hako_time_t hako_asset_time = 0;
+static hako_time_t hako_sim_asset_time = 0;
 static void asset_runner()
 {
     hako_asset_runner_register_callback(&my_callbacks);
@@ -112,7 +125,7 @@ static void asset_runner()
         return;
     }
     while (true) {
-        hako_asset_time = 0;
+        hako_sim_asset_time = 0;
         std::cout << "INFO: start simulation" << std::endl;
         while (true) {
             if (hako_asset_runner_step(1) == false) {
@@ -120,7 +133,7 @@ static void asset_runner()
                 break;
             }
             else {
-                hako_asset_time += HAKO_RUNNER_MASTER_DELTA_USEC;
+                hako_sim_asset_time += HAKO_RUNNER_MASTER_DELTA_USEC;
             }
         }
     }

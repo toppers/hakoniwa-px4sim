@@ -20,6 +20,7 @@
 #include "hako/runner/common/drone_types.hpp"
 #include "modules/hako_bypass.hpp"
 #include "modules/hako_phys.hpp"
+#include "modules/hako_sim.hpp"
 #include "utils/hako_params.hpp"
 
 typedef enum {
@@ -34,7 +35,7 @@ typedef enum {
 int main(int argc, char* argv[]) 
 {
     if(argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={replay|replay_dump|capture|normal|sim|bypass|phys}> "  << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={replay|replay_dump|capture|normal|sim|bypass|phys|asim}> "  << std::endl;
         return -1;
     }
     ModeType mode = NORMAL;
@@ -61,6 +62,11 @@ int main(int argc, char* argv[])
     }
     else if (strcmp("phys", arg_mode) == 0) {
         hako_phys_main();
+        //not returned function.
+        //do not pass
+    }
+    else if (strcmp("asim", arg_mode) == 0) {
+        hako_sim_main(serverEndpoint);
         //not returned function.
         //do not pass
     }
