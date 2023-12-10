@@ -12,25 +12,24 @@ class SensorBaro : public hako::assets::drone::ISensorBaro {
 private:
     double delta_time_sec;
 
+    hako::assets::drone::SensorDataAssembler asm_alt;
 public:
-    SensorBaro(double dt, int sample_num) : delta_time_sec(dt)
+    SensorBaro(double dt, int sample_num) : delta_time_sec(dt), asm_alt(sample_num)
     {
-        (void)sample_num;
         this->noise = nullptr;
     }
     virtual ~SensorBaro() {}
     void run(const DronePositionType& data) override
     {
-        (void)data;
         (void)this->delta_time_sec;
-        //nop
+        asm_alt.add_data(ref_alt - data.data.z);
     }
     DroneBarometricPressureType sensor_value() override
     {
         DroneBarometricPressureType value;
         value.abs_pressure = 10;
         value.diff_pressure = 0;
-        value.pressure_alt = 0;
+        value.pressure_alt = asm_alt.get_calculated_value();
         if (this->noise != nullptr) {
             value.abs_pressure = this->noise->add_noise(value.abs_pressure);
             value.diff_pressure = this->noise->add_noise(value.diff_pressure);

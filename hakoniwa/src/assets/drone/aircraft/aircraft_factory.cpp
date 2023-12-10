@@ -86,6 +86,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
 
     //sensor baro
     auto baro = new SensorBaro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
+    baro->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     HAKO_ASSERT(baro != nullptr);
     drone->set_baro(baro);
 

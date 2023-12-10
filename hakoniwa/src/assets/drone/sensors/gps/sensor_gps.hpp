@@ -24,7 +24,8 @@ private:
     {
         double lat = this->ref_lat + (p.data.x / 111000.0);
         double lon = this->ref_lon + (p.data.y / 111000.0);
-        double alt = this->ref_alt + p.data.z;
+        //高度はプラス
+        double alt = this->ref_alt - p.data.z;
 
         this->asm_lat.add_data(lat);
         this->asm_lon.add_data(lon);
