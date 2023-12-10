@@ -36,6 +36,14 @@ public:
             return 0.0;  // データがない場合は0を返却
         }
     }
+    void reset() override
+    {
+        data_vector.clear();
+    }
+    int size() override
+    {
+        return data_vector.size();
+    }
 };
 
 }

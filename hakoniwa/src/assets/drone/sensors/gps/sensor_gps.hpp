@@ -48,6 +48,7 @@ private:
         double ve = v.data.y;
 
         if (vn == 0 && ve == 0) {
+            this->asm_cog.reset();
             return;
         }
         // 角度を-πからπで範囲で返す
@@ -89,7 +90,12 @@ public:
         value.ve = this->asm_ve.get_calculated_value();
         value.vd = this->asm_vd.get_calculated_value();
 
-        value.cog = this->asm_cog.get_calculated_value();
+        if (this->asm_cog.size() > 0) {
+            value.cog = this->asm_cog.get_calculated_value();
+        }
+        else {
+            value.cog = -1;
+        }
         if (this->noise != nullptr) {
             value.lat= this->noise->add_noise(value.lat);
             value.lon= this->noise->add_noise(value.lon);
@@ -99,8 +105,9 @@ public:
             value.vn = this->noise->add_noise(value.vn);
             value.ve = this->noise->add_noise(value.ve);
             value.vd = this->noise->add_noise(value.vd);
-
-            value.cog = this->noise->add_noise(value.cog);
+            if (value.cog >= 0) {
+                value.cog = this->noise->add_noise(value.cog);
+            }
         }
         value.eph = 10;
         value.epv = 10;

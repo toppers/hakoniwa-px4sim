@@ -46,12 +46,14 @@ TEST_F(UtilsTest, SensorDataAssemblerTest_001)
 {
     SensorDataAssembler obj(3);
     EXPECT_EQ(0, obj.get_calculated_value());
+    EXPECT_EQ(0, obj.size());
 }
 TEST_F(UtilsTest, SensorDataAssemblerTest_002)
 {
     SensorDataAssembler obj(3);
     obj.add_data(1);
     EXPECT_EQ(1, obj.get_calculated_value());
+    EXPECT_EQ(1, obj.size());
 }
 TEST_F(UtilsTest, SensorDataAssemblerTest_003)
 {
@@ -76,4 +78,15 @@ TEST_F(UtilsTest, SensorDataAssemblerTest_005)
     obj.add_data(3);
     obj.add_data(4);
     EXPECT_EQ(3, obj.get_calculated_value());
+}
+TEST_F(UtilsTest, SensorDataAssemblerTest_006)
+{
+    SensorDataAssembler obj(3);
+    obj.add_data(1);
+    obj.add_data(2);
+    obj.add_data(3);
+    obj.add_data(4);
+    EXPECT_EQ(3, obj.get_calculated_value());
+    obj.reset();
+    EXPECT_EQ(0, obj.size());
 }
