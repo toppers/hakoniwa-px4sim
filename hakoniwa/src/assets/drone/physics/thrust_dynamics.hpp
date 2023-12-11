@@ -3,6 +3,7 @@
 
 #include "drone_primitive_types.hpp"
 #include "ithrust_dynamics.hpp"
+#include "utils/icsv_log.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 
@@ -10,9 +11,10 @@ namespace hako::assets::drone {
 
 const int HOVERING_ROTOR_RPM = 6000;
 
-class ThrustDynamics : public hako::assets::drone::IThrustDynamics {
+class ThrustDynamics : public hako::assets::drone::IThrustDynamics, public ICsvLog {
 private:
     double delta_time_sec;
+    double total_time_sec = 0;
     double param_A;
     double param_B;
     double param_Jr;
@@ -124,6 +126,7 @@ public:
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->prev_rotor_speed[i] = rotor_speed[i];
         }
+        total_time_sec += delta_time_sec;
     }
 
     void print() override
@@ -134,6 +137,18 @@ public:
                   << " , " << this->torque.data.z 
                   << " )" << std::endl;
     }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "Thrust", "Tx", "Ty", "Tz" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        DroneThrustType thrust = get_thrust();
+        DroneTorqueType torque = get_torque();
+
+        return {std::to_string(total_time_sec), std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)};
+    }
+
 };
 
 }

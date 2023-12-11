@@ -25,7 +25,7 @@ using hako::assets::drone::ThrustDynamics;
 using hako::assets::drone::SensorNoise;
 
 #define DELTA_TIME_SEC              0.001
-#define HAKO_PHYS_DRAG              0.01
+#define HAKO_PHYS_DRAG              0.05
 #define REFERENCE_LATITUDE      47.641468
 #define REFERENCE_LONGTITUDE    -122.140165
 #define REFERENCE_ALTITUDE      121.321
@@ -62,6 +62,8 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
         auto rotor = new RotorDynamics(DELTA_TIME_SEC);
         HAKO_ASSERT(rotor != nullptr);
         rotors[i] = rotor;
+        std::string logfilename= "./log_rotar_" + std::to_string(i) + ".csv";
+        drone->get_logger().add_entry(*rotor, logfilename);
     }
     drone->set_rotor_dynamics(rotors);
 
@@ -69,6 +71,11 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     auto thrust = new ThrustDynamics(DELTA_TIME_SEC);
     HAKO_ASSERT(thrust != nullptr);
     drone->set_thrus_dynamics(thrust);
+    double param_A =  8 * GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+    double param_B = 0.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+    double param_Jr = 0.0;
+    thrust->set_params(param_A, param_B, param_Jr);
+    drone->get_logger().add_entry(*thrust, "./log_thrust.csv");
 
     //sensor acc
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);

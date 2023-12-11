@@ -3,12 +3,13 @@
 
 #include "drone_primitive_types.hpp"
 #include "irotor_dynamics.hpp"
+#include "utils/icsv_log.hpp"
 #include <math.h>
 
 namespace hako::assets::drone {
 
 
-class RotorDynamics : public hako::assets::drone::IRotorDynamics {
+class RotorDynamics : public hako::assets::drone::IRotorDynamics, public ICsvLog {
 private:
     double param_rpm_max = 6000.0;
     double param_tau = 1.0;
@@ -58,6 +59,15 @@ public:
         }
         this->speed.data = this->next_speed.data;
         this->total_time_sec += this->delta_time_sec;
+    }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "RPM" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        DroneRotorSpeedType v = get_rotor_speed();
+        return {std::to_string(total_time_sec), std::to_string(v.data)};
     }
 };
 

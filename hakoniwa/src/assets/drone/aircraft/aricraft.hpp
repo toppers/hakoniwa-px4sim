@@ -2,13 +2,18 @@
 #define _AIRCRAFT_HPP_
 
 #include "iaircraft.hpp"
+#include "utils/csv_logger.hpp"
 
 namespace hako::assets::drone {
 
 class AirCraft : public hako::assets::drone::IAirCraft {
-
+private:
+    CsvLogger logger;
 public:
-    virtual ~AirCraft() {}
+    virtual ~AirCraft() 
+    {
+        logger.close();
+    }
     void run(double controls[ROTOR_NUM]) override
     {
         //actuators
@@ -26,6 +31,12 @@ public:
         gps->run(drone_dynamics->get_pos(), drone_dynamics->get_vel());
         mag->run(drone_dynamics->get_angle());
         baro->run(drone_dynamics->get_pos());
+
+        logger.run();
+    }
+    CsvLogger& get_logger()
+    {
+        return logger;
     }
 
 };

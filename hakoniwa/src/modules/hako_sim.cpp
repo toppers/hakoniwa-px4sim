@@ -68,18 +68,27 @@ static void my_setup()
     return;
 }
 
-static void do_io_write()
+static void do_io_write(double controls[hako::assets::drone::ROTOR_NUM])
 {
+    Hako_HakoHilActuatorControls hil_actuator_controls;
     Hako_Twist pos;
+
+    memset(&hil_actuator_controls, 0, sizeof(hil_actuator_controls));
+    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+        hil_actuator_controls.controls[i] = controls[i];
+    }
+    if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_MOTOR, (const char*)&hil_actuator_controls, sizeof(hil_actuator_controls))) {
+        std::cerr << "ERROR: can not write pdu data: hil_actuator_controls" << std::endl;
+    }
 
     DronePositionType dpos = drone->get_drone_dynamics().get_pos();
     DroneAngleType dangle = drone->get_drone_dynamics().get_angle();
     pos.linear.x = dpos.data.x;
-    pos.linear.y = dpos.data.y;
-    pos.linear.z = dpos.data.z;
+    pos.linear.y = -dpos.data.y;
+    pos.linear.z = -dpos.data.z;
     pos.angular.x = dangle.data.x;
-    pos.angular.y = dangle.data.y;
-    pos.angular.z = dangle.data.z;
+    pos.angular.y = -dangle.data.y;
+    pos.angular.z = -dangle.data.z;
     if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_POS, (const char*)&pos, sizeof(pos))) {
         std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
     }
@@ -99,7 +108,7 @@ static void my_task()
     //write Mavlink Message
     mavlink_io.write_sensor_data(*drone);
 
-    do_io_write();
+    do_io_write(controls);
     px4sim_sender_do_task();
     return;
 }

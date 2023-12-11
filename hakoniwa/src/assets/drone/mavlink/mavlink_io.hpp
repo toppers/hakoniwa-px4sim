@@ -3,6 +3,7 @@
 
 #include "iaircraft.hpp"
 #include "hako/pdu/hako_pdu_data.hpp"
+#include "config/config.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {
@@ -67,9 +68,16 @@ public:
     {
         Hako_HakoHilActuatorControls hil_actuator_controls;
         if (hako_read_hil_actuator_controls(hil_actuator_controls)) {
+#ifndef DRONE_PX4_AIRFRAME_ADJUSTMENT_ENABLE
             for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
                 controls[i] = hil_actuator_controls.controls[i];
             }
+#else
+        controls[0] = hil_actuator_controls.controls[2];
+        controls[1] = hil_actuator_controls.controls[0];
+        controls[2] = hil_actuator_controls.controls[3];
+        controls[3] = hil_actuator_controls.controls[1];
+#endif
             return true;
         }
         return false;
