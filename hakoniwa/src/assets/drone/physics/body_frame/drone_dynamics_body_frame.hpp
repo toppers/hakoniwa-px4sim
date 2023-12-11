@@ -190,7 +190,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", "X", "Y", "Z", "Rx", "Rx", "Ry" };
+        return { "TIME", "X", "Y", "Z", "Rx", "Ry", "Rz" };
     }
     const std::vector<std::string> log_data() override
     {
