@@ -48,7 +48,11 @@ add_executable(
 
     px4sim_main.cpp
 )
-
+add_executable(
+    utest
+    assets/drone/physics/math_and_physics/math_and_physics.cpp
+    assets/drone/physics/math_and_physics/utest.cpp
+)
 target_include_directories(
     hako-px4sim
     PRIVATE /usr/local/include
