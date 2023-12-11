@@ -25,7 +25,7 @@ using hako::assets::drone::ThrustDynamics;
 using hako::assets::drone::SensorNoise;
 
 #define DELTA_TIME_SEC              0.001
-#define HAKO_PHYS_DRAG              0.05
+#define HAKO_PHYS_DRAG              0.1
 #define REFERENCE_LATITUDE      47.641468
 #define REFERENCE_LONGTITUDE    -122.140165
 #define REFERENCE_ALTITUDE      121.321
@@ -43,7 +43,7 @@ using hako::assets::drone::SensorNoise;
 #define GPS_SAMPLE_NUM              2
 #define MAG_SAMPLE_NUM              2
 
-#define RPM_MAX                     4000
+#define RPM_MAX                     2000
 
 IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
 {
@@ -75,18 +75,18 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     HAKO_ASSERT(thrust != nullptr);
     drone->set_thrus_dynamics(thrust);
     double param_A =  32 * GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_B =  0.000001 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_Jr = 0.000001;
+    double param_B =  1.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+    double param_Jr = 1.0;
     thrust->set_params(param_A, param_B, param_Jr);
 
     RotorConfigType rotor_config[ROTOR_NUM];
-    rotor_config[0].ccw = 0.05;
+    rotor_config[0].ccw =  0.0005;
     rotor_config[0].data = { 0.1515, 0.245, 0 };
-    rotor_config[1].ccw = 0.05;
+    rotor_config[1].ccw =  0.0005;
     rotor_config[1].data = { -0.1515, -0.1875, 0 };
-    rotor_config[2].ccw = -0.05;
+    rotor_config[2].ccw = -0.0005;
     rotor_config[2].data = { 0.1515, -0.245, 0 };
-    rotor_config[3].ccw = -0.05;
+    rotor_config[3].ccw = -0.0005;
     rotor_config[3].data = { -0.1515, 0.1875, 0 };
 
     thrust->set_rotor_config(rotor_config);
