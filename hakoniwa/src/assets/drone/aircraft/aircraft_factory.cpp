@@ -43,6 +43,8 @@ using hako::assets::drone::SensorNoise;
 #define GPS_SAMPLE_NUM              2
 #define MAG_SAMPLE_NUM              2
 
+#define RPM_MAX                     4000
+
 IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
 {
     (void)drone_type;
@@ -62,6 +64,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
         auto rotor = new RotorDynamics(DELTA_TIME_SEC);
         HAKO_ASSERT(rotor != nullptr);
         rotors[i] = rotor;
+        rotor->set_params(RPM_MAX, 1.0, 1.0);
         std::string logfilename= "./log_rotar_" + std::to_string(i) + ".csv";
         drone->get_logger().add_entry(*rotor, logfilename);
     }
@@ -71,10 +74,22 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     auto thrust = new ThrustDynamics(DELTA_TIME_SEC);
     HAKO_ASSERT(thrust != nullptr);
     drone->set_thrus_dynamics(thrust);
-    double param_A =  8 * GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_B = 0.1 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_Jr = 0.1;
+    double param_A =  32 * GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+    double param_B =  0.000001 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+    double param_Jr = 0.000001;
     thrust->set_params(param_A, param_B, param_Jr);
+
+    RotorConfigType rotor_config[ROTOR_NUM];
+    rotor_config[0].ccw = 0.05;
+    rotor_config[0].data = { 0.1515, 0.245, 0 };
+    rotor_config[1].ccw = 0.05;
+    rotor_config[1].data = { -0.1515, -0.1875, 0 };
+    rotor_config[2].ccw = -0.05;
+    rotor_config[2].data = { 0.1515, -0.245, 0 };
+    rotor_config[3].ccw = -0.05;
+    rotor_config[3].data = { -0.1515, 0.1875, 0 };
+
+    thrust->set_rotor_config(rotor_config);
     drone->get_logger().add_entry(*thrust, "./log_thrust.csv");
 
     //sensor acc

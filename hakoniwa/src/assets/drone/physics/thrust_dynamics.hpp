@@ -126,6 +126,9 @@ public:
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->prev_rotor_speed[i] = rotor_speed[i];
         }
+        //torque.data.x = 0;
+        //torque.data.y = 0;
+        //torque.data.z = 0;
         total_time_sec += delta_time_sec;
     }
 
