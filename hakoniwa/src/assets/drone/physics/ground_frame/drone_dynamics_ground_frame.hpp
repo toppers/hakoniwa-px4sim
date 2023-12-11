@@ -50,6 +50,13 @@ public:
     }
     virtual ~DroneDynamicsGroundFrame() {}
 
+    void set_torque_constants(double cx, double cy, double cz) override
+    {
+        (void)cx;
+        (void)cy;
+        (void)cz;
+    }
+
     void set_mass(double mass)
     {
         this->param_mass = mass;

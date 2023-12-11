@@ -106,7 +106,12 @@ public:
         this->param_cz = 1;
     }
     virtual ~DroneDynamicsBodyFrame() {}
-
+    void set_torque_constants(double cx, double cy, double cz) override
+    {
+        this->param_cx = cx;
+        this->param_cy = cy;
+        this->param_cz = cz;
+    }
     void set_mass(double mass)
     {
         this->param_mass = mass;

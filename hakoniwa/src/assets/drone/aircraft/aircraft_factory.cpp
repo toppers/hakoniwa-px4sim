@@ -37,13 +37,13 @@ using hako::assets::drone::SensorNoise;
 #define PARAMS_MAG_D    DEGREE2RADIAN(15.306)
 #define PARAMS_MAG_I    DEGREE2RADIAN(68.984)
 
-#define ACC_SAMPLE_NUM              2
-#define GYRO_SAMPLE_NUM             2
-#define BARO_SAMPLE_NUM             2
-#define GPS_SAMPLE_NUM              2
-#define MAG_SAMPLE_NUM              2
+#define ACC_SAMPLE_NUM              4
+#define GYRO_SAMPLE_NUM             4
+#define BARO_SAMPLE_NUM             4
+#define GPS_SAMPLE_NUM              4
+#define MAG_SAMPLE_NUM              4
 
-#define RPM_MAX                     2000
+#define RPM_MAX                     1500
 
 IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
 {
@@ -56,6 +56,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     auto drone_dynamics = new DroneDynamicsBodyFrame(DELTA_TIME_SEC);
     HAKO_ASSERT(drone_dynamics != nullptr);
     drone_dynamics->set_drag(HAKO_PHYS_DRAG);
+    drone_dynamics->set_torque_constants(0.001, 0.001, 0.001);
     drone->set_drone_dynamics(drone_dynamics);
 
     //rotor dynamics
