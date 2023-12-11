@@ -4,13 +4,15 @@
 
 #include "isensor_baro.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
+#include "utils/icsv_log.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {
 
-class SensorBaro : public hako::assets::drone::ISensorBaro {
+class SensorBaro : public hako::assets::drone::ISensorBaro, public ICsvLog {
 private:
     double delta_time_sec;
+    double total_time_sec;
 
     hako::assets::drone::SensorDataAssembler asm_alt;
 public:
@@ -21,8 +23,8 @@ public:
     virtual ~SensorBaro() {}
     void run(const DronePositionType& data) override
     {
-        (void)this->delta_time_sec;
         asm_alt.add_data(ref_alt - data.data.z);
+        total_time_sec += delta_time_sec;
     }
     DroneBarometricPressureType sensor_value() override
     {
@@ -48,6 +50,16 @@ public:
                     << result.pressure_alt
                     << " )" 
                     << std::endl;
+    }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "abs_p", "diff_p", "p_alt" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        DroneBarometricPressureType v = sensor_value();
+
+        return {std::to_string(total_time_sec), std::to_string(v.abs_pressure), std::to_string(v.diff_pressure), std::to_string(v.pressure_alt)};
     }
 
 };

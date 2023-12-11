@@ -4,13 +4,15 @@
 
 #include "isensor_gps.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
+#include "utils/icsv_log.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {
 
-class SensorGps : public hako::assets::drone::ISensorGps {
+class SensorGps : public hako::assets::drone::ISensorGps, public ICsvLog {
 private:
     double delta_time_sec;
+    double total_time_sec;
     hako::assets::drone::SensorDataAssembler asm_lat;
     hako::assets::drone::SensorDataAssembler asm_lon;
     hako::assets::drone::SensorDataAssembler asm_alt;
@@ -74,10 +76,10 @@ public:
     virtual ~SensorGps() {}
     void run(const DronePositionType& p, const DroneVelocityType& v) override
     {
-        (void)this->delta_time_sec;
         run_pos(p);
         run_velocity(v);
         run_cog(v);
+        total_time_sec += delta_time_sec;
     }
     DroneGpsDataType sensor_value() override
     {
@@ -138,6 +140,19 @@ public:
                     << result.cog
                     << " )" 
                     << std::endl;
+    }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "lat", "lon", "alt", "vel", "vn", "ve", "vd", "cog" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        DroneGpsDataType v = sensor_value();
+
+        return {std::to_string(total_time_sec), 
+                std::to_string(v.lat), std::to_string(v.lon), std::to_string(v.alt),
+                std::to_string(v.vel), std::to_string(v.vn), std::to_string(v.ve), std::to_string(v.vd),
+                std::to_string(v.cog)};
     }
 
 };

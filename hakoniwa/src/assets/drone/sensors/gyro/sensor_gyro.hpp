@@ -3,14 +3,16 @@
 
 
 #include "isensor_gyro.hpp"
+#include "utils/icsv_log.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {
 
-class SensorGyro : public hako::assets::drone::ISensorGyro {
+class SensorGyro : public hako::assets::drone::ISensorGyro, public ICsvLog {
 private:
     double delta_time_sec;
+    double total_time_sec;
     hako::assets::drone::SensorDataAssembler gyro_x;
     hako::assets::drone::SensorDataAssembler gyro_y;
     hako::assets::drone::SensorDataAssembler gyro_z;
@@ -22,10 +24,10 @@ public:
     virtual ~SensorGyro() {}
     void run(const DroneAngularVelocityBodyFrameType& data) override
     {
-        (void)this->delta_time_sec;
         this->gyro_x.add_data(data.data.x);
         this->gyro_y.add_data(data.data.y);
         this->gyro_z.add_data(data.data.z);
+        total_time_sec += delta_time_sec;
     }
     DroneAngularVelocityBodyFrameType sensor_value() override
     {
@@ -51,6 +53,16 @@ public:
                     << result.data.z
                     << " )" 
                     << std::endl;
+    }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "X", "Y", "Z" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        auto v = sensor_value();
+
+        return {std::to_string(total_time_sec), std::to_string(v.data.x), std::to_string(v.data.y), std::to_string(v.data.z)};
     }
 
 };

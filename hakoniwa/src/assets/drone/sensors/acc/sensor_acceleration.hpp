@@ -3,13 +3,15 @@
 
 
 #include "isensor_acceleration.hpp"
+#include "utils/icsv_log.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 
 namespace hako::assets::drone {
 
-class SensorAcceleration : public hako::assets::drone::ISensorAcceleration {
+class SensorAcceleration : public hako::assets::drone::ISensorAcceleration, public ICsvLog {
 private:
     double delta_time_sec;
+    double total_time_sec;
     hako::assets::drone::SensorDataAssembler acc_x;
     hako::assets::drone::SensorDataAssembler acc_y;
     hako::assets::drone::SensorDataAssembler acc_z;
@@ -31,6 +33,7 @@ public:
             this->has_prev_data = true;
         }
         this->prev_data = data;
+        total_time_sec += delta_time_sec;
     }
     DroneAccelerationBodyFrameType sensor_value() override
     {
@@ -59,6 +62,17 @@ public:
                     << " )" 
                     << std::endl;
     }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "X", "Y", "Z" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        DroneAccelerationBodyFrameType v = sensor_value();
+
+        return {std::to_string(total_time_sec), std::to_string(v.data.x), std::to_string(v.data.y), std::to_string(v.data.z)};
+    }
+
 };
 
 }

@@ -72,8 +72,8 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     HAKO_ASSERT(thrust != nullptr);
     drone->set_thrus_dynamics(thrust);
     double param_A =  8 * GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_B = 0.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_Jr = 0.0;
+    double param_B = 0.1 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+    double param_Jr = 0.1;
     thrust->set_params(param_A, param_B, param_Jr);
     drone->get_logger().add_entry(*thrust, "./log_thrust.csv");
 
@@ -81,11 +81,13 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(acc != nullptr);
     drone->set_acc(acc);
+    drone->get_logger().add_entry(*acc, "./log_acc.csv");
 
     //sensor gyro
     auto gyro = new SensorGyro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(gyro != nullptr);
     drone->set_gyro(gyro);
+    drone->get_logger().add_entry(*gyro, "./log_gyro.csv");
 
     //sensor mag
     auto mag = new SensorMag(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -95,18 +97,21 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     mag->set_noise(mag_noise);
     mag->set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
     drone->set_mag(mag);
+    drone->get_logger().add_entry(*mag, "./log_mag.csv");
 
     //sensor baro
     auto baro = new SensorBaro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     baro->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     HAKO_ASSERT(baro != nullptr);
     drone->set_baro(baro);
+    drone->get_logger().add_entry(*baro, "./log_baro.csv");
 
     //sensor gps
     auto gps = new SensorGps(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(gps != nullptr);
     gps->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     drone->set_gps(gps);
+    drone->get_logger().add_entry(*gps, "./log_gps.csv");
 
     return drone;
 }

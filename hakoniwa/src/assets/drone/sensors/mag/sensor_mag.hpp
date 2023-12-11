@@ -2,13 +2,15 @@
 #define _SENSOR_MAG_HPP_
 
 #include "isensor_mag.hpp"
+#include "utils/icsv_log.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 
 namespace hako::assets::drone {
 
-class SensorMag : public hako::assets::drone::ISensorMag {
+class SensorMag : public hako::assets::drone::ISensorMag, public ICsvLog {
 private:
     double delta_time_sec;
+    double total_time_sec;
     hako::assets::drone::SensorDataAssembler mag_x;
     hako::assets::drone::SensorDataAssembler mag_y;
     hako::assets::drone::SensorDataAssembler mag_z;
@@ -21,8 +23,6 @@ public:
     virtual ~SensorMag() {}
     void run(const DroneAngleType& angle) override
     {
-        (void)this->delta_time_sec;
-
         double theta = angle.data.y + params_I;
         double psi = angle.data.z - params_D;
         //std::cout << "theta: " << theta << " psi: " << psi << std::endl;
@@ -34,6 +34,7 @@ public:
         this->mag_x.add_data(x);
         this->mag_y.add_data(y);
         this->mag_z.add_data(z);
+        total_time_sec += delta_time_sec;
     }
     DroneMagDataType sensor_value() override
     {
@@ -59,6 +60,16 @@ public:
                     << result.data.z
                     << " )" 
                     << std::endl;
+    }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "X", "Y", "Z" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        auto v = sensor_value();
+
+        return {std::to_string(total_time_sec), std::to_string(v.data.x), std::to_string(v.data.y), std::to_string(v.data.z)};
     }
 
 };
