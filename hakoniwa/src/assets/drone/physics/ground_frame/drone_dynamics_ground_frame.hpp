@@ -2,11 +2,12 @@
 #define _DRON_DYNAMICS_GROUND_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
+#include "utils/icsv_log.hpp"
 
 namespace hako::assets::drone {
 
 
-class DroneDynamicsGroundFrame : public hako::assets::drone::IDroneDynamics {
+class DroneDynamicsGroundFrame : public hako::assets::drone::IDroneDynamics, public ICsvLog {
 private:
     /*
      * parameters
@@ -129,6 +130,19 @@ public:
         
         this->total_time_sec += this->delta_time_sec;
     }
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "X", "Y", "Z", "Rx", "Rx", "Ry" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        return {
+            std::to_string(total_time_sec), 
+            std::to_string(position.data.x), std::to_string(position.data.y), std::to_string(position.data.z),
+            std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z)
+            };
+    }
+
 };
 
 }
