@@ -110,7 +110,7 @@ AngularVelocityType angular_velocity_ground_to_body(
 
 /* physics */
 
-AccelerationType Acceleration_in_body_frame(
+AccelerationType acceleration_in_body_frame(
     const VelocityType& body,
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
@@ -141,7 +141,7 @@ AccelerationType Acceleration_in_body_frame(
     return body_acceleration;
 }
 
-AccelerationType Acceleration_in_ground_frame(
+AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
