@@ -115,15 +115,15 @@ Decoded MAVLink message:
   Controls: 0.535 0.528 0.454 0.447 0 0 0 0 
 ```
 
-## controls[0-3]
+#### controls[0-3]
 
 <img width="878" alt="スクリーンショット 2023-12-13 6 56 40" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/c083ec6e-d45e-42e3-a3f8-4bc89bcc672c">
 
-## mode
+#### mode
 
 <img width="869" alt="スクリーンショット 2023-12-13 6 58 33" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/1cd8e7d0-9522-4756-a081-d1e46bc1f173">
 
-## flags
+#### flags
 
 <img width="877" alt="スクリーンショット 2023-12-13 6 59 07" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/c31979cc-c327-4ee8-be2f-efd76a38aa07">
 
@@ -227,7 +227,30 @@ Decoded MAVLink message:
   temparature: 0
   fileds_updated: 7167
  id: 0x0
+
 ```
+#### [xyz]acc
+
+<img width="917" alt="スクリーンショット 2023-12-13 7 02 17" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/a2a5ee2a-ec68-4770-b498-d93f09becb2c">
+
+<img width="894" alt="スクリーンショット 2023-12-13 7 03 18" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/413e05aa-dba7-458f-bfd3-37c630ca84ba">
+
+#### [xyz]gyro
+
+<img width="911" alt="スクリーンショット 2023-12-13 7 04 03" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/69cdca58-4e16-4910-99f3-59b3003ff7ee">
+
+#### [xyz]mag
+
+<img width="873" alt="スクリーンショット 2023-12-13 7 04 38" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/1cdfab44-83ac-40e9-b1c9-9a0e439545d8">
+
+### preassure
+
+<img width="880" alt="スクリーンショット 2023-12-13 7 05 46" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/12f1b963-a5c5-495c-831d-ea04c08e8c81">
+
+<img width="900" alt="スクリーンショット 2023-12-13 7 06 16" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/15565a70-ea78-4fc8-b44f-aa85d4ee554b">
+
+<img width="900" alt="スクリーンショット 2023-12-13 7 06 46" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/a614321d-8bb5-4c31-b13e-19af321397db">
+
 
 ### HIL_GPS
 
