@@ -106,7 +106,7 @@ public:
         return velocity_ground_to_body(velocity, angle);
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
-        return angular_velocity_body_to_ground(angularVelocity, angle);
+        return angular_velocity_ground_to_body(angularVelocity, angle);
     }
 
     // Implementation for the run function is required
