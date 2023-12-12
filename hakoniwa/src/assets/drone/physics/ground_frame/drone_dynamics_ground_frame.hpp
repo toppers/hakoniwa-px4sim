@@ -14,6 +14,9 @@ private:
      */
     double param_mass;
     double param_drag;
+    double param_cx;
+    double param_cy;
+    double param_cz;
     /*
      * internal state
      */
@@ -26,9 +29,6 @@ private:
     DroneVelocityType next_velocity;           // Initialized to zero by default (glm::dvec3)
     DroneAngleType next_angle;                 // Initialized to zero by default (glm::dvec3)
     DroneAngularVelocityType next_angularVelocity; // Initialized to zero by default (glm::dvec3)
-
-    DroneVelocityBodyFrameType velocityBodyFrame;
-    DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -48,14 +48,17 @@ public:
         this->delta_time_sec = dt;
         this->param_mass = 1;
         this->param_drag = 0;
+        this->param_cx = 1;
+        this->param_cy = 1;
+        this->param_cz = 1;
     }
     virtual ~DroneDynamicsGroundFrame() {}
 
     void set_torque_constants(double cx, double cy, double cz) override
     {
-        (void)cx;
-        (void)cy;
-        (void)cz;
+        this->param_cx = cx;
+        this->param_cy = cy;
+        this->param_cz = cz;
     }
 
     void set_mass(double mass)
@@ -100,10 +103,10 @@ public:
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
-        return velocityBodyFrame;
+        return velocity_ground_to_body(velocity, angle);
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
-        return angularVelocityBodyFrame;
+        return angular_velocity_body_to_ground(angularVelocity, angle);
     }
 
     // Implementation for the run function is required

@@ -44,6 +44,7 @@ private:
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
+#if 0
         DroneVelocityType earthFrameVelocity;
         const double cos_phi = this->cache.cos_phi;
         const double cos_theta = this->cache.cos_theta;
@@ -65,10 +66,14 @@ private:
                                     cos_phi * cos_theta * src.data.z;
 
         return earthFrameVelocity;
+#else
+        return velocity_body_to_ground(src, angle);
+#endif
     }
 
     DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
     {
+#if 0
         DroneAngularVelocityType eulerRate;
         const double sin_phi = this->cache.sin_phi;
         const double cos_phi = this->cache.cos_phi;
@@ -80,6 +85,9 @@ private:
         eulerRate.data.z = sin_phi * sec_theta * src.data.y + cos_phi * sec_theta * src.data.z;
 
         return eulerRate;
+#else
+        return angular_velocity_body_to_ground(src, angle);
+#endif
     }
     void integral(const DroneVelocityType& src)
     {

@@ -55,20 +55,20 @@ void DroneDynamicsGroundFrame::run_z(const DroneThrustType &thrust, const DroneT
 void DroneDynamicsGroundFrame::run_rx(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
-    this->next_angularVelocity.data.x = (torque.data.x * this->delta_time_sec) + this->angularVelocity.data.x;
+    this->next_angularVelocity.data.x = (this->param_cx * torque.data.x * this->delta_time_sec) + this->angularVelocity.data.x;
     this->next_angle.data.x           = (this->angularVelocity.data.x * this->delta_time_sec) + this->angle.data.x;
 }
 
 void DroneDynamicsGroundFrame::run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
-    this->next_angularVelocity.data.y = (torque.data.y * this->delta_time_sec) + this->angularVelocity.data.y;
+    this->next_angularVelocity.data.y = (this->param_cy * torque.data.y * this->delta_time_sec) + this->angularVelocity.data.y;
     this->next_angle.data.y           = (this->angularVelocity.data.y * this->delta_time_sec) + this->angle.data.y;
 }
 
 void DroneDynamicsGroundFrame::run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque) 
 {
     (void)thrust;
-    this->next_angularVelocity.data.z = (torque.data.z * this->delta_time_sec) + this->angularVelocity.data.z;
+    this->next_angularVelocity.data.z = (this->param_cz * torque.data.z * this->delta_time_sec) + this->angularVelocity.data.z;
     this->next_angle.data.z           = (this->angularVelocity.data.z * this->delta_time_sec) + this->angle.data.z;
 }

@@ -3,10 +3,13 @@
 
 #include <glm/vec3.hpp>
 #include <math.h>
+#include <tuple>
+#include "assets/drone/physics/math_and_physics/math_and_physics.hpp"
 
 namespace hako::assets::drone {
 
 const double GRAVITY = 9.81;
+extern glm::dvec3 tupleToVec3(const std::tuple<double, double, double>& tuple);
 
 /*
  * Coordinate System: Ground Coordinate System (NED)
@@ -17,8 +20,17 @@ const double GRAVITY = 9.81;
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#position
  */
-typedef struct {
+typedef struct DronePosition {
     glm::dvec3 data;
+    DronePosition(){}
+    DronePosition(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DronePosition& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DronePositionType;
 
 /*
@@ -30,8 +42,17 @@ typedef struct {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#velocity
  */
-typedef struct {
+typedef struct DroneVelocity {
     glm::dvec3 data;
+    DroneVelocity(){}
+    DroneVelocity(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneVelocity& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneVelocityType;
 
 
@@ -44,8 +65,17 @@ typedef struct {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#velocity-in-body-coordinate-system
  */
-typedef struct {
+typedef struct DroneVelocityBodyFrame {
     glm::dvec3 data;
+    DroneVelocityBodyFrame(){}
+    DroneVelocityBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneVelocityBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneVelocityBodyFrameType;
 
 /*
@@ -57,8 +87,17 @@ typedef struct {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angle
  */
-typedef struct {
+typedef struct DroneAngle {
     glm::dvec3 data;
+    DroneAngle(){}
+    DroneAngle(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngle& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneAngleType;
 
 /*
@@ -70,8 +109,17 @@ typedef struct {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angularvelocity
  */
-typedef struct {
+typedef struct DroneAngularVelocity {
     glm::dvec3 data;
+    DroneAngularVelocity(){}
+    DroneAngularVelocity(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngularVelocity& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneAngularVelocityType;
 
 
@@ -84,8 +132,17 @@ typedef struct {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angular-velocity-in-body-coordinate-system
  */
-typedef struct {
+typedef struct DroneAngularVelocityBodyFrame {
     glm::dvec3 data;
+    DroneAngularVelocityBodyFrame(){}
+    DroneAngularVelocityBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngularVelocityBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneAngularVelocityBodyFrameType;
 
 /*
