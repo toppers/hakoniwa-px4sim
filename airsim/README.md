@@ -305,3 +305,31 @@ Decoded MAVLink message:
   cog: 24593
   id: 0x0
 ```
+
+### lat, long, alt
+
+<img width="886" alt="スクリーンショット 2023-12-13 7 09 28" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/27132984-0728-4e69-9192-8a045ad1c14e">
+
+<img width="884" alt="スクリーンショット 2023-12-13 7 09 51" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/26744c75-962c-4394-94a3-169e3db0b9fa">
+
+<img width="906" alt="スクリーンショット 2023-12-13 7 10 21" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/33676810-80b9-436b-a192-bbc127b20ef0">
+
+
+### eph, epv
+
+<img width="889" alt="スクリーンショット 2023-12-13 7 11 00" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/ca678bb4-2a67-4711-a224-a3f7c5ae8f4e">
+
+<img width="879" alt="スクリーンショット 2023-12-13 7 11 17" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/ebca91fa-c817-4f4c-bb6b-40834a96eab7">
+
+### vel, vn, ve, vd, cog
+
+<img width="910" alt="スクリーンショット 2023-12-13 7 11 53" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/7af20e3b-1f2d-41dc-879c-b19ba3403bf8">
+
+<img width="901" alt="スクリーンショット 2023-12-13 7 12 26" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/81fbb22b-e708-4a01-b8ee-653a796f052b">
+
+<img width="884" alt="スクリーンショット 2023-12-13 7 13 05" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/4898846b-1444-4272-aa6f-d460ece7012a">
+
+<img width="909" alt="スクリーンショット 2023-12-13 7 13 32" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/bb13ef84-e937-4811-b4ea-e019d20e5cf1">
+
+<img width="891" alt="スクリーンショット 2023-12-13 7 13 54" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/256dac8b-1661-41e7-adeb-4cfe74d9cf95">
+
