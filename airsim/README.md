@@ -115,9 +115,17 @@ Decoded MAVLink message:
   Controls: 0.535 0.528 0.454 0.447 0 0 0 0 
 ```
 
+## controls[0-3]
+
 <img width="878" alt="スクリーンショット 2023-12-13 6 56 40" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/c083ec6e-d45e-42e3-a3f8-4bc89bcc672c">
 
+## mode
 
+<img width="869" alt="スクリーンショット 2023-12-13 6 58 33" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/1cd8e7d0-9522-4756-a081-d1e46bc1f173">
+
+## flags
+
+<img width="877" alt="スクリーンショット 2023-12-13 6 59 07" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/c31979cc-c327-4ee8-be2f-efd76a38aa07">
 
 
 ## AirSim
