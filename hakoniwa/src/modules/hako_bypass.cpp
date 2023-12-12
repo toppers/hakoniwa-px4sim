@@ -5,6 +5,23 @@
 #include "../utils/hako_utils.hpp"
 #include <stdlib.h>
 #include <iostream>
+#include "utils/csv_logger.hpp"
+#include "mavlink/log/mavlink_log_hil_sensor.hpp"
+#include "mavlink/log/mavlink_log_hil_gps.hpp"
+#include "mavlink/log/mavlink_log_hil_actuator_controls.hpp"
+#include "mavlink/mavlink_decoder.hpp"
+
+using hako::assets::drone::mavlink::log::MavlinkLogHilSensor;
+using hako::assets::drone::mavlink::log::MavlinkLogHilGps;
+using hako::assets::drone::mavlink::log::MavlinkLogHilActuatorControls;
+
+static CsvLogger logger_hil_sensor;
+static CsvLogger logger_hil_gps;
+static CsvLogger logger_hil_actuator_controls;
+
+static MavlinkLogHilSensor log_hil_sensor;
+static MavlinkLogHilGps log_hil_gps;
+static MavlinkLogHilActuatorControls log_hil_actuator_controls;
 
 typedef struct {
     const char* name;
@@ -15,10 +32,50 @@ typedef struct {
     pthread_mutex_t *mutex;
 } HakoBypassCommType;
 
+static void hako_bypass_logging(const char* recvBuffer, int recvDataLen)
+{
+    mavlink_message_t msg;
+    bool ret = mavlink_decode(MAVLINK_CONFIG_CHAN_0, recvBuffer, recvDataLen, &msg);
+    if (ret)
+    {
+        MavlinkDecodedMessage message;
+        ret = mavlink_get_message(&msg, &message);
+        if (ret) {
+            switch (message.type) {
+            case MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS:
+                log_hil_actuator_controls.set_data(message.data.hil_actuator_controls);
+                logger_hil_actuator_controls.run();
+                break;
+            case MAVLINK_MSG_TYPE_HIL_SENSOR:
+                log_hil_sensor.set_data(message.data.sensor);
+                logger_hil_sensor.run();
+                break;
+            case MAVLINK_MSG_TYPE_HIL_GPS:
+                log_hil_gps.set_data(message.data.hil_gps);
+                logger_hil_gps.run();
+                break;
+            default:
+                break;
+            }
+        }
+    }    
+}
+
 static void *hako_bypass_thread(void *argp)
 {
     HakoBypassCommType *bypass_ctrl = (HakoBypassCommType*)argp;
     std::cout << "INFO: start " << bypass_ctrl->name << " : " << bypass_ctrl->owner << std::endl;
+
+    if (bypass_ctrl->owner == MAVLINK_CAPTURE_DATA_OWNER_CONTROL) {
+        //px4
+        logger_hil_actuator_controls.add_entry(log_hil_actuator_controls, "./log_comm_hil_actuator_controls.csv");
+    }
+    else {
+        //airsim
+        logger_hil_sensor.add_entry(log_hil_sensor, "./log_comm_hil_sensor.csv");
+        logger_hil_gps.add_entry(log_hil_gps, "./log_comm_hil_gps.csv");
+    }
+
     while (true) {
         char recvBuffer[1024];
         int recvDataLen;
@@ -31,6 +88,7 @@ static void *hako_bypass_thread(void *argp)
             if (ret == false) {
                 std::cerr << "ERROR: " << bypass_ctrl->name << " Failed to capture data" << std::endl;
             }
+            hako_bypass_logging(recvBuffer, recvDataLen);
 
             int sndLen = 0;
             ret = bypass_ctrl->dst_comm->send(recvBuffer, recvDataLen, &sndLen);

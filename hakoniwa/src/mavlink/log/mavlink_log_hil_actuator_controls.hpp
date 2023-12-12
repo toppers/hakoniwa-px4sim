@@ -1,5 +1,5 @@
-#ifndef _MAVLINK_LOG_HIL_GPS_HPP_
-#define _MAVLINK_LOG_HIL_GPS_HPP_
+#ifndef _MAVLINK_LOG_HIL_ACTUATOR_CONTROLS_HPP_
+#define _MAVLINK_LOG_HIL_ACTUATOR_CONTROLS_HPP_
 
 
 #include "utils/icsv_log.hpp"
@@ -44,4 +44,4 @@ public:
 }
 
 
-#endif /* _MAVLINK_LOG_HIL_GPS_HPP_ */
+#endif /* _MAVLINK_LOG_HIL_ACTUATOR_CONTROLS_HPP_ */
