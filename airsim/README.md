@@ -80,6 +80,12 @@ Decoded MAVLink message:
 
 ### HIL_ACTUATOR_CONTROLS
 
+```
+Average of TIME_diff: 3002.7064792305255 μs
+Standard Deviation of TIME_diff: 124.62584573916502 μs
+```
+
+
 静止状態：
 
 
@@ -171,6 +177,12 @@ Decoded MAVLink message:
 
 ### HIL_SENSOR
 
+```
+Average of TIME_diff: 2999.958494548013 μs
+Standard Deviation of TIME_diff: 17.794393454408848 μs
+```
+
+
 静止状態：
 
 ```
@@ -254,6 +266,11 @@ Decoded MAVLink message:
 
 ### HIL_GPS
 
+
+```
+Average of TIME_diff: 20992.981333997013 μs
+Standard Deviation of TIME_diff: 360.4148943809385 μs
+```
 
 静止状態：
 
