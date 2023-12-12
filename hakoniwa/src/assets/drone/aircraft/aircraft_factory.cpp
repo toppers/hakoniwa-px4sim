@@ -11,6 +11,7 @@
 #include "assets/drone/sensors/mag/sensor_mag.hpp"
 #include "assets/drone/aircraft/aricraft.hpp"
 #include "assets/drone/utils/sensor_noise.hpp"
+#include "config/drone_config.hpp"
 
 using hako::assets::drone::AirCraft;
 using hako::assets::drone::DroneDynamicsBodyFrame;
@@ -24,26 +25,30 @@ using hako::assets::drone::RotorDynamics;
 using hako::assets::drone::ThrustDynamics;
 using hako::assets::drone::SensorNoise;
 
-#define DELTA_TIME_SEC              0.001
-#define HAKO_PHYS_DRAG              0.1
-#define REFERENCE_LATITUDE      47.641468
-#define REFERENCE_LONGTITUDE    -122.140165
-#define REFERENCE_ALTITUDE      121.321
+#define DELTA_TIME_SEC              drone_config.getSimTimeStep()
+#define HAKO_PHYS_DRAG              drone_config.getCompDroneDynamicsAirFrictionCoefficient()
+#define REFERENCE_LATITUDE          drone_config.getSimLatitude()
+#define REFERENCE_LONGTITUDE        drone_config.getSimLongitude()
+#define REFERENCE_ALTITUDE          drone_config.getSimAltitude()
 #define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
 #define RADIAN2DEGREE(v)    ( (180.0 * (v)) / M_PI )
-#define PARAMS_MAG_F   53045.1
-#define PARAMS_MAG_H   19023.3
-#define PARAMS_MAG_Z   49516.6
-#define PARAMS_MAG_D    DEGREE2RADIAN(15.306)
-#define PARAMS_MAG_I    DEGREE2RADIAN(68.984)
+#define PARAMS_MAG_F   drone_config.getSimMagneticField().intensity_nT
+#define PARAMS_MAG_D    DEGREE2RADIAN(drone_config.getSimMagneticField().declination_deg)
+#define PARAMS_MAG_I    DEGREE2RADIAN(drone_config.getSimMagneticField().inclination_deg)
 
-#define ACC_SAMPLE_NUM              4
-#define GYRO_SAMPLE_NUM             4
-#define BARO_SAMPLE_NUM             4
-#define GPS_SAMPLE_NUM              4
-#define MAG_SAMPLE_NUM              4
+#define ACC_SAMPLE_NUM              drone_config.getCompSensorSampleCount("acc")
+#define GYRO_SAMPLE_NUM             drone_config.getCompSensorSampleCount("gyro")
+#define BARO_SAMPLE_NUM             drone_config.getCompSensorSampleCount("baro")
+#define GPS_SAMPLE_NUM              drone_config.getCompSensorSampleCount("gps")
+#define MAG_SAMPLE_NUM              drone_config.getCompSensorSampleCount("mag")
 
-#define RPM_MAX                     3000
+#define RPM_MAX                     drone_config.getCompRotorRpmMax()
+#define ROTOR_TAU                   drone_config.getCompRotorTau()
+#define ROTOR_K                     drone_config.getCompRotorK()
+
+#define THRUST_PARAM_A              drone_config.getCompThrusterParameter("parameterA")
+#define THRUST_PARAM_B              drone_config.getCompThrusterParameter("parameterB")
+#define THRUST_PARAM_JR             drone_config.getCompThrusterParameter("parameterJr")
 
 IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
 {
@@ -67,7 +72,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
         auto rotor = new RotorDynamics(DELTA_TIME_SEC);
         HAKO_ASSERT(rotor != nullptr);
         rotors[i] = rotor;
-        rotor->set_params(RPM_MAX, 1.0, 1.0);
+        rotor->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
         std::string logfilename= "./log_rotar_" + std::to_string(i) + ".csv";
         drone->get_logger().add_entry(*rotor, logfilename);
     }
@@ -77,20 +82,20 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     auto thrust = new ThrustDynamics(DELTA_TIME_SEC);
     HAKO_ASSERT(thrust != nullptr);
     drone->set_thrus_dynamics(thrust);
-    double param_A =  32 * GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_B =  1.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-    double param_Jr = 1.0;
-    thrust->set_params(param_A, param_B, param_Jr);
+    std::cout << "param_A: " << THRUST_PARAM_A << std::endl;
+    std::cout << "param_B: " << THRUST_PARAM_B << std::endl;
+    std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
+    thrust->set_params(THRUST_PARAM_A, THRUST_PARAM_B, THRUST_PARAM_JR);
 
     RotorConfigType rotor_config[ROTOR_NUM];
-    rotor_config[0].ccw =  0.0001;
-    rotor_config[0].data = { 0.1515, 0.245, 0 };
-    rotor_config[1].ccw =  0.0005;
-    rotor_config[1].data = { -0.1515, -0.1875, 0 };
-    rotor_config[2].ccw = -0.0001;
-    rotor_config[2].data = { 0.1515, -0.245, 0 };
-    rotor_config[3].ccw = -0.0001;
-    rotor_config[3].data = { -0.1515, 0.1875, 0 };
+    std::vector<RotorPosition> pos = drone_config.getCompThrusterRotorPositions();
+    HAKO_ASSERT(pos.size() == ROTOR_NUM);
+    for (size_t i = 0; i < pos.size(); ++i) {
+        rotor_config[i].ccw = pos[i].rotationDirection;
+        rotor_config[i].data.x = pos[i].position[0];
+        rotor_config[i].data.y = pos[i].position[1];
+        rotor_config[i].data.z = pos[i].position[2];
+    }    
 
     thrust->set_rotor_config(rotor_config);
     drone->get_logger().add_entry(*thrust, "./log_thrust.csv");
@@ -98,35 +103,62 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     //sensor acc
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(acc != nullptr);
+    double variance = drone_config.getCompSensorNoise("acc");
+    if (variance > 0) {
+        auto noise = new SensorNoise(variance);
+        HAKO_ASSERT(noise != nullptr);
+        acc->set_noise(noise);
+    }
     drone->set_acc(acc);
     drone->get_logger().add_entry(*acc, "./log_acc.csv");
 
     //sensor gyro
     auto gyro = new SensorGyro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(gyro != nullptr);
+    variance = drone_config.getCompSensorNoise("gyro");
+    if (variance > 0) {
+        auto noise = new SensorNoise(variance);
+        HAKO_ASSERT(noise != nullptr);
+        gyro->set_noise(noise);
+    }
     drone->set_gyro(gyro);
     drone->get_logger().add_entry(*gyro, "./log_gyro.csv");
 
     //sensor mag
     auto mag = new SensorMag(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(mag != nullptr);
-    auto mag_noise = new SensorNoise(0.0001);
-    HAKO_ASSERT(mag_noise != nullptr);
-    mag->set_noise(mag_noise);
+    variance = drone_config.getCompSensorNoise("mag");
+    if (variance > 0) {
+        auto noise = new SensorNoise(variance);
+        HAKO_ASSERT(noise != nullptr);
+        mag->set_noise(noise);
+    }
     mag->set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
     drone->set_mag(mag);
     drone->get_logger().add_entry(*mag, "./log_mag.csv");
 
     //sensor baro
     auto baro = new SensorBaro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
-    baro->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     HAKO_ASSERT(baro != nullptr);
+    baro->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
+    variance = drone_config.getCompSensorNoise("baro");
+    if (variance > 0) {
+        auto noise = new SensorNoise(variance);
+        HAKO_ASSERT(noise != nullptr);
+        baro->set_noise(noise);
+    }
     drone->set_baro(baro);
     drone->get_logger().add_entry(*baro, "./log_baro.csv");
 
     //sensor gps
     auto gps = new SensorGps(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
     HAKO_ASSERT(gps != nullptr);
+    variance = drone_config.getCompSensorNoise("gps");
+    if (variance > 0) {
+        auto noise = new SensorNoise(variance);
+        HAKO_ASSERT(noise != nullptr);
+        gps->set_noise(noise);
+    }
     gps->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     drone->set_gps(gps);
     drone->get_logger().add_entry(*gps, "./log_gps.csv");

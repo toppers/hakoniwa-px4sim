@@ -65,6 +65,7 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/assets/drone/include
     PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
+    PRIVATE ${NLOHMANN_SOURCE_DIR}
 )
 
 target_link_libraries(hako-px4sim hakoarun)
