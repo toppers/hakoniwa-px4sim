@@ -14,6 +14,7 @@ set(MAVLINK_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/c_library_v2")
 set(HAKONIWA_CORE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/hakoniwa-core-cpp-client/core/src")
 set(HAKONIWA_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/hakoniwa-core-cpp-client/src/hakoc/src")
 set(HAKONIWA_PDU_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/hakoniwa-ros2pdu/pdu/types")
+set(NLOHMANN_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/hakoniwa-core-cpp-client/core/third-party/json/include")
 
 if (DEFINED HAKO_CLIENT_OPTION_FILEPATH)
     include(${HAKO_CLIENT_OPTION_FILEPATH})

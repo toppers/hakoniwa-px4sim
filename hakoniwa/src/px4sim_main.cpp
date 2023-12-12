@@ -22,6 +22,9 @@
 #include "modules/hako_phys.hpp"
 #include "modules/hako_sim.hpp"
 #include "utils/hako_params.hpp"
+#include "config/drone_config.hpp"
+
+class DroneConfig drone_config;
 
 typedef enum {
     REPLAY = 0,
@@ -43,11 +46,11 @@ int main(int argc, char* argv[])
     int serverPort = std::atoi(argv[2]);
     const char* arg_mode = argv[3];
     hako_param_env_init();
-
-    //std::cout << " HakoHilGps size=" << sizeof(Hako_HakoHilGps) << std::endl;
-    //std::cout << " Hako_HakoHilSensor size=" << sizeof(Hako_HakoHilSensor) << std::endl;
-    //std::cout << " Hako_HakoHilStateQuaternion size=" << sizeof(Hako_HakoHilStateQuaternion) << std::endl;
-
+    if (drone_config.init("../config/drone_config.json") == false)
+    {
+        std::cerr << "ERROR: can not find ../config/drone_config.json" << std::endl;
+        return -1;
+    }
     hako::px4::comm::IcommEndpointType serverEndpoint = { serverIp, serverPort };
 
     hako::px4::comm::ICommIO *comm_io  = nullptr;
