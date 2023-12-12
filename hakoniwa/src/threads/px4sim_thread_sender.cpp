@@ -10,6 +10,9 @@
 #include <unistd.h>
 #include <random>
 #include <chrono>
+#include "utils/csv_logger.hpp"
+#include "mavlink/log/mavlink_log_hil_sensor.hpp"
+#include "mavlink/log/mavlink_log_hil_gps.hpp"
 
 #include "../mavlink/mavlink_msg_types.hpp"
 //#define DRONE_PX4_SEND_STATE_QUATERNION
@@ -36,6 +39,13 @@ typedef struct {
 } Px4SimSenderTimingConfigType;
 static Px4SimSenderTimingConfigType px4sim_sender_timing_config;
 
+using hako::assets::drone::mavlink::log::MavlinkLogHilSensor;
+using hako::assets::drone::mavlink::log::MavlinkLogHilGps;
+static CsvLogger logger_hil_sensor;
+static MavlinkLogHilSensor log_hil_sensor;
+static CsvLogger logger_hil_gps;
+static MavlinkLogHilGps log_hil_gps;
+
 void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
 {
     px4_comm_io = comm_io;
@@ -49,6 +59,9 @@ void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
     px4sim_sender_timing_config.sensor.cycle = 3000;
     //px4sim_sender_timing_config.state_quaternion.cycle = 8000;
     px4sim_sender_timing_config.gps.cycle = 21000;
+
+    logger_hil_sensor.add_entry(log_hil_sensor, "./log_comm_hil_sensor.csv");
+    logger_hil_gps.add_entry(log_hil_gps, "./log_comm_hil_gps.csv");
     return;
 }
 static inline bool is_send_cycle(Px4SimSenderTimingType &timing, uint64_t boot_time_usec)
@@ -194,6 +207,8 @@ static void px4sim_send_hil_gps(hako::px4::comm::ICommIO &clientConnector, uint6
     }
     if (is_initialized) {
         message.data.hil_gps.time_usec = time_usec;
+        log_hil_gps.set_data(message.data.hil_gps);
+        logger_hil_gps.run();
         px4sim_send_message(clientConnector, message);
     }
 }
@@ -263,7 +278,8 @@ static void px4sim_send_sensor(hako::px4::comm::ICommIO &clientConnector, uint64
         //message.data.sensor.xmag = 0.217065 + distribution(generator);
         //message.data.sensor.ymag = 0.0063418 + distribution(generator);
         //message.data.sensor.zmag = 0.422639 + distribution(generator);
-
+        log_hil_sensor.set_data(message.data.sensor);
+        logger_hil_sensor.run();
         px4sim_send_message(clientConnector, message);
     }
 }
