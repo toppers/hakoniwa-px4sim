@@ -34,13 +34,13 @@
     "components": {
         "droneDynamics": {
             "physicsEquation": "BodyFrame",
-            "airFrictionCoefficient": 0.1,
+            "airFrictionCoefficient": 0.01,
             "torqueCoefficient": 0.001
           },
           "rotor": {
-            "tau": 1.0,
-            "k": 1.0,
-            "rpmMax": 3000
+            "tau": 0.001,
+            "k": 1000.0,
+            "rpmMax": 2200
           },
           "thruster": {
             "rotorPositions": [

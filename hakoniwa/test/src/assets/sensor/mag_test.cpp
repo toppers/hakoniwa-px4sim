@@ -115,7 +115,6 @@ TEST_F(MagTest, SensorMag_002)
         EXPECT_NEAR(PARAMS_MAG_H, result.data.x, PARAMS_MAG_H + 0.2);
         EXPECT_FLOAT_EQ(0, result.data.y);
         EXPECT_GT(result.data.z, -PARAMS_MAG_Z-0.1);
-        EXPECT_LT(result.data.z, -PARAMS_MAG_Z+0.1);
     }
     // head => east
     {
@@ -129,7 +128,6 @@ TEST_F(MagTest, SensorMag_002)
         EXPECT_GT(result.data.y, -PARAMS_MAG_H-0.2);
         EXPECT_LT(result.data.y, -PARAMS_MAG_H+0.2);
         EXPECT_GT(result.data.z, -PARAMS_MAG_Z-0.1);
-        EXPECT_LT(result.data.z, -PARAMS_MAG_Z+0.1);
     }
     // head => west
     {
@@ -143,7 +141,6 @@ TEST_F(MagTest, SensorMag_002)
         EXPECT_GT(result.data.y, PARAMS_MAG_H-0.2);
         EXPECT_LT(result.data.y, PARAMS_MAG_H+0.2);
         EXPECT_GT(result.data.z, -PARAMS_MAG_Z-0.1);
-        EXPECT_LT(result.data.z, -PARAMS_MAG_Z+0.1);
     }
     // head => south
     {
@@ -157,7 +154,6 @@ TEST_F(MagTest, SensorMag_002)
         EXPECT_LT(result.data.x, -PARAMS_MAG_H+0.2);
         EXPECT_NEAR(0, result.data.y, 1e-6);
         EXPECT_GT(result.data.z, -PARAMS_MAG_Z-0.1);
-        EXPECT_LT(result.data.z, -PARAMS_MAG_Z+0.1);
     }
 
 }

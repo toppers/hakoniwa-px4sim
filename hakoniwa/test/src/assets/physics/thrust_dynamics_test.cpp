@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "thrust_dynamics.hpp"
+#include "rotor_dynamics.hpp"
 
 class ThrustDynamicsTest : public ::testing::Test {
 protected:
@@ -199,4 +200,33 @@ TEST_F(ThrustDynamicsTest, test_04)
         EXPECT_LT(torque.data.y, 0);
         EXPECT_FLOAT_EQ(-1, torque.data.z);   
     }
+}
+
+
+using hako::assets::drone::RotorDynamics;
+TEST_F(ThrustDynamicsTest, test_05)
+{
+    RotorDynamics *rotors[hako::assets::drone::ROTOR_NUM];
+    ThrustDynamics dynamics(DELTA_TIME_SEC);
+    DroneRotorSpeedType rotor_speed[hako::assets::drone::ROTOR_NUM];
+
+    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+        rotors[i] = new RotorDynamics(DELTA_TIME_SEC);
+        rotors[i]->set_params(12000, 1, 1);
+    }
+    for (int step = 0; step < 10000; step++) {
+        for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+            rotors[i]->run(0.5);
+            rotor_speed[i] = rotors[i]->get_rotor_speed();
+        }
+        dynamics.run(rotor_speed);
+    }
+    DroneThrustType thrust = dynamics.get_thrust();
+    EXPECT_GT(thrust.data, GRAVITY -0.01);
+    EXPECT_LT(thrust.data, GRAVITY +0.01);
+
+    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+        delete rotors[i];
+    }
+
 }
