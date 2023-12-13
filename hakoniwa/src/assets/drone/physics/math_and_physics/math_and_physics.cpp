@@ -177,6 +177,46 @@ AccelerationType acceleration_in_ground_frame(
 
     return ground_acceleration;
 }
+AngularAccelerationType angular_acceleration_in_body_frame(
+    const AngularVelocityType& angular_velocity_in_body_frame,
+    const AngleType& angle,
+    double torque_x, /* in body frame */
+    double torque_y, /* in body frame */
+    double torque_z, /* in body frame */
+    double inertia_x, /* in body frame */
+    double inertia_y, /* in body frame */
+    double inertia_z /* in body frame */)
+{
+    (void)angle; (void)angular_velocity_in_body_frame;
+    /* For later updates for Coriolis force and etc.
+    auto c_phi = cos(std::get<0>(angle)), s_phi = sin(std::get<0>(angle)),
+        c_theta = cos(std::get<1>(angle)), s_theta = sin(std::get<1>(angle)),
+        c_psi = cos(std::get<2>(angle)), s_psi = sin(std::get<2>(angle));
+    */
 
-//AngularAccelerationType Angular_acceleration_in_body_frame(AngularVelocityType angular_velocity, AngleType angle, double trust, double mass, double inertia_x, double inertia_y, double inertia_z){}
+    AngularAccelerationType body_angular_acceleration;
 
+    auto& dotdot_phi = std::get<0>(body_angular_acceleration);
+    auto& dotdot_theta = std::get<1>(body_angular_acceleration);
+    auto& dotdot_psy = std::get<2>(body_angular_acceleration);
+
+    dotdot_phi = inertia_x * torque_x;
+    dotdot_theta = inertia_y * torque_y;
+    dotdot_psy = inertia_z * torque_z;
+
+    return body_angular_acceleration;
+}
+
+AngularAccelerationType angular_acceleration_in_ground_frame(
+    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngleType& angle,
+    double torque_x, /* in ground frame */
+    double torque_y, /* in ground frame */
+    double torque_z, /* in ground frame */
+    double inertia_x, /* in body frame */
+    double inertia_y, /* in body frame */
+    double inertia_z /* in body frame */)
+{
+    /* for now, use the same equation but NEEDS CONVERSION */
+    return angular_acceleration_in_body_frame(angular_velocity_in_ground_frame, angle, torque_x, torque_y, torque_z, inertia_x, inertia_y, inertia_z);
+}

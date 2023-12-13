@@ -36,8 +36,24 @@ AccelerationType acceleration_in_ground_frame(
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
 
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularVelocityType& angular_velocity,
+    const AngularVelocityType& angular_velocity_in_body_frame,
     const AngleType& angle,
-    double trust, double mass, double inertia_x, double inertia_y, double inertia_z);
+    double torque_x, /* in body frame */
+    double torque_y, /* in body frame */
+    double torque_z, /* in body frame */
+    double inertia_x, /* in body frame */
+    double inertia_y, /* in body frame */
+    double inertia_z /* in body frame */);
+
+/* difficult not well-implemented yet !!!*/
+AngularAccelerationType angular_acceleration_in_ground_frame(
+    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngleType& angle,
+    double torque_x, /* in ground frame */
+    double torque_y, /* in ground frame */
+    double torque_z, /* in ground frame */
+    double inertia_x, /* in body frame */
+    double inertia_y, /* in body frame */
+    double inertia_z /* in body frame */);
 
 #endif /* MATH_AND_PHYSICS_HPP_ */
