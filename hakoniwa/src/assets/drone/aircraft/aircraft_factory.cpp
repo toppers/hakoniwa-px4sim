@@ -58,7 +58,13 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     HAKO_ASSERT(drone != nullptr);
 
     //drone dynamics
-    auto drone_dynamics = new DroneDynamicsBodyFrame(DELTA_TIME_SEC);
+    IDroneDynamics *drone_dynamics = nullptr;
+    if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrame") {
+        drone_dynamics = new DroneDynamicsBodyFrame(DELTA_TIME_SEC);
+    }
+    else {
+        drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
+    }
     //auto drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
     HAKO_ASSERT(drone_dynamics != nullptr);
     drone_dynamics->set_drag(HAKO_PHYS_DRAG);

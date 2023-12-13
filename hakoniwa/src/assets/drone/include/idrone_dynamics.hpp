@@ -2,10 +2,11 @@
 #define _IDRONE_DYNAMICS_HPP_
 
 #include "drone_primitive_types.hpp"
+#include "utils/icsv_log.hpp"
 
 namespace hako::assets::drone {
 
-class IDroneDynamics {
+class IDroneDynamics: public ICsvLog {
 protected:
     DronePhysCalcCacheType cache;
 public:

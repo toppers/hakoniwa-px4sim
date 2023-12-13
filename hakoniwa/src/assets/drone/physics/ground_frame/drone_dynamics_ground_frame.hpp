@@ -2,12 +2,11 @@
 #define _DRON_DYNAMICS_GROUND_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
-#include "utils/icsv_log.hpp"
 
 namespace hako::assets::drone {
 
 
-class DroneDynamicsGroundFrame : public hako::assets::drone::IDroneDynamics, public ICsvLog {
+class DroneDynamicsGroundFrame : public hako::assets::drone::IDroneDynamics {
 private:
     /*
      * parameters

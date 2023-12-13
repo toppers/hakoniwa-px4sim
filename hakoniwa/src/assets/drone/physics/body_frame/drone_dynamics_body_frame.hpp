@@ -2,14 +2,13 @@
 #define _DRON_DYNAMICS_BODY_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
-#include "utils/icsv_log.hpp"
 #include <math.h>
 #include <iostream>
 
 namespace hako::assets::drone {
 
 
-class DroneDynamicsBodyFrame : public hako::assets::drone::IDroneDynamics, public ICsvLog {
+class DroneDynamicsBodyFrame : public hako::assets::drone::IDroneDynamics {
 private:
     /*
      * parameters
