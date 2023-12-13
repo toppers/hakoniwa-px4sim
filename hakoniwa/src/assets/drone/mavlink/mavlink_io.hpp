@@ -26,7 +26,7 @@ private:
 
         DroneMagDataType mag = drone.get_mag().sensor_value();
         sensor.xmag = static_cast<float>(NT_TO_G(mag.data.x));
-        sensor.yacc = static_cast<float>(NT_TO_G(mag.data.y));
+        sensor.ymag = static_cast<float>(NT_TO_G(mag.data.y));
         sensor.zmag = static_cast<float>(NT_TO_G(mag.data.z));
 
         DroneBarometricPressureType baro = drone.get_baro().sensor_value();

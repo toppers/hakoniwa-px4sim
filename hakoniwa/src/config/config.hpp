@@ -26,7 +26,7 @@
 /*
  * 有効にすると新しいアーキテクチャで動作する
  */
-//#define ENABLE_LATEST_ARCHITECTURE
+#define ENABLE_LATEST_ARCHITECTURE
 
 /*
  * 有効化すると、PX4への送信データを標準出力に出力します。
