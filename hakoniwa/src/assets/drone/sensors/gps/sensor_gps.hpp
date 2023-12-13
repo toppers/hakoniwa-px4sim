@@ -39,7 +39,7 @@ private:
         double vn = v.data.x;
         double ve = v.data.y;
         double vd = v.data.z;
-        double vel = sqrt(vn * vn + ve * ve + vd * vd);
+        double vel = sqrt(vn * vn + ve * ve /* +  vd * vd */);
         this->asm_vn.add_data(vn);
         this->asm_ve.add_data(ve);
         this->asm_vd.add_data(vd);
