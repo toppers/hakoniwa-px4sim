@@ -8,6 +8,7 @@
 #include "hako/runner/hako_px4_master.hpp"
 #include "threads/px4sim_thread_sender.hpp"
 #include "threads/px4sim_thread_receiver.hpp"
+#include "config/drone_config.hpp"
 
 #include <unistd.h>
 #include <memory.h>
@@ -35,7 +36,7 @@ void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint)
     else {
         std::cout << "INFO: hako_master_init() success" << std::endl;
     }
-    hako_master_set_config_simtime(HAKO_RUNNER_MASTER_MAX_DELAY_USEC, HAKO_RUNNER_MASTER_DELTA_USEC);
+    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), HAKO_RUNNER_MASTER_DELTA_USEC);
     pthread_t thread;
     if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
         std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
