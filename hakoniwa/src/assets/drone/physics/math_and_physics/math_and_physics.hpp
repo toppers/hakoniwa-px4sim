@@ -25,7 +25,7 @@ AngularVelocityType angular_velocity_ground_to_body(
     const AngleType& angle);
 
 /* physics */
-AccelerationType Acceleration_in_body_frame(
+AccelerationType acceleration_in_body_frame(
     const VelocityType& body,
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
@@ -46,6 +46,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double inertia_z /* in body frame */);
 
 /* difficult not well-implemented yet !!!*/
+#if 0
 AngularAccelerationType angular_acceleration_in_ground_frame(
     const AngularVelocityType& angular_velocity_in_ground_frame,
     const AngleType& angle,
@@ -56,4 +57,5 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
     double inertia_y, /* in body frame */
     double inertia_z /* in body frame */);
 
+#endif
 #endif /* MATH_AND_PHYSICS_HPP_ */

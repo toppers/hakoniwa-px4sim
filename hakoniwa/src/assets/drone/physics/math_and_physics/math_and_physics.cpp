@@ -120,11 +120,13 @@ AccelerationType acceleration_in_body_frame(
     auto c_phi = cos(std::get<0>(angle)), s_phi = sin(std::get<0>(angle)),
         c_theta = cos(std::get<1>(angle)), s_theta = sin(std::get<1>(angle));
 
+    // velocities in body frame (u, v, w)
     auto u = std::get<0>(body), v = std::get<1>(body), w = std::get<2>(body);
 
 
     AccelerationType body_acceleration;
 
+    // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
     auto& dot_u = std::get<0>(body_acceleration);
     auto& dot_v = std::get<1>(body_acceleration);
     auto& dot_w = std::get<2>(body_acceleration);
@@ -171,9 +173,13 @@ AccelerationType acceleration_in_ground_frame(
     // and z-axis is inverted(and also psi is inverted).
     // these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
 
-    dotdot_x = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi)        - c * dot_x;
-    dotdot_y = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi)        - c * dot_y;
-    dotdot_z = -T/m * (c_phi * c_theta)                         + g    - c * dot_z;
+    dotdot_x = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi)
+        - c * dot_x;
+    dotdot_y = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi)
+        - c * dot_y;
+    dotdot_z = -T/m * (c_phi * c_theta)
+        + g
+        - c * dot_z;
 
     return ground_acceleration;
 }
@@ -207,6 +213,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return body_angular_acceleration;
 }
 
+#if 0 /* not well-implemented yet */
 AngularAccelerationType angular_acceleration_in_ground_frame(
     const AngularVelocityType& angular_velocity_in_ground_frame,
     const AngleType& angle,
@@ -220,3 +227,4 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
     /* for now, use the same equation but NEEDS CONVERSION */
     return angular_acceleration_in_body_frame(angular_velocity_in_ground_frame, angle, torque_x, torque_y, torque_z, inertia_x, inertia_y, inertia_z);
 }
+#endif
