@@ -151,6 +151,24 @@ void test_body_acceleration() {
     assert_almost_equal(a, AccelerationType(-gravity*sin(PI/6)-0.1, -0.2, -trust/mass+gravity*cos(PI/6)-0.3));
 
 }
+
+void test_body_angular_acceleration() {
+    const AngularVelocityType v(1, 2, 3);
+    double inertia_x = 1, inertia_y = 1, inertia_z = 1, torque_x = 0, torque_y = 0, torque_z = 0;
+    AngularAccelerationType a = angular_acceleration_in_body_frame(v, AngleType(0, 0, 0),
+        torque_x, torque_y, torque_z, inertia_x, inertia_y, inertia_z);
+    assert_almost_equal(a, AngularAccelerationType(0, 0, 0));
+
+    inertia_x = 1, inertia_y = 1, inertia_z = 1, torque_x = 1, torque_y = 2, torque_z = 3;
+    a = angular_acceleration_in_body_frame(v, AngleType(0, 0, 0),
+        torque_x, torque_y, torque_z, inertia_x, inertia_y, inertia_z);
+    assert_almost_equal(a, AngularAccelerationType(1, 2, 3));
+
+    inertia_x = 2, inertia_y = 5, inertia_z = 8, torque_x = 1, torque_y = 2, torque_z = 3;
+    a = angular_acceleration_in_body_frame(v, AngleType(0, 0, 0),
+        torque_x, torque_y, torque_z, inertia_x, inertia_y, inertia_z);
+    assert_almost_equal(a, AngularAccelerationType(torque_x/inertia_x, torque_y/inertia_y, torque_z/inertia_z));
+}
     
 
 int main() {
@@ -160,6 +178,7 @@ int main() {
     T(test_matrix_is_unitary);
     T(test_roundtrip);
     T(test_body_acceleration);
+    T(test_body_angular_acceleration);
     std::cout << "-------all test PASSSED!!----\n";
     return 0;
 }

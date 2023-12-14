@@ -194,6 +194,10 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double inertia_z /* in body frame */)
 {
     (void)angle; (void)angular_velocity_in_body_frame;
+    assert(inertia_x != 0.0); // TODO: remove this line
+    assert(inertia_y != 0.0); // TODO: remove this line
+    assert(inertia_z != 0.0); // TODO: remove this line
+    
     /* For later updates for Coriolis force and etc.
     auto c_phi = cos(std::get<0>(angle)), s_phi = sin(std::get<0>(angle)),
         c_theta = cos(std::get<1>(angle)), s_theta = sin(std::get<1>(angle)),
@@ -206,9 +210,9 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     auto& dotdot_theta = std::get<1>(body_angular_acceleration);
     auto& dotdot_psy = std::get<2>(body_angular_acceleration);
 
-    dotdot_phi = inertia_x * torque_x;
-    dotdot_theta = inertia_y * torque_y;
-    dotdot_psy = inertia_z * torque_z;
+    dotdot_phi = torque_x / inertia_x;
+    dotdot_theta = torque_y / inertia_y;
+    dotdot_psy = torque_z / inertia_z;
 
     return body_angular_acceleration;
 }
