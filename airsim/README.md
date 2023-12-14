@@ -123,7 +123,7 @@ Decoded MAVLink message:
 
 #### controls[0-3]
 
-![Uploading スクリーンショット 2023-12-14 11.49.23.png…]()
+<img width="899" alt="スクリーンショット 2023-12-14 11 50 03" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/2cb25c73-1da7-4b45-b731-2de5e10d4387">
 
 #### mode
 
