@@ -1,6 +1,7 @@
 #include "aircraft_factory.hpp"
 #include "utils/hako_utils.hpp"
 #include "assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
+#include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
 #include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include "assets/drone/physics/rotor_dynamics.hpp"
 #include "assets/drone/physics/thrust_dynamics.hpp"
@@ -61,6 +62,9 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     IDroneDynamics *drone_dynamics = nullptr;
     if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrame") {
         drone_dynamics = new DroneDynamicsBodyFrame(DELTA_TIME_SEC);
+    }
+    else if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrameRK4") {
+        drone_dynamics = new DroneDynamicsBodyFrameRK4(DELTA_TIME_SEC);
     }
     else {
         drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
