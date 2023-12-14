@@ -50,10 +50,6 @@ private:
         double vn = v.data.x;
         double ve = v.data.y;
 
-        if (vn == 0 && ve == 0) {
-            this->asm_cog.reset();
-            return;
-        }
         // 角度を-πからπで範囲で返す
         double angleRadians = atan2(ve, vn);
 
