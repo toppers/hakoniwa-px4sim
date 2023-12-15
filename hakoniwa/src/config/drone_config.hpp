@@ -96,8 +96,12 @@ public:
         return configJson["components"]["droneDynamics"]["airFrictionCoefficient"].get<double>();
     }
 
-    double getCompDroneDynamicsTorqueCoefficient() const {
-        return configJson["components"]["droneDynamics"]["torqueCoefficient"].get<double>();
+    std::vector<double> getCompDroneDynamicsInertia() const {
+        std::vector<double> inertia;
+        for (const auto& item : configJson["components"]["droneDynamics"]["inertia"]) {
+            inertia.push_back(item);
+        }
+        return inertia;
     }
 
     // Rotor parameters

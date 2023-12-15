@@ -145,6 +145,19 @@ typedef struct DroneAngularVelocityBodyFrame {
     }
 } DroneAngularVelocityBodyFrameType;
 
+typedef struct DroneAngularAccelerationBodyFrame {
+    glm::dvec3 data;
+    DroneAngularAccelerationBodyFrame(){}
+    DroneAngularAccelerationBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngularAccelerationBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
+} DroneAngularAccelerationBodyFrameType;
+
 /*
  * Unit: Revolutions per Second (RPM)
  * data: The rate of change in the drone's rotor speed, directly influencing lift and flight stability
@@ -193,8 +206,17 @@ typedef struct {
  * This structure is used to quantify the rate of change of the drone's velocity in its body frame,
  * accounting for movements in all three spatial dimensions.
  */
-typedef struct {
+typedef struct DroneAccelerationBodyFrame {
     glm::dvec3 data;
+    DroneAccelerationBodyFrame(){}
+    DroneAccelerationBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAccelerationBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneAccelerationBodyFrameType;
 
 /*

@@ -51,7 +51,7 @@ void DroneDynamicsBodyFrameRK4::run_rx(const DroneThrustType &thrust, const Dron
     // 微分方程式をラムダ関数として定義
     auto df = [&](double v) {
         (void)v;
-        return this->param_cx * torque.data.x;
+        return (1.0/this->param_cx) * torque.data.x;
     };
     // 現在の状態
     double v = this->next_angularVelocityBodyFrame.data.x;
@@ -64,7 +64,7 @@ void DroneDynamicsBodyFrameRK4::run_ry(const DroneThrustType &thrust, const Dron
     // 微分方程式をラムダ関数として定義
     auto df = [&](double v) {
         (void)v;
-        return this->param_cy * torque.data.y;
+        return (1.0/this->param_cy) * torque.data.y;
     };
     // 現在の状態
     double v = this->next_angularVelocityBodyFrame.data.y;
@@ -76,7 +76,7 @@ void DroneDynamicsBodyFrameRK4::run_rz(const DroneThrustType &thrust, const Dron
     (void)thrust;
     auto df = [&](double v) {
         (void)v;
-        return this->param_cz * torque.data.z;
+        return (1.0/this->param_cz) * torque.data.z;
     };
     // 現在の状態
     double v = this->next_angularVelocityBodyFrame.data.z;

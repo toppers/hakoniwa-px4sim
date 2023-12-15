@@ -88,17 +88,13 @@ private:
         return angular_velocity_body_to_ground(src, angle);
 #endif
     }
-    void integral(const DroneVelocityType& src)
+    glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
     {
-        this->position.data.x += src.data.x * this->delta_time_sec;
-        this->position.data.y += src.data.y * this->delta_time_sec;
-        this->position.data.z += src.data.z * this->delta_time_sec;
-    }
-    void integral(const DroneAngularVelocityType& src)
-    {
-        this->angle.data.x += src.data.x * this->delta_time_sec;
-        this->angle.data.y += src.data.y * this->delta_time_sec;
-        this->angle.data.z += src.data.z * this->delta_time_sec;
+        glm::dvec3 r;
+        r.x = p.x + (v.x * this->delta_time_sec);
+        r.y = p.y + (v.y * this->delta_time_sec);
+        r.z = p.z + (v.z * this->delta_time_sec);
+        return r;
     }
 
 public:
@@ -172,20 +168,25 @@ public:
     void run(const DroneThrustType &thrust, const DroneTorqueType &torque) override 
     {
         this->cache = drone_phys_calc_cache(this->angle);
-        run_x(thrust, torque);
-        run_y(thrust, torque);
-        run_z(thrust, torque);
-        run_rx(thrust, torque);
-        run_ry(thrust, torque);
-        run_rz(thrust, torque);
 
-        this->velocityBodyFrame = this->next_velocityBodyFrame;
-        this->angularVelocityBodyFrame = this->next_angularVelocityBodyFrame;
+        DroneAccelerationBodyFrame acc = acceleration_in_body_frame(this->velocityBodyFrame, this->angle, thrust.data,
+                                                                    this->param_mass, GRAVITY, this->param_drag);
+        DroneAngularAccelerationBodyFrame acc_angular = angular_acceleration_in_body_frame(
+                                                            this->angularVelocityBodyFrame, this->angle,
+                                                            torque.data.x, torque.data.y, torque.data.z,
+                                                            this->param_cx, this->param_cy, this->param_cz);
 
+        //integral to velocity on body frame
+        this->velocityBodyFrame.data = integral(this->velocityBodyFrame.data, acc.data);
+        this->angularVelocityBodyFrame.data = integral(this->angularVelocityBodyFrame.data, acc_angular.data);
+
+        //convert to ground frame
         this->velocity = this->convert(this->velocityBodyFrame);
         this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
-        this->integral(this->velocity);
-        this->integral(this->angularVelocity);
+
+        //integral to pos, angle on ground frame
+        this->position.data = integral(this->position.data, this->velocity.data);
+        this->angle.data = integral(this->angle.data, this->angularVelocity.data);
 
         //boundary condition
         if (this->position.data.z > 0) {

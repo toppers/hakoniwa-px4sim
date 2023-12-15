@@ -35,7 +35,7 @@
         "droneDynamics": {
             "physicsEquation": "BodyFrame",
             "airFrictionCoefficient": 0.01,
-            "torqueCoefficient": 0.001
+            "inertia": [ 1000, 1000, 1000 ]
           },
           "rotor": {
             "tau": 0.001,
