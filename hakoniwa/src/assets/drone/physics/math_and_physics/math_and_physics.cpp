@@ -9,9 +9,9 @@ VelocityType velocity_body_to_ground(const VelocityType& b, const AngleType& a)
 {
     using namespace std;
     const auto
-        c_phi = cos(get<0>(a)), s_phi = sin(get<0>(a)),
+        c_phi   = cos(get<0>(a)),   s_phi = sin(get<0>(a)),
         c_theta = cos(get<1>(a)), s_theta = sin(get<1>(a)),
-        c_psi = cos(get<2>(a)), s_psi = sin(get<2>(a));
+        c_psi   = cos(get<2>(a)),   s_psi = sin(get<2>(a));
     const auto u = get<0>(b), v = get<1>(b), w = get<2>(b);
 
     VelocityType ground_velocity;
