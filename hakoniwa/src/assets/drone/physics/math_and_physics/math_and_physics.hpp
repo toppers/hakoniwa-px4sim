@@ -8,10 +8,11 @@ PositionType,  VelocityType, AccelerationType,
 AngleType, AngularVelocityType, AngularAccelerationType;
 
 /* NOTE: for AnguleType, 
- * <0> phi(x-rotation or roll),      -PI < phi   < PI
- * <1> theta(y-rotation or pitch), -PI/2 < theta < PI/2
- * <2> psi(z-rotation or yaw),       -PI < psi   < PI
+ * <0> phi(x-rotation or roll),      -PI <= phi   < PI
+ * <1> theta(y-rotation or pitch), -PI/2 <= theta < PI/2
+ * <2> psi(z-rotation or yaw),       -PI <= psi   < PI
  * and (0,0,0) is the initial state.
+ * See https://www.sky-engin.jp/blog/eulerian-angles/
 */
 
 /* maths for frame transformations */

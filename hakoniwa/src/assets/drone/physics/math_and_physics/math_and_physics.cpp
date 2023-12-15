@@ -1,8 +1,12 @@
 #include "math_and_physics.hpp"
 #include <cassert>
 
-/* all the equations are from 
-https://mtkbirdman.com/flight-dynamics-body-axes-system */
+/*
+ *  All the equations are from 
+ * https://mtkbirdman.com/flight-dynamics-body-axes-system
+ * https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
+ * https://www.sky-engin.jp/blog/eulers-equations-of-motion/
+ */
 
 /* maths */
 VelocityType velocity_body_to_ground(const VelocityType& b, const AngleType& a)
@@ -14,14 +18,17 @@ VelocityType velocity_body_to_ground(const VelocityType& b, const AngleType& a)
         c_psi   = cos(get<2>(a)),   s_psi = sin(get<2>(a));
     const auto u = get<0>(b), v = get<1>(b), w = get<2>(b);
 
+    // will be return value
     VelocityType ground_velocity;
     
-    /* see https://mtkbirdman.com/flight-dynamics-body-axes-system */
-
     auto& dot_x = get<0>(ground_velocity);
     auto& dot_y = get<1>(ground_velocity);
     auto& dot_z = get<2>(ground_velocity);
 
+    /*
+     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * for the transformation equations.
+     */
     /*****************************************************************/  
     dot_x =   (c_theta * c_psi)                         * u
             + (s_phi * s_theta * c_psi - c_phi * s_psi) * v
@@ -31,9 +38,9 @@ VelocityType velocity_body_to_ground(const VelocityType& b, const AngleType& a)
             + (s_phi * s_theta * s_psi + c_phi * c_psi) * v
             + (c_phi * s_theta * s_psi - s_phi * c_psi) * w;
     
-    dot_z =   (- s_theta)                                 * u
-            + (s_psi * c_theta)                           * v
-            + (c_psi * c_theta)                           * w;
+    dot_z =   (- s_theta)                               * u
+            + (s_psi * c_theta)                         * v
+            + (c_psi * c_theta)                         * w;
     /*****************************************************************/
 
     return ground_velocity;
@@ -53,13 +60,17 @@ VelocityType velocity_ground_to_body(
         dot_y = get<1>(ground),
         dot_z = get<2>(ground);
 
+    // will be return value
     VelocityType body_velocity;
     
-    /* see (blue book 1.9-9 and URL here )*/
     auto& u = get<0>(body_velocity);
     auto& v = get<1>(body_velocity);
     auto& w = get<2>(body_velocity);
     
+     /*
+     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * for the transformation equations.
+     */
     /*****************************************************************/  
     u =   (c_theta * c_psi)                         * dot_x
         + (c_theta * s_psi)                         * dot_y
@@ -90,12 +101,17 @@ AngularVelocityType angular_velocity_body_to_ground(
 
     const auto p = get<0>(body), q = get<1>(body), r = get<2>(body);
 
-    AngularVelocityType ground_angular_velocity;
+   // will be return value
+   AngularVelocityType ground_angular_velocity;
     
     auto& dot_phi   = get<0>(ground_angular_velocity);
     auto& dot_theta = get<1>(ground_angular_velocity);
     auto& dot_psi   = get<2>(ground_angular_velocity);
-    
+
+     /*
+     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * for the transformation equations.
+     */
     /*****************************************************************/  
     dot_phi   = p + (r * c_phi + q * s_phi) * t_theta; /** overflow INF possible */
     dot_theta = q * c_phi - r * s_phi;
@@ -119,12 +135,17 @@ AngularVelocityType angular_velocity_ground_to_body(
         dot_theta = get<1>(ground),
         dot_psi = get<2>(ground);
 
+    // will be return value
     AngularVelocityType body_angular_velocity;
     
     auto& p = get<0>(body_angular_velocity);
     auto& q = get<1>(body_angular_velocity);
     auto& r = get<2>(body_angular_velocity);
-    
+
+    /*
+     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * for the transformation equations.
+     */
     /*****************************************************************/  
     p = dot_phi - dot_psi * s_theta;
     q = dot_theta * c_phi + dot_psi * s_phi * c_theta;
@@ -196,6 +217,7 @@ AccelerationType acceleration_in_body_frame2(
         v = get<1>(body_velocity),
         w = get<2>(body_velocity);
 
+    // will be return value
     AccelerationType body_acceleration;
 
     // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
@@ -238,6 +260,7 @@ AccelerationType acceleration_in_ground_frame(
         dot_y = get<1>(ground),
         dot_z = get<2>(ground);
 
+    // will be return value
     AccelerationType ground_acceleration;
 
     auto& dotdot_x = get<0>(ground_acceleration);
@@ -249,10 +272,11 @@ AccelerationType acceleration_in_ground_frame(
     const auto c = drag;
     const auto T = thrust;
 
-    // see run_x, run_y, run_z in drone_dynamics_ground_frame.cpp
-    // which comes from https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
-    // and z-axis is inverted(and also psi is inverted).
-    // these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
+    /*
+     * See https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
+     * and z-axis is inverted(and also psi is inverted).
+     * these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
+     */
 
     /*****************************************************************/  
     dotdot_x = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * dot_x;
@@ -274,20 +298,21 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_zz /* in body frame, 0 is not allowed */)
 {
     using namespace std;
-    (void)angle; /* not used for now */
+    (void)angle; // not used for now
 
     assert(I_xx != 0.0); // TODO: remove this line
     assert(I_yy != 0.0); // TODO: remove this line
     assert(I_zz != 0.0); // TODO: remove this line
 
-    /* current angular velocities in body frame */
+    // current angular velocities in body frame
     const auto p = get<0>(angular_velocity_in_body_frame);
     const auto q = get<1>(angular_velocity_in_body_frame);
     const auto r = get<2>(angular_velocity_in_body_frame);
     
+    // will be return value
     AngularAccelerationType body_angular_acceleration;
 
-    /* angular accelerations to calculate */
+    // angular accelerations to calculate
     auto& dot_p = get<0>(body_angular_acceleration);
     auto& dot_q = get<1>(body_angular_acceleration);
     auto& dot_r = get<2>(body_angular_acceleration);
