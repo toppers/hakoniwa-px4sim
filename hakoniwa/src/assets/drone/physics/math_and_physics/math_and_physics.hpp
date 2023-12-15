@@ -7,9 +7,14 @@ typedef std::tuple<double, double, double>
 PositionType,  VelocityType, AccelerationType,
 AngleType, AngularVelocityType, AngularAccelerationType;
 
-/* maths */
-/* think about the sin/cos cache later... check working right first */
+/* NOTE: for AnguleType, 
+ * <0> phi(x-rotation or roll),      -PI < phi   < PI
+ * <1> theta(y-rotation or pitch), -PI/2 < theta < PI/2
+ * <2> psi(z-rotation or yaw),       -PI < psi   < PI
+ * and (0,0,0) is the initial state.
+*/
 
+/* maths for frame transformations */
 VelocityType velocity_body_to_ground(
     const VelocityType& body,
     const AngleType& angle);
@@ -24,7 +29,7 @@ AngularVelocityType angular_velocity_ground_to_body(
     const AngularVelocityType& angular_velocity_ground_frame,
     const AngleType& angle);
 
-/* physics */
+/* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body,
     const AngleType& angle,
@@ -41,11 +46,11 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
-    double I_xx, /* in body frame */
-    double I_yy, /* in body frame */
-    double I_zz /* in body frame */);
+    double I_xx, /* in body frame, 0 is not allowed */
+    double I_yy, /* in body frame, 0 is not allowed */
+    double I_zz /* in body frame, 0 is not allowed */);
 
-/* difficult not well-implemented yet !!!*/
+/* difficult not well-implemented yet !!! */
 #if 0
 AngularAccelerationType angular_acceleration_in_ground_frame(
     const AngularVelocityType& angular_velocity_in_ground_frame,
@@ -56,6 +61,6 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
     double inertia_x, /* in body frame */
     double inertia_y, /* in body frame */
     double inertia_z /* in body frame */);
-
 #endif
+
 #endif /* MATH_AND_PHYSICS_HPP_ */
