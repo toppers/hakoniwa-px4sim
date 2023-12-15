@@ -41,9 +41,9 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
-    double inertia_x, /* in body frame */
-    double inertia_y, /* in body frame */
-    double inertia_z /* in body frame */);
+    double I_xx, /* in body frame */
+    double I_yy, /* in body frame */
+    double I_zz /* in body frame */);
 
 /* difficult not well-implemented yet !!!*/
 #if 0

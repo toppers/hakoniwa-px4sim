@@ -189,30 +189,35 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
-    double inertia_x, /* in body frame */
-    double inertia_y, /* in body frame */
-    double inertia_z /* in body frame */)
+    double I_xx, /* in body frame */
+    double I_yy, /* in body frame */
+    double I_zz /* in body frame */)
 {
-    (void)angle; (void)angular_velocity_in_body_frame;
-    assert(inertia_x != 0.0); // TODO: remove this line
-    assert(inertia_y != 0.0); // TODO: remove this line
-    assert(inertia_z != 0.0); // TODO: remove this line
-    
-    /* For later updates for Coriolis force and etc.
-    auto c_phi = cos(std::get<0>(angle)), s_phi = sin(std::get<0>(angle)),
-        c_theta = cos(std::get<1>(angle)), s_theta = sin(std::get<1>(angle)),
-        c_psi = cos(std::get<2>(angle)), s_psi = sin(std::get<2>(angle));
-    */
+    (void)angle;
+    assert(I_xx != 0.0); // TODO: remove this line
+    assert(I_yy != 0.0); // TODO: remove this line
+    assert(I_zz != 0.0); // TODO: remove this line
 
+    /* current angular velocities in body frame */
+    auto p = std::get<0>(angular_velocity_in_body_frame);
+    auto q = std::get<1>(angular_velocity_in_body_frame);
+    auto r = std::get<2>(angular_velocity_in_body_frame);
+    
     AngularAccelerationType body_angular_acceleration;
 
-    auto& dotdot_phi = std::get<0>(body_angular_acceleration);
-    auto& dotdot_theta = std::get<1>(body_angular_acceleration);
-    auto& dotdot_psy = std::get<2>(body_angular_acceleration);
+    /* angular accelerations to calculate */
+    auto& dot_p = std::get<0>(body_angular_acceleration);
+    auto& dot_q = std::get<1>(body_angular_acceleration);
+    auto& dot_r = std::get<2>(body_angular_acceleration);
 
-    dotdot_phi = torque_x / inertia_x;
-    dotdot_theta = torque_y / inertia_y;
-    dotdot_psy = torque_z / inertia_z;
+    /*
+     * For this equations, 
+     * See https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq. (21) and the rest
+     */
+
+    dot_p = (torque_x - q*r*(I_zz -I_yy)) / I_xx;
+    dot_q = (torque_y - r*p*(I_xx -I_zz)) / I_yy;
+    dot_r = (torque_z - p*q*(I_yy -I_xx)) / I_zz;
 
     return body_angular_acceleration;
 }
