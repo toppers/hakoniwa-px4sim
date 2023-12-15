@@ -35,6 +35,13 @@ AccelerationType acceleration_in_body_frame(
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
 
+/* soon replaces the above */
+AccelerationType acceleration_in_body_frame2(
+    const VelocityType& body_velocity,
+    const AngleType& angle,
+    const AngularVelocityType& body_angular_velocity,
+    double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
+
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& body,
     const AngleType& angle,

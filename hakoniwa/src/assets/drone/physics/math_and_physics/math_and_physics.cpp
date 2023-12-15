@@ -172,6 +172,54 @@ AccelerationType acceleration_in_body_frame(
     return body_acceleration;
 }
 
+AccelerationType acceleration_in_body_frame2(
+    const VelocityType& body_velocity,
+    const AngleType& angle,
+    const AngularVelocityType& body_angular_velocity,
+    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
+{
+    assert(mass != 0.0); // TODO: remove this line
+    using namespace std;
+
+    const auto
+        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
+        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
+
+    const auto
+        p = get<0>(body_angular_velocity),
+        q = get<1>(body_angular_velocity),
+        r = get<2>(body_angular_velocity);
+
+    // velocities in body frame (u, v, w)
+    const auto
+        u = get<0>(body_velocity),
+        v = get<1>(body_velocity),
+        w = get<2>(body_velocity);
+
+    AccelerationType body_acceleration;
+
+    // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
+    auto& dot_u = get<0>(body_acceleration);
+    auto& dot_v = get<1>(body_acceleration);
+    auto& dot_w = get<2>(body_acceleration);
+
+    const auto g = gravity;
+    const auto m = mass;
+    const auto c = drag;
+    const auto T = thrust;
+
+    /*
+     * See nonami's book eq.(1.136)
+     */
+    /*****************************************************************/  
+    dot_u =       - g * s_theta            - (q*w - r*v) - c/m * u;
+    dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - c/m * v;
+    dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - c/m * w;
+    /*****************************************************************/  
+
+    return body_acceleration;
+}
+
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const AngleType& angle,
@@ -181,9 +229,9 @@ AccelerationType acceleration_in_ground_frame(
     using namespace std;
 
     const auto
-        c_phi = cos(get<0>(angle)), s_phi = sin(get<0>(angle)),
+        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
-        c_psi = cos(get<2>(angle)), s_psi = sin(get<2>(angle));
+        c_psi   = cos(get<2>(angle)), s_psi   = sin(get<2>(angle));
 
     const auto
         dot_x = get<0>(ground),
@@ -214,6 +262,7 @@ AccelerationType acceleration_in_ground_frame(
 
     return ground_acceleration;
 }
+
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     const AngleType& angle,
@@ -243,10 +292,15 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     auto& dot_q = get<1>(body_angular_acceleration);
     auto& dot_r = get<2>(body_angular_acceleration);
 
+ 
     /*
      * For this equations, 
-     * See https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq. (21) and the rest
+     * See https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq. (21)
+     * and the rest.
+     * See also Nonami's book eq. (1.136),(1.137), where L=tau_x, M=tau_y, N=tau_z.
+     * and Ixz = Iyz = Izx = 0 is assumed.
      */
+ 
     /*****************************************************************/
     dot_p = (torque_x - q*r*(I_zz -I_yy)) / I_xx;
     dot_q = (torque_y - r*p*(I_xx -I_zz)) / I_yy;
