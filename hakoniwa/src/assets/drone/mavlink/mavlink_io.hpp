@@ -64,13 +64,14 @@ private:
 public:
     virtual ~MavlinkIO() {}
 
-    bool read_actuator_data(double controls[hako::assets::drone::ROTOR_NUM])
+    bool read_actuator_data(double controls[hako::assets::drone::ROTOR_NUM], Hako_uint64& time_usec)
     {
         Hako_HakoHilActuatorControls hil_actuator_controls;
         if (hako_read_hil_actuator_controls(hil_actuator_controls)) {
             for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
                 controls[i] = hil_actuator_controls.controls[i];
             }
+            time_usec = hil_actuator_controls.time_usec;
             return true;
         }
         return false;

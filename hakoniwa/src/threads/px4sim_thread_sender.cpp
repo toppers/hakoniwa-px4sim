@@ -74,6 +74,20 @@ static inline bool is_send_cycle(Px4SimSenderTimingType &timing, uint64_t boot_t
         return false;
     }
 }
+void px4sim_send_sensor_data(Hako_uint64 time_usec, Hako_uint64 boot_time_usec)
+{
+    static int count = 0;
+    (void)boot_time_usec;
+    if (px4_comm_io == nullptr) {
+        return;
+    }
+    px4sim_send_sensor(*px4_comm_io, time_usec);
+    if ((count % 10) == 0) {
+        px4sim_send_hil_gps(*px4_comm_io, time_usec);
+    }
+    count++;
+    return;
+}
 void px4sim_sender_do_task(void)
 {
     if (px4_comm_io == nullptr) {

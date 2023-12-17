@@ -1,6 +1,7 @@
 {
     "simulation": {
-      "timeStep": 0.001,
+      "lockstep": true,
+      "timeStep": 0.003,
       "logOutputDirectory": "./",
       "logOutput": {
         "sensors": {

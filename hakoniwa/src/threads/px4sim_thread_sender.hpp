@@ -3,9 +3,11 @@
 
 #include "../comm/icomm_connector.hpp"
 #include "../mavlink/mavlink_msg_types.hpp"
+#include "hako/pdu/hako_pdu_data.hpp"
 
 extern void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io);
 extern void px4sim_sender_do_task(void);
+extern void px4sim_send_sensor_data(Hako_uint64 time_usec, Hako_uint64 boot_time_usec);
 
 extern void px4sim_send_message(hako::px4::comm::ICommIO &clientConnector, MavlinkDecodedMessage &message);
 extern void px4sim_send_dummy_command_long(hako::px4::comm::ICommIO &clientConnector);

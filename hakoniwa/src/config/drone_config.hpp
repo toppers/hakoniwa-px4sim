@@ -40,6 +40,9 @@ public:
     double getSimTimeStep() const {
         return configJson["simulation"]["timeStep"].get<double>();
     }
+    bool getSimLockStep() const {
+        return configJson["simulation"]["lockstep"].get<bool>();
+    }
 
     std::string getSimLogOutputDirectory() const {
         return configJson["simulation"]["logOutputDirectory"].get<std::string>();

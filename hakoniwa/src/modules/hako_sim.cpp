@@ -15,7 +15,6 @@
 #include <iostream>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
-#define HAKO_RUNNER_MASTER_DELTA_USEC           1000 /* usec*/
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
 #define HAKO_AVATOR_CHANNLE_ID_POS      1
 #define HAKO_AVATOR_CHANNLE_ID_CTRL     2
@@ -36,7 +35,7 @@ void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint)
     else {
         std::cout << "INFO: hako_master_init() success" << std::endl;
     }
-    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), HAKO_RUNNER_MASTER_DELTA_USEC);
+    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
     pthread_t thread;
     if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
         std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
@@ -96,21 +95,13 @@ static void do_io_write(double controls[hako::assets::drone::ROTOR_NUM])
 }
 
 
+static double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
+static hako::assets::drone::MavlinkIO mavlink_io;
 static void my_task()
 {
-    static hako::assets::drone::MavlinkIO mavlink_io;
-    static double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
-
-    //read Mavlink Message
-    mavlink_io.read_actuator_data(controls);
-
+    //std::cout << "drone run()" << std::endl;
     drone->run(controls);
-
-    //write Mavlink Message
-    mavlink_io.write_sensor_data(*drone);
-
     do_io_write(controls);
-    px4sim_sender_do_task();
     return;
 }
 
@@ -125,26 +116,60 @@ static hako_asset_runner_callback_t my_callbacks = {
     my_task,   // do_task
     my_reset    // reset
 };
-
+#include <chrono>
 static hako_time_t hako_sim_asset_time = 0;
 static void* asset_runner(void*)
 {
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+    //microseconds = 0;
+    Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
+    bool lockstep = drone_config.getSimLockStep();
     hako_asset_runner_register_callback(&my_callbacks);
     const char* config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);
-    if (hako_asset_runner_init(HAKO_ROBO_NAME, config_path, HAKO_RUNNER_MASTER_DELTA_USEC) == false) {
+    if (hako_asset_runner_init(HAKO_ROBO_NAME, config_path, delta_time_usec) == false) {
         std::cerr << "ERROR: " << "hako_asset_runner_init() error" << std::endl;
         return nullptr;
     }
     while (true) {
+        Hako_uint64 px4_time_usec = microseconds;
+        Hako_uint64 dummy;
         hako_sim_asset_time = 0;
+        bool isRecvControl = false;
         std::cout << "INFO: start simulation" << std::endl;
         while (true) {
+            //read Mavlink Message
+            //std::cout << "lockstep: " << lockstep << " isRecvControl: " << isRecvControl << std::endl;
+            if (mavlink_io.read_actuator_data(controls, dummy) == false) {
+                if (lockstep && isRecvControl) {
+                    //std::cout << "waiting .... " << std::endl;
+                    usleep(delta_time_usec); //1msec sleep
+                    continue;
+                }
+                else {
+                    //std::cout << "go!" << std::endl;
+                    //case1. lockstep = false
+                    //          ==> do not sync with px4 sim timing
+                    //case2. lockstep = true && isRecvControl = false
+                    //          ==> does not recv HIL_ACTUATOR_CONTROLS yet, so send HIL_SENSOR..
+                }
+            }
+            else {
+                isRecvControl = true;
+                //std::cout << "recv HIL_ACTUATOR_CONTROLS: " << px4_time_usec << std::endl;
+            }
+
             if (hako_asset_runner_step(1) == false) {
                 std::cout << "INFO: stopped simulation" << std::endl;
                 break;
             }
             else {
-                hako_sim_asset_time += HAKO_RUNNER_MASTER_DELTA_USEC;
+                px4_time_usec += delta_time_usec;
+                //write Mavlink Message
+                mavlink_io.write_sensor_data(*drone);
+                px4sim_send_sensor_data(px4_time_usec, microseconds);
+                hako_sim_asset_time += delta_time_usec;
             }
         }
     }
