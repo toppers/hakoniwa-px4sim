@@ -91,14 +91,14 @@ static EulerAngles toEulerAngles(const Quaternion& q) {
 
     return angles;
 }
-class Px4Attitude : public ICsvLog {
+class Px4LocalAttitude : public ICsvLog {
 private:
 	uint64_t time_usec;
 	vehicle_attitude_s att;
 	EulerAngles angles;
 public:
-	Px4Attitude() {}
-	~Px4Attitude() {}
+	Px4LocalAttitude() {}
+	~Px4LocalAttitude() {}
 	void set_data(uint64_t t, vehicle_attitude_s& data)
 	{
 		time_usec = t;
@@ -123,6 +123,40 @@ public:
 			};
     }
 };
+
+class Px4GlobalAttitude : public ICsvLog {
+private:
+	uint64_t time_usec;
+	vehicle_attitude_s att;
+	EulerAngles angles;
+public:
+	Px4GlobalAttitude() {}
+	~Px4GlobalAttitude() {}
+	void set_data(uint64_t t, vehicle_attitude_s& data)
+	{
+		time_usec = t;
+		att = data;
+		Quaternion q;
+		q.w = data.q[0];
+		q.x = data.q[1];
+		q.y = data.q[2];
+		q.z = data.q[3];
+		angles = toEulerAngles(q);
+	}
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "q0", "q1", "q2", "q3", "euler_x", "euler_y", "euler_z" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        return {
+			std::to_string(time_usec), 
+			std::to_string(att.q[0]), std::to_string(att.q[1]), std::to_string(att.q[2]),std::to_string(att.q[3]),
+			std::to_string(angles.pitch), std::to_string(angles.roll), std::to_string(angles.yaw)
+			};
+    }
+};
+
 class Px4LocalPosition : public ICsvLog {
 private:
 	uint64_t time_usec;
@@ -149,16 +183,48 @@ public:
 			};
     }
 };
+
+class Px4GlobalPosition : public ICsvLog {
+private:
+	uint64_t time_usec;
+	vehicle_global_position_s pos;
+public:
+	Px4GlobalPosition() {}
+	~Px4GlobalPosition() {}
+	void set_data(uint64_t t, vehicle_global_position_s& data)
+	{
+		time_usec = t;
+		pos = data;
+	}
+    const std::vector<std::string> log_head() override
+    {
+        return { "TIME", "lat", "lon", "alt" };
+    }
+    const std::vector<std::string> log_data() override
+    {
+        return {
+			std::to_string(time_usec), 
+			std::to_string(pos.lat), std::to_string(pos.lon), std::to_string(pos.alt)
+			};
+    }
+};
+
 static CsvLogger logger_pos;
 static CsvLogger logger_att;
+static CsvLogger logger_pos_gl;
+static CsvLogger logger_att_gl;
 
-static Px4Attitude px4_att;
+static Px4LocalAttitude px4_att;
 static Px4LocalPosition px4_pos;
+static Px4GlobalAttitude px4_att_gl;
+static Px4GlobalPosition px4_pos_gl;
 
 extern "C" __EXPORT int px4_csv_logger_main(int argc, char *argv[])
 {
 	logger_att.add_entry(px4_att, "./att.csv");
 	logger_pos.add_entry(px4_pos, "./pos.csv");
+	logger_att_gl.add_entry(px4_att, "./att_gl.csv");
+	logger_pos_gl.add_entry(px4_pos, "./pos_gl.csv");
 	return Px4CsvLogger::main(argc, argv);
 }
 #define DELTA_TIME_USEC 1000
@@ -174,6 +240,12 @@ void Px4CsvLogger::log_pos()
 		px4_pos.set_data(curr, vehicle_local_position);
 		logger_pos.run();
 	}
+	if (_vehicle_global_position_sub.updated()) {
+		_vehicle_global_position_sub.copy(&vehicle_global_position);
+		hrt_abstime curr = hrt_absolute_time();
+		px4_pos_gl.set_data(curr, vehicle_global_position);
+		logger_pos_gl.run();
+	}
 }
 void Px4CsvLogger::log_att()
 {
@@ -182,6 +254,12 @@ void Px4CsvLogger::log_att()
 		hrt_abstime curr = hrt_absolute_time();
 		px4_att.set_data(curr, vehicle_attitude);
 		logger_att.run();
+	}
+	if (_vehicle_attitude_groundtruth_sub.updated()) {
+		_vehicle_attitude_groundtruth_sub.copy(&vehicle_attitude_grounadtrue);
+		hrt_abstime curr = hrt_absolute_time();
+		px4_att_gl.set_data(curr, vehicle_attitude_grounadtrue);
+		logger_att_gl.run();
 	}
 }
 bool Px4CsvLogger::init()

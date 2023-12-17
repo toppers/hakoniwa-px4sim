@@ -4,6 +4,7 @@
 
 #include "isensor_acceleration.hpp"
 #include "utils/icsv_log.hpp"
+#include "utils/csv_logger.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 
 namespace hako::assets::drone {
@@ -70,7 +71,7 @@ public:
     {
         DroneAccelerationBodyFrameType v = sensor_value();
 
-        return {std::to_string(total_time_sec), std::to_string(v.data.x), std::to_string(v.data.y), std::to_string(v.data.z)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(v.data.x), std::to_string(v.data.y), std::to_string(v.data.z)};
     }
 
 };

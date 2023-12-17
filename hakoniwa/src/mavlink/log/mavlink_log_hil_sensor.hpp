@@ -3,6 +3,7 @@
 
 
 #include "utils/icsv_log.hpp"
+#include "utils/csv_logger.hpp"
 #include "mavlink.h"
 #include <iostream>
 
@@ -31,7 +32,7 @@ public:
     const std::vector<std::string> log_data() override
     {
         return {
-            std::to_string(msg.time_usec), 
+            std::to_string(CsvLogger::get_time_usec()), 
             std::to_string(msg.xacc), std::to_string(msg.yacc), std::to_string(msg.zacc),
             std::to_string(msg.xgyro), std::to_string(msg.ygyro), std::to_string(msg.zgyro),
             std::to_string(msg.xmag), std::to_string(msg.ymag), std::to_string(msg.zmag),

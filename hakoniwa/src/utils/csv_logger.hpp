@@ -9,12 +9,13 @@ typedef struct {
     CsvData *csv_data;
 } CsvLogEntryType;
 
-#define MAX_WRITE_COUNT 1024
+#define MAX_WRITE_COUNT 256
 class CsvLogger {
 private:
     std::vector<CsvLogEntryType> entries;
     int write_count;
-
+    static bool enable_flag;
+    static uint64_t time_usec;
 public:
     CsvLogger() : write_count(0) {}
 
@@ -28,8 +29,26 @@ public:
         CsvLogEntryType entry = { &log, csv_data };
         entries.push_back(entry);
     }
-
+    static void set_time_usec(uint64_t t)
+    {
+        time_usec = t;
+    }
+    static uint64_t get_time_usec()
+    {
+        return time_usec;
+    }
+    static void enable()
+    {
+        enable_flag = true;
+    }
+    static void disable()
+    {
+        enable_flag = false;
+    }
     void run() {
+        if (enable_flag == false) {
+            return;
+        }
         for (auto& entry : entries) {
             auto log_data = entry.log->log_data();
             entry.csv_data->write(log_data);

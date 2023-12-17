@@ -5,6 +5,7 @@
 #include "isensor_baro.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 #include "utils/icsv_log.hpp"
+#include "utils/csv_logger.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {
@@ -59,7 +60,7 @@ public:
     {
         DroneBarometricPressureType v = sensor_value();
 
-        return {std::to_string(total_time_sec), std::to_string(v.abs_pressure), std::to_string(v.diff_pressure), std::to_string(v.pressure_alt)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(v.abs_pressure), std::to_string(v.diff_pressure), std::to_string(v.pressure_alt)};
     }
 
 };

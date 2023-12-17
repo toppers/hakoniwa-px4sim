@@ -9,7 +9,7 @@ typedef struct {
     CsvData *csv_data;
 } CsvLogEntryType;
 
-#define MAX_WRITE_COUNT 1024
+#define MAX_WRITE_COUNT 256
 class CsvLogger {
 private:
     std::vector<CsvLogEntryType> entries;

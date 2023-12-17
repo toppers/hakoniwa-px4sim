@@ -5,6 +5,7 @@
 #include "isensor_gps.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 #include "utils/icsv_log.hpp"
+#include "utils/csv_logger.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {
@@ -145,7 +146,7 @@ public:
     {
         DroneGpsDataType v = sensor_value();
 
-        return {std::to_string(total_time_sec), 
+        return {std::to_string(CsvLogger::get_time_usec()), 
                 std::to_string(v.lat), std::to_string(v.lon), std::to_string(v.alt),
                 std::to_string(v.vel), std::to_string(v.vn), std::to_string(v.ve), std::to_string(v.vd),
                 std::to_string(v.cog)};

@@ -117,6 +117,9 @@ static hako_asset_runner_callback_t my_callbacks = {
     my_reset    // reset
 };
 #include <chrono>
+#include "utils/csv_logger.hpp"
+bool CsvLogger::enable_flag = false;
+uint64_t CsvLogger::time_usec = 0; 
 static hako_time_t hako_sim_asset_time = 0;
 static void* asset_runner(void*)
 {
@@ -133,15 +136,15 @@ static void* asset_runner(void*)
         return nullptr;
     }
     while (true) {
-        Hako_uint64 px4_time_usec = microseconds;
-        Hako_uint64 dummy;
+        Hako_uint64 hako_asset_time_usec = microseconds;
+        Hako_uint64 px4_time_usec;
         hako_sim_asset_time = 0;
         bool isRecvControl = false;
         std::cout << "INFO: start simulation" << std::endl;
         while (true) {
             //read Mavlink Message
             //std::cout << "lockstep: " << lockstep << " isRecvControl: " << isRecvControl << std::endl;
-            if (mavlink_io.read_actuator_data(controls, dummy) == false) {
+            if (mavlink_io.read_actuator_data(controls, px4_time_usec) == false) {
                 if (lockstep && isRecvControl) {
                     //std::cout << "waiting .... " << std::endl;
                     usleep(delta_time_usec); //1msec sleep
@@ -157,6 +160,8 @@ static void* asset_runner(void*)
             }
             else {
                 isRecvControl = true;
+                CsvLogger::enable();
+                CsvLogger::set_time_usec(px4_time_usec);
                 //std::cout << "recv HIL_ACTUATOR_CONTROLS: " << px4_time_usec << std::endl;
             }
 
@@ -165,10 +170,10 @@ static void* asset_runner(void*)
                 break;
             }
             else {
-                px4_time_usec += delta_time_usec;
+                hako_asset_time_usec += delta_time_usec;
                 //write Mavlink Message
                 mavlink_io.write_sensor_data(*drone);
-                px4sim_send_sensor_data(px4_time_usec, microseconds);
+                px4sim_send_sensor_data(hako_asset_time_usec, microseconds);
                 hako_sim_asset_time += delta_time_usec;
             }
         }

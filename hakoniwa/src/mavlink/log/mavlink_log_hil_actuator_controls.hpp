@@ -5,6 +5,7 @@
 #include "utils/icsv_log.hpp"
 #include "mavlink.h"
 #include <iostream>
+#include "utils/csv_logger.hpp"
 
 namespace hako::assets::drone::mavlink::log {
 
@@ -31,7 +32,7 @@ public:
     const std::vector<std::string> log_data() override
     {
         return {
-            std::to_string(msg.time_usec), 
+            std::to_string(CsvLogger::get_time_usec()), 
             std::to_string(msg.mode), std::to_string(msg.flags), 
             std::to_string(msg.controls[0]), std::to_string(msg.controls[1]), std::to_string(msg.controls[2]), std::to_string(msg.controls[3]),
             std::to_string(msg.controls[4]), std::to_string(msg.controls[5]), std::to_string(msg.controls[6]), std::to_string(msg.controls[7]),
