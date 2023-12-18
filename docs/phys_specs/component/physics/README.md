@@ -9,6 +9,8 @@ Drone Dynamics encompasses the mathematical and computational models that simula
 
 `BodyFrameDroneDynamics` component models the drone's behavior and motion from the perspective of its own body frame. It accounts for the linear and angular velocities, the impact of the propellers' thrust and torque, and the drone's attitude, which is its orientation in space. The body frame dynamics are essential for direct drone control and for understanding the immediate effects of control inputs on the drone's movement.
 
+The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone. The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
+
 The basic dynamics equations in the body frame are as follows.
 
 $m \dot{v} + \omega \times m v = F$
