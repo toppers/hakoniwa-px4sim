@@ -157,7 +157,7 @@ AngularVelocityType angular_velocity_ground_to_body(
 
 /* physics */
 
-AccelerationType acceleration_in_body_frame(
+AccelerationType acceleration_in_body_frame_without_Coriolis(
     const VelocityType& body,
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
@@ -185,15 +185,15 @@ AccelerationType acceleration_in_body_frame(
     const auto T = thrust;
 
     /*****************************************************************/  
-    dot_u =       - g * s_theta            - c * u;
-    dot_v =         g * c_theta * s_phi    - c * v;
-    dot_w = -T/m  + g * c_theta * c_phi    - c * w;
+    dot_u =       - g * s_theta            - c/m * u;
+    dot_v =         g * c_theta * s_phi    - c/m * v;
+    dot_w = -T/m  + g * c_theta * c_phi    - c/m * w;
     /*****************************************************************/  
 
     return body_acceleration;
 }
 
-AccelerationType acceleration_in_body_frame2(
+AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
     const AngularVelocityType& body_angular_velocity,
@@ -206,16 +206,17 @@ AccelerationType acceleration_in_body_frame2(
         c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
 
-    const auto
-        p = get<0>(body_angular_velocity),
-        q = get<1>(body_angular_velocity),
-        r = get<2>(body_angular_velocity);
-
     // velocities in body frame (u, v, w)
     const auto
         u = get<0>(body_velocity),
         v = get<1>(body_velocity),
         w = get<2>(body_velocity);
+
+    // angular velocities in body frame (p, q, r)
+    const auto
+        p = get<0>(body_angular_velocity),
+        q = get<1>(body_angular_velocity),
+        r = get<2>(body_angular_velocity);
 
     // will be return value
     AccelerationType body_acceleration;
@@ -231,7 +232,7 @@ AccelerationType acceleration_in_body_frame2(
     const auto T = thrust;
 
     /*
-     * See nonami's book eq.(1.136)
+     * See nonami's book eq.(1.136). Colioris's force is (p, q, r) x (u, v, w)
      */
     /*****************************************************************/  
     dot_u =       - g * s_theta            - (q*w - r*v) - c/m * u;
@@ -247,6 +248,7 @@ AccelerationType acceleration_in_ground_frame(
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
+    assert(false && "this is not well-implemented, use acceleration_in_body_frame instead");
     assert(mass != 0.0); // TODO: remove this line
     using namespace std;
 

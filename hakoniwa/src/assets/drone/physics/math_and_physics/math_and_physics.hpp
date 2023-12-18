@@ -31,13 +31,13 @@ AngularVelocityType angular_velocity_ground_to_body(
     const AngleType& angle);
 
 /* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
-AccelerationType acceleration_in_body_frame(
+AccelerationType acceleration_in_body_frame_without_Coriolis(
     const VelocityType& body,
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
 
-/* soon replaces the above */
-AccelerationType acceleration_in_body_frame2(
+/* replaces the above with Coriolis's Force */
+AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
     const AngularVelocityType& body_angular_velocity,

@@ -120,36 +120,49 @@ void test_body_acceleration() {
     const VelocityType v(1, 2, 3);
 
     double trust = 1, mass = 1, gravity = 1, drag = 0;
-    AccelerationType a = acceleration_in_body_frame(v, AngleType(0, 0, 0),
+    AccelerationType a = acceleration_in_body_frame(v, AngleType(0, 0, 0), AngularVelocityType(0, 0, 0),
         trust, mass, gravity, drag);
     assert_almost_equal(a, AccelerationType(0, 0, 0));
 
     trust = 10, mass = 2, gravity = 1, drag = 0;
-    a = acceleration_in_body_frame(v, AngleType(0, 0, 0),
+    a = acceleration_in_body_frame(v, AngleType(0, 0, 0), AngularVelocityType(0, 0, 0),
         trust, mass, gravity, drag);
     assert_almost_equal(a, AccelerationType(0, 0, -trust/mass+gravity));
 
     /* change psi angle (doesn't matter) */
-    a = acceleration_in_body_frame(v, AngleType(0, 0, PI/6),
+    a = acceleration_in_body_frame(v, AngleType(0, 0, PI/6), AngularVelocityType(0, 0, 0),
         trust, mass, gravity, drag);
         assert_almost_equal(a, AccelerationType(0, 0, -trust/mass+gravity));
 
     /* change phi */
-    a = acceleration_in_body_frame(v, AngleType(PI/6, 0, 0),
+    a = acceleration_in_body_frame(v, AngleType(PI/6, 0, 0), AngularVelocityType(0, 0, 0),
         trust, mass, gravity, drag);
     assert_almost_equal(a, AccelerationType(0, gravity*sin(PI/6), -trust/mass+gravity*cos(PI/6)));
 
     /* change theta */
-    a = acceleration_in_body_frame(v, AngleType(0, PI/6, 0),
+    a = acceleration_in_body_frame(v, AngleType(0, PI/6, 0), AngularVelocityType(0, 0, 0),
         trust, mass, gravity, drag);
     assert_almost_equal(a, AccelerationType(-gravity*sin(PI/6), 0, -trust/mass+gravity*cos(PI/6)));
 
     /* add drag */
     trust = 10, mass = 2, gravity = 1, drag = 0.1;
-    a = acceleration_in_body_frame(v, AngleType(0, PI/6, 0),
+    a = acceleration_in_body_frame(v, AngleType(0, PI/6, 0), AngularVelocityType(0, 0, 0),
         trust, mass, gravity, drag);
-    assert_almost_equal(a, AccelerationType(-gravity*sin(PI/6)-0.1, -0.2, -trust/mass+gravity*cos(PI/6)-0.3));
+    assert_almost_equal(a, AccelerationType(
+        -gravity*sin(PI/6)-drag/mass*1,
+                          -drag/mass*2,
+        -trust/mass+gravity*cos(PI/6)- drag/mass*3));
 
+    trust = 10, mass = 2, gravity = 1, drag = 0;
+    // setting angle to (0,0,0), drag = 0, same anglular and linear velocity, so Coliori=(0,0,0)
+    a = acceleration_in_body_frame(v, AngleType(0, 0, 0), AngularVelocityType(1, 2, 3),
+        trust, mass, gravity, drag);
+    assert_almost_equal(a, AccelerationType(0, 0, -trust/mass+gravity));
+    
+    // now Coliori is (1,1,1)x(1,2,3) = (1,-2,1)
+    a = acceleration_in_body_frame(v, AngleType(0, 0, 0), AngularVelocityType(1, 1, 1),
+        trust, mass, gravity, drag);
+    assert_almost_equal(a, AccelerationType(-1, 2, -trust/mass+gravity-1));
 }
 
 void test_body_angular_acceleration() {
