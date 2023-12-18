@@ -45,14 +45,14 @@
           },
           "thruster": {
             "rotorPositions": [
-              {"position": [  0.3,  0.3, 0 ], "rotationDirection":  1.0e-3 },
-              {"position": [ -0.3, -0.3, 0 ], "rotationDirection":  1.0e-3 },
-              {"position": [  0.3, -0.3, 0 ], "rotationDirection": -1.0e-3 },
-              {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0e-3 }
+              {"position": [  0.3,  0.3, 0 ], "rotationDirection":  1.0 },
+              {"position": [ -0.3, -0.3, 0 ], "rotationDirection":  1.0 },
+              {"position": [  0.3, -0.3, 0 ], "rotationDirection": -1.0 },
+              {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0 }
               ],
             "parameterA": 2.18e-06,
-            "parameterB": 6.94444e-09,
-            "parameterJr": 1.0e-03
+            "parameterB": 6.94444e-12,
+            "parameterJr": 0.0
           },
           "sensors": {
             "acc": {
