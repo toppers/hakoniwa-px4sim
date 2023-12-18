@@ -84,7 +84,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
         HAKO_ASSERT(rotor != nullptr);
         rotors[i] = rotor;
         rotor->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
-        std::string logfilename= "./log_rotar_" + std::to_string(i) + ".csv";
+        std::string logfilename= "./log_rotor_" + std::to_string(i) + ".csv";
         drone->get_logger().add_entry(*rotor, logfilename);
     }
     drone->set_rotor_dynamics(rotors);

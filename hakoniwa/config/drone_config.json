@@ -35,8 +35,8 @@
     "components": {
         "droneDynamics": {
             "physicsEquation": "BodyFrame",
-            "airFrictionCoefficient": 0.1,
-            "inertia": [ 0.1, 0.1, 0.2 ]
+            "airFrictionCoefficient": 0.2,
+            "inertia": [ 0.05, 0.05, 0.05 ]
           },
           "rotor": {
             "tau": 0.001,
@@ -45,14 +45,14 @@
           },
           "thruster": {
             "rotorPositions": [
-              {"position": [  0.3,  0.3, 0 ], "rotationDirection":  0.0001 },
-              {"position": [ -0.3, -0.3, 0 ], "rotationDirection":  0.0001 },
-              {"position": [  0.3, -0.3, 0 ], "rotationDirection": -0.0001 },
-              {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -0.0001 }
+              {"position": [  0.3,  0.3, 0 ], "rotationDirection":  1.0e-3 },
+              {"position": [ -0.3, -0.3, 0 ], "rotationDirection":  1.0e-3 },
+              {"position": [  0.3, -0.3, 0 ], "rotationDirection": -1.0e-3 },
+              {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0e-3 }
               ],
             "parameterA": 2.18e-06,
             "parameterB": 6.94444e-09,
-            "parameterJr": 1.0
+            "parameterJr": 1.0e-03
           },
           "sensors": {
             "acc": {
