@@ -9,27 +9,48 @@ Drone Dynamics encompasses the mathematical and computational models that simula
 
 `BodyFrameDroneDynamics` component models the drone's behavior and motion from the perspective of its own body frame. It accounts for the linear and angular velocities, the impact of the propellers' thrust and torque, and the drone's attitude, which is its orientation in space. The body frame dynamics are essential for direct drone control and for understanding the immediate effects of control inputs on the drone's movement.
 
-$\dot{u} = -g \sin{\theta} -cu$
+The basic dynamics equations in the body frame are as follows.
 
-$\dot{v} = g \cos{\theta}\sin{\phi} -cv$
+$m \dot{v} + \omega \times m v = F$
 
-$\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -cw$
+$I \dot{\omega} + \omega \times I \omega = \tau$
 
-$\dot{p} = c_x \tau_{\phi}$
+where;
 
-$\dot{q} = c_y \tau_{\theta}$
+- $m$ - the mass of the drone
+- $I$ - the inertia matrix of the drone 
+- $v$ - the linear velocity of the drone $v=(u, v, w)$
+- $\omega$ - the angular velocity of the drone $\omega = (p, q, r)$
+- $F$ - the force vector including gravity($mg$), drag($-dv)$, and thrust $(T)$
+- $\tau$ - the torque vector including the propeller torque
 
-$\dot{r} = c_z \tau_{\psi}$
 
-* u,v,w are the drone's velocities along its body-frame axes.
-* T is  the thrust produced by the drone's propulsion system.
-* g is the acceleration due to gravity.
-* θ and φ are the pitch and roll angles, respectively.
-* c is the air friction coefficient, affecting the velocity terms.
-* m is the mass of the drone.
-* p,q,r represent the angular velocities around the body-frame axes.
-* τφ,τθ,τψ are the torques around the body-frame axes.
-* cx​, cy, cz are coefficients related to the torques.
+The body frame dynamics based on the body angles $\phi, \theta, \psi$, are described in the following equations.
+
+
+$\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u$
+
+$\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v$
+
+$\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w$
+
+$\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} $
+
+$\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy}$
+
+$\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz}$
+
+- $g$ is the acceleration due to gravity.
+- $\phi, \theta, \psi$ are the roll(x-axis), pitch(y-axis) and yaw(z-axis) angles, respectively($\psi$
+- $d$ is the air friction coefficient called "drag", affecting the velocity terms.
+- $I_{xx}​,I_{yy}, I_{zz}$ are inertia moments around the body-frame axes $x, y, z$ respectively($x, y, z$ should be aligned with the drone's principal axes, from the gravity-center(other slant inertia $I_{xy}, I_{yz}, I_{zx}$ are assumed to be zero).
+
+
+References:
+- https://mtkbirdman.com/flight-dynamics-body-axes-system/ 
+- https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
+- Nonami's book(details of the above) eq.(1.136).
+
 
 ## GroundFrameVelocityConverter
 

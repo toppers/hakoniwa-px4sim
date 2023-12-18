@@ -243,6 +243,7 @@ AccelerationType acceleration_in_body_frame(
     return body_acceleration;
 }
 
+/* NOTE : this is not well-implemented, use acceleration_in_body_frame instead */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const AngleType& angle,
