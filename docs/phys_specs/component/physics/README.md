@@ -25,7 +25,7 @@ where;
 - $\tau$ - the torque vector including the propeller torque
 
 
-The body frame dynamics based on the body angles $\phi, \theta, \psi$, are described in the following equations.
+The body frame dynamics above are expanded based on the body angles $\phi, \theta, \psi$ as follows.
 
 
 $\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u$
@@ -40,8 +40,10 @@ $\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy}$
 
 $\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz}$
 
+where;
+
 - $g$ is the acceleration due to gravity.
-- $\phi, \theta, \psi$ are the roll(x-axis), pitch(y-axis) and yaw(z-axis) angles, respectively($\psi$
+- $\phi, \theta, \psi$ are the roll($x$-axis), pitch($y$-axis) and yaw($z$-axis) angles, respectively.
 - $d$ is the air friction coefficient called "drag", affecting the velocity terms.
 - $I_{xx}​,I_{yy}, I_{zz}$ are inertia moments around the body-frame axes $x, y, z$ respectively($x, y, z$ should be aligned with the drone's principal axes, from the gravity-center(other slant inertia $I_{xy}, I_{yz}, I_{zx}$ are assumed to be zero).
 
