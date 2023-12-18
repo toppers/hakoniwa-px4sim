@@ -169,8 +169,8 @@ public:
     {
         this->cache = drone_phys_calc_cache(this->angle);
 
-        DroneAccelerationBodyFrame acc = acceleration_in_body_frame2(
-                                                            this->velocityBodyFrame, this->angle, this->angularVelocityBodyFrame,
+        DroneAccelerationBodyFrame acc = acceleration_in_body_frame_without_Coriolis(
+                                                            this->velocityBodyFrame, this->angle, 
                                                             thrust.data, this->param_mass, GRAVITY, this->param_drag);
         DroneAngularAccelerationBodyFrame acc_angular = angular_acceleration_in_body_frame(
                                                             this->angularVelocityBodyFrame, this->angle,
