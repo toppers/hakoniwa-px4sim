@@ -108,12 +108,12 @@ public:
     }
 
     // Rotor parameters
-    double getCompRotorTau() const {
-        return configJson["components"]["rotor"]["tau"].get<double>();
+    double getCompRotorTr() const {
+        return configJson["components"]["rotor"]["Tr"].get<double>();
     }
 
-    double getCompRotorK() const {
-        return configJson["components"]["rotor"]["k"].get<double>();
+    double getCompRotorKr() const {
+        return configJson["components"]["rotor"]["Kr"].get<double>();
     }
 
     int getCompRotorRpmMax() const {

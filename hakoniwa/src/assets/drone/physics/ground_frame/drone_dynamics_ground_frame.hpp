@@ -64,6 +64,11 @@ public:
     {
         this->param_mass = mass;
     }
+    double get_mass() const override
+    {
+        return this->param_mass;
+    }
+
     void set_drag(double drag) override
     {
         this->param_drag = drag;

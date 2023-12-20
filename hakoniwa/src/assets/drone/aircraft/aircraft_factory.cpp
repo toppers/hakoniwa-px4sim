@@ -13,6 +13,7 @@
 #include "assets/drone/aircraft/aricraft.hpp"
 #include "assets/drone/utils/sensor_noise.hpp"
 #include "config/drone_config.hpp"
+#include <math.h>
 
 using hako::assets::drone::AirCraft;
 using hako::assets::drone::DroneDynamicsBodyFrame;
@@ -44,10 +45,9 @@ using hako::assets::drone::SensorNoise;
 #define MAG_SAMPLE_NUM              drone_config.getCompSensorSampleCount("mag")
 
 #define RPM_MAX                     drone_config.getCompRotorRpmMax()
-#define ROTOR_TAU                   drone_config.getCompRotorTau()
-#define ROTOR_K                     drone_config.getCompRotorK()
+#define ROTOR_TAU                   drone_config.getCompRotorTr()
+#define ROTOR_K                     drone_config.getCompRotorKr()
 
-#define THRUST_PARAM_A              drone_config.getCompThrusterParameter("parameterA")
 #define THRUST_PARAM_B              drone_config.getCompThrusterParameter("parameterB")
 #define THRUST_PARAM_JR             drone_config.getCompThrusterParameter("parameterJr")
 
@@ -93,10 +93,17 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     auto thrust = new ThrustDynamics(DELTA_TIME_SEC);
     HAKO_ASSERT(thrust != nullptr);
     drone->set_thrus_dynamics(thrust);
-    std::cout << "param_A: " << THRUST_PARAM_A << std::endl;
+    double mass = drone_dynamics->get_mass();
+    double param_A = ( 
+                        mass * GRAVITY / 
+                        (
+                            pow(drone_config.getCompThrusterParameter("HoveringRpm"), 2) * ROTOR_NUM
+                        )
+                    );
+    std::cout << "param_A: " << param_A << std::endl;
     std::cout << "param_B: " << THRUST_PARAM_B << std::endl;
     std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
-    thrust->set_params(THRUST_PARAM_A, THRUST_PARAM_B, THRUST_PARAM_JR);
+    thrust->set_params(param_A, THRUST_PARAM_B, THRUST_PARAM_JR);
 
     RotorConfigType rotor_config[ROTOR_NUM];
     std::vector<RotorPosition> pos = drone_config.getCompThrusterRotorPositions();

@@ -39,8 +39,8 @@
             "inertia": [ 0.09, 0.09, 0.18 ]
           },
           "rotor": {
-            "tau": 0.001,
-            "k": 1000.0,
+            "Tr": 0.01,
+            "Kr": 8000,
             "rpmMax": 8000
           },
           "thruster": {
@@ -50,9 +50,9 @@
               {"position": [  0.3, -0.3, 0 ], "rotationDirection": -1.0 },
               {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0 }
               ],
-            "parameterA": 1.53e-07,
+            "HoveringRpm": 4000,
             "parameterB": 6.94444e-09,
-            "parameterJr": 1.0e-07
+            "parameterJr": 1.0e-08
           },
           "sensors": {
             "acc": {

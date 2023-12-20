@@ -26,6 +26,7 @@ public:
 
     virtual DroneVelocityBodyFrameType get_vel_body_frame() const = 0;
     virtual DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const = 0;
+    virtual double get_mass() const = 0;
 
     virtual void run(const DroneThrustType &thrust, const DroneTorqueType& torque) = 0;
 };
