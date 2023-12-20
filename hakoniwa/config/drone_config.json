@@ -39,7 +39,7 @@
             "inertia": [ 0.09, 0.09, 0.18 ]
           },
           "rotor": {
-            "Tr": 0.01,
+            "Tr": 0.05,
             "Kr": 8000,
             "rpmMax": 8000
           },
@@ -51,7 +51,7 @@
               {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0 }
               ],
             "HoveringRpm": 4000,
-            "parameterB": 6.94444e-09,
+            "parameterB":  0.5e-07,
             "parameterJr": 1.0e-08
           },
           "sensors": {
