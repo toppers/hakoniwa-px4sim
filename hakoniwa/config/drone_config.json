@@ -36,10 +36,10 @@
         "droneDynamics": {
             "physicsEquation": "BodyFrame",
             "airFrictionCoefficient": 0.324,
-            "inertia": [ 0.09, 0.09, 0.18 ]
+            "inertia": [ 0.03, 0.03, 0.06 ]
           },
           "rotor": {
-            "Tr": 0.05,
+            "Tr": 0.1,
             "Kr": 8000,
             "rpmMax": 8000
           },
