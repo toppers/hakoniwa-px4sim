@@ -35,8 +35,8 @@
     "components": {
         "droneDynamics": {
             "physicsEquation": "BodyFrame",
-            "airFrictionCoefficient": 0.324,
-            "inertia": [ 0.03, 0.03, 0.06 ]
+            "airFrictionCoefficient": 0.1,
+            "inertia": [ 0.01, 0.01, 0.02 ]
           },
           "rotor": {
             "Tr": 0.1,
@@ -51,7 +51,7 @@
               {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0 }
               ],
             "HoveringRpm": 4000,
-            "parameterB":  0.5e-07,
+            "parameterB":  2.0e-08,
             "parameterJr": 1.0e-08
           },
           "sensors": {
