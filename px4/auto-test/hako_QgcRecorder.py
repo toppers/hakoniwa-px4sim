@@ -1,14 +1,30 @@
 from pymavlink import mavutil
 import threading
+import json
+import argparse
 
-# PX4とQGroundControlのIPアドレスとポート番号を設定
-px4_ipaddr = '127.0.0.1'  # PX4のIPアドレス
-my_ipaddr = '192.168.11.33'   # EthernetのIPアドレス
-qgc_ipaddr = '192.168.11.56'  # QGroundControlのIPアドレス
+parser = argparse.ArgumentParser(description='Qgc command recording Tool')
+parser.add_argument('config_path', help='Path to the JSON configuration file')
+args = parser.parse_args()
 
-mavlink_connection_qgc_in = mavutil.mavlink_connection(f'udpin:{my_ipaddr}:54001')
-mavlink_connection_qgc = mavutil.mavlink_connection(f'udpout:{qgc_ipaddr}:14550')
-mavlink_connection_px4 = mavutil.mavlink_connection(f'udpout:127.0.0.1:18570')
+# Read the JSON file
+with open(args.config_path, 'r') as json_file:
+    config_data = json.load(json_file)
+
+px4_ipaddr = config_data['px4_ipaddr']
+px4_portno = config_data['px4_portno']
+my_ipaddr = config_data['my_ipaddr']
+my_portno = config_data['my_portno']
+qgc_ipaddr = config_data['qgc_ipaddr']
+qgc_portno = config_data['qgc_portno']
+print(f'me:{my_ipaddr}:{my_portno}')
+print(f'px4:{px4_ipaddr}:{px4_portno}')
+print(f'qgc:{qgc_ipaddr}:{qgc_portno}')
+
+# Establish MAVLink connections
+mavlink_connection_qgc_in = mavutil.mavlink_connection(f'udpin:{my_ipaddr}:{my_portno}')
+mavlink_connection_qgc = mavutil.mavlink_connection(f'udpout:{qgc_ipaddr}:{qgc_portno}')
+mavlink_connection_px4 = mavutil.mavlink_connection(f'udpout:{px4_ipaddr}:{px4_portno}')
 
 bypass_thread_activate_flag = False
 
