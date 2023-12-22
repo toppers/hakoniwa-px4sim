@@ -106,6 +106,23 @@ public:
         }
         return inertia;
     }
+    std::vector<double> getCompDroneDynamicsPosition() const {
+        std::vector<double> inertia;
+        for (const auto& item : configJson["components"]["droneDynamics"]["position_meter"]) {
+            inertia.push_back(item);
+        }
+        return inertia;
+    }
+    std::vector<double> getCompDroneDynamicsAngle() const {
+        std::vector<double> inertia;
+        for (const auto& item : configJson["components"]["droneDynamics"]["angle_degree"]) {
+            inertia.push_back(item);
+        }
+        return inertia;
+    }
+    double getCompDroneDynamicsMass() const {
+        return configJson["components"]["droneDynamics"]["mass_kg"].get<double>();
+    }
 
     // Rotor parameters
     double getCompRotorTr() const {

@@ -116,7 +116,7 @@ public:
         this->param_cy = cy;
         this->param_cz = cz;
     }
-    void set_mass(double mass)
+    void set_mass(double mass) override
     {
         this->param_mass = mass;
     }
