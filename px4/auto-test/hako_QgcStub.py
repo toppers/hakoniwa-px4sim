@@ -4,7 +4,7 @@ import json
 import argparse
 import datetime
 import utils.mavlink_msg as mav_msg
-from operations.takeoff import TakeoffOperation
+from operations.scenario_manager import ScenarioManager
 import sys
 import time
 
@@ -32,20 +32,12 @@ print(f'qgc:{qgc_ipaddr}:{qgc_portno}')
 # Establish MAVLink connections
 mavlink_connection_px4 = mavutil.mavlink_connection(f'udpout:{px4_ipaddr}:{px4_portno}')
 
-def load_scenario(filename):
-    with open(filename, 'r') as file:
-        data = json.load(file)
-    return data
+scenario_manager = ScenarioManager()
+scenario_manager.load_scenario(args.test_scenario_path)
 
-scenario = load_scenario(args.test_scenario_path)
-
-op = scenario['scenario'][0]
-if op['operation'] == 'takeoff':
-    altitude = op['alt']
-    print(f"INFO: takeoff operation alt: {altitude}")
-    operation = TakeoffOperation(mavlink_connection_px4, altitude)
-else:
-    print(f"ERROR: not supported operation {op['operation']}")
+operation = scenario_manager.load_operation(mavlink_connection_px4)
+if operation is None:
+    print(f"ERROR: not supported operation")
     sys.exit(1)
 
 def get_current_time_in_usec():
