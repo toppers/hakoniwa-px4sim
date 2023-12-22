@@ -72,8 +72,8 @@ VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
             + (c_phi * s_theta * s_psi - s_phi * c_psi) * z;
     
     z_e =   (- s_theta)                                 * x
-            + (s_psi * c_theta)                         * y
-            + (c_psi * c_theta)                         * z;
+            + (s_phi * c_theta)                         * y
+            + (c_phi * c_theta)                         * z;
     /*****************************************************************/
 
     return ground;
