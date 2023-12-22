@@ -4,6 +4,7 @@
 #include "drone_primitive_types.hpp"
 #include "ithrust_dynamics.hpp"
 #include "utils/icsv_log.hpp"
+#include "math_and_physics/rotor_physics.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 
@@ -20,50 +21,13 @@ private:
     double param_Jr;
     DroneThrustType thrust;
     DroneTorqueType torque;
-    double counter_torque[ROTOR_NUM];
-    double T[ROTOR_NUM];
     DroneRotorSpeedType prev_rotor_speed[ROTOR_NUM];
     RotorConfigType rotor_config[ROTOR_NUM];
-    void run_thrust(const DroneRotorSpeedType rotor_speed[ROTOR_NUM])
-    {
-        double u = 0;
-        for (int i = 0; i < ROTOR_NUM; i++) {
-            this->T[i] = this->param_A * (rotor_speed[i].data * rotor_speed[i].data);
-            //std::cout << "A: " << param_A << std::endl;
-            //std::cout << "R[" << i << "]: " << rotor_speed[i].data << std::endl;
-            //std::cout << "T[" << i << "]: " << T[i] << std::endl;
-            u += this->T[i];
-        }
-        this->thrust.data = u;
-    }
-    void run_counter_torque(const DroneRotorSpeedType rotor_speed[ROTOR_NUM])
-    {
-        for (int i = 0; i < ROTOR_NUM; i++) {
-            this->counter_torque[i] = (this->param_B * rotor_speed[i].data * rotor_speed[i].data) 
-                                    + (this->param_Jr * (rotor_speed[i].data - this->prev_rotor_speed[i].data) / this->delta_time_sec );
-        }
-    }
-    void run_torque(const DroneRotorSpeedType rotor_speed[ROTOR_NUM])
-    {
-        (void)rotor_speed;
-        glm::dvec3 total_torque = glm::dvec3(0.0, 0.0, 0.0);
-        for (int i = 0; i < ROTOR_NUM; i++) {
-            // ローターによる推力ベクトルを生成（Z方向にのみ作用する）
-            // 航空座標系では重力の反対方向はマイナス
-            glm::dvec3 thrust_vector = glm::dvec3(0.0, 0.0, -this->T[i]);
-            
-            // ローターの位置ベクトルと推力ベクトルとの外積
-            glm::dvec3 torque_vector = glm::cross(this->rotor_config[i].data, thrust_vector);
-            
-            // 反トルク
-            // CCW:　時計回り（Z軸方向の回転に対してプラス方向）
-            //  CW:反時計回り（Z軸方向の回転に対してマイナス方向）
-            torque_vector += glm::dvec3(0.0, 0.0, this->rotor_config[i].ccw * this->counter_torque[i]);
-            // 合計トルクを計算
-            total_torque += torque_vector;
-        }
-        this->torque.data = total_torque;
-    }
+    double omega[ROTOR_NUM];
+    PositionType position[ROTOR_NUM];
+    double ccw[ROTOR_NUM];
+    double omega_acceleration[ROTOR_NUM];
+
 public:
     ThrustDynamics(double dt)
     {
@@ -84,6 +48,7 @@ public:
         this->rotor_config[2].data = { -0.3, 0.0, 0 };
         this->rotor_config[3].ccw = 1;
         this->rotor_config[3].data = { 0.0, 0.3, 0 };
+        set_rotor_config(rotor_config);
     }
     virtual ~ThrustDynamics() {}
 
@@ -98,6 +63,8 @@ public:
     {
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->rotor_config[i] = rotor_config[i];
+            this->position[i] = {rotor_config[i].data.x, rotor_config[i].data.y, rotor_config[i].data.z};
+            this->ccw[i] = rotor_config[i].ccw;
         }
     }
     void set_thrust(const DroneThrustType &thrust) override 
@@ -120,15 +87,18 @@ public:
 
     void run(const DroneRotorSpeedType rotor_speed[ROTOR_NUM]) override
     {
-        this->run_thrust(rotor_speed);
-        this->run_counter_torque(rotor_speed);
-        this->run_torque(rotor_speed);
+        for (int i = 0; i < ROTOR_NUM; i++) {
+            omega[i] = rotor_speed[i].data;
+            omega_acceleration[i] = (rotor_speed[i].data - this->prev_rotor_speed[i].data) / this->delta_time_sec;
+        }
+        this->thrust.data = body_thrust(param_A, ROTOR_NUM, omega);
+        this->torque = body_torque(param_A, param_B, param_Jr, ROTOR_NUM,
+                                            position, ccw, omega, omega_acceleration);
+
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->prev_rotor_speed[i] = rotor_speed[i];
         }
-        //torque.data.x = 0;
-        //torque.data.y = 0;
-        //torque.data.z = 0;
+
         total_time_sec += delta_time_sec;
     }
 

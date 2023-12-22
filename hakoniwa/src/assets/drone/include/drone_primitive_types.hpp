@@ -186,8 +186,17 @@ typedef struct {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#torque
  */
-typedef struct {
+typedef struct DroneTorque {
     glm::dvec3 data;
+    DroneTorque(){}
+    DroneTorque(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneTorque& operator=(const std::tuple<double, double, double>& rhs) {
+        this->data = tupleToVec3(rhs);
+        return *this;
+    }
+    operator std::tuple<double, double, double>() const {
+        return std::make_tuple(data.x, data.y, data.z);
+    }
 } DroneTorqueType;
 
 typedef struct {
