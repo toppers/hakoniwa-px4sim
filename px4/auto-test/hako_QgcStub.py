@@ -56,7 +56,7 @@ def get_rtime_from_boot():
 
 def QgcStub():
     global running
-    global command_long_ack_recv
+    global operation
 
     time.sleep(1)
    # 関数が開始した時刻を記録
@@ -83,6 +83,13 @@ def QgcStub():
 
         if not operation.is_op_done():
             operation.do_operation(current_time)
+        else:
+            operation = scenario_manager.next_operation()
+            if operation is None:
+                print("INFO: All Operations done.")
+                sys.exit(1)
+            else:
+                operation.start(time.time())
 
 def Px4Receiver():
     global running
@@ -92,8 +99,7 @@ def Px4Receiver():
         # PX4からのメッセージを受信する
         msg = mavlink_connection_px4.recv_match(blocking=True)
         if msg is not None:
-            if not operation.is_op_done():
-                operation.event_msg(msg)
+            scenario_manager.event_msg(msg)
             message_type = msg.get_type()
             if message_type == "COMMAND_ACK":
                 print(f"PX4: {get_rtime_from_boot()}:{message_type}")
