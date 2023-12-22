@@ -6,14 +6,9 @@ import datetime
 import utils.mavlink_msg as mav_msg
 import signal
 import time
+
 running = True
-
-def signal_handler(signum, frame):
-    global running
-    print(f'signal handler: {signum}')
-    running = False
-
-signal.signal(signal.SIGINT, signal_handler)
+command_long_ack_recv = False
 
 parser = argparse.ArgumentParser(description='Qgc Stub Tool')
 parser.add_argument('config_path', help='Path to the JSON configuration file')
@@ -50,33 +45,29 @@ boot_time = get_current_time_in_usec()
 def get_rtime_from_boot():
     return get_current_time_in_usec() - boot_time
 
-def bypass_Px4ToQgc():
+def QgcStub():
     global running
+    global command_long_ack_recv
+
+    time.sleep(1)
    # 関数が開始した時刻を記録
     start_time = time.time()
     command_sent = False
     hb_sent_time = 0
     ping_sent_time = 0
-
+    arm_msg_sent = False
     while running:
+        time.sleep(1)
         current_time = time.time()
-
-        # PX4からのメッセージを受信する
-        msg = mavlink_connection_px4.recv_match(blocking=True, timeout=1)
-        if msg is not None:
-            message_type = msg.get_type()
-            if message_type == "COMMAND_ACK":
-                print(f"PX4: {get_rtime_from_boot()}:{message_type}")
-
-
-        if (current_time - hb_sent_time) > 1:
+        if (current_time - hb_sent_time) > 5:
             hb_msg = mav_msg.create_heartbeat_message()
-            mav_msg.dump_heartbeat(hb_msg)
+            #mav_msg.dump_heartbeat(hb_msg)
             mavlink_connection_px4.write(hb_msg.get_msgbuf())
+            hb_sent_time = time.time()
 
         if (current_time - ping_sent_time) > 13:
             ping_msg = mav_msg.create_ping_message()
-            mav_msg.dump_ping(ping_msg)
+            #mav_msg.dump_ping(ping_msg)
             mavlink_connection_px4.write(ping_msg.get_msgbuf())
             ping_sent_time = time.time()
 
@@ -89,7 +80,31 @@ def bypass_Px4ToQgc():
             mavlink_connection_px4.write(command_msg.get_msgbuf())
             command_sent = True  # コマンド送信済みフラグをセット
 
-msg = mav_msg.create_heartbeat_message()
-mav_msg.dump_heartbeat(msg)
-mavlink_connection_px4.write(msg.get_msgbuf())
-bypass_Px4ToQgc()
+        if command_long_ack_recv and not arm_msg_sent:
+            # ARMコマンドを作成
+            command_msg = mav_msg.create_command_long_arm(True)
+            mav_msg.dump_command_long(command_msg)
+            # コマンドを送信
+            mavlink_connection_px4.write(command_msg.get_msgbuf())
+
+            arm_msg_sent = True  # コマンド送信済みフラグをセット
+
+def Px4Receiver():
+    global running
+    global command_long_ack_recv
+
+    while running:
+        current_time = time.time()
+
+        # PX4からのメッセージを受信する
+        msg = mavlink_connection_px4.recv_match(blocking=True)
+        if msg is not None:
+            message_type = msg.get_type()
+            if message_type == "COMMAND_ACK":
+                print(f"PX4: {get_rtime_from_boot()}:{message_type}")
+                command_long_ack_recv = True
+
+
+thread = threading.Thread(target=QgcStub)
+thread.start()
+Px4Receiver()

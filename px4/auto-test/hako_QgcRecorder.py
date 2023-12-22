@@ -67,6 +67,10 @@ def bypass_QgcToPx4():
             if message_type == "HEARTBEAT":
                 mav_msg.dump_heartbeat(msg)
             if message_type == "COMMAND_LONG":
+                #if msg.command == 22:
+                #    msg = mav_msg.create_command_long_takeoff(msg.param7)
+                #else:
+                #    msg = mav_msg.create_command_long_arm(True)
                 mav_msg.dump_command_long(msg)
             if message_type == "COMMAND_INT":
                 mav_msg.dump_command_int(msg)
