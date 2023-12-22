@@ -49,7 +49,7 @@ void test_frame_all_unit_vectors_with_some_angles() {
     assert_almost_equal(VelocityType(sqrt(3)/2, 0.5, 0), v2);
 }
 
-double length(VelocityType v) {
+static double length(VelocityType v) {
     double x = std::get<0>(v);
     double y = std::get<1>(v);
     double z = std::get<2>(v);
@@ -58,33 +58,53 @@ double length(VelocityType v) {
 
 void test_frame_matrix_is_unitary() {
     VelocityType v1(1, 0, 0);
-    for (int i = 0; i < 360; i+=30) {
+    for (int i = -180; i < 180; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType(i * (PI/180), 0, 0));
         double len = length(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
-    for (int i = 0; i < 360; i+=30) {
+    for (int i = 0; i < 90; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, i * (PI/180), 0));
         double len = length(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
   
-    for (int i = 0; i < 360; i+=30) {
+    for (int i = -180; i < 360; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, 0, i * (PI/180)));
         double len = length(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
 
     // conbinations
-    for (int i = 0; i < 360; i+=30) {
-        for (int j = 0; j < 360; j+=30) {
-            for (int k = 0; k < 360; k+=30) {
-                VelocityType v2 = velocity_body_to_ground(v1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
-                double len = length(v2);
+    VelocityType u1 = {0, 1, 0};
+    VelocityType w1 = {0, 0, 1};
+    for (int i = -180; i < 180; i+=30) {
+        for (int j = -90; j < 90; j+=30) {
+            for (int k = -180; k < 180; k+=30) {
+                VelocityType V = velocity_body_to_ground(v1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                double len = length(V);
                 assert(fabs(len - 1.0) < 0.0001);
+
+                // bug #89 indicated that need testing (0,1,0) and (0,0,1) vectors.
+                V = velocity_body_to_ground(u1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                len = length(V);
+                assert(fabs(len - 1.0) < 0.0001);
+
+                V = velocity_body_to_ground(w1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                len = length(V);
+                assert(fabs(len - 1.0) < 0.0001);
+
             }
         }
     }
+}
+
+void test_issue_89_yaw_angle_bug() {
+    // this works ok.
+    VelocityType v1(0, 1, 0);
+    VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, 0, PI/2));
+    assert_almost_equal(v2, VelocityType(-1, 0, 0));
+    // v2 = (-1, 0, 1)); bug #89 produced this result. now it is (-1,0,0)
 }
 
 void test_frame_roundtrip() {
@@ -343,6 +363,8 @@ int main() {
     T(test_body_torque);
     T(test_body_anti_torque);
     T(test_body_anti_Jr_torque);
-    std::cout << "-------all test PASSSED!!----\n";
+    std::cout << "-------all standard test PASSSED!!----\n";
+    T(test_issue_89_yaw_angle_bug);
+    std::cout << "-------all bug issue test PASSSED!!----\n";
     return 0;
 }
