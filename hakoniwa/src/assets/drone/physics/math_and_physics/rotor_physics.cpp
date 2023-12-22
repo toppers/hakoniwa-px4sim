@@ -52,13 +52,13 @@ double rotor_thrust(
 /* this makes z-axis rotation */
 /* Ta = B*(Omega)^2 + Jr* (d(Omega)/dt) */
 double rotor_anti_torque(double B, 
- double Jr, double omega, double omega_acceleratoin, int ccw)
+ double Jr, double omega, double omega_acceleratoin, double ccw)
 {
     /**
      * See Nonami's book (2.56)
      * Ta = B * (Omega)^2 + Jr * (d(Omega)/dt)
      */
-   return double(ccw) * ( B * omega * omega + Jr * omega_acceleratoin );
+   return ccw * ( B * omega * omega + Jr * omega_acceleratoin );
 }
 
 /* the sum of the n trust from the rotors */

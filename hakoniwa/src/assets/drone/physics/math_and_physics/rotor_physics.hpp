@@ -25,7 +25,7 @@ double rotor_anti_torque(
     double Jr,
     double omega, /* in rpm */
     double omega_acceleratoin, /* in rpm/s */
-    int ccw /* 1 or -1 */ );
+    double ccw /* 1 or -1 */ );
 
 /**
  * These functions are body dynamics.
