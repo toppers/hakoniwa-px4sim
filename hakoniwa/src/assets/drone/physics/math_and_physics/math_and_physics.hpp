@@ -37,32 +37,32 @@ AngularVelocityType angular_velocity_ground_to_body(
     const AngleType& angle);
 
 /* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
-AccelerationType acceleration_in_body_frame_without_Coriolis(
+AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     const VelocityType& body,
     const AngleType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
+    double thrust, double mass, /* 0 is not allowed */
+    double gravity, double drag);
 
 /* replaces the above with Coriolis's Force */
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
     const AngularVelocityType& body_angular_velocity,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
+    double thrust, double mass, /* 0 is not allowed */
+    double gravity, double drag);
 
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& body,
     const AngleType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
+    double thrust,
+    double mass, /* 0 is not allowed */
+    double gravity, double drag);
 
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     const AngleType& angle,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
-    double I_xx, /* in body frame, 0 is not allowed */
-    double I_yy, /* in body frame, 0 is not allowed */
-    double I_zz /* in body frame, 0 is not allowed */);
+    double torque_x, double torque_y, double torque_z, /* in body frame */
+    double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
 
 /* difficult not well-implemented yet !!! */
 #if 0

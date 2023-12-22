@@ -2,13 +2,17 @@
 #include <cassert>
 
 /*
- *  All the equations are from 
+ * All the equations are from the references below.
+ * Nonami's book "Introduction to Drone Engineering" from Corona Publishing Co., Ltd.
+ * Some of the them can be found in the following links, too.
  * https://mtkbirdman.com/flight-dynamics-body-axes-system
  * https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
  * https://www.sky-engin.jp/blog/eulers-equations-of-motion/
  */
 
-/* utility functions */
+/**
+ *  Utility section (tried not to depend on other libraries, except for C++ std)
+ */
 VectorType cross(const VectorType& u, const VectorType& v)
 {
     using std::get;
@@ -32,92 +36,111 @@ VectorType operator + (const VectorType& u, const VectorType& v)
     return result += v;
 }
 
+/**
+ *  Maths section (3D frame transformations between body and ground)
+ */
 
-/* maths */
-VelocityType velocity_body_to_ground(const VelocityType& b, const AngleType& a)
+/* for generic vectors. use the meaningful aliases below  */
+VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
 {
-    using namespace std;
+    using std::get; using std::sin; using std::cos;
     const auto
-        c_phi   = cos(get<0>(a)),   s_phi = sin(get<0>(a)),
-        c_theta = cos(get<1>(a)), s_theta = sin(get<1>(a)),
-        c_psi   = cos(get<2>(a)),   s_psi = sin(get<2>(a));
-    const auto u = get<0>(b), v = get<1>(b), w = get<2>(b);
+        c_phi   = cos(get<0>(angle)),   s_phi = sin(get<0>(angle)),
+        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
+        c_psi   = cos(get<2>(angle)),   s_psi = sin(get<2>(angle));
+    const auto x = get<0>(body), y = get<1>(body), z = get<2>(body);
 
     // will be return value
-    VelocityType ground_velocity;
-    
-    auto& dot_x = get<0>(ground_velocity);
-    auto& dot_y = get<1>(ground_velocity);
-    auto& dot_z = get<2>(ground_velocity);
+    VectorType ground;
+
+    // ground coordinates (x_e, y_e, z_e), where 'e' means earth.
+    auto& x_e = get<0>(ground);
+    auto& y_e = get<1>(ground);
+    auto& z_e = get<2>(ground);
 
     /*
      * See https://mtkbirdman.com/flight-dynamics-body-axes-system
      * for the transformation equations.
      */
     /*****************************************************************/  
-    dot_x =   (c_theta * c_psi)                         * u
-            + (s_phi * s_theta * c_psi - c_phi * s_psi) * v
-            + (c_phi * s_theta * c_psi + s_phi * s_psi) * w;
+    x_e =   (c_theta * c_psi)                           * x
+            + (s_phi * s_theta * c_psi - c_phi * s_psi) * y
+            + (c_phi * s_theta * c_psi + s_phi * s_psi) * z;
 
-    dot_y =   (c_theta * s_psi)                         * u
-            + (s_phi * s_theta * s_psi + c_phi * c_psi) * v
-            + (c_phi * s_theta * s_psi - s_phi * c_psi) * w;
+    y_e =   (c_theta * s_psi)                           * x
+            + (s_phi * s_theta * s_psi + c_phi * c_psi) * y
+            + (c_phi * s_theta * s_psi - s_phi * c_psi) * z;
     
-    dot_z =   (- s_theta)                               * u
-            + (s_psi * c_theta)                         * v
-            + (c_psi * c_theta)                         * w;
+    z_e =   (- s_theta)                                 * x
+            + (s_psi * c_theta)                         * y
+            + (c_psi * c_theta)                         * z;
     /*****************************************************************/
 
-    return ground_velocity;
+    return ground;
 }
 
-VelocityType velocity_ground_to_body(
-    const VelocityType& ground,
-    const AngleType& a)
+/* Transform velocity in body frame to ground frame */
+VelocityType velocity_body_to_ground(const VelocityType& body, const AngleType& angle)
 {
-    using namespace std;
+    return vector_body_to_ground(body, angle);
+}
+
+/* for generic vectors. use the meaningful aliases below  */
+VectorType vector_ground_to_body(const VectorType& ground,
+    const AngleType& angle)
+{
+    using std::get; using std::sin; using std::cos;
     const auto
-        c_phi   = cos(get<0>(a)), s_phi   = sin(get<0>(a)),
-        c_theta = cos(get<1>(a)), s_theta = sin(get<1>(a)),
-        c_psi   = cos(get<2>(a)), s_psi   = sin(get<2>(a));
+        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
+        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
+        c_psi   = cos(get<2>(angle)), s_psi   = sin(get<2>(angle));
     const auto
-        dot_x = get<0>(ground),
-        dot_y = get<1>(ground),
-        dot_z = get<2>(ground);
+        x_e = get<0>(ground),
+        y_e = get<1>(ground),
+        z_e = get<2>(ground);
 
     // will be return value
-    VelocityType body_velocity;
+    VectorType body;
     
-    auto& u = get<0>(body_velocity);
-    auto& v = get<1>(body_velocity);
-    auto& w = get<2>(body_velocity);
+    auto& x = get<0>(body);
+    auto& y = get<1>(body);
+    auto& z = get<2>(body);
     
      /*
      * See https://mtkbirdman.com/flight-dynamics-body-axes-system
      * for the transformation equations.
      */
     /*****************************************************************/  
-    u =   (c_theta * c_psi)                         * dot_x
-        + (c_theta * s_psi)                         * dot_y
-        - (s_theta)                                 * dot_z;
+    x =   (c_theta * c_psi)                         * x_e
+        + (c_theta * s_psi)                         * y_e
+        - (s_theta)                                 * z_e;
 
-    v =   (s_phi * s_theta * c_psi - c_phi * s_psi) * dot_x
-        + (s_phi * s_theta * s_psi + c_phi * c_psi) * dot_y
-        + (s_phi * c_theta)                         * dot_z;
+    y =   (s_phi * s_theta * c_psi - c_phi * s_psi) * x_e
+        + (s_phi * s_theta * s_psi + c_phi * c_psi) * y_e
+        + (s_phi * c_theta)                         * z_e;
 
-    w = (c_phi * s_theta * c_psi + s_phi * s_psi)   * dot_x
-        + (c_phi * s_theta * s_psi - s_phi * c_psi) * dot_y
-        + (c_phi * c_theta)                         * dot_z;
+    z = (c_phi * s_theta * c_psi + s_phi * s_psi)   * x_e
+        + (c_phi * s_theta * s_psi - s_phi * c_psi) * y_e
+        + (c_phi * c_theta)                         * z_e;
     /*****************************************************************/  
 
-    return body_velocity;
+    return body;
 }
 
+/* Tranlsform velocity in ground frame to body frame */
+VelocityType velocity_ground_to_body(
+    const VelocityType& ground,
+    const AngleType& angle)
+{
+    return vector_ground_to_body(ground, angle);
+}
+
+/* Tranlsform angular velocity in body frame to ground frame */
 AngularVelocityType angular_velocity_body_to_ground(
     const AngularVelocityType& body,
     const AngleType& angle)
 {
-    using namespace std;
+    using std::get; using std::sin; using std::cos; using std::tan;
     const auto
         c_phi   = cos(get<0>(angle)),
         s_phi   = sin(get<0>(angle)),
@@ -146,11 +169,12 @@ AngularVelocityType angular_velocity_body_to_ground(
     return ground_angular_velocity;
 }
 
+/* Tranlsform angular velocity in ground frame to body frame */
 AngularVelocityType angular_velocity_ground_to_body(
     const AngularVelocityType& ground,
     const AngleType& angle)
 {
-    using namespace std;
+    using std::get; using std::sin; using std::cos; using std::tan;
     const auto
         c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
@@ -180,44 +204,16 @@ AngularVelocityType angular_velocity_ground_to_body(
     return body_angular_velocity;
 }
 
-/* physics */
+/**
+ * Physics section.
+ * The functions below includes Force, Mass, Torque, and Inertia,
+ * and calculates accelerations and angular accelerations.
+ * 
+ * Calculations are based in the body frame.
+ * So the results should be transformed to the ground frame, if needed.
+ */
 
-AccelerationType acceleration_in_body_frame_without_Coriolis(
-    const VelocityType& body,
-    const AngleType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
-{
-    assert(mass != 0.0); // TODO: remove this line
-    using namespace std;
-
-    const auto
-        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
-        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
-
-    // velocities in body frame (u, v, w)
-    const auto u = get<0>(body), v = get<1>(body), w = get<2>(body);
-
-    AccelerationType body_acceleration;
-
-    // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
-    auto& dot_u = get<0>(body_acceleration);
-    auto& dot_v = get<1>(body_acceleration);
-    auto& dot_w = get<2>(body_acceleration);
-
-    const auto g = gravity;
-    const auto m = mass;
-    const auto c = drag;
-    const auto T = thrust;
-
-    /*****************************************************************/  
-    dot_u =       - g * s_theta            - c/m * u;
-    dot_v =         g * c_theta * s_phi    - c/m * v;
-    dot_w = -T/m  + g * c_theta * c_phi    - c/m * w;
-    /*****************************************************************/  
-
-    return body_acceleration;
-}
-
+/* acceleration in body frame based on mV'+ w x mV = F ... Nonami (2.31)*/
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
@@ -225,7 +221,7 @@ AccelerationType acceleration_in_body_frame(
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
     assert(mass != 0.0); // TODO: remove this line
-    using namespace std;
+    using std::get; using std::sin; using std::cos;
 
     const auto
         c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
@@ -268,53 +264,7 @@ AccelerationType acceleration_in_body_frame(
     return body_acceleration;
 }
 
-/* NOTE : this is not well-implemented, use acceleration_in_body_frame instead */
-AccelerationType acceleration_in_ground_frame(
-    const VelocityType& ground,
-    const AngleType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
-{
-    assert(false && "this is not well-implemented, use acceleration_in_body_frame instead");
-    assert(mass != 0.0); // TODO: remove this line
-    using namespace std;
-
-    const auto
-        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
-        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
-        c_psi   = cos(get<2>(angle)), s_psi   = sin(get<2>(angle));
-
-    const auto
-        dot_x = get<0>(ground),
-        dot_y = get<1>(ground),
-        dot_z = get<2>(ground);
-
-    // will be return value
-    AccelerationType ground_acceleration;
-
-    auto& dotdot_x = get<0>(ground_acceleration);
-    auto& dotdot_y = get<1>(ground_acceleration);
-    auto& dotdot_z = get<2>(ground_acceleration);
-
-    const auto g = gravity;
-    const auto m = mass;
-    const auto c = drag;
-    const auto T = thrust;
-
-    /*
-     * See https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
-     * and z-axis is inverted(and also psi is inverted).
-     * these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
-     */
-
-    /*****************************************************************/  
-    dotdot_x = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * dot_x;
-    dotdot_y = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * dot_y;
-    dotdot_z = -T/m * (c_phi * c_theta)                   + g   - c * dot_z;
-    /*****************************************************************/  
-
-    return ground_acceleration;
-}
-
+/* angular acceleration in body frame based on JW' = W x JW =Tb ... Nonami (2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     const AngleType& angle,
@@ -325,7 +275,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */)
 {
-    using namespace std;
+    using std::get;
     (void)angle; // not used for now
 
     assert(I_xx != 0.0); // TODO: remove this line
@@ -363,18 +313,87 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return body_angular_acceleration;
 }
 
-#if 0 /* not well-implemented yet */
-AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularVelocityType& angular_velocity_in_ground_frame,
+/* Obsolete. for testing only. */
+AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
+    const VelocityType& body,
     const AngleType& angle,
-    double torque_x, /* in ground frame */
-    double torque_y, /* in ground frame */
-    double torque_z, /* in ground frame */
-    double inertia_x, /* in body frame */
-    double inertia_y, /* in body frame */
-    double inertia_z /* in body frame */)
+    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
-    /* for now, use the same equation but NEEDS CONVERSION */
-    return angular_acceleration_in_body_frame(angular_velocity_in_ground_frame, angle, torque_x, torque_y, torque_z, inertia_x, inertia_y, inertia_z);
+    assert(mass != 0.0); // TODO: remove this line
+    using std::get; using std::sin; using std::cos;
+
+    const auto
+        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
+        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
+
+    // velocities in body frame (u, v, w)
+    const auto u = get<0>(body), v = get<1>(body), w = get<2>(body);
+
+    AccelerationType body_acceleration;
+
+    // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
+    auto& dot_u = get<0>(body_acceleration);
+    auto& dot_v = get<1>(body_acceleration);
+    auto& dot_w = get<2>(body_acceleration);
+
+    const auto g = gravity;
+    const auto m = mass;
+    const auto c = drag;
+    const auto T = thrust;
+
+    /*****************************************************************/  
+    dot_u =       - g * s_theta            - c/m * u;
+    dot_v =         g * c_theta * s_phi    - c/m * v;
+    dot_w = -T/m  + g * c_theta * c_phi    - c/m * w;
+    /*****************************************************************/  
+
+    return body_acceleration;
 }
-#endif
+
+
+/* Obsolete: this is not well-implemented, use acceleration_in_body_frame, then translate to ground instead */
+AccelerationType acceleration_in_ground_frame(
+    const VelocityType& ground,
+    const AngleType& angle,
+    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
+{
+    assert(false && "this is not well-implemented, use acceleration_in_body_frame instead");
+    assert(mass != 0.0); // TODO: remove this line
+    using std::get; using std::sin; using std::cos;
+
+    const auto
+        c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
+        c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
+        c_psi   = cos(get<2>(angle)), s_psi   = sin(get<2>(angle));
+
+    const auto
+        dot_x = get<0>(ground),
+        dot_y = get<1>(ground),
+        dot_z = get<2>(ground);
+
+    // will be return value
+    AccelerationType ground_acceleration;
+
+    auto& dotdot_x = get<0>(ground_acceleration);
+    auto& dotdot_y = get<1>(ground_acceleration);
+    auto& dotdot_z = get<2>(ground_acceleration);
+
+    const auto g = gravity;
+    const auto m = mass;
+    const auto c = drag;
+    const auto T = thrust;
+
+    /*
+     * See https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
+     * and z-axis is inverted(and also psi is inverted).
+     * these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
+     */
+
+    /*****************************************************************/  
+    dotdot_x = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * dot_x;
+    dotdot_y = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * dot_y;
+    dotdot_z = -T/m * (c_phi * c_theta)                   + g   - c * dot_z;
+    /*****************************************************************/  
+
+    return ground_acceleration;
+}
