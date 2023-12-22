@@ -5,13 +5,14 @@ import argparse
 import datetime
 import utils.mavlink_msg as mav_msg
 from operations.takeoff import TakeoffOperation
-import signal
+import sys
 import time
 
 running = True
 
 parser = argparse.ArgumentParser(description='Qgc Stub Tool')
 parser.add_argument('config_path', help='Path to the JSON configuration file')
+parser.add_argument('test_scenario_path', help='Path to the JSON test scenario file')
 args = parser.parse_args()
 
 # Read the JSON file
@@ -31,8 +32,21 @@ print(f'qgc:{qgc_ipaddr}:{qgc_portno}')
 # Establish MAVLink connections
 mavlink_connection_px4 = mavutil.mavlink_connection(f'udpout:{px4_ipaddr}:{px4_portno}')
 
-operation = TakeoffOperation(mavlink_connection_px4, 131.3212432861328)
+def load_scenario(filename):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    return data
 
+scenario = load_scenario(args.test_scenario_path)
+
+op = scenario['scenario'][0]
+if op['operation'] == 'takeoff':
+    altitude = op['alt']
+    print(f"INFO: takeoff operation alt: {altitude}")
+    operation = TakeoffOperation(mavlink_connection_px4, altitude)
+else:
+    print(f"ERROR: not supported operation {op['operation']}")
+    sys.exit(1)
 
 def get_current_time_in_usec():
     # 現在の日時を取得
@@ -83,8 +97,6 @@ def Px4Receiver():
     global command_long_ack_recv
 
     while running:
-        current_time = time.time()
-
         # PX4からのメッセージを受信する
         msg = mavlink_connection_px4.recv_match(blocking=True)
         if msg is not None:
