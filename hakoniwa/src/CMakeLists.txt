@@ -38,6 +38,7 @@ add_executable(
     assets/drone/physics/ground_frame/drone_dynamics_ground_frame.cpp
     assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.cpp
     assets/drone/physics/math_and_physics/math_and_physics.cpp
+    assets/drone/physics/math_and_physics/rotor_physics.cpp
     assets/drone/physics/math_and_physics_convertor.cpp
 
     assets/drone/controller/drone_pid_control.cpp
@@ -53,6 +54,7 @@ add_executable(
 add_executable(
     utest
     assets/drone/physics/math_and_physics/math_and_physics.cpp
+    assets/drone/physics/math_and_physics/rotor_physics.cpp
     assets/drone/physics/math_and_physics/utest.cpp
 )
 target_include_directories(
