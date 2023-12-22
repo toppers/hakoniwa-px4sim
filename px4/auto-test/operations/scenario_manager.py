@@ -15,8 +15,9 @@ class ScenarioManager:
     def _get_op(self, op):
         if op['operation'] == 'takeoff':
             altitude = op['alt']
+            duration_sec = op['duration_sec']
             print(f"INFO: takeoff operation alt: {altitude}")
-            self.current = TakeoffOperation(self.connection, altitude)
+            self.current = TakeoffOperation(self.connection, altitude, duration_sec)
         else:
             print(f"ERROR: not supported operation {op['operation']}")
             self.current = None

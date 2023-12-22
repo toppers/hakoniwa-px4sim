@@ -2,7 +2,8 @@
     "scenario": [
         {
             "operation": "takeoff",
-            "alt": 131.3212432861328
+            "alt": 131.3212432861328,
+            "duration_sec": 20
         }
     ]
 }
