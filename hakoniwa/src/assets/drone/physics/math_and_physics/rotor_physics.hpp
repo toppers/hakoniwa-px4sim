@@ -1,5 +1,5 @@
-#ifndef _ROTOR_DYNAMICS_HPP_
-#define _ROTOR_DYNAMICS_HPP_
+#ifndef _ROTOR_PHYSICS_HPP_
+#define _ROTOR_PHYSICS_HPP_
 
 #include "math_and_physics.hpp"
 typedef VectorType
@@ -46,4 +46,4 @@ TorqueType body_torque(
     double omega[], /* in rpm */
     double omega_acceleration[] /* in rpm/s */ );
 
-#endif /* ROTOR_DYNAMICS_HPP_ */
+#endif /* _ROTOR_PHYSICS_HPP_ */

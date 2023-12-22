@@ -4,6 +4,7 @@
 #include "drone_primitive_types.hpp"
 #include "irotor_dynamics.hpp"
 #include "utils/icsv_log.hpp"
+#include "math_and_physics/rotor_physics.hpp"
 #include <math.h>
 
 namespace hako::assets::drone {
@@ -47,8 +48,7 @@ public:
     void run(double control) override
     {
         this->next_speed.data =   (
-                                      ( ( this->param_kr / this->param_tr) * control )
-                                    - ( this->speed.data / this->param_tr )
+                                    rotor_omega_acceleration(param_kr, param_tr, speed.data, control)
                                   ) * this->delta_time_sec
                                 + this->speed.data;
         // Cap the next speed at the maximum RPM if it exceeds it
