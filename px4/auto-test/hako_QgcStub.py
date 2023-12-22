@@ -4,11 +4,11 @@ import json
 import argparse
 import datetime
 import utils.mavlink_msg as mav_msg
+from operations.takeoff import TakeoffOperation
 import signal
 import time
 
 running = True
-command_long_ack_recv = False
 
 parser = argparse.ArgumentParser(description='Qgc Stub Tool')
 parser.add_argument('config_path', help='Path to the JSON configuration file')
@@ -31,6 +31,9 @@ print(f'qgc:{qgc_ipaddr}:{qgc_portno}')
 # Establish MAVLink connections
 mavlink_connection_px4 = mavutil.mavlink_connection(f'udpout:{px4_ipaddr}:{px4_portno}')
 
+operation = TakeoffOperation(mavlink_connection_px4, 131.3212432861328)
+
+
 def get_current_time_in_usec():
     # 現在の日時を取得
     now = datetime.datetime.now()
@@ -52,10 +55,11 @@ def QgcStub():
     time.sleep(1)
    # 関数が開始した時刻を記録
     start_time = time.time()
-    command_sent = False
     hb_sent_time = 0
     ping_sent_time = 0
-    arm_msg_sent = False
+
+    operation.start(start_time)
+
     while running:
         time.sleep(1)
         current_time = time.time()
@@ -71,23 +75,8 @@ def QgcStub():
             mavlink_connection_px4.write(ping_msg.get_msgbuf())
             ping_sent_time = time.time()
 
-        # 3秒経過し、まだコマンドを送信していない場合
-        if (current_time - start_time) > 3 and not command_sent:
-            # テイクオフコマンドを作成
-            command_msg = mav_msg.create_command_long_takeoff(131.3212432861328)
-            mav_msg.dump_command_long(command_msg)
-            # コマンドを送信
-            mavlink_connection_px4.write(command_msg.get_msgbuf())
-            command_sent = True  # コマンド送信済みフラグをセット
-
-        if command_long_ack_recv and not arm_msg_sent:
-            # ARMコマンドを作成
-            command_msg = mav_msg.create_command_long_arm(True)
-            mav_msg.dump_command_long(command_msg)
-            # コマンドを送信
-            mavlink_connection_px4.write(command_msg.get_msgbuf())
-
-            arm_msg_sent = True  # コマンド送信済みフラグをセット
+        if not operation.is_op_done():
+            operation.do_operation(current_time)
 
 def Px4Receiver():
     global running
@@ -99,10 +88,11 @@ def Px4Receiver():
         # PX4からのメッセージを受信する
         msg = mavlink_connection_px4.recv_match(blocking=True)
         if msg is not None:
+            if not operation.is_op_done():
+                operation.event_msg(msg)
             message_type = msg.get_type()
             if message_type == "COMMAND_ACK":
                 print(f"PX4: {get_rtime_from_boot()}:{message_type}")
-                command_long_ack_recv = True
 
 
 thread = threading.Thread(target=QgcStub)
