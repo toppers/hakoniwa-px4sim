@@ -4,6 +4,7 @@ import json
 import argparse
 import datetime
 import time
+import utils.mavlink_msg as mav_msg
 
 parser = argparse.ArgumentParser(description='Qgc command recording Tool')
 parser.add_argument('config_path', help='Path to the JSON configuration file')
@@ -44,39 +45,6 @@ boot_time = get_current_time_in_usec()
 def get_rtime_from_boot():
     return get_current_time_in_usec() - boot_time
 
-
-def dump_command_long(msg):
-    # COMMAND_LONG メッセージの内容を出力
-    print("COMMAND_LONG Received:")
-    print(f"  Command: {msg.command}")
-    print(f"  Param1: {msg.param1}")
-    print(f"  Param2: {msg.param2}")
-    print(f"  Param3: {msg.param3}")
-    print(f"  Param4: {msg.param4}")
-    print(f"  Param5: {msg.param5}")
-    print(f"  Param6: {msg.param6}")
-    print(f"  Param7: {msg.param7}")
-    print(f"  Target System: {msg.target_system}")
-    print(f"  Target Component: {msg.target_component}")
-    print(f"  Confirmation: {msg.confirmation}")
-
-def dump_command_int(msg):
-    # COMMAND_INT メッセージの内容を出力
-    print("COMMAND_INT Received:")
-    print(f"  Command: {msg.command}")
-    print(f"  Param1: {msg.param1}")
-    print(f"  Param2: {msg.param2}")
-    print(f"  Param3: {msg.param3}")
-    print(f"  Param4: {msg.param4}")
-    print(f"  X: {msg.x}")  # 緯度 or X座標
-    print(f"  Y: {msg.y}")  # 経度 or Y座標
-    print(f"  Z: {msg.z}")  # 高度 or Z座標
-    print(f"  Target System: {msg.target_system}")
-    print(f"  Target Component: {msg.target_component}")
-    print(f"  Frame: {msg.frame}")
-    print(f"  Current: {msg.current}")
-    print(f"  Autocontinue: {msg.autocontinue}")
-
 def bypass_Px4ToQgc():
     while True:
         # PX4からのメッセージを受信する
@@ -95,12 +63,15 @@ def bypass_QgcToPx4():
         msg = mavlink_connection_qgc.recv_match(blocking=True)
         if msg is not None:
             message_type = msg.get_type()
-            if message_type != "HEARTBEAT":
-                print(f"QGC: {get_rtime_from_boot()}:{message_type}")
+            print(f"QGC: {get_rtime_from_boot()}:{message_type}")
+            if message_type == "HEARTBEAT":
+                mav_msg.dump_heartbeat(msg)
             if message_type == "COMMAND_LONG":
-                dump_command_long(msg)
+                mav_msg.dump_command_long(msg)
             if message_type == "COMMAND_INT":
-                dump_command_int(msg)
+                mav_msg.dump_command_int(msg)
+            if message_type == "PING":
+                mav_msg.dump_ping(msg)
             # 受信したメッセージを PX4にバイパスする
             mavlink_connection_px4.write(msg.get_msgbuf())
 
