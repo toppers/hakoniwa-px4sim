@@ -1,11 +1,17 @@
-#ifndef MATH_AND_PHYSICS_HPP_
-#define MATH_AND_PHYSICS_HPP_
+#ifndef _MATH_AND_PHYSICS_HPP_
+#define _MATH_AND_PHYSICS_HPP_
 #include <cmath>
 #include <tuple>
 
-typedef std::tuple<double, double, double> 
-PositionType,  VelocityType, AccelerationType,
-AngleType, AngularVelocityType, AngularAccelerationType;
+typedef std::tuple<double, double, double> VectorType;
+typedef VectorType
+    VelocityType, AccelerationType, AngleType, AngularVelocityType, AngularAccelerationType;
+
+/* basic operators */
+VectorType cross(const VectorType& u, const VectorType& v);
+VectorType& operator += (VectorType& u, const VectorType& v);
+VectorType operator + (const VectorType& u, const VectorType& v);
+
 
 /* NOTE: for AnguleType, 
  * <0> phi(x-rotation or roll),      -PI <= phi   < PI
@@ -71,4 +77,4 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
     double inertia_z /* in body frame */);
 #endif
 
-#endif /* MATH_AND_PHYSICS_HPP_ */
+#endif /* _MATH_AND_PHYSICS_HPP_ */

@@ -8,6 +8,31 @@
  * https://www.sky-engin.jp/blog/eulers-equations-of-motion/
  */
 
+/* utility functions */
+VectorType cross(const VectorType& u, const VectorType& v)
+{
+    using std::get;
+    return VectorType(
+        get<1>(u) * get<2>(v) - get<2>(u) * get<1>(v),
+        get<2>(u) * get<0>(v) - get<0>(u) * get<2>(v),
+        get<0>(u) * get<1>(v) - get<1>(u) * get<0>(v)
+    );
+}
+VectorType& operator += (VectorType& u, const VectorType& v)
+{
+    using std::get;
+    get<0>(u) += get<0>(v);
+    get<1>(u) += get<1>(v);
+    get<2>(u) += get<2>(v);
+    return u;
+}
+VectorType operator + (const VectorType& u, const VectorType& v)
+{
+    VectorType result = u;
+    return result += v;
+}
+
+
 /* maths */
 VelocityType velocity_body_to_ground(const VelocityType& b, const AngleType& a)
 {

@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
-#include <numbers>
 #include "math_and_physics.hpp"
+#include "rotor_physics.hpp"
 
 #define assert_almost_equal(a, b) \
     assert(std::fabs(std::get<0>(a) - std::get<0>(b)) < 0.0001); \
@@ -15,7 +15,7 @@
 
 const double PI = 3.14159265358979323846;
 
-void test_all_unit_vectors_with_angle0() {
+void test_frame_all_unit_vectors_with_angle0() {
     VelocityType v1(1, 0, 0);
     VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, 0, 0));
     assert_almost_equal(v1, v2);
@@ -29,7 +29,7 @@ void test_all_unit_vectors_with_angle0() {
     assert_almost_equal(v1, v2);
 }
 
-void test_all_unit_vectors_with_some_angles() {
+void test_frame_all_unit_vectors_with_some_angles() {
     const VelocityType v1(1, 0, 0);
     VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, 0, 0));
     assert_almost_equal(v1, v2);
@@ -56,7 +56,7 @@ double length(VelocityType v) {
     return sqrt(x*x + y*y + z*z);
 }
 
-void test_matrix_is_unitary() {
+void test_frame_matrix_is_unitary() {
     VelocityType v1(1, 0, 0);
     for (int i = 0; i < 360; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType(i * (PI/180), 0, 0));
@@ -87,7 +87,7 @@ void test_matrix_is_unitary() {
     }
 }
 
-void test_roundtrip() {
+void test_frame_roundtrip() {
     const VelocityType v1(1, 0, 0);
     VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, 0, 0));
     assert_almost_equal(v1, v2);
@@ -186,16 +186,163 @@ void test_body_angular_acceleration() {
         (torque_y - 1*3*(I_xx - I_zz))/I_yy,
         (torque_z - 1*2*(I_yy - I_xx))/I_zz));
 }
-    
+
+#include <fstream>
+void test_rotor_omega_accesleration() {
+    double Kr = 0.1, Tr = 1, duty_rate = 1, omega = 1;
+    double a = rotor_omega_acceleration(Kr, Tr, omega, duty_rate);
+    assert(a == (Kr * duty_rate - omega) / Tr);
+
+    std::ofstream ofs;
+    ofs.open("omega_times_series.csv", std::ios::out);
+    ofs << "TIME,ACC,OMEGA" << std::endl;
+
+    Kr = 1, Tr = 100, duty_rate = 0.5, omega = 0;
+
+    for (double time = 0; time < 3; time += 0.01) {
+        double a = rotor_omega_acceleration(Kr, Tr, omega, duty_rate);
+        assert(a == (Kr * duty_rate - omega) / Tr);
+        omega += a;
+
+        /** differencial equation
+         *  d(Omega)/dt = ( Kr * (duty rate) - (Omega) ) / Tr
+         *  if duty_rate is a constant, the solution is
+         *  Omega = Kr * (1 - exp(-t/Tr) * (duty rate))
+         */
+        assert(std::fabs(omega -  Kr*(1 - std::exp(-time/Tr)*duty_rate) < 0.0001));
+        ofs << time << "," << a << "," << omega << std::endl;
+    }
+    ofs.close();
+}
+
+void test_vector_operators(){
+    VectorType v1(1, 2, 3);
+    VectorType v2(4, 5, 6);
+    assert_almost_equal(v1+v2, VectorType(5, 7, 9));
+    assert_almost_equal(cross(v1,v2), VectorType(-3, 6, -3));
+}
+
+void test_rotor_thrust() {
+    double A = 1, omega = 10;
+    double thrust = rotor_thrust(A, omega);
+    assert(thrust == A * (omega * omega));
+}
+
+void test_rotor_anti_torque() {
+    double B = 1, Jr = 1, omega = 10, omega_acceleration = 1;
+    /* ccw=1, means the rotor is rotating ccw, so the anti-torque is cw=positive(+z=down) */
+    double torque = rotor_anti_torque(B, Jr, omega, omega_acceleration, 1);
+    assert(torque == B * omega * omega + Jr * omega_acceleration);
+
+    /* ccw=-1, means the rotor is rotating cw, so the anti-torque is ccw=negative(-z=up) */
+    torque = rotor_anti_torque(B, Jr, omega, omega_acceleration, -1);
+    assert(torque == -B * omega * omega - Jr * omega_acceleration);
+}
+
+void test_body_thrust() {
+    double A = 1;
+    unsigned n = 4;
+    double omega[4] = {1, 2, 3, 4};
+    double thrust = body_thrust(A, n, omega);
+    assert(thrust == 1*1 + 2*2 + 3*3 + 4*4);
+}
+
+void test_body_torque() {
+    double A = 1, B = 1, Jr = 1;
+    unsigned n = 4;
+    PositionType position[4] = { // + shape coordinaites
+        {0.3, 0.0, 0},  // +x  (front)
+        {0.0, -0.3, 0}, // -y  (left)
+        {-0.3, 0.0, 0}, // -x  (back)
+        {0.0, 0.3, 0}   // +y  (right)
+    };
+    double ccw[4] = {-1, 1, -1, 1};
+    double omega[4] = {100, 100, 100, 100};
+    double omega_acceleration[4] = {0, 0, 0, 0};
+    TorqueType torque = body_torque(A, B, Jr, n, position, ccw, omega, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, 0, 0)); // ZERO TORQUE
+
+    double omega2[4] = {100, 200, 100, 200};
+    A = 1; B = 0;
+    torque = body_torque(A, B, Jr, n, position, ccw, omega2, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, 0, 0));
+
+    /** HERE, four omega's one each */
+    double omega3[4] = {100, 0, 0, 0};
+    /* only get rotor0 torque */
+    torque = body_torque(A, B, Jr, n, position, ccw, omega3, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, (0.3)*A*100*100, 0));
+
+    double omega4[4] = {0, 100, 0, 0};
+    torque = body_torque(A, B, Jr, n, position, ccw, omega4, omega_acceleration);
+    assert_almost_equal(torque, TorqueType((0.3)*A*100*100, 0, 0));
+
+    double omega5[4] = {0, 0, 100, 0};
+    torque = body_torque(A, B, Jr, n, position, ccw, omega5, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, -(0.3)*A*100*100, 0));
+
+    double omega6[4] = {0, 0, 0, 100};
+    torque = body_torque(A, B, Jr, n, position, ccw, omega6, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(-(0.3)*A*100*100, 0, 0));
+}
+
+void test_body_anti_torque() {
+    double A = 10, B = 1, Jr = 1;
+    unsigned n = 4;
+    PositionType position[4] = { // + shape coordinaites
+        {0.3, 0.0, 0},  // +x  (front)
+        {0.0, -0.3, 0}, // -y  (left)
+        {-0.3, 0.0, 0}, // -x  (back)
+        {0.0, 0.3, 0}   // +y  (right)
+    };
+    double ccw[4] = {-1, 1, -1, 1};
+    double omega[4] = {100, 100, 100, 100};
+    double omega_acceleration[4] = {0, 0, 0, 0};
+    TorqueType torque = body_torque(A, B, Jr, n, position, ccw, omega, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, 0, 0)); // ZERO TORQUE
+
+    omega[1] = omega[3] = 200;  // increase CWW rotors
+    torque = body_torque(A, B, Jr, n, position, ccw, omega, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, 0, 2*(200*200-100*100)*B));
+
+    omega[0] = omega[2] = 200;  // increase CW rotors
+    omega[1] = omega[3] = 100;
+    torque = body_torque(A, B, Jr, n, position, ccw, omega, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, 0, -2*(200*200-100*100)*B));
+}
+
+void test_body_anti_Jr_torque() {
+    unsigned n = 4;
+    PositionType position[4] = { // + shape coordinaites
+        {0.3, 0.0, 0},  // +x  (front)
+        {0.0, -0.3, 0}, // -y  (left)
+        {-0.3, 0.0, 0}, // -x  (back)
+        {0.0, 0.3, 0}   // +y  (right)
+    };
+    double ccw[4] = {-1, 1, -1, 1};
+    double omega[4] = {100, 100, 100, 100};
+    double omega_acceleration[4] = {0, 0, 0, 10};
+    double A = 10, B = 0, Jr = 1;
+    TorqueType torque = body_torque(A, B, Jr, n, position, ccw, omega, omega_acceleration);
+    assert_almost_equal(torque, TorqueType(0, 0, 10*Jr));
+}
 
 int main() {
     std::cout << "-------start unit test-------\n";
-    T(test_all_unit_vectors_with_angle0);
-    T(test_all_unit_vectors_with_some_angles);
-    T(test_matrix_is_unitary);
-    T(test_roundtrip);
+    T(test_frame_all_unit_vectors_with_angle0);
+    T(test_frame_all_unit_vectors_with_some_angles);
+    T(test_frame_matrix_is_unitary);
+    T(test_frame_roundtrip);
     T(test_body_acceleration);
     T(test_body_angular_acceleration);
+    T(test_rotor_omega_accesleration);
+    T(test_vector_operators);
+    T(test_rotor_thrust);
+    T(test_rotor_anti_torque);
+    T(test_body_thrust);
+    T(test_body_torque);
+    T(test_body_anti_torque);
+    T(test_body_anti_Jr_torque);
     std::cout << "-------all test PASSSED!!----\n";
     return 0;
 }
