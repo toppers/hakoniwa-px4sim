@@ -1,14 +1,13 @@
-# hakoniwa drone physics
+# Hakoniwa Drone Physics Library(math, physics and dynamics)
 
 ## What is this ?
 
 This is a math, physics, and dynamics library for the drone plant model in the Hakoniwa project(Open Source Runtime Environment for Simulating Cyber-Physical Systems).
 
-But this library is more general, and can be used for any drone simulation projects
-to calculate the drone's speed, acceleration and etc. in the
-ground and the body frame coordinate system.
+It is designed for Hakoniwa px4sim project, but this library is more general, and can be used for any drone simulation projects
+to calculate the drone's speed, acceleration and etc. in the ground and the body frame coordinate system.
 
-Most of the functions are implementation of the equations in the following book:
+Most of the functions are implemented based on the equations in the following book:
 
 - ["Introduction to Drone Engineering" by Dr. Kenzo Nonami(Japanese)](https://www.coronasha.co.jp/np/isbn/9784339032307/)
 
@@ -176,6 +175,9 @@ where $B$, $Jr$ is parameters related to the rotor properties. This makes the dr
 
 We connected Hakoniwa to PX4 SITL simulator and tested the library with the following experiments.
 The architecture of the simulation is described here.
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/2ffd9cd6-e8b4-4c75-9328-69c6a8aebba4)
+
 
 Mission:
 - Lift off and hover at height 10m.
