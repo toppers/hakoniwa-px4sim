@@ -60,32 +60,32 @@ int main() {
 
 関数は以下のカテゴリから構成され、書籍の式番号が記載されています。
 
-### Frame conversion functions:
-| Function | equation | note |
+### 座標変換
+| 関数 | 数式 | 意味 |
 |----------|-----------|------|
 |`velocity_body_to_ground`  | (1.71), (1.124) | 機体座標の速度を地上座標に変換 |
 |`velocity_ground_to_body`  | (1.69), inverse of (1.124) | 地上座標の速度を機体座標に変換 |
 |`angular_velocity_body_to_ground` | (1.109) | 機体角速度を地上座標に変換 |
 |`angular_velocity_ground_to_body` | (1.106) | 地上角速度を機体座標に変換 |
 
-### Body dynamics(Acceleration) functions:
-| Function | equations in the book | note |
+### 機体の力学(力と加速度)
+| 関数 | 数式 | 意味 |
 |----------|-----------|------|
 |`acceleration_in_body_frame` | (1.136),(2.31) | 機体座標系での加速度計算 |
 |`angular_acceleration_in_body_frame` | (1.37),(2.31) | 機体座標系での角加速度計算 |
 
-### Rotor dynamics functions:
-| Function | equations in the book | note |
+### 1ロータの力学（回転数と推力）
+| 関数 | 数式 | 意味 |
 |----------|-----------|------|
 |`rotor_omega_acceleration` | (2.48) | ローター角速度の加速度計算 |
 |`rotor_thrust` | (2.50) | ローター推力計算 |
+|`rotor_anti_torque` | (2.56) | ローターの反トルク計算。これにより機体は z 軸周りに回転する。 |
 
-### Body dynamics(n rotors) functions:
-| Function | equations in the book | note |
+### $n$ 個のローターによる機体力学（機体の推力とトルク）
+| 関数 | 数式 | 意味 |
 |----------|-----------|------|
 |`body_thrust` | (2.61) | $n$ 個のローターの推力の合力 |
 |`body_torque` | (2.60)-(2.62) | $n$ 個のローターのトルクの合力。ローターの設置位置も関係する。 |
-|`rotor_anti_torque` | (2.56) | ローターの反トルク計算。これにより機体は z 軸周りに回転する。 |
 
 ## 利用法
 

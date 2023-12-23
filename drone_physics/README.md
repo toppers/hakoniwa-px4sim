@@ -6,8 +6,8 @@ English ｜ [日本語](README-ja.md)
 
 This is a math, physics, and dynamics library for the drone plant model in the Hakoniwa project(Open Source Runtime Environment for Simulating Cyber-Physical Systems).
 
-It is designed for Hakoniwa px4sim project, but this library is more general, and can be used for any drone simulation projects
-to calculate the drone's speed, acceleration and etc. in the ground and the body frame coordinate system.
+It is first designed for Hakoniwa px4sim project, but I found it was more general,
+and can be used for any drone simulation projects to calculate the drone's speed, acceleration and etc. in the ground and the body frame coordinate system.
 
 Most of the functions are implemented based on the equations in the following book:
 
@@ -60,7 +60,7 @@ int main() {
 
 Functions are implemented in the following categories, with the referece to the book.
 
-### Frame conversion functions:
+### Frame conversion:
 | Function | equation | note |
 |----------|-----------|------|
 |`velocity_body_to_ground`  | (1.71), (1.124) | Body velocity to ground velocity |
@@ -68,24 +68,24 @@ Functions are implemented in the following categories, with the referece to the 
 |`angular_velocity_body_to_ground` | (1.109) | Body angular velocity to ground angular velocity |
 |`angular_velocity_ground_to_body` | (1.106) | Ground angular velocity to body angular velocity |
 
-### Body dynamics(Acceleration) functions:
+### Body dynamics(Acceleration):
 | Function | equations in the book | note |
 |----------|-----------|------|
 |`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame |
 |`angular_acceleration_in_body_frame` | (1.37),(2.31) | Angular acceleration in body frame |
 
-### Rotor dynamics functions:
+### Rotor dynamics(1 rotor, rotation speed and thrust):
 | Function | equations in the book | note |
 |----------|-----------|------|
 |`rotor_omega_acceleration` | (2.48) | Rotor angular velocity acceleration from dury rate |
 |`rotor_thrust` | (2.50) | Rotor thrust from rotor angular velocity |
+|`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
 
-### Body dynamics(n rotors) functions:
+### Body dynamics(n rotors, thrust and torque to the body):
 | Function | equations in the book | note |
 |----------|-----------|------|
 |`body_thrust` | (2.61) | Sum of the $n$ trust from the rotors |
 |`body_torque` | (2.60)-(2.62) | Sum of the torques from the $n$ rotors based on the positionings of them |
-|`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
 
 ## Usage
 
