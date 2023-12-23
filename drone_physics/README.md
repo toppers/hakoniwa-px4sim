@@ -66,7 +66,7 @@ Functions are implemented in the following categories, with the referece to the 
 |`angular_velocity_ground_to_body` | (1.106) | Ground angular velocity to body angular velocity |
 
 ### Body dynamics(Acceleration) functions:
-| Function | equation | note |
+| Function | equations in the book | note |
 |----------|-----------|------|
 |`acceleration_in_body_frame` | (1.36),(2.31) | Acceleration in body frame |
 |`angular_acceleration_in_body_frame` | (1.37),(2.31) | Angular acceleration in body frame |
@@ -78,7 +78,7 @@ Functions are implemented in the following categories, with the referece to the 
 |`rotor_thrust` | (2.50) | Rotor thrust from rotor angular velocity |
 
 ### Body dynamics(n rotors) functions:
-| Function | equation | note |
+| Function | equations in the book | note |
 |----------|-----------|------|
 |`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
 |`body_thrust` | (2.61) | Sum of the n trust from the rotors |
