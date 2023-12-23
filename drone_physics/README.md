@@ -192,3 +192,7 @@ utest.cpp has unit tests for the functions.
 - All the functions are implemented in standard C++17.
 - No external libraries are used other than ones in the std:: namespace.
 - Implemented as functions, not classes. Meaning stateless.
+
+## Acknowledgement
+
+I thank Dr. Nonami for writing the detailed description of the math around the drone development !
