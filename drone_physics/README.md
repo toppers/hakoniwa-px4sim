@@ -1,15 +1,20 @@
 # hakoniwa drone physics
 
-## Overview
+## What is this ?
 
-This is a math, physics, and dynamics library for drone plant model in Hakoniwa,
-for the purpose of calculating the drone's speed, acceleration and etc. in the
+This is a math, physics, and dynamics library for the drone plant model in the Hakoniwa project(Open Source Runtime Environment for Simulating Cyber-Physical Systems).
+
+But this library is more general, and can be used for any drone simulation projects
+to calculate the drone's speed, acceleration and etc. in the
 ground and the body frame coordinate system.
+
 Most of the functions are implementation of the equations in the following book:
 
 - "Introduction to Drone Engineering" by Dr. Kenzo Nonami
 
-All the functions are implemented in C++, with the equation numbers in the book as comments.
+All the functions are implemented in C++, with the equation numbers in the book as comments in the sourde code.
+
+I hope this can be a reference implmentation for the basic drone dynamics.
 
 ## Hello World
 
@@ -67,7 +72,7 @@ Functions are implemented in the following categories, with the referece to the 
 |`angular_acceleration_in_body_frame` | (1.37),(2.31) | Angular acceleration in body frame |
 
 ### Rotor dynamics functions:
-| Function | equation | note |
+| Function | equations in the book | note |
 |----------|-----------|------|
 |`rotor_omega_acceleration` | (2.48) | Rotor angular velocity acceleration from dury rate |
 |`rotor_thrust` | (2.50) | Rotor thrust from rotor angular velocity |
@@ -158,13 +163,10 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
 where $B$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
 
-
-
-
-
-
-
 ## Experiments
+
+We connected with PX4 SITL simulator and tested the library with the following experiments.
+
 
 
 
