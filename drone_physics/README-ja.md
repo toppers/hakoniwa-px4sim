@@ -12,6 +12,9 @@
 
 - [『ドローン工学入門』工学博士 野波健蔵【著】](https://www.coronasha.co.jp/np/isbn/9784339032307/)
 
+
+[![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/c92d3d96-25f9-4b6a-ae4e-25d898b75a28)](https://www.coronasha.co.jp/np/isbn/9784339032307/)
+
 基礎的なドローンの動力学の参考実装となることを期待しています。
 
 ## Hello World
@@ -187,3 +190,7 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 - std:: 名前空間以外の外部ライブラリは使用していません。
 - 他のライブラリ（std:: 名前空間を除く）に依存ていません。
 - すべて関数として実装され、クラスはありません。すなわち内部状態を持ちません。
+
+## 謝辞
+
+非常に丁寧な解説書を書いていただいた、野波先生に感謝します。

@@ -12,6 +12,8 @@ Most of the functions are implementation of the equations in the following book:
 
 - ["Introduction to Drone Engineering" by Dr. Kenzo Nonami(Japanese)](https://www.coronasha.co.jp/np/isbn/9784339032307/)
 
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/c92d3d96-25f9-4b6a-ae4e-25d898b75a28)
+
 All the functions are implemented in C++, with the equation numbers in the book as comments in the sourde code.
 
 I hope this can be a reference implmentation for the basic drone dynamics.
@@ -190,3 +192,7 @@ utest.cpp has unit tests for the functions.
 - All the functions are implemented in standard C++17.
 - No external libraries are used other than ones in the std:: namespace.
 - Implemented as functions, not classes. Meaning stateless.
+
+## Acknowledgement
+
+I thank Dr. Nonami for writing the detailed description of the math around the drone development !
