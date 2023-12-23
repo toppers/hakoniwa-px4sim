@@ -70,7 +70,7 @@ Functions are implemented in the following categories, with the referece to the 
 ### Body dynamics(Acceleration) functions:
 | Function | equations in the book | note |
 |----------|-----------|------|
-|`acceleration_in_body_frame` | (1.36),(2.31) | Acceleration in body frame |
+|`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame |
 |`angular_acceleration_in_body_frame` | (1.37),(2.31) | Angular acceleration in body frame |
 
 ### Rotor dynamics functions:
@@ -148,7 +148,11 @@ AngularVelocity:
 
 Each rotor can be modeled as a first-order lag system, in which the rotor angular velocity
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
-eq.(2.48) in the book, and the time domain equation is as follows.
+eq.(2.48) in the book,
+
+$G(s)/D(s) = K_r/(T_r s + 1)$
+
+and the time domain differential equation is as follows.
 
 $\dot{\Omega}(t) = K_r (d(t) - \Omega / T_r)$
 
@@ -195,4 +199,5 @@ utest.cpp has unit tests for the functions.
 
 ## Acknowledgement
 
-I thank Dr. Nonami for writing the detailed description of the math around the drone development !
+I thank Dr. Nonami for writing the detailed description of the math around the drone development.
+And also I thank @tmori for leading this Hakoniwa project.
