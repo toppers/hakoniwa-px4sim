@@ -54,7 +54,7 @@
               {"position": [ -0.3,  0.3, 0 ], "rotationDirection": -1.0 }
               ],
             "HoveringRpm": 4000,
-            "parameterB":  2.0e-08,
+            "parameterB":  5.0e-09,
             "parameterJr": 1.0e-08
           },
           "sensors": {
@@ -68,7 +68,7 @@
             },
             "mag": {
               "sampleCount": 1,
-              "noise": 0.0001
+              "noise": 0
             },
             "baro": {
               "sampleCount": 1,
