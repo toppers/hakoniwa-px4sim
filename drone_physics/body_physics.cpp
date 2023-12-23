@@ -60,7 +60,8 @@ VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
     auto& [x_e, y_e, z_e] = ground;
 
     /*
-     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * eq.(1.71),(1.124) in Nonami's book.
+     * See also https://mtkbirdman.com/flight-dynamics-body-axes-system
      * for the transformation equations.
      */
     /*****************************************************************/  
@@ -101,8 +102,9 @@ VectorType vector_ground_to_body(const VectorType& ground,
     VectorType body;
     auto& [x, y, z] = body;
 
-     /*
-     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+    /*
+     * See eq.(1.69), inverse of (1.124) in Nonami's book.
+     * See also https://mtkbirdman.com/flight-dynamics-body-axes-system
      * for the transformation equations.
      */
     /*****************************************************************/  
@@ -130,7 +132,7 @@ VelocityType velocity_ground_to_body(
     return vector_ground_to_body(ground, angle);
 }
 
-/* Tranlsform angular velocity in body frame to ground frame */
+/* Tranlsform angular velocity in body frame to ground frame eq.(1.109)*/
 AngularVelocityType angular_velocity_body_to_ground(
     const AngularVelocityType& body,
     const AngleType& angle)
@@ -148,8 +150,9 @@ AngularVelocityType angular_velocity_body_to_ground(
    auto& [dot_phi, dot_theta, dot_psi] = ground_angular_velocity;
 
      /*
-     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * See eq.(1.109) in Nonami's book.
      * for the transformation equations.
+     * See also https://mtkbirdman.com/flight-dynamics-body-axes-system
      */
     /*****************************************************************/  
     dot_phi   = p + (r * c_phi + q * s_phi) * t_theta; /** overflow INF possible */
@@ -160,7 +163,7 @@ AngularVelocityType angular_velocity_body_to_ground(
     return ground_angular_velocity;
 }
 
-/* Tranlsform angular velocity in ground frame to body frame */
+/* Tranlsform angular velocity in ground frame to body frame (eq.106)*/
 AngularVelocityType angular_velocity_ground_to_body(
     const AngularVelocityType& ground,
     const AngleType& angle)
@@ -180,8 +183,9 @@ AngularVelocityType angular_velocity_ground_to_body(
     auto& [p, q, r] = body_angular_velocity;
 
     /*
-     * See https://mtkbirdman.com/flight-dynamics-body-axes-system
+     * See eq.(1.106) in Nonami's book.
      * for the transformation equations.
+     * See also https://mtkbirdman.com/flight-dynamics-body-axes-system
      */
     /*****************************************************************/  
     p = dot_phi - dot_psi * s_theta;
@@ -201,7 +205,7 @@ AngularVelocityType angular_velocity_ground_to_body(
  * So the results should be transformed to the ground frame, if needed.
  */
 
-/* acceleration in body frame based on mV'+ w x mV = F ... Nonami (2.31)*/
+/* acceleration in body frame based on mV'+ w x mV = F ... eq.(1.36),(2.31)*/
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
@@ -230,7 +234,8 @@ AccelerationType acceleration_in_body_frame(
     const auto T = thrust;
 
     /*
-     * See nonami's book eq.(1.136). Colioris's force is (p, q, r) x (u, v, w)
+     * See nonami's book eq.(1.136).(2.31)
+     * Colioris's force is (p, q, r) x (u, v, w)
      */
     /*****************************************************************/  
     dot_u =       - g * s_theta            - (q*w - r*v) - c/m * u;
@@ -241,7 +246,7 @@ AccelerationType acceleration_in_body_frame(
     return body_acceleration;
 }
 
-/* angular acceleration in body frame based on JW' = W x JW =Tb ... Nonami (2.31) */
+/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.37),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     const AngleType& angle,
@@ -269,11 +274,10 @@ AngularAccelerationType angular_acceleration_in_body_frame(
    auto& [dot_p, dot_q, dot_r] = body_angular_acceleration;
  
     /*
-     * For this equations, 
-     * See https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq. (21)
-     * and the rest.
-     * See also Nonami's book eq. (1.136),(1.137), where L=tau_x, M=tau_y, N=tau_z.
+     * See also Nonami's book eq. (2.31)(1.137), where L=tau_x, M=tau_y, N=tau_z.
      * and Ixz = Iyz = Izx = 0 is assumed.
+     * See also https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq.(21)
+     * and the rest.
      */
  
     /*****************************************************************/
