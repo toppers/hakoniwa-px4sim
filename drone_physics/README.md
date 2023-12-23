@@ -10,7 +10,7 @@ ground and the body frame coordinate system.
 
 Most of the functions are implementation of the equations in the following book:
 
-- "Introduction to Drone Engineering" by Dr. Kenzo Nonami
+- ["Introduction to Drone Engineering" by Dr. Kenzo Nonami(Japanese)](https://www.coronasha.co.jp/np/isbn/9784339032307/)
 
 All the functions are implemented in C++, with the equation numbers in the book as comments in the sourde code.
 
