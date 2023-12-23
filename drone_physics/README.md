@@ -6,8 +6,8 @@ English ｜ [日本語](README-ja.md)
 
 This is a math, physics, and dynamics library for the drone plant model in the Hakoniwa project(Open Source Runtime Environment for Simulating Cyber-Physical Systems).
 
-It is designed for Hakoniwa px4sim project, but this library is more general, and can be used for any drone simulation projects
-to calculate the drone's speed, acceleration and etc. in the ground and the body frame coordinate system.
+It is first designed for Hakoniwa px4sim project, but I found it was more general,
+and can be used for any drone simulation projects to calculate the drone's speed, acceleration and etc. in the ground and the body frame coordinate system.
 
 Most of the functions are implemented based on the equations in the following book:
 
