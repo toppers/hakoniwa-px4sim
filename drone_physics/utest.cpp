@@ -1,7 +1,9 @@
 #include <cassert>
 #include <iostream>
-#include "math_and_physics.hpp"
+#include "body_physics.hpp"
 #include "rotor_physics.hpp"
+
+using namespace hako::drone_physics;
 
 #define assert_almost_equal(a, b) \
     assert(std::fabs(std::get<0>(a) - std::get<0>(b)) < 0.0001); \
@@ -50,9 +52,7 @@ void test_frame_all_unit_vectors_with_some_angles() {
 }
 
 static double length(VelocityType v) {
-    double x = std::get<0>(v);
-    double y = std::get<1>(v);
-    double z = std::get<2>(v);
+    auto [x, y, z] = v; // C++17 structured binding declaration
     return sqrt(x*x + y*y + z*z);
 }
 
@@ -108,27 +108,39 @@ void test_issue_89_yaw_angle_bug() {
 }
 
 void test_frame_roundtrip() {
-    const VelocityType v1(1, 0, 0);
+    VelocityType v1(1, 0, 0);
     VelocityType v2 = velocity_body_to_ground(v1, AngleType(0, 0, 0));
     assert_almost_equal(v1, v2);
 
-    for (int i = 0; i < 360; i+=30) {  // 0 to 360 degree x-axis
+    for (int i = -180; i < 180; i+=30) {  // 0 to 360 degree x-axis
         v2 = velocity_body_to_ground(v1, AngleType(i * PI / 180, 0, 0));
         VelocityType v3 = velocity_ground_to_body(v2, AngleType(i * PI / 180, 0, 0));
         assert_almost_equal(v1, v3);
     }
-    for (int i = 0; i < 360; i+=30) {  // 0 to 360 degree x-axis
+    for (int i = -90; i < 90; i+=30) {  // 0 to 360 degree x-axis
         v2 = velocity_body_to_ground(v1, AngleType(0, i * PI / 180, 0));
         VelocityType v3 = velocity_ground_to_body(v2, AngleType(0, i * PI / 180, 0));
         assert_almost_equal(v1, v3);
     }
     // conbinations
-    for (int i = 0; i < 360; i+=30) {
-        for (int j = 0; j < 360; j+=30) {
-            for (int k = 0; k < 360; k+=30) {
+    VelocityType u1 = {1, 0, 0};
+    v1 = {0, 1, 0};
+    VectorType w1 = {0, 0, 1};
+    for (int i = -180; i < 180; i+=30) {
+        for (int j = -90; j < 90; j+=30) {
+            for (int k = -180; k < 180; k+=30) {
                 v2 = velocity_body_to_ground(v1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
                 VelocityType v3 = velocity_ground_to_body(v2, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
                 assert_almost_equal(v1, v3);
+
+                // bug #89 indicated that need testing (0,1,0) and (0,0,1) vectors.
+                v2 = velocity_body_to_ground(u1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                v3 = velocity_ground_to_body(v2, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                assert_almost_equal(u1, v3);
+
+                v2 = velocity_body_to_ground(w1, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                v3 = velocity_ground_to_body(v2, AngleType(i * (PI/180), j * (PI/180), k * (PI/180)));
+                assert_almost_equal(w1, v3);
             }
         }
     }
