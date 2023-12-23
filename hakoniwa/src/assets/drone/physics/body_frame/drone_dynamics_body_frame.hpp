@@ -66,7 +66,7 @@ private:
 
         return earthFrameVelocity;
 #else
-        return velocity_body_to_ground(src, angle);
+        return drone_physics::velocity_body_to_ground(src, angle);
 #endif
     }
 
@@ -85,7 +85,7 @@ private:
 
         return eulerRate;
 #else
-        return angular_velocity_body_to_ground(src, angle);
+        return drone_physics::angular_velocity_body_to_ground(src, angle);
 #endif
     }
     glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
@@ -173,11 +173,11 @@ public:
     {
         this->cache = drone_phys_calc_cache(this->angle);
 
-        DroneAccelerationBodyFrame acc = acceleration_in_body_frame(
+        DroneAccelerationBodyFrame acc = drone_physics::acceleration_in_body_frame(
                                                             this->velocityBodyFrame, this->angle, 
                                                             this->angularVelocityBodyFrame,
                                                             thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        DroneAngularAccelerationBodyFrame acc_angular = angular_acceleration_in_body_frame(
+        DroneAngularAccelerationBodyFrame acc_angular = drone_physics::angular_acceleration_in_body_frame(
                                                             this->angularVelocityBodyFrame, this->angle,
                                                             torque.data.x, torque.data.y, torque.data.z,
                                                             this->param_cx, this->param_cy, this->param_cz);

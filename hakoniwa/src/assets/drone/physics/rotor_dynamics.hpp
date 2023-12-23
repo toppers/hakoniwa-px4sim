@@ -48,7 +48,7 @@ public:
     void run(double control) override
     {
         this->next_speed.data =   (
-                                    rotor_omega_acceleration(param_kr, param_tr, speed.data, control)
+                                    drone_physics::rotor_omega_acceleration(param_kr, param_tr, speed.data, control)
                                   ) * this->delta_time_sec
                                 + this->speed.data;
         // Cap the next speed at the maximum RPM if it exceeds it
