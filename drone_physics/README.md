@@ -80,15 +80,18 @@ Functions are implemented in the following categories, with the referece to the 
 ### Body dynamics(n rotors) functions:
 | Function | equations in the book | note |
 |----------|-----------|------|
-|`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
-|`body_thrust` | (2.61) | Sum of the n trust from the rotors |
+|`body_thrust` | (2.61) | Sum of the $n$ trust from the rotors |
 |`body_torque` | (2.60)-(2.62) | Sum of the torques from the $n$ rotors based on the positionings of them |
+|`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
 
 ## Usage
 
 See examples.cpp and utest.cpp for more examples.
 
 ## Equations
+
+The ground frame coordinate system fixed to the ground is defined by right hand rule,
+in which $z$-axis is downward.
 
 The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone. The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
 
@@ -165,7 +168,7 @@ where $B$, $Jr$ is parameters related to the rotor properties. This makes the dr
 
 ## Experiments
 
-We connected with PX4 SITL simulator and tested the library with the following experiments.
+We connected Hakoniwa to PX4 SITL simulator and tested the library with the following experiments.
 The architecture of the simulation is described here.
 
 Mission:
