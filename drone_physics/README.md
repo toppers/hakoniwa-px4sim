@@ -12,6 +12,8 @@ Most of the functions are implementation of the equations in the following book:
 
 - "Introduction to Drone Engineering" by Dr. Kenzo Nonami
 
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/c92d3d96-25f9-4b6a-ae4e-25d898b75a28)
+
 All the functions are implemented in C++, with the equation numbers in the book as comments in the sourde code.
 
 I hope this can be a reference implmentation for the basic drone dynamics.
