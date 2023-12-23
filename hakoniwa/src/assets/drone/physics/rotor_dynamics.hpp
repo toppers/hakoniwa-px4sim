@@ -69,7 +69,7 @@ public:
     const std::vector<std::string> log_data() override
     {
         DroneRotorSpeedType v = get_rotor_speed();
-        return {std::to_string(total_time_sec), std::to_string(v.data)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(v.data)};
     }
 };
 

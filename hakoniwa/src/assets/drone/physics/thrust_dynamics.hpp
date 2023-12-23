@@ -119,7 +119,7 @@ public:
         DroneThrustType thrust = get_thrust();
         DroneTorqueType torque = get_torque();
 
-        return {std::to_string(total_time_sec), std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)};
     }
 
 };

@@ -4,6 +4,7 @@
 #include "idrone_dynamics.hpp"
 #include <math.h>
 #include <iostream>
+#include "utils/csv_logger.hpp"
 
 namespace hako::assets::drone {
 
@@ -211,7 +212,7 @@ public:
     const std::vector<std::string> log_data() override
     {
         return {
-            std::to_string(total_time_sec), 
+            std::to_string(CsvLogger::get_time_usec()), 
             std::to_string(position.data.x), std::to_string(position.data.y), std::to_string(position.data.z),
             std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z)
             };
