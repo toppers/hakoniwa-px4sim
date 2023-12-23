@@ -1,4 +1,6 @@
-# hakoniwa drone physics
+[English](README.md) ｜ 日本語
+
+# Hakoniwa Drone Physics Library(math, physics and dynamics)
 
 ## これは何？
 
