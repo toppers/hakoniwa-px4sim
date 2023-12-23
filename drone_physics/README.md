@@ -1,3 +1,5 @@
+English ｜ [日本語](README-ja.md)
+
 # Hakoniwa Drone Physics Library(math, physics and dynamics)
 
 ## What is this ?
