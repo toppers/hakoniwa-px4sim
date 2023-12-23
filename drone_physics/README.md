@@ -166,7 +166,15 @@ where $B$, $Jr$ is parameters related to the rotor properties. This makes the dr
 ## Experiments
 
 We connected with PX4 SITL simulator and tested the library with the following experiments.
+The architecture of the simulation is described here.
 
+Mission:
+- Lift off and hover at height 10m.
+- Move to the right 10m.
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/afa89bfd-e873-4cee-b4f1-606c6fed409e)
+
+<img width="1072" alt="image" src="https://github.com/toppers/hakoniwa-px4sim/assets/1093925/ef02a826-4ba8-4dbb-86d2-090b9de1919e">
 
 
 
