@@ -1,7 +1,8 @@
-#ifndef _MATH_AND_PHYSICS_HPP_
-#define _MATH_AND_PHYSICS_HPP_
-#include <cmath>
+#ifndef _BODY_PHYSICS_HPP_
+#define _BODY_PHYSICS_HPP_
 #include <tuple>
+
+namespace hako::drone_physics {
 
 typedef std::tuple<double, double, double> VectorType;
 typedef VectorType
@@ -77,4 +78,6 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
     double inertia_z /* in body frame */);
 #endif
 
-#endif /* _MATH_AND_PHYSICS_HPP_ */
+#endif /* _BODY_PHYSICS_HPP_ */
+
+} /* namespace hako::drone_physics */

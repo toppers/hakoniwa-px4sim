@@ -1,5 +1,8 @@
-#include "math_and_physics.hpp"
+#include "body_physics.hpp"
 #include <cassert>
+#include <cmath>
+
+namespace hako::drone_physics {
 
 /*
  * All the equations are from the references below.
@@ -48,15 +51,13 @@ VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
         c_phi   = cos(get<0>(angle)),   s_phi = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
         c_psi   = cos(get<2>(angle)),   s_psi = sin(get<2>(angle));
-    const auto x = get<0>(body), y = get<1>(body), z = get<2>(body);
+    
+    const auto [x, y, z] = body;
 
     // will be return value
     VectorType ground;
-
-    // ground coordinates (x_e, y_e, z_e), where 'e' means earth.
-    auto& x_e = get<0>(ground);
-    auto& y_e = get<1>(ground);
-    auto& z_e = get<2>(ground);
+    // ground coordinates (x_e, y_e, z_e) reference to ground, where 'e' means earth.
+    auto& [x_e, y_e, z_e] = ground;
 
     /*
      * See https://mtkbirdman.com/flight-dynamics-body-axes-system
@@ -94,18 +95,12 @@ VectorType vector_ground_to_body(const VectorType& ground,
         c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
         c_psi   = cos(get<2>(angle)), s_psi   = sin(get<2>(angle));
-    const auto
-        x_e = get<0>(ground),
-        y_e = get<1>(ground),
-        z_e = get<2>(ground);
+    const auto [x_e, y_e, z_e] = ground;
 
     // will be return value
     VectorType body;
-    
-    auto& x = get<0>(body);
-    auto& y = get<1>(body);
-    auto& z = get<2>(body);
-    
+    auto& [x, y, z] = body;
+
      /*
      * See https://mtkbirdman.com/flight-dynamics-body-axes-system
      * for the transformation equations.
@@ -146,15 +141,11 @@ AngularVelocityType angular_velocity_body_to_ground(
         s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)),
         t_theta = tan(get<1>(angle));
-
-    const auto p = get<0>(body), q = get<1>(body), r = get<2>(body);
+    const auto [p, q, r] = body;
 
    // will be return value
    AngularVelocityType ground_angular_velocity;
-    
-    auto& dot_phi   = get<0>(ground_angular_velocity);
-    auto& dot_theta = get<1>(ground_angular_velocity);
-    auto& dot_psi   = get<2>(ground_angular_velocity);
+   auto& [dot_phi, dot_theta, dot_psi] = ground_angular_velocity;
 
      /*
      * See https://mtkbirdman.com/flight-dynamics-body-axes-system
@@ -186,10 +177,7 @@ AngularVelocityType angular_velocity_ground_to_body(
 
     // will be return value
     AngularVelocityType body_angular_velocity;
-    
-    auto& p = get<0>(body_angular_velocity);
-    auto& q = get<1>(body_angular_velocity);
-    auto& r = get<2>(body_angular_velocity);
+    auto& [p, q, r] = body_angular_velocity;
 
     /*
      * See https://mtkbirdman.com/flight-dynamics-body-axes-system
@@ -227,26 +215,15 @@ AccelerationType acceleration_in_body_frame(
         c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
 
-    // velocities in body frame (u, v, w)
-    const auto
-        u = get<0>(body_velocity),
-        v = get<1>(body_velocity),
-        w = get<2>(body_velocity);
-
-    // angular velocities in body frame (p, q, r)
-    const auto
-        p = get<0>(body_angular_velocity),
-        q = get<1>(body_angular_velocity),
-        r = get<2>(body_angular_velocity);
+    const auto [u, v, w] = body_velocity;
+    const auto [p, q, r] = body_angular_velocity;
 
     // will be return value
     AccelerationType body_acceleration;
-
-    // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
-    auto& dot_u = get<0>(body_acceleration);
-    auto& dot_v = get<1>(body_acceleration);
-    auto& dot_w = get<2>(body_acceleration);
-
+    // (u', v', w'), where primes(') mean time derivative.
+    // references to return value
+    auto& [dot_u, dot_v, dot_w] = body_acceleration;
+    
     const auto g = gravity;
     const auto m = mass;
     const auto c = drag;
@@ -283,18 +260,13 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     assert(I_zz != 0.0); // TODO: remove this line
 
     // current angular velocities in body frame
-    const auto p = get<0>(angular_velocity_in_body_frame);
-    const auto q = get<1>(angular_velocity_in_body_frame);
-    const auto r = get<2>(angular_velocity_in_body_frame);
+    const auto [p, q, r] = angular_velocity_in_body_frame;
     
     // will be return value
     AngularAccelerationType body_angular_acceleration;
-
-    // angular accelerations to calculate
-    auto& dot_p = get<0>(body_angular_acceleration);
-    auto& dot_q = get<1>(body_angular_acceleration);
-    auto& dot_r = get<2>(body_angular_acceleration);
-
+    // (p', q', r'), where primes(') mean time derivative.
+    // references to return value
+   auto& [dot_p, dot_q, dot_r] = body_angular_acceleration;
  
     /*
      * For this equations, 
@@ -325,16 +297,12 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     const auto
         c_phi   = cos(get<0>(angle)), s_phi   = sin(get<0>(angle)),
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle));
-
     // velocities in body frame (u, v, w)
-    const auto u = get<0>(body), v = get<1>(body), w = get<2>(body);
+    const auto [u, v, w]  = body;
 
     AccelerationType body_acceleration;
-
     // accelerations in body frame (u', v', w'), where primes(') mean time derivative.
-    auto& dot_u = get<0>(body_acceleration);
-    auto& dot_v = get<1>(body_acceleration);
-    auto& dot_w = get<2>(body_acceleration);
+    auto& [dot_u, dot_v, dot_w] = body_acceleration;
 
     const auto g = gravity;
     const auto m = mass;
@@ -358,7 +326,7 @@ AccelerationType acceleration_in_ground_frame(
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
     assert(false && "this is not well-implemented, use acceleration_in_body_frame instead");
-    assert(mass != 0.0); // TODO: remove this line
+     assert(mass != 0.0); // TODO: remove this line
     using std::get; using std::sin; using std::cos;
 
     const auto
@@ -366,17 +334,14 @@ AccelerationType acceleration_in_ground_frame(
         c_theta = cos(get<1>(angle)), s_theta = sin(get<1>(angle)),
         c_psi   = cos(get<2>(angle)), s_psi   = sin(get<2>(angle));
 
-    const auto
-        dot_x = get<0>(ground),
-        dot_y = get<1>(ground),
-        dot_z = get<2>(ground);
+    const auto [u, v, w] = ground;
 
     // will be return value
     AccelerationType ground_acceleration;
+    // (u', v', w'), where primes(') mean time derivative.
+    // references to return value
+    auto& [dot_u, dot_v, dot_w] = ground_acceleration;
 
-    auto& dotdot_x = get<0>(ground_acceleration);
-    auto& dotdot_y = get<1>(ground_acceleration);
-    auto& dotdot_z = get<2>(ground_acceleration);
 
     const auto g = gravity;
     const auto m = mass;
@@ -390,10 +355,12 @@ AccelerationType acceleration_in_ground_frame(
      */
 
     /*****************************************************************/  
-    dotdot_x = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * dot_x;
-    dotdot_y = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * dot_y;
-    dotdot_z = -T/m * (c_phi * c_theta)                   + g   - c * dot_z;
+    dot_u = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * u;
+    dot_v = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * v;
+    dot_w = -T/m * (c_phi * c_theta)                   + g   - c * w;
     /*****************************************************************/  
 
     return ground_acceleration;
 }
+
+} /* namespace hako::drone_physics */
