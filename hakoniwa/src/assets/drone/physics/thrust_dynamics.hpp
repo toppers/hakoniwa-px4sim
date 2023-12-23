@@ -24,7 +24,7 @@ private:
     DroneRotorSpeedType prev_rotor_speed[ROTOR_NUM];
     RotorConfigType rotor_config[ROTOR_NUM];
     double omega[ROTOR_NUM];
-    PositionType position[ROTOR_NUM];
+    drone_physics::PositionType position[ROTOR_NUM];
     double ccw[ROTOR_NUM];
     double omega_acceleration[ROTOR_NUM];
 
@@ -91,8 +91,8 @@ public:
             omega[i] = rotor_speed[i].data;
             omega_acceleration[i] = (rotor_speed[i].data - this->prev_rotor_speed[i].data) / this->delta_time_sec;
         }
-        this->thrust.data = body_thrust(param_A, ROTOR_NUM, omega);
-        this->torque = body_torque(param_A, param_B, param_Jr, ROTOR_NUM,
+        this->thrust.data = drone_physics::body_thrust(param_A, ROTOR_NUM, omega);
+        this->torque = drone_physics::body_torque(param_A, param_B, param_Jr, ROTOR_NUM,
                                             position, ccw, omega, omega_acceleration);
 
         for (int i = 0; i < ROTOR_NUM; i++) {
