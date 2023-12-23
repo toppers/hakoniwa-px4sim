@@ -1,7 +1,7 @@
 #ifndef _ROTOR_PHYSICS_HPP_
 #define _ROTOR_PHYSICS_HPP_
 
-#include "math_and_physics.hpp"
+#include "body_physics.hpp"
 typedef VectorType
     TorqueType, PositionType;
 

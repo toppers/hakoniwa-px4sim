@@ -37,10 +37,11 @@ add_executable(
     assets/drone/physics/body_frame/drone_dynamics_body_frame.cpp
     assets/drone/physics/ground_frame/drone_dynamics_ground_frame.cpp
     assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.cpp
-    assets/drone/physics/math_and_physics/math_and_physics.cpp
-    assets/drone/physics/math_and_physics/rotor_physics.cpp
     assets/drone/physics/math_and_physics_convertor.cpp
 
+    ${PHYSICS_SOURCE_DIR}/body_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
+    
     assets/drone/controller/drone_pid_control.cpp
     assets/drone/aircraft/aircraft_factory.cpp
 
@@ -53,9 +54,9 @@ add_executable(
 )
 add_executable(
     utest
-    assets/drone/physics/math_and_physics/math_and_physics.cpp
-    assets/drone/physics/math_and_physics/rotor_physics.cpp
-    assets/drone/physics/math_and_physics/utest.cpp
+    ${PHYSICS_SOURCE_DIR}/body_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/utest.cpp
 )
 target_include_directories(
     hako-px4sim
@@ -69,6 +70,7 @@ target_include_directories(
     PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
     PRIVATE ${NLOHMANN_SOURCE_DIR}
+    PRIVATE ${PHYSICS_SOURCE_DIR}
 )
 
 target_link_libraries(hako-px4sim hakoarun)

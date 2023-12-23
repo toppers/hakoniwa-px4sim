@@ -42,7 +42,7 @@ public:
         DroneMagDataType value;
         value.data.x = this->mag_x.get_calculated_value();
         value.data.y = this->mag_y.get_calculated_value();
-        value.data.z = -this->mag_z.get_calculated_value();
+        value.data.z = this->mag_z.get_calculated_value();
         if (this->noise != nullptr) {
             value.data.x = this->noise->add_noise(value.data.x);
             value.data.y = this->noise->add_noise(value.data.y);

@@ -1,6 +1,6 @@
 #include <cassert>
 #include <iostream>
-#include "math_and_physics.hpp"
+#include "body_physics.hpp"
 #include "rotor_physics.hpp"
 
 #define assert_almost_equal(a, b) \
