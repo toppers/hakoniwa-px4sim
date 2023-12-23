@@ -4,7 +4,7 @@
 #include "drone_primitive_types.hpp"
 #include "ithrust_dynamics.hpp"
 #include "utils/icsv_log.hpp"
-#include "math_and_physics/rotor_physics.hpp"
+#include "rotor_physics.hpp"
 #include <glm/glm.hpp>
 #include <iostream>
 
