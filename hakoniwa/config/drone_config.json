@@ -35,11 +35,11 @@
     "components": {
         "droneDynamics": {
             "physicsEquation": "BodyFrame",
-            "airFrictionCoefficient": 0.1,
+            "airFrictionCoefficient": 0.324,
             "inertia": [ 0.01, 0.01, 0.02 ],
             "mass_kg": 1,
-            "position_meter": [0, 0, 0 ],
-            "angle_degree": [0, 0, 0]
+            "position_meter": [ 0, 0, 0 ],
+            "angle_degree": [ 0, 0, 0 ]
           },
           "rotor": {
             "Tr": 0.1,
