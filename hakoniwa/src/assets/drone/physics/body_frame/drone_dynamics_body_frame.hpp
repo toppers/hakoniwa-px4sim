@@ -179,7 +179,7 @@ public:
                                                             this->angularVelocityBodyFrame,
                                                             thrust.data, this->param_mass, GRAVITY, this->param_drag);
         DroneAngularAccelerationBodyFrame acc_angular = drone_physics::angular_acceleration_in_body_frame(
-                                                            this->angularVelocityBodyFrame, this->angle,
+                                                            this->angularVelocityBodyFrame,
                                                             torque.data.x, torque.data.y, torque.data.z,
                                                             this->param_cx, this->param_cy, this->param_cz);
 
