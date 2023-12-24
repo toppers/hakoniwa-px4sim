@@ -5,10 +5,15 @@
 
 using namespace hako::drone_physics;
 
+std::ostream& operator << (std::ostream& os, const VectorType& v) {
+    os << "(" << std::get<0>(v) << ", " << std::get<1>(v) << ", " << std::get<2>(v) << ")";
+    return os;
+}
+
 #define assert_almost_equal(a, b) \
-    assert(std::fabs(std::get<0>(a) - std::get<0>(b)) < 0.0001); \
-    assert(std::fabs(std::get<1>(a) - std::get<1>(b)) < 0.0001); \
-    assert(std::fabs(std::get<2>(a) - std::get<2>(b)) < 0.0001)
+    assert(std::fabs(std::get<0>(a) - std::get<0>(b)) < 0.0001 || (std::cout << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0)); \
+    assert(std::fabs(std::get<1>(a) - std::get<1>(b)) < 0.0001 || (std::cout << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0)); \
+    assert(std::fabs(std::get<2>(a) - std::get<2>(b)) < 0.0001 || (std::cout << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0))
 
 #define print_vec(v) \
     std::cout << #v "=" << std::get<0>(v) << ", " << std::get<1>(v) << ", " << std::get<2>(v) << std::endl
