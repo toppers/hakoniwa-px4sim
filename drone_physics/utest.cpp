@@ -144,8 +144,53 @@ void test_frame_roundtrip() {
             }
         }
     }
+}
 
+void test_angular_frame_roundtrip() {
+    AngularVelocityType v1(1, 0, 0);
+    AngularVelocityType v2 = angular_velocity_body_to_ground(v1, AngleType(0, 0, 0));
+    assert_almost_equal(v1, v2);
 
+    for (int i = -180; i < 180; i+=30) {  // 0 to 360 degree x-axis
+        v2 = angular_velocity_body_to_ground(v1, AngleType(i * PI / 180, 0, 0));
+        AngularVelocityType v3 = angular_velocity_ground_to_body(v2, AngleType(i * PI / 180, 0, 0));
+        assert_almost_equal(v1, v3);
+    }
+    for (int i = -90; i < 90; i+=30) {  // y-axis
+        v2 = angular_velocity_body_to_ground(v1, AngleType(0, i * PI / 180, 0));
+        AngularVelocityType v3 = angular_velocity_ground_to_body(v2, AngleType(0, i * PI / 180, 0));
+        assert_almost_equal(v1, v3);
+    }
+    for (int i = -180; i < 180; i+=30) {  // z-axis
+        v2 = angular_velocity_body_to_ground(v1, AngleType(0, 0, i * PI / 180));
+        AngularVelocityType v3 = angular_velocity_ground_to_body(v2, AngleType(0, 0, i * PI / 180));
+        assert_almost_equal(v1, v3);
+    }
+    // conbinations
+    AngularVelocityType u1 = {1, 0, 0};
+    v1 = {0, 1, 0};
+    VectorType w1 = {0, 0, 1};
+    VectorType ans;
+    for (int i = -90; i < 180; i+=30) {
+         for (int j = -90; j < 90; j+=30) {
+            if (j == -90) continue;  // gimbal lock
+            for (int k = -180; k < 180; k+=30) {
+                AngleType rot_angle(i * (PI/180), j * (PI/180), k * (PI/180));
+
+                v2 = angular_velocity_body_to_ground(v1, rot_angle);
+                ans = angular_velocity_ground_to_body(v2, rot_angle);
+                assert_almost_equal(v1, ans);
+
+                v2 = angular_velocity_body_to_ground(u1, rot_angle);
+                ans= angular_velocity_ground_to_body(v2, rot_angle);
+                assert_almost_equal(u1, ans);
+
+                v2 = angular_velocity_body_to_ground(w1, rot_angle);
+                ans = angular_velocity_ground_to_body(v2, rot_angle);
+                assert_almost_equal(w1, ans);
+            }
+         }
+    }
 }
 
 void test_body_acceleration() {
@@ -363,6 +408,7 @@ int main() {
     T(test_frame_matrix_is_unitary);
     T(test_frame_roundtrip);
     T(test_body_acceleration);
+    T(test_angular_frame_roundtrip);
     T(test_body_angular_acceleration);
     T(test_rotor_omega_accesleration);
     T(test_vector_operators);
