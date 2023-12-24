@@ -1,5 +1,6 @@
 import json
 from operations.takeoff import TakeoffOperation
+from operations.start_landing import StartLandingOperation
 
 class ScenarioManager:
     def __init__(self):
@@ -18,6 +19,13 @@ class ScenarioManager:
             duration_sec = op['duration_sec']
             print(f"INFO: takeoff operation alt: {altitude}")
             self.current = TakeoffOperation(self.connection, altitude, duration_sec)
+        elif op['operation'] == 'start_landing':
+            lat = op['lat']
+            lon = op['lon']
+            alt = op['alt']
+            duration_sec = op['duration_sec']
+            print(f"INFO: start_landing operation lat: {lat} lon: ${lon} alt: {alt}")
+            self.current = StartLandingOperation(self.connection, lat, lon, alt, duration_sec)
         else:
             print(f"ERROR: not supported operation {op['operation']}")
             self.current = None

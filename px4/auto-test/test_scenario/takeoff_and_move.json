@@ -1,0 +1,23 @@
+{
+    "scenario": [
+        {
+            "operation": "takeoff",
+            "alt": 131.3212432861328,
+            "duration_sec": 20
+        },
+        {
+            "operation": "start_landing",
+            "lat": 476414756,
+            "lon": -1221400909,
+            "alt": 131.3212432861328,
+            "duration_sec": 20
+        },
+        {
+            "operation": "start_landing",
+            "lat": 476415654,
+            "lon": -1221400909,
+            "alt": 131.3212432861328,
+            "duration_sec": 20
+        }
+    ]
+}
