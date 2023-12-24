@@ -61,22 +61,8 @@ AccelerationType acceleration_in_ground_frame(
 
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
-    const AngleType& angle,
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
-
-/* difficult not well-implemented yet !!! */
-#if 0
-AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularVelocityType& angular_velocity_in_ground_frame,
-    const AngleType& angle,
-    double torque_x, /* in ground frame */
-    double torque_y, /* in ground frame */
-    double torque_z, /* in ground frame */
-    double inertia_x, /* in body frame */
-    double inertia_y, /* in body frame */
-    double inertia_z /* in body frame */);
-#endif
 
 #endif /* _BODY_PHYSICS_HPP_ */
 

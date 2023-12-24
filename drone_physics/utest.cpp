@@ -200,19 +200,16 @@ void test_body_acceleration() {
 void test_body_angular_acceleration() {
     const AngularVelocityType v(1, 2, 3);
     double I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 0, torque_y = 0, torque_z = 0;
-    AngularAccelerationType a = angular_acceleration_in_body_frame(v, AngleType(0, 0, 0),
-        torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    AngularAccelerationType a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
     assert_almost_equal(a, AngularAccelerationType(0, 0, 0));
 
     I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 1, torque_y = 2, torque_z = 3;
-    a = angular_acceleration_in_body_frame(v, AngleType(0, 0, 0),
-        torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
     assert_almost_equal(a, AngularAccelerationType(1, 2, 3));
 
     I_xx = 2, I_yy = 5, I_zz = 8, torque_x = 1, torque_y = 2, torque_z = 3;
     // remember v = (p, q, r) = {1, 2, 3}
-    a = angular_acceleration_in_body_frame(v, AngleType(0, 0, 0),
-        torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
     assert_almost_equal(a, AngularAccelerationType(
         (torque_x - 2*3*(I_zz - I_yy))/I_xx,
         (torque_y - 1*3*(I_xx - I_zz))/I_yy,

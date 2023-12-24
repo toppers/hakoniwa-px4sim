@@ -249,7 +249,6 @@ AccelerationType acceleration_in_body_frame(
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.37),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
-    const AngleType& angle,
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
@@ -258,7 +257,6 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_zz /* in body frame, 0 is not allowed */)
 {
     using std::get;
-    (void)angle; // not used for now
 
     assert(I_xx != 0.0); // TODO: remove this line
     assert(I_yy != 0.0); // TODO: remove this line
