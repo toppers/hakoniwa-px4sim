@@ -3,28 +3,35 @@ from operations.takeoff import TakeoffOperation
 from operations.start_landing import StartLandingOperation
 
 class ScenarioManager:
-    def __init__(self):
+    def __init__(self, drone_config_data):
         self.index = 0
         self.current = None
         self.connection = None
+        self.drone_config_data = drone_config_data
 
     def load_scenario(self, filename):
         with open(filename, 'r') as file:
             data = json.load(file)
         self.scenario_data = data
 
+    def _scale_lat_lon(self, v):
+        return v * 1e07
+    
+    def _scale_lat_lon_meter(self, v):
+        return (float(v)/111000.0) * 1e07
+
     def _get_op(self, op):
         if op['operation'] == 'takeoff':
-            altitude = op['alt']
+            altitude = op['alt'] + self.drone_config_data['simulation']['location']['altitude']
             duration_sec = op['duration_sec']
             print(f"INFO: takeoff operation alt: {altitude}")
             self.current = TakeoffOperation(self.connection, altitude, duration_sec)
         elif op['operation'] == 'start_landing':
-            lat = op['lat']
-            lon = op['lon']
-            alt = op['alt']
+            lat = int(self._scale_lat_lon(self.drone_config_data['simulation']['location']['latitude'])) + int(self._scale_lat_lon_meter(op['lat']))
+            lon = int(self._scale_lat_lon(self.drone_config_data['simulation']['location']['longitude'])) + int(self._scale_lat_lon_meter(op['lon']))
+            alt = op['alt'] + self.drone_config_data['simulation']['location']['altitude']
             duration_sec = op['duration_sec']
-            print(f"INFO: start_landing operation lat: {lat} lon: ${lon} alt: {alt}")
+            print(f"INFO: start_landing operation lat: {lat} lon: {lon} alt: {alt}")
             self.current = StartLandingOperation(self.connection, lat, lon, alt, duration_sec)
         else:
             print(f"ERROR: not supported operation {op['operation']}")

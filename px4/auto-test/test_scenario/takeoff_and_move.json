@@ -2,21 +2,35 @@
     "scenario": [
         {
             "operation": "takeoff",
-            "alt": 131.3212432861328,
+            "alt": 10,
             "duration_sec": 20
         },
         {
             "operation": "start_landing",
-            "lat": 476414756,
-            "lon": -1221400909,
-            "alt": 131.3212432861328,
+            "lat": 0,
+            "lon": 10,
+            "alt": 10,
             "duration_sec": 20
         },
         {
             "operation": "start_landing",
-            "lat": 476415654,
-            "lon": -1221400909,
-            "alt": 131.3212432861328,
+            "lat": 10,
+            "lon": 10,
+            "alt": 10,
+            "duration_sec": 20
+        },
+        {
+            "operation": "start_landing",
+            "lat": 10,
+            "lon": 0,
+            "alt": 10,
+            "duration_sec": 20
+        },
+        {
+            "operation": "start_landing",
+            "lat": 0,
+            "lon": 0,
+            "alt": 10,
             "duration_sec": 20
         }
     ]
