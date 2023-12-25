@@ -91,7 +91,7 @@ public:
 
     void run(const DroneAngleType& angle) override
     {
-        run_old(angle);
+        run_new(angle);
         total_time_sec += delta_time_sec;
     }
     DroneMagDataType sensor_value() override
