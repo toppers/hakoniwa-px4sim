@@ -50,6 +50,20 @@ private:
         this->mag_y.add_data(y);
         this->mag_z.add_data(z);
     }
+    void run_fix(const DroneAngleType& angle)
+    {
+        double x =   params_F * (cos(params_I) * cos(params_D));
+        double y =   params_F * (cos(params_I) * sin(params_D));
+        double z = - params_F * sin(params_I);
+
+        x += angle.data.x;
+        y += angle.data.y;
+        z += angle.data.z;
+
+        this->mag_x.add_data(x);
+        this->mag_y.add_data(y);
+        this->mag_z.add_data(z);
+    }
     void run_new(const DroneAngleType& angle)
     {
         glm::dvec3 mag = get_mag_field(); // 磁場ベクトルを取得
