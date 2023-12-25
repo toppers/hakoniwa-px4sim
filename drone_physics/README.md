@@ -98,6 +98,8 @@ in which $z$-axis is downward.
 
 The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone. The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
 
+### Body dynamics
+
 The basic dynamics equations in the body frame are as follows eq.(2.31).
 
 $m \dot{v} + \omega \times m v = F$
@@ -138,24 +140,57 @@ where;
 
 The transformation from/to the body frame and the ground frame is as follows.
 
-Velocity: 
+### Frame transformation
 
-![スクリーンショット 2023-12-05 10 04 44](https://github.com/toppers/hakoniwa-px4sim/assets/164193/992bb7fe-0d50-47a5-aab5-e17aba4f716d)
+#### Velocity, Acceleration
+
+The rotation order from ground($v_e$) to body($v$): $z$-axis($\psi$)
+), $y$-axis($\theta$), $x$-axis($\phi$). From the body to the ground, the transformation matrix is;
+
+$$
+\left[
+  \begin{array}{c} u_e\\v_e\\w_e \end{array}
+\right] =
+  \begin{bmatrix}
+    \cos\theta\cos\psi & \sin\phi\sin\theta\cos\psi - \cos\phi\sin\psi & \cos\phi\sin\theta\cos\psi + \sin\phi\sin\psi \\
+    \cos\theta\sin\psi & \sin\phi\sin\theta\sin\psi + \cos\phi\cos\psi & \cos\phi\sin\theta\sin\psi -\sin\phi\cos\psi \\
+    -\sin\theta & \sin\phi\cos\theta & \cos\phi\cos\theta
+  \end{bmatrix}
+\left[
+  \begin{array}{c} u\\v\\w \end{array}
+\right]
+$$
 
 
-AngularVelocity:
+#### Angular Velocity, Angular Acceleration
 
-![スクリーンショット 2023-12-05 10 05 51](https://github.com/toppers/hakoniwa-px4sim/assets/164193/9b036e35-6ed5-4fd0-8ceb-05364e5cccdb)
+The body angular velocity $\omega = (p, q, r)$ 
+is transformed to ground($\omega_e = (p_e, q_e, r_e$). From the body to the ground, the transformation matrix is;
+$$
+\begin{bmatrix}
+   p_e\\ q_e\\ r_e
+\end{bmatrix} =
+  \begin{bmatrix}
+1 & \sin \phi \tan \theta & \cos \phi \tan \theta \\ 
+0 & \cos \phi & -\sin \phi \\
+0 & \sin \phi \sec \theta & \cos \phi \sec \theta
+\end{bmatrix}
+\begin{bmatrix}
+    p\\q\\r
+\end{bmatrix}
+$$
+
+### Rotor dynamics
 
 Each rotor can be modeled as a first-order lag system, in which the rotor angular velocity
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
 
-$G(s)/D(s) = K_r/(T_r s + 1)$
+$G(s)/D(s) = K_r\;/\;(T_r s + 1)$
 
 and the time domain differential equation is as follows.
 
-$\dot{\Omega}(t) = K_r (d(t) - \Omega / T_r)$
+$\dot{\Omega}(t) = K_r\; (\; d(t) - \Omega(t) / T_r\;)$
 
 where;
 
