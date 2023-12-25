@@ -118,18 +118,21 @@ where;
 
 The body frame dynamics above are expanded based on the body angles $\phi, \theta, \psi$ as follows.
 
+$$
+\begin{array}{l}
+\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\ 
 
-$\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u$
+\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
 
-$\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v$
+\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w \\
 
-$\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w$
+\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
 
-$\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} $
+\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
 
-$\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy}$
-
-$\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz}$
+\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \\
+\end{array}
+$$
 
 where;
 
@@ -149,7 +152,10 @@ The rotation order from ground($v_e$) to body($v$): $z$-axis($\psi$)
 
 $$
 \left[
-  \begin{array}{c} u_e\\v_e\\w_e \end{array}
+  \begin{array}{c}
+   u_e \\ 
+  v_e \\ 
+  w_e \end{array}
 \right] =
   \begin{bmatrix}
     \cos\theta\cos\psi & \sin\phi\sin\theta\cos\psi - \cos\phi\sin\psi & \cos\phi\sin\theta\cos\psi + \sin\phi\sin\psi \\
@@ -157,7 +163,9 @@ $$
     -\sin\theta & \sin\phi\cos\theta & \cos\phi\cos\theta
   \end{bmatrix}
 \left[
-  \begin{array}{c} u\\v\\w \end{array}
+  \begin{array}{c} u \\
+  v \\
+  w \end{array}
 \right]
 $$
 
@@ -166,9 +174,12 @@ $$
 
 The body angular velocity $\omega = (p, q, r)$ 
 is transformed to ground($\omega_e = (p_e, q_e, r_e$). From the body to the ground, the transformation matrix is;
+
 $$
 \begin{bmatrix}
-   p_e\\ q_e\\ r_e
+   p_e \\ 
+   q_e \\ 
+   r_e
 \end{bmatrix} =
   \begin{bmatrix}
 1 & \sin \phi \tan \theta & \cos \phi \tan \theta \\ 
@@ -176,7 +187,9 @@ $$
 0 & \sin \phi \sec \theta & \cos \phi \sec \theta
 \end{bmatrix}
 \begin{bmatrix}
-    p\\q\\r
+    p \\ 
+    q \\ 
+    r
 \end{bmatrix}
 $$
 
