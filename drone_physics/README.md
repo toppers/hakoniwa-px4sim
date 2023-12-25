@@ -212,11 +212,11 @@ Each rotor can be modeled as a first-order lag system, in which the rotor angula
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
 
-$G(s)/D(s) = K_r\;/\;(T_r s + 1)$
+$G(s)/D(s) = K_r/(T_r s + 1)$
 
 and the time domain differential equation is as follows.
 
-$\dot{\Omega}(t) = K_r\; (\; d(t) - \Omega(t) / T_r\;)$
+$\dot{\Omega}(t) = K_r ( d(t) - \frac{\Omega(t)}{ T_r})$
 
 where;
 

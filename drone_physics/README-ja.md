@@ -148,9 +148,9 @@ $$
 
 機体座標系と地上座標系の変換は以下のようになります。
 
-###　座標変換
+### 座標変換
 
-###　速度、加速度の変換
+#### 速度、加速度の変換
 
 機体座標系 $v = (u, v, w)$ から地上座標系 $v_e = (u_e, v_e, w_e)$ への変換行列は以下のようになります。
 
@@ -173,14 +173,9 @@ $$
 \right]
 $$
 
-###　角速度、角加速度の変換
+#### 角速度、角加速度の変換
 
 機体座標系の角速度 $\omega = (p, q, r)$ から地上座標系 $\omega_e = (p_e, q_e, r_e)$ への変換行列は以下のようになります。
-
-
-The body angular velocity $\omega = (p, q, r)$ 
-is transformed to ground($\omega_e = (p_e, q_e, r_e$).
-From the body to the ground, the transformation matrix is;
 
 $$
 \begin{bmatrix}
@@ -200,16 +195,16 @@ $$
 \end{bmatrix}
 $$
 
-### 1つのローターの力学
+#### 1つのローターの力学
 
 1つ1つのモーターの角速度は、$\Omega(t)$ は、デューティー比 $d(t)$ によって1次遅れ系としてモデル化できます。
 書籍の式 (2.48) の伝達関数 G(s) によって記述され、
 
-$G(s)/D(s) = K_r\;/\;(T_r s + 1)$
+$G(s)/D(s) = K_r/(T_r s + 1)$
 
 時間領域の微分方程式は以下のようになります。
 
-$\dot{\Omega}(t) = K_r\; (\; d(t) - \Omega(t) / T_r\;)$
+$\dot{\Omega}(t) = K_r ( d(t) - \frac{\Omega(t)}{ T_r})$
 
 ここで、
 
