@@ -102,9 +102,10 @@ The body frame coordinate system is defined by right hand rule, in which $x$-axi
 
 The basic dynamics equations in the body frame are as follows eq.(2.31).
 
-$m \dot{v} + \omega \times m v = F$
-
-$I \dot{\omega} + \omega \times I \omega = \tau$
+$$
+m \dot{v} + \omega \times m v = F \\
+I \dot{\omega} + \omega \times I \omega = \tau
+$$
 
 where;
 
@@ -120,16 +121,11 @@ The body frame dynamics above are expanded based on the body angles $\phi, \thet
 
 $$
 \begin{array}{l}
-\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\ 
-
+\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
 \dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
-
 \dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w \\
-
 \dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
-
 \dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
-
 \dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \\
 \end{array}
 $$
@@ -153,8 +149,8 @@ The rotation order from ground($v_e$) to body($v$): $z$-axis($\psi$)
 $$
 \left[
   \begin{array}{c}
-   u_e \\ 
-  v_e \\ 
+   u_e \\
+  v_e \\
   w_e \end{array}
 \right] =
   \begin{bmatrix}
