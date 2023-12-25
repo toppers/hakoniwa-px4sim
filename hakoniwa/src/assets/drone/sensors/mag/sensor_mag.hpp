@@ -5,6 +5,9 @@
 #include "utils/icsv_log.hpp"
 #include "../../utils/sensor_data_assembler.hpp"
 #include "utils/csv_logger.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace hako::assets::drone {
 
@@ -16,13 +19,24 @@ private:
     hako::assets::drone::SensorDataAssembler mag_y;
     hako::assets::drone::SensorDataAssembler mag_z;
 
-public:
-    SensorMag(double dt, int sample_num) : delta_time_sec(dt), mag_x(sample_num), mag_y(sample_num), mag_z(sample_num) 
+    glm::dvec3 get_mag_field() const
     {
-        this->noise = nullptr;
+        glm::dvec3 m;
+        m.x = cos(params_D) * cos(params_I);
+        m.y = sin(params_D) * cos(params_I);
+        m.z = sin(params_I);
+        return m;
     }
-    virtual ~SensorMag() {}
-    void run(const DroneAngleType& angle) override
+    glm::mat3 getRotationMatrix(const glm::dvec3& angles_rad) {
+        // オイラー角からクォータニオンを生成
+        glm::quat quaternion = glm::quat(angles_rad);
+
+        // クォータニオンから回転行列を生成
+        glm::mat3 rot = glm::mat3_cast(quaternion);
+
+        return rot;
+    }
+    void run_old(const DroneAngleType& angle)
     {
         double theta = angle.data.y + params_I;
         double psi = angle.data.z - params_D;
@@ -35,6 +49,35 @@ public:
         this->mag_x.add_data(x);
         this->mag_y.add_data(y);
         this->mag_z.add_data(z);
+    }
+    void run_new(const DroneAngleType& angle)
+    {
+        glm::dvec3 mag = get_mag_field(); // 磁場ベクトルを取得
+        glm::mat3 rot = getRotationMatrix(angle.data); // 回転行列を取得
+
+        // 行列の転置
+        rot = glm::transpose(rot);
+
+        // ベクトルに行列を適用（キャストが必要）
+        mag = glm::dvec3(rot * glm::vec3(mag));
+        double x = mag.x * params_F;
+        double y = mag.y * params_F;
+        double z = mag.z * params_F;
+
+        this->mag_x.add_data(x);
+        this->mag_y.add_data(y);
+        this->mag_z.add_data(z);
+    }
+public:
+    SensorMag(double dt, int sample_num) : delta_time_sec(dt), mag_x(sample_num), mag_y(sample_num), mag_z(sample_num) 
+    {
+        this->noise = nullptr;
+    }
+    virtual ~SensorMag() {}
+
+    void run(const DroneAngleType& angle) override
+    {
+        run_new(angle);
         total_time_sec += delta_time_sec;
     }
     DroneMagDataType sensor_value() override
