@@ -6,8 +6,10 @@ English ｜ [日本語](README-ja.md)
 
 This is a math, physics, and dynamics library for the drone plant model in the Hakoniwa project(Open Source Runtime Environment for Simulating Cyber-Physical Systems).
 
-It is first designed for Hakoniwa px4sim project, but I found it was more general,
-and can be used for any drone simulation projects to calculate the drone's speed, acceleration and etc. in the ground and the body frame coordinate system.
+You can transform vectors between the ground and the body frame coordinate system, and also calculate the drone's speed, acceleration from the rotors' thrust and gravity.
+
+It is first designed for Hakoniwa px4sim project, but I found it was more general, so
+made it a separate library with more user-friendly interface, and also added the reference to the equations in the book below.
 
 Most of the functions are implemented based on the equations in the following book:
 
@@ -15,7 +17,8 @@ Most of the functions are implemented based on the equations in the following bo
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/c92d3d96-25f9-4b6a-ae4e-25d898b75a28)
 
-All the functions are implemented in C++, with the equation numbers in the book as comments in the sourde code.
+All the functions are implemented in C++, with the equation numbers in the book as comments in the sourde code. The coverage is not enough but the drone in the project started flying with this library, 
+although not all the equations in the book are not implemented yet.
 
 I hope this can be a reference implmentation for the basic drone dynamics.
 
@@ -56,6 +59,15 @@ int main() {
     // output: u2 = 100, v2 = 200, w2 = 300, back again.
 }
 ```
+
+## Installation
+
+TODO: Not yet written.
+Copy the source code to your project.
+`drone_physics.hpp` is the header file you need. See the header file for the prototypes of the functions.
+
+`example.cpp`` and `utest.cpp`` are the examples and unit tests for the functions.
+
 ## List of functions
 
 Functions are implemented in the following categories, with the referece to the book.
@@ -96,15 +108,21 @@ See examples.cpp and utest.cpp for more examples.
 The ground frame coordinate system fixed to the ground is defined by right hand rule,
 in which $z$-axis is downward.
 
-The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone. The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
+The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone.
+
+The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
+
+The rotation order from ground to body is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$). 
 
 ### Body dynamics
 
 The basic dynamics equations in the body frame are as follows eq.(2.31).
 
 $$
+\begin{array}{l}
 m \dot{v} + \omega \times m v = F \\
 I \dot{\omega} + \omega \times I \omega = \tau
+\end{array}
 $$
 
 where;
@@ -115,7 +133,6 @@ where;
 - $\omega$ - angular velocity of the drone $\omega = (p, q, r)$
 - $F$ - force vector including gravity($mg$), drag($-dv)$, and thrust $(T)$
 - $\tau$ - torque vector from the rotors
-
 
 The body frame dynamics above are expanded based on the body angles $\phi, \theta, \psi$ as follows.
 
@@ -143,8 +160,7 @@ The transformation from/to the body frame and the ground frame is as follows.
 
 #### Velocity, Acceleration
 
-The rotation order from ground($v_e$) to body($v$): $z$-axis($\psi$)
-), $y$-axis($\theta$), $x$-axis($\phi$). From the body to the ground, the transformation matrix is;
+The body velocity $\v = (u, v, w)$ is transformed to ground $v_e = (u_e, v_e, w_e)$ by the following matrix.
 
 $$
 \left[
@@ -169,7 +185,8 @@ $$
 #### Angular Velocity, Angular Acceleration
 
 The body angular velocity $\omega = (p, q, r)$ 
-is transformed to ground($\omega_e = (p_e, q_e, r_e$). From the body to the ground, the transformation matrix is;
+is transformed to ground($\omega_e = (p_e, q_e, r_e$).
+From the body to the ground, the transformation matrix is;
 
 $$
 \begin{bmatrix}
@@ -234,8 +251,6 @@ Mission:
 <img width="1072" alt="image" src="https://github.com/toppers/hakoniwa-px4sim/assets/1093925/ef02a826-4ba8-4dbb-86d2-090b9de1919e">
 
 
-
-
 ## Tests
 
 utest.cpp has unit tests for the functions.
@@ -248,4 +263,6 @@ utest.cpp has unit tests for the functions.
 ## Acknowledgement
 
 I thank Dr. Nonami for writing the detailed description of the math around the drone development.
-And also I thank @tmori for leading this Hakoniwa project.
+And also I thank （[@tmori](https://github.com/tmori)）for connecting Hakoniwa to
+PX4, QGroundControl, and Unity, and spending a long time testing the drone flight virtually, and also 
+for leading this whole Hakoniwa project.

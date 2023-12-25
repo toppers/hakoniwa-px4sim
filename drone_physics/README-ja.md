@@ -1,24 +1,27 @@
 [English](README.md) ｜ 日本語
 
-# Hakoniwa Drone Physics Library(math, physics and dynamics)
+# 箱庭 Drone Physics Library(math, physics and dynamics)
 
 ## これは何？
 
 [箱庭プロジェクト](https://toppers.github.io/hakoniwa/)
 （サイバーフィジカルシステムのシミュレーションのための、オープンソースランタイム環境）において作成された、
-小型無人航空機（ドローン）プラントモデルのための数学、物理、および動力学ライブラリです。
-地上と機体フレーム座標系間の変換や、ロータの推力からドローンの速度、加速度などが計算できます。
+小型無人航空機（ドローン）プラントモデルのための、数学、物理、および動力学ライブラリです。
 
-当初このドローンシミュレーションプロジェクト用に開発されましたが、その中から汎用的に利用できる部分を切り出し、
-さらに、インターフェイスをより使いやすくし、参考文献との対応をとって公開することにしました。
-すべての関数は、以下の書籍の式の C++ 実装であり、ソースコードコメントに式番号が記載されています。この本を読んで実際にコードを書く方の参考になれば幸いです。
+地上と機体座標系間の変換や、ロータの推力と重力からドローンの速度、加速度などが計算できます。
+
+当初この箱庭 PX4 ドローンシミュレーションプロジェクト用に開発されましたが、その中から汎用的に利用できる部分を切り出し、
+さらに、インターフェイスをより使いやすくし、以下の参考文献との対応をとって公開することにしました。
+すべての関数は、以下の書籍の式の C++ 実装であり、ソースコードコメントに式番号が記載されています。
+本のすべての式を実装しているわけではありませんが、箱庭プロジェクトのドローンはこのライブラリを使って実際に飛行しています。
+
+このライブラリが、本を読んで実際にコードを書く方の参考になれば嬉しいです。
 
 - [『ドローン工学入門』工学博士 野波健蔵【著】](https://www.coronasha.co.jp/np/isbn/9784339032307/)
 
 
 [![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/c92d3d96-25f9-4b6a-ae4e-25d898b75a28)](https://www.coronasha.co.jp/np/isbn/9784339032307/)
 
-実装はまだカバー領域が足りていませんが、基礎的なドローンの動力学の参考実装となることを期待しています。
 
 ## Hello World
 
@@ -60,8 +63,9 @@ int main() {
 
 ## インストール
 
-TODO: まだインストール方法が書けていません。ソースコードをコピーしてください。
-examples.cpp と utest.cpp に呼び出し例があります。
+TODO: まだインストール方法が書けていません。ソースコードをコピーしてください。`drone_physics.hpp` をインクルードし、ヘッダーファイルのプロとタプ宣言をみて利用してください。
+
+`examples.cpp` と `utest.cpp` に呼び出し例があります。
 
 ## 関数リスト
 
@@ -99,12 +103,19 @@ examples.cpp と utest.cpp に呼び出し例があります。
 
 地上座標系は、右手系で定義されており、 $z$ 軸は下向きです。
 機体座標系は、右手系で定義されており、 $x$ 軸は機体の前方向、 $y$ 軸は機体の右方向、 $z$ 軸は機体の下方向です。
+
 機体座標系の原点は機体の重心です。機体座標系は機体に固定されており、機体座標系は機体とともに移動します。
+
+オイラー角は、機体から地上へと、$z$-軸($\psi$)、$y$-軸($\theta$)、$x$-軸($\phi$)の順に回転することとします。
+
 基本的な力学方程式は、機体座標系で以下のようになります eq.(2.31)。
 
-$m \dot{v} + \omega \times m v = F$
-
-$I \dot{\omega} + \omega \times I \omega = \tau$
+$$
+\begin{array}{l}
+m \dot{v} + \omega \times m v = F \\
+I \dot{\omega} + \omega \times I \omega = \tau
+\end{array}
+$$
 
 ここで、
 
@@ -117,44 +128,88 @@ $I \dot{\omega} + \omega \times I \omega = \tau$
 
 機体座標系の動力学方程式は、機体座標系のオイラー角 $\phi, \theta, \psi$ に基づいて計算されます。
 
-$\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u$
-
-$\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v$
-
-$\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w$
-
-$\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} $
-
-$\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy}$
-
-$\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz}$
+$$
+\begin{array}{l}
+\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
+\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
+\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w \\
+\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
+\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
+\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \\
+\end{array}
+$$
 
 ここで、
 
 - $g$ は重力加速度
 - $\phi, \theta, \psi$ は機体座標系のオイラー角。ロール($x$-軸)、ピッチ($y$-軸)、ヨー($z$-軸)角。
-- $d$ は空気抵抗係数。速度項に影響する空気抵抗係数である「抗力」を表す。
+- $d$ は空気抵抗係数。速度項に影響する空気抵抗係数である「抗力」（drag）を表す。
 - $I_{xx}​,I_{yy}, I_{zz}$ は機体座標系の慣性モーメント。$x, y, z$ 軸は機体の主軸に沿っているものとする。他の斜めの慣性モーメント $I_{xy}, I_{yz}, I_{zx}$ はゼロとする。
 
 機体座標系と地上座標系の変換は以下のようになります。
 
-速度の変換: 
+###　座標変換
 
-![スクリーンショット 2023-12-05 10 04 44](https://github.com/toppers/hakoniwa-px4sim/assets/164193/992bb7fe-0d50-47a5-aab5-e17aba4f716d)
+###　速度、加速度の変換
+
+機体座標系 $v = (u, v, w)$ から地上座標系 $v_e = (u_e, v_e, w_e)$ への変換行列は以下のようになります。
+
+$$
+\left[
+  \begin{array}{c}
+   u_e \\
+  v_e \\
+  w_e \end{array}
+\right] =
+  \begin{bmatrix}
+    \cos\theta\cos\psi & \sin\phi\sin\theta\cos\psi - \cos\phi\sin\psi & \cos\phi\sin\theta\cos\psi + \sin\phi\sin\psi \\
+    \cos\theta\sin\psi & \sin\phi\sin\theta\sin\psi + \cos\phi\cos\psi & \cos\phi\sin\theta\sin\psi -\sin\phi\cos\psi \\
+    -\sin\theta & \sin\phi\cos\theta & \cos\phi\cos\theta
+  \end{bmatrix}
+\left[
+  \begin{array}{c} u \\
+  v \\
+  w \end{array}
+\right]
+$$
+
+###　角速度、角加速度の変換
+
+機体座標系の角速度 $\omega = (p, q, r)$ から地上座標系 $\omega_e = (p_e, q_e, r_e)$ への変換行列は以下のようになります。
 
 
-角速度の変換:
+The body angular velocity $\omega = (p, q, r)$ 
+is transformed to ground($\omega_e = (p_e, q_e, r_e$).
+From the body to the ground, the transformation matrix is;
 
-![スクリーンショット 2023-12-05 10 05 51](https://github.com/toppers/hakoniwa-px4sim/assets/164193/9b036e35-6ed5-4fd0-8ceb-05364e5cccdb)
+$$
+\begin{bmatrix}
+   p_e \\ 
+   q_e \\ 
+   r_e
+\end{bmatrix} =
+  \begin{bmatrix}
+1 & \sin \phi \tan \theta & \cos \phi \tan \theta \\ 
+0 & \cos \phi & -\sin \phi \\
+0 & \sin \phi \sec \theta & \cos \phi \sec \theta
+\end{bmatrix}
+\begin{bmatrix}
+    p \\ 
+    q \\ 
+    r
+\end{bmatrix}
+$$
+
+### 1つのローターの力学
 
 1つ1つのモーターの角速度は、$\Omega(t)$ は、デューティー比 $d(t)$ によって1次遅れ系としてモデル化できます。
-書籍の式 (2.48) で記述されている伝達関数 G(s) によって記述され、
+書籍の式 (2.48) の伝達関数 G(s) によって記述され、
 
-$\frac{G(s)}{D(s)} = \frac{K_r/}{Tr s + 1}$
+$G(s)/D(s) = K_r\;/\;(T_r s + 1)$
 
 時間領域の微分方程式は以下のようになります。
 
-$\dot{\Omega}(t) = K_r (d(t) - \Omega / T_r)$
+$\dot{\Omega}(t) = K_r\; (\; d(t) - \Omega(t) / T_r\;)$
 
 ここで、
 
