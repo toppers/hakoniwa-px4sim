@@ -12,12 +12,16 @@ running = True
 
 parser = argparse.ArgumentParser(description='Qgc Stub Tool')
 parser.add_argument('config_path', help='Path to the JSON configuration file')
+parser.add_argument('drone_config_path', help='Path to the JSON drone configuration file')
 parser.add_argument('test_scenario_path', help='Path to the JSON test scenario file')
 args = parser.parse_args()
 
 # Read the JSON file
 with open(args.config_path, 'r') as json_file:
     config_data = json.load(json_file)
+
+with open(args.drone_config_path, 'r') as drone_config:
+    drone_config_data = json.load(drone_config)
 
 px4_ipaddr = config_data['px4_ipaddr']
 px4_portno = config_data['px4_portno']
@@ -32,7 +36,7 @@ print(f'qgc:{qgc_ipaddr}:{qgc_portno}')
 # Establish MAVLink connections
 mavlink_connection_px4 = mavutil.mavlink_connection(f'udpout:{px4_ipaddr}:{px4_portno}')
 
-scenario_manager = ScenarioManager()
+scenario_manager = ScenarioManager(drone_config_data)
 scenario_manager.load_scenario(args.test_scenario_path)
 
 operation = scenario_manager.load_operation(mavlink_connection_px4)

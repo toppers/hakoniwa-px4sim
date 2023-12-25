@@ -1,4 +1,5 @@
 import datetime
+import math
 from pymavlink import mavutil
 from pymavlink.dialects.v20 import common as mavlink2
 
@@ -156,3 +157,49 @@ def create_command_long_arm(arm=True):
 
     return create_command_long(target_system, target_component, command, param1, param2, param3, param4, param5, param6, param7)
 
+def create_command_int(target_system, target_component, frame, command, param1, param2, param3, param4, x, y, z):
+    # MAVLinkインスタンスの作成
+    mav = mavlink2.MAVLink(None)
+
+    # COMMAND_INTメッセージの作成
+    command_int = mav.command_int_encode(
+        target_system,
+        target_component,
+        frame,
+        command,
+        0, # current - これは通常0ですが、コマンドが現在実行中かどうかに応じて変更します。
+        0, # autocontinue - このコマンドの後に自動で次のコマンドを実行するかどうか。
+        param1,
+        param2,
+        param3,
+        param4,
+        x,
+        y,
+        z
+    )
+
+    # メッセージにヘッダ情報を追加
+    create_header(mav)
+    msgbuf = command_int.pack(mav)
+    return command_int
+
+
+def start_landing_sequence(x, y, z):
+    target_system = 1
+    target_component = 1
+
+    # COMMAND_INTメッセージの作成（MAV_CMD_DO_LAND_START）
+    command_int = create_command_int(
+        target_system,    # Target system (1をデフォルトとしています)
+        target_component, # Target component (1をデフォルトとしています)
+        0,                # Frame (0をデフォルトとしています)
+        192,              # MAV_CMD_DO_LAND_START
+        0,                # Param1 (このコマンドでは使用されないため0)
+        0,                # Param2 (このコマンドでは使用されないため0)
+        0,                # Param3 (このコマンドでは使用されないため0)
+        math.nan,         # Param4 (このコマンドでは使用されないためNaN)
+        x,                # X - latitude or local position x
+        y,                # Y - longitude or local position y
+        z                 # Z - altitude or local position z
+    )
+    return command_int
