@@ -30,7 +30,7 @@ private:
         sensor.zmag = static_cast<float>(NT_TO_G(mag.data.z));
 
         DroneBarometricPressureType baro = drone.get_baro().sensor_value();
-        sensor.abs_pressure = static_cast<float>(baro.abs_pressure);
+        sensor.abs_pressure = static_cast<float>(baro.abs_pressure * 0.01); // Pa to millibar
         sensor.diff_pressure = static_cast<float>(baro.diff_pressure);
         sensor.pressure_alt = static_cast<float>(baro.pressure_alt);
 

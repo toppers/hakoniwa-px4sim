@@ -14,8 +14,25 @@ class SensorBaro : public hako::assets::drone::ISensorBaro, public ICsvLog {
 private:
     double delta_time_sec;
     double total_time_sec;
+    double Pb = 101325.0;  // static pressure at sea level [Pa]
+    double Tb = 288.15;    // standard temperature at sea level [K]
+    double Lb = -0.0065;   // standard temperature lapse rate [K/m]
+    double M = 0.0289644;  // molar mass of Earth's air [kg/mol]
+    double G = GRAVITY;    // gravity
+    double R = 8.31432;    // universal gas constant
 
     hako::assets::drone::SensorDataAssembler asm_alt;
+    double alt2baro(double alt) {
+        if (alt <= 11000.0) {
+            return Pb * pow(Tb / (Tb + (Lb * alt)), (G * M) / (R * Lb));
+        } else if (alt <= 20000.0) {
+            double f = 11000.0;
+            double a = alt2baro(f);
+            double c = Tb + (f * Lb);
+            return a * exp(((-G) * M * (alt - f)) / (R * c));
+        }
+        return 0.0;
+    } 
 public:
     SensorBaro(double dt, int sample_num) : delta_time_sec(dt), asm_alt(sample_num)
     {
@@ -30,9 +47,9 @@ public:
     DroneBarometricPressureType sensor_value() override
     {
         DroneBarometricPressureType value;
-        value.abs_pressure = 10;
         value.diff_pressure = 0;
         value.pressure_alt = asm_alt.get_calculated_value();
+        value.abs_pressure = alt2baro(value.pressure_alt);
         if (this->noise != nullptr) {
             value.abs_pressure = this->noise->add_random_noise(value.abs_pressure);
             value.diff_pressure = this->noise->add_random_noise(value.diff_pressure);
