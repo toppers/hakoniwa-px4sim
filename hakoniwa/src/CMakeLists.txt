@@ -52,12 +52,7 @@ add_executable(
 
     px4sim_main.cpp
 )
-add_executable(
-    utest
-    ${PHYSICS_SOURCE_DIR}/body_physics.cpp
-    ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
-    ${PHYSICS_SOURCE_DIR}/utest.cpp
-)
+
 target_include_directories(
     hako-px4sim
     PRIVATE /usr/local/include

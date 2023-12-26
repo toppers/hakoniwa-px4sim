@@ -8,9 +8,9 @@ then
     uname -a | grep WSL2 > /dev/null
     if [ $? -eq 0 ]
     then
-        cmake .. -D HAKO_CLIENT_OPTION_FILEPATH=`pwd`/../win-cmake-options.cmake
+        cmake .. -D HAKO_CLIENT_OPTION_FILEPATH=`pwd`/../../cmake-options/win-cmake-options.cmake
     else
-        cmake .. -D HAKO_CLIENT_OPTION_FILEPATH=`pwd`/../linux-cmake-options.cmake
+        cmake .. -D HAKO_CLIENT_OPTION_FILEPATH=`pwd`/../../cmake-options/linux-cmake-options.cmake
     fi
 else
     cmake ..
