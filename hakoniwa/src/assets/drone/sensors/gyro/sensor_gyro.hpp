@@ -37,9 +37,9 @@ public:
         value.data.y = this->gyro_y.get_calculated_value();
         value.data.z = this->gyro_z.get_calculated_value();
         if (this->noise != nullptr) {
-            value.data.x = this->noise->add_noise(value.data.x);
-            value.data.y = this->noise->add_noise(value.data.y);
-            value.data.z = this->noise->add_noise(value.data.z);
+            value.data.x = this->noise->add_random_noise(value.data.x);
+            value.data.y = this->noise->add_random_noise(value.data.y);
+            value.data.z = this->noise->add_random_noise(value.data.z);
         }
         return value;
     }

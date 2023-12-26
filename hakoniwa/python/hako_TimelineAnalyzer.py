@@ -37,19 +37,22 @@ import argparse
 import sys
 import os
 
+time_colname='TIME'
+#time_colname='timestamp'
+
 def validate_and_merge_time_columns(df_list):
     # 全てのデータフレームのTIME列を比較して、共通の値を見つける
-    common_times = set(df_list[0]['TIME'])
+    common_times = set(df_list[0][time_colname])
     for df in df_list[1:]:
-        common_times.intersection_update(set(df['TIME']))
+        common_times.intersection_update(set(df[time_colname]))
 
-    if len(common_times) < len(df_list[0]['TIME']):
+    if len(common_times) < len(df_list[0][time_colname]):
         print(f"Warning: Only {len(common_times)} common time points found. Others will be skipped.")
 
     # 共通のTIME値に基づいて各データフレームをフィルタリング
     filtered_df_list = []
     for df in df_list:
-        filtered_df = df[df['TIME'].isin(common_times)]
+        filtered_df = df[df[time_colname].isin(common_times)]
         filtered_df_list.append(filtered_df)
 
     return filtered_df_list
@@ -76,7 +79,7 @@ for file_path in args.file_paths:
         file_name = os.path.splitext(os.path.basename(file_path))[0]
 
         # TIME以外のカラム名にファイル名をプレフィックスとして追加
-        df.rename(columns=lambda x: f"{file_name}.{x}" if x != 'TIME' else x, inplace=True)
+        df.rename(columns=lambda x: f"{file_name}.{x}" if x != time_colname else x, inplace=True)
 
     df_list.append(df)
 
@@ -93,18 +96,18 @@ df = df.loc[:,~df.columns.duplicated()]  # 重複する列を除去
 
 # TIME列の差分計算が指定されている場合は処理を行う
 if args.diff:
-    df['TIME'] = (df['TIME'] - df['TIME'].iloc[0]) / 1e6  # μsから秒に変換
+    df[time_colname] = (df[time_colname] - df[time_colname].iloc[0]) / 1e6  # μsから秒に変換
 
 # フィルタリング
 end_time = args.start_time + args.duration
-filtered_df = df[(df['TIME'] >= args.start_time) & (df['TIME'] <= end_time)]
+filtered_df = df[(df[time_colname] >= args.start_time) & (df[time_colname] <= end_time)]
 
 # グラフの描画
 plt.figure(figsize=(10, 6))  # グラフのサイズ指定
 
 # 複数の列のデータをプロット
 for column_name in args.columns:
-    plt.plot(filtered_df['TIME'].to_numpy(), filtered_df[column_name].to_numpy(), label=column_name)
+    plt.plot(filtered_df[time_colname].to_numpy(), filtered_df[column_name].to_numpy(), label=column_name)
 
 plt.title('Data over Time')  # グラフのタイトル
 plt.xlabel('Time (seconds)' if args.diff else 'Time')  # x軸のラベル

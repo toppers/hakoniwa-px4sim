@@ -59,16 +59,16 @@
         },
         "sensors": {
           "acc": {
-            "sampleCount": 1,
-            "noise": 0
+            "sampleCount": 5,
+            "noise": 0.05
           },
           "gyro": {
             "sampleCount": 1,
-            "noise": 0
+            "noise": 0.01
           },
           "mag": {
             "sampleCount": 1,
-            "noise": 0
+            "noise": 0.005
           },
           "baro": {
             "sampleCount": 1,

@@ -34,9 +34,9 @@ public:
         value.diff_pressure = 0;
         value.pressure_alt = asm_alt.get_calculated_value();
         if (this->noise != nullptr) {
-            value.abs_pressure = this->noise->add_noise(value.abs_pressure);
-            value.diff_pressure = this->noise->add_noise(value.diff_pressure);
-            value.pressure_alt = this->noise->add_noise(value.pressure_alt);
+            value.abs_pressure = this->noise->add_random_noise(value.abs_pressure);
+            value.diff_pressure = this->noise->add_random_noise(value.diff_pressure);
+            value.pressure_alt = this->noise->add_random_noise(value.pressure_alt);
         }
         return value;
     }

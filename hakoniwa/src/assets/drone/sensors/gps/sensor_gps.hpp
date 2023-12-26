@@ -97,16 +97,16 @@ public:
             value.cog = -1;
         }
         if (this->noise != nullptr) {
-            value.lat= this->noise->add_noise(value.lat);
-            value.lon= this->noise->add_noise(value.lon);
-            value.alt= this->noise->add_noise(value.alt);
+            value.lat= this->noise->add_random_noise(value.lat);
+            value.lon= this->noise->add_random_noise(value.lon);
+            value.alt= this->noise->add_random_noise(value.alt);
 
-            value.vel = this->noise->add_noise(value.vel);
-            value.vn = this->noise->add_noise(value.vn);
-            value.ve = this->noise->add_noise(value.ve);
-            value.vd = this->noise->add_noise(value.vd);
+            value.vel = this->noise->add_random_noise(value.vel);
+            value.vn = this->noise->add_random_noise(value.vn);
+            value.ve = this->noise->add_random_noise(value.ve);
+            value.vd = this->noise->add_random_noise(value.vd);
             if (value.cog >= 0) {
-                value.cog = this->noise->add_noise(value.cog);
+                value.cog = this->noise->add_random_noise(value.cog);
             }
         }
         value.eph = 10;

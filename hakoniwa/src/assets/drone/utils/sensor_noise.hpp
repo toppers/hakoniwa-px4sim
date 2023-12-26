@@ -3,23 +3,40 @@
 
 #include "isensor_noise.hpp"
 #include <random>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
 
 namespace hako::assets::drone {
 
 class SensorNoise : public hako::assets::drone::ISensorNoise {
 private:
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution;
+    double stdDev;
     SensorNoise() {}
 public:
-    SensorNoise(double v) : distribution(0, v) {}
-    SensorNoise(double m, double v) : distribution(m, v) {}    
+    SensorNoise(double v) : stdDev(v) {}
     virtual ~SensorNoise() {}
-    double add_noise(double data) override
+
+    double add_random_noise(double data) override
     {
-        double noise = distribution(generator);
-        return data + noise;
+
+        double x0;
+        double b0, b1;
+
+        do {
+            b0 = static_cast<double>(rand()) / RAND_MAX;
+            b1 = static_cast<double>(rand()) / RAND_MAX;
+        } while (b0 <= std::numeric_limits<float>::min());
+
+        x0 = sqrt(-2.0 * log(b0)) * cos(M_PI * 2.0 * b1);
+
+        if (std::isinf(x0) || std::isnan(x0)) {
+            x0 = 0.0;
+        }
+
+        return data + (x0 * stdDev);
     }
+
 };
 
 }

@@ -6,7 +6,7 @@ namespace hako::assets::drone {
 class ISensorNoise {
 public:
     virtual ~ISensorNoise() {}
-    virtual double add_noise(double data) = 0;
+    virtual double add_random_noise(double data) = 0;
 };
 
 }

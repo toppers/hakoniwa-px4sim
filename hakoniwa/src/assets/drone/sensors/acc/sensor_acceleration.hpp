@@ -44,9 +44,9 @@ public:
         value.data.z = this->acc_z.get_calculated_value() / this->delta_time_sec;
         value.data.z -= GRAVITY;
         if (this->noise != nullptr) {
-            value.data.x = this->noise->add_noise(value.data.x);
-            value.data.y = this->noise->add_noise(value.data.y);
-            value.data.z = this->noise->add_noise(value.data.z);
+            value.data.x = this->noise->add_random_noise(value.data.x);
+            value.data.y = this->noise->add_random_noise(value.data.y);
+            value.data.z = this->noise->add_random_noise(value.data.z);
         }
         return value;
     }
