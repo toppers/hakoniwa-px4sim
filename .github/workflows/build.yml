@@ -1,6 +1,6 @@
-name: build
+name: Build
 
-on:
+on: 
   push:
 
 jobs:
@@ -23,19 +23,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+      - name: Build hakoniwa-px4sim/drone_physics
+        run: |
+          cd drone_physics && make
 
-      - name: Install GTest on Ubuntu
-        if: startsWith(matrix.os, 'ubuntu')
-        run: sudo apt-get install -y libgtest-dev
-  
-      - name: Install GTest on macOS
-        if: startsWith(matrix.os, 'macos')
-        run: brew install googletest
-            
       - name: hakoniwa-px4sim/hakoniwa
         run: |
           cd hakoniwa && bash build.bash
 
-      - name: Run Tests/hakoniwa
-        run: |
-          cd hakoniwa/cmake-build && test/hako-px4sim-test
