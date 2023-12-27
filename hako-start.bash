@@ -18,6 +18,17 @@ trap 'terminate_processes' TERM INT
 # バックグラウンドプロセスのPIDを格納する配列
 declare -a pids
 
+# 引数のチェック
+if [ "$#" -ne 3 ]; then
+    echo "Usage: $0 <config.json> <drone_config.json> <scenario.json>"
+    exit 1
+fi
+
+# 引数から設定ファイルのパスを取得
+config_json=$1
+drone_config_json=$2
+scenario_json=$3
+
 # run hakoniwa
 CURR_DIR=`pwd`
 echo "INFO: Activating hakoniwa"
@@ -38,6 +49,12 @@ cd ${CURR_DIR}
 sleep 2
 
 hako-cmd start
+
+
+# run test scenario
+
+python3 px4/auto-test/hako_QgcStub.py "$config_json" "$drone_config_json" "$scenario_json" &
+pids+=($!)
 
 # 全てのバックグラウンドプロセスの終了を待つ
 wait
