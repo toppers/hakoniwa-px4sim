@@ -24,9 +24,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Build hakoniwa-px4sim/drone_physics
+      - name: Build hakoniwa-px4sim/drone_physics on ubuntu
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
-          cd drone_physics && cmake . && make
+            cd drone_physics && cmake -D HAKO_CLIENT_OPTION_FILEPATH=../cmake-options/linux-cmake-options.cmake . && make
+
+      - name: Build hakoniwa-px4sim/drone_physics on macOs
+        if: startsWith(matrix.os, 'macos')
+        run: |
+            cd drone_physics && cmake . && make
+  
 
       - name: hakoniwa-px4sim/hakoniwa
         run: |
