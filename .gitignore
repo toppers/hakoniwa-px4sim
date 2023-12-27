@@ -1,3 +1,14 @@
+# General
+.DS_Store
+
+# VSCode directories
+.vscode/
+
+*.png
+*.zip
+*/cmake-build/*
+__pycache__
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
