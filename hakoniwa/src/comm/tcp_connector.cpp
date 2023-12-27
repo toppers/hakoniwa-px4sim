@@ -60,7 +60,13 @@ ICommIO* TcpServer::server_open(IcommEndpointType *endpoint) {
         std::cout << "Failed to create socket: " << strerror(errno) << std::endl;
         return nullptr;
     }
-
+    // SO_REUSEADDR オプションを設定
+    int optval = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0) {
+        std::cout << "Failed to set SO_REUSEADDR: " << strerror(errno) << std::endl;
+        ::close(sockfd);
+        return nullptr;
+    }
     struct sockaddr_in local_addr;
     memset(&local_addr, 0, sizeof(local_addr));
     local_addr.sin_family = AF_INET;

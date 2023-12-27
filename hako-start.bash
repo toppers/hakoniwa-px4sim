@@ -19,8 +19,8 @@ trap 'terminate_processes' TERM INT
 declare -a pids
 
 # 引数のチェック
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <config.json> <drone_config.json> <scenario.json>"
+if [ "$#" -ne 3 -a "$#" -ne 4 ]; then
+    echo "Usage: $0 <config.json> <drone_config.json> <scenario.json> [unity]"
     exit 1
 fi
 
@@ -28,6 +28,11 @@ fi
 config_json=$1
 drone_config_json=$2
 scenario_json=$3
+use_unity="OFF"
+if [ $# -eq 4 ]
+then
+    use_unity="ON"
+fi
 
 # run hakoniwa
 CURR_DIR=`pwd`
@@ -47,6 +52,14 @@ pids+=($!)
 cd ${CURR_DIR}
 
 sleep 2
+
+if [ "$use_unity" = "ON" ]
+then
+    echo "Please start Unity and enter key"
+    read
+fi
+sleep 1
+echo "INFO: start simulation"
 
 hako-cmd start
 
