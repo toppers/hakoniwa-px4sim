@@ -24,6 +24,14 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Install GTest on Ubuntu
+        if: startsWith(matrix.os, 'ubuntu')
+        run: sudo apt-get install -y libgtest-dev
+  
+      - name: Install GTest on macOS
+        if: startsWith(matrix.os, 'macos')
+        run: brew install gtest
+            
       - name: hakoniwa-px4sim/hakoniwa
         run: |
           cd hakoniwa && bash build.bash
