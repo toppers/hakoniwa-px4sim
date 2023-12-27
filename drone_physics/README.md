@@ -160,7 +160,7 @@ The transformation from/to the body frame and the ground frame is as follows.
 
 #### Velocity, Acceleration
 
-The body velocity $\v = (u, v, w)$ is transformed to ground $v_e = (u_e, v_e, w_e)$ by the following matrix.
+The body velocity $v = (u, v, w)$ is transformed to ground $v_e = (u_e, v_e, w_e)$ by the following matrix.
 
 $$
 \left[
