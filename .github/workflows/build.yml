@@ -47,3 +47,11 @@ jobs:
         run: |
           cd hakoniwa && bash build.bash
 
+      - name: Run Tests/drone_physics
+        run: |
+          cd drone_physics && make run_verbose_test
+          
+      - name: Run Tests/hakoniwa
+        run: |
+          cd hakoniwa/cmake-build && test/hako-px4sim-test
+  
