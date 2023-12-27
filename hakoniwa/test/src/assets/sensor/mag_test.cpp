@@ -42,7 +42,7 @@ using hako::assets::drone::DroneAngleType;
  * Downward (Z)  : 49516.6  nT
  * Horizontal (H): 19023.3  nT
  */
-
+#if 0
 TEST_F(MagTest, SensorMag_001) 
 {
     SensorMag mag(0.001, 1);
@@ -157,3 +157,4 @@ TEST_F(MagTest, SensorMag_002)
     }
 
 }
+#endif

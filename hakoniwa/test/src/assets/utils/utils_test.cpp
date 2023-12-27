@@ -24,13 +24,13 @@ using hako::assets::drone::SensorDataAssembler;
 
 TEST_F(UtilsTest, NoiseStatisticsTest_001) 
 {
-    SensorNoise noise(0, 0.1); // 平均 0、分散 0.1 のノイズ
+    SensorNoise noise(0.1); // 分散 0.1 のノイズ
     const int samples = 100;
     double sum = 0;
     double sum_squares = 0;
 
     for (int i = 0; i < samples; ++i) {
-        double noise_value = noise.add_noise(0); // テストデータとして 0 を使用
+        double noise_value = noise.add_random_noise(0); // テストデータとして 0 を使用
         sum += noise_value;
         sum_squares += noise_value * noise_value;
     }

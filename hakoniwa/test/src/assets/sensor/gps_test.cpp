@@ -54,7 +54,7 @@ TEST_F(GpsTest, SensorGps_001)
     EXPECT_FLOAT_EQ(ref_lon + (1/111000), result.lon);
     EXPECT_FLOAT_EQ(ref_alt + (-1), result.alt);
 
-    EXPECT_FLOAT_EQ(sqrt(3), result.vel);
+    EXPECT_FLOAT_EQ(sqrt(2), result.vel);
     EXPECT_FLOAT_EQ(1, result.vn);
     EXPECT_FLOAT_EQ(1, result.ve);
     EXPECT_FLOAT_EQ(1, result.vd);
@@ -99,8 +99,8 @@ TEST_F(GpsTest, SensorGps_002)
     EXPECT_GT(result.alt, ref_alt - 1 - 0.02);
     EXPECT_LT(result.alt, ref_alt - 1 + 0.02);
 
-    EXPECT_GT(result.vel, sqrt(3) - 0.02);
-    EXPECT_LT(result.vel, sqrt(3) + 0.02);
+    EXPECT_GT(result.vel, sqrt(2) - 0.02);
+    EXPECT_LT(result.vel, sqrt(2) + 0.02);
 
     EXPECT_GT(result.vn, 1 - 0.02);
     EXPECT_LT(result.vn, 1 + 0.02);

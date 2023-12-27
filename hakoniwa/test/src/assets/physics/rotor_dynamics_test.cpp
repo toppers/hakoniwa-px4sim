@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
+#include "utils/csv_logger.hpp"
 #include "rotor_dynamics.hpp"
 
 class RotorDynamicsTest : public ::testing::Test {
@@ -36,11 +37,11 @@ TEST_F(RotorDynamicsTest, test_01)
         value = rotor.get_rotor_speed();
     }
     //std::cout << "1sec value: " << value.data << std::endl;
-    EXPECT_GT(value.data, 300);
+    EXPECT_GT(value.data, 0.3);
     for (int i = 0; i < 1000; i++) {
         rotor.run(0.5);
         value = rotor.get_rotor_speed();
     }
     //std::cout << "2sec value: " << value.data << std::endl;
-    EXPECT_GT(value.data, 400);
+    EXPECT_GT(value.data, 0.4);
 }

@@ -18,6 +18,10 @@ add_executable(
     src/assets/sensor/baro_test.cpp
     src/assets/sensor/gps_test.cpp
     src/assets/sensor/mag_test.cpp
+
+    ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/body_physics.cpp
+    ${PROJECT_SOURCE_DIR}/../src/assets/drone/physics/math_and_physics_convertor.cpp
     main.cpp
 )
 
@@ -35,6 +39,7 @@ target_include_directories(
     PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
     PRIVATE ${GTEST_INCLUDE_DIRS}
+    PRIVATE ${PHYSICS_SOURCE_DIR}
 )
 
 target_link_libraries(hako-px4sim-test

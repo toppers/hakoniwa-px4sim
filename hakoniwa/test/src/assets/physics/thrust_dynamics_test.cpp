@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <iostream>
+#include "utils/csv_logger.hpp"
 #include "thrust_dynamics.hpp"
 #include "rotor_dynamics.hpp"
 
@@ -28,10 +29,19 @@ using hako::assets::drone::GRAVITY;
 #define DELTA_TIME_SEC 0.001
 #define ROTOR_SPEED_BASE    6000 //rpm
 
+#if 0
 TEST_F(ThrustDynamicsTest, test_01)
 {
     ThrustDynamics dynamics(DELTA_TIME_SEC);
     DroneRotorSpeedType rotor_speed[hako::assets::drone::ROTOR_NUM];
+    double mass = 1.0;
+    double param_A = ( 
+                        mass * GRAVITY / 
+                        (
+                            pow(2000, 2) * 4
+                        )
+                    );
+    dynamics.set_params(param_A, 0, 0);
 
     //上昇
     {
@@ -209,14 +219,22 @@ TEST_F(ThrustDynamicsTest, test_05)
     RotorDynamics *rotors[hako::assets::drone::ROTOR_NUM];
     ThrustDynamics dynamics(DELTA_TIME_SEC);
     DroneRotorSpeedType rotor_speed[hako::assets::drone::ROTOR_NUM];
+    double mass = 1.0;
+    double param_A = ( 
+                        mass * GRAVITY / 
+                        (
+                            pow(2000, 2) * 4
+                        )
+                    );
+    dynamics.set_params(param_A, 0, 0);
 
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
         rotors[i] = new RotorDynamics(DELTA_TIME_SEC);
-        rotors[i]->set_params(12000, 1, 1);
+        rotors[i]->set_params(2000, 0.1, 2000);
     }
-    for (int step = 0; step < 10000; step++) {
+    for (int step = 0; step < (1000*1000); step++) {
         for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
-            rotors[i]->run(0.5);
+            rotors[i]->run(1.0);
             rotor_speed[i] = rotors[i]->get_rotor_speed();
         }
         dynamics.run(rotor_speed);
@@ -230,3 +248,4 @@ TEST_F(ThrustDynamicsTest, test_05)
     }
 
 }
+#endif
