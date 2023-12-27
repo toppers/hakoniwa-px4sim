@@ -7,8 +7,19 @@ import utils.mavlink_msg as mav_msg
 from operations.scenario_manager import ScenarioManager
 import sys
 import time
+import signal
 
 running = True
+
+# シグナルハンドラ
+def signal_handler(signum, frame):
+    global running
+    print("INFO: Received termination signal. Shutting down...")
+    running = False
+
+# シグナルハンドラを設定
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
 parser = argparse.ArgumentParser(description='Qgc Stub Tool')
 parser.add_argument('config_path', help='Path to the JSON configuration file')
@@ -91,17 +102,16 @@ def QgcStub():
             operation = scenario_manager.next_operation()
             if operation is None:
                 print("INFO: All Operations done.")
-                sys.exit(1)
+                running = False
             else:
                 operation.start(time.time())
 
 def Px4Receiver():
     global running
-    global command_long_ack_recv
 
     while running:
         # PX4からのメッセージを受信する
-        msg = mavlink_connection_px4.recv_match(blocking=True)
+        msg = mavlink_connection_px4.recv_match(blocking=True, timeout=1)
         if msg is not None:
             scenario_manager.event_msg(msg)
             message_type = msg.get_type()
@@ -111,4 +121,10 @@ def Px4Receiver():
 
 thread = threading.Thread(target=QgcStub)
 thread.start()
-Px4Receiver()
+
+try:
+    Px4Receiver()
+finally:
+    running = False
+    thread.join()
+    print("INFO: Program is exiting.")

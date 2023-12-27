@@ -1,19 +1,30 @@
 #!/bin/bash
 
-# プロセス終了のハンドラ
+# プロセス終了
+terminate_px4_process()
+{
+    ps aux | grep px4_sitl_default | grep -v grep | awk '{print $2}' | xargs kill -TERM
+}
+
 terminate_processes() {
     echo "INFO: Stopping processes..."
     for pid in ${pids[@]}; do
         echo "kill -TERM "$pid""
         kill -TERM "$pid"
     done
+    terminate_px4_process
     wait
     echo "INFO: All processes stopped."
     exit
 }
 
+
+signal_handler()
+{
+    echo "INFO: NOP SIGNAL"
+}
 # SIGTERM と SIGINT のシグナルハンドラを設定
-trap 'terminate_processes' TERM INT
+trap 'signal_handler' TERM INT
 
 # バックグラウンドプロセスのPIDを格納する配列
 declare -a pids
@@ -47,7 +58,7 @@ sleep 2
 # run px4
 echo "INFO: Activating PX4"
 cd px4/PX4-Autopilot
-bash ../sim/simstart.bash &
+make px4_sitl none_iris &
 pids+=($!)
 cd ${CURR_DIR}
 
@@ -66,8 +77,18 @@ hako-cmd start
 
 # run test scenario
 
-python3 px4/auto-test/hako_QgcStub.py "$config_json" "$drone_config_json" "$scenario_json" &
-pids+=($!)
+python3 px4/auto-test/hako_QgcStub.py "$config_json" "$drone_config_json" "$scenario_json"
+
+
+if [ "$use_unity" = "ON" ]
+then
+    echo "Please stop Unity and enter key"
+    read
+fi
+sleep 1
+echo "INFO: stop simulation"
+
+terminate_processes
 
 # 全てのバックグラウンドプロセスの終了を待つ
 wait
