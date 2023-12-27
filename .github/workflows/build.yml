@@ -1,0 +1,29 @@
+name: build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.13
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: hakoniwa-px4sim/hakoniwa
+        run: |
+          cd hakoniwa && bash build.bash

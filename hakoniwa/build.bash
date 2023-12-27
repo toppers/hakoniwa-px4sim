@@ -16,3 +16,5 @@ else
     cmake .. -D DO_TEST=true
 fi
 make
+
+exit $?
