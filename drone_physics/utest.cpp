@@ -1,4 +1,7 @@
 #include <cassert>
+#ifdef __linux__
+#include <cmath>
+#endif /* __linux__ */
 #include <iostream>
 #include "body_physics.hpp"
 #include "rotor_physics.hpp"
