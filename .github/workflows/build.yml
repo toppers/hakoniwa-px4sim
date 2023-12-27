@@ -35,3 +35,7 @@ jobs:
       - name: hakoniwa-px4sim/hakoniwa
         run: |
           cd hakoniwa && bash build.bash
+
+      - name: Run Tests/hakoniwa
+        run: |
+          cd hakoniwa/cmake-build && test/hako-px4sim-test
