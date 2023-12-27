@@ -19,6 +19,7 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/rotor_physics.cpp
     ${PROJECT_SOURCE_DIR}/utest.cpp
 )
+
 enable_testing()
 add_test(NAME test COMMAND ./utest)
 add_custom_target(vtest COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
