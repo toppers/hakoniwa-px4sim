@@ -25,12 +25,16 @@ cd px4
 cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/10016_none_iris 
 ```
 
+```
+cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
+```
+
 ### シミュレータ起動方法
 
 前提条件：ビルド済みであること
 
 ```
- make px4_sitl none_iris
+ bash ../sim/simstart.bash
 ```
 
 成功すると、以下のログが出力されます。
