@@ -43,9 +43,27 @@ public:
     bool getSimLockStep() const {
         return configJson["simulation"]["lockstep"].get<bool>();
     }
+    std::string getSimLogOutputDirectory() const 
+    {
+        std::string directory = configJson["simulation"]["logOutputDirectory"].get<std::string>();
+        // ディレクトリの存在を確認
+        if (!std::filesystem::exists(directory)) {
+            std::cerr << "Error: Log output directory '" << directory << "' does not exist." << std::endl;
+            return "./"; // または適切なデフォルト値を返すか、ディレクトリを作成する
+        }
+        return directory;
+    }
+    std::string getSimLogFullPath(const std::string& filename) const
+    {
+        std::string logDirectory = getSimLogOutputDirectory();
 
-    std::string getSimLogOutputDirectory() const {
-        return configJson["simulation"]["logOutputDirectory"].get<std::string>();
+        // パス区切り文字を確認して追加する（必要な場合のみ）
+        if (logDirectory.back() != '/' && logDirectory.back() != '\\') {
+            logDirectory += "/";
+        }
+
+        // 完全なログファイルパスを返す
+        return logDirectory + filename;
     }
 
     // Log Output for Sensors
