@@ -30,7 +30,7 @@ jobs:
   
       - name: Install GTest on macOS
         if: startsWith(matrix.os, 'macos')
-        run: brew install gtest
+        run: brew install googletest
             
       - name: hakoniwa-px4sim/hakoniwa
         run: |
