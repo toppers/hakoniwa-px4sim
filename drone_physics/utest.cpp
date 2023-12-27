@@ -11,14 +11,14 @@ std::ostream& operator << (std::ostream& os, const VectorType& v) {
 }
 
 #define assert_almost_equal(a, b) \
-    assert(std::fabs(std::get<0>(a) - std::get<0>(b)) < 0.0001 || (std::cout << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0)); \
-    assert(std::fabs(std::get<1>(a) - std::get<1>(b)) < 0.0001 || (std::cout << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0)); \
-    assert(std::fabs(std::get<2>(a) - std::get<2>(b)) < 0.0001 || (std::cout << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0))
+    assert(std::fabs(std::get<0>(a) - std::get<0>(b)) < 0.0001 || (std::cerr << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0)); \
+    assert(std::fabs(std::get<1>(a) - std::get<1>(b)) < 0.0001 || (std::cerr << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0)); \
+    assert(std::fabs(std::get<2>(a) - std::get<2>(b)) < 0.0001 || (std::cerr << std::endl << #a "=" << a << ", " #b "=" << b << std::endl, 0))
 
 #define print_vec(v) \
-    std::cout << #v "=" << std::get<0>(v) << ", " << std::get<1>(v) << ", " << std::get<2>(v) << std::endl
+    std::cerr << #v "=" << std::get<0>(v) << ", " << std::get<1>(v) << ", " << std::get<2>(v) << std::endl
 
-#define T(f) do {std::cout<< #f ; f(); std::cout << "... PASS" << std::endl;} while(false)
+#define T(f) do {std::cerr<< #f ; f(); std::cerr << "... PASS" << std::endl;} while(false)
 
 const double PI = 3.14159265358979323846;
 
@@ -407,7 +407,7 @@ void test_body_anti_Jr_torque() {
 }
 
 int main() {
-    std::cout << "-------start unit test-------\n";
+    std::cerr << "-------start unit test-------\n";
     T(test_frame_all_unit_vectors_with_angle0);
     T(test_frame_all_unit_vectors_with_some_angles);
     T(test_frame_matrix_is_unitary);
@@ -423,8 +423,8 @@ int main() {
     T(test_body_torque);
     T(test_body_anti_torque);
     T(test_body_anti_Jr_torque);
-    std::cout << "-------all standard test PASSSED!!----\n";
+    std::cerr << "-------all standard test PASSSED!!----\n";
     T(test_issue_89_yaw_angle_bug);
-    std::cout << "-------all bug issue test PASSSED!!----\n";
+    std::cerr << "-------all bug issue test PASSSED!!----\n";
     return 0;
 }

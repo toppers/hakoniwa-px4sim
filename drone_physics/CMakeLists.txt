@@ -10,7 +10,7 @@ project(drone_physics
 if (DEFINED HAKO_CLIENT_OPTION_FILEPATH)
     include(${HAKO_CLIENT_OPTION_FILEPATH})
 else()
-    include(../cmake-options/default-cmake-options.cmake)
+    include(default-cmake-options.cmake)
 endif()
 
 add_executable(
@@ -19,3 +19,7 @@ add_executable(
     ${PROJECT_SOURCE_DIR}/rotor_physics.cpp
     ${PROJECT_SOURCE_DIR}/utest.cpp
 )
+enable_testing()
+add_test(NAME test COMMAND ./utest)
+add_custom_target(vtest COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
+
