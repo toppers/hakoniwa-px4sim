@@ -1,5 +1,8 @@
 # hakoniwa-px4sim
 
+[![Build](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml)
+
+[![Test](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/test.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/test.yml)
 ## 環境
 
 * サポートOS
