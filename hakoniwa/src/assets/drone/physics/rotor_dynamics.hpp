@@ -64,7 +64,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", "RPM" };
+        return { "timestamp", "RPM" };
     }
     const std::vector<std::string> log_data() override
     {

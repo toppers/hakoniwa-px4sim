@@ -37,8 +37,7 @@ import argparse
 import sys
 import os
 
-time_colname='TIME'
-#time_colname='timestamp'
+time_colname='timestamp'
 
 def validate_and_merge_time_columns(df_list):
     # 全てのデータフレームのTIME列を比較して、共通の値を見つける

@@ -140,7 +140,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", "lat", "lon", "alt", "vel", "vn", "ve", "vd", "cog" };
+        return { "timestamp", "lat", "lon", "alt", "vel", "vn", "ve", "vd", "cog" };
     }
     const std::vector<std::string> log_data() override
     {

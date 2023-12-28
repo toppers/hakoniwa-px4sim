@@ -71,7 +71,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", "abs_p", "diff_p", "p_alt" };
+        return { "timestamp", "abs_p", "diff_p", "p_alt" };
     }
     const std::vector<std::string> log_data() override
     {

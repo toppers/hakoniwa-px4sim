@@ -112,7 +112,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", "Thrust", "Tx", "Ty", "Tz" };
+        return { "timestamp", "Thrust", "Tx", "Ty", "Tz" };
     }
     const std::vector<std::string> log_data() override
     {
