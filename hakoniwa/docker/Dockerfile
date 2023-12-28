@@ -75,3 +75,4 @@ RUN bash install.bash
 
 RUN mkdir -p /root/workspace
 WORKDIR /root/workspace
+RUN apt-get install -y libgtest-dev
