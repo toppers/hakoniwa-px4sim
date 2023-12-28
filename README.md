@@ -251,3 +251,10 @@ eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/cb40933f-329c-4f86-bac8-782be71f7de2)
 
+以下は、QGCの操作例です。
+
+https://github.com/toppers/hakoniwa-px4sim/assets/164193/88934527-58dd-46f7-abc1-0e2d49c44935
+
+1. 離陸
+2. 東へ移動
+3. 北へ移動
