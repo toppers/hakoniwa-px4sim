@@ -3,15 +3,33 @@ import json
 import pandas as pd
 import numpy as np
 import os
+import math
+
+def normal_pdf(x, mean, std):
+    """正規分布の確率密度関数"""
+    return (1 / (std * math.sqrt(2 * math.pi))) * math.exp(-0.5 * ((x - mean) / std) ** 2)
 
 def evaluate(actual_mean, actual_stdev, expected_mean, expected_stdev):
     print(f'actual_mean: {actual_mean}')
     print(f'actual_stdev: {actual_stdev}')
-    mean_diff_score = max(0, 100 - (abs(actual_mean - expected_mean) / expected_mean * 100))
-    stdev_diff_score = max(0, 100 - (actual_stdev / expected_stdev * 100))
-    print(f'mean_diff_score: {mean_diff_score}')
-    print(f'stdev_diff_score: {stdev_diff_score}')
-    total_score = (mean_diff_score + stdev_diff_score) / 2
+    # 平均値での正規分布のピーク値
+    peak_pdf = normal_pdf(expected_mean, expected_mean, expected_stdev)
+
+    # 平均値の評価
+    mean_score = (normal_pdf(actual_mean, expected_mean, expected_stdev) / peak_pdf) * 100
+
+    # 平均 + 標準偏差の評価
+    upper_score = (normal_pdf(actual_mean + actual_stdev, expected_mean, expected_stdev) / peak_pdf) * 100
+
+    # 平均 - 標準偏差の評価
+    lower_score = (normal_pdf(actual_mean - actual_stdev, expected_mean, expected_stdev) / peak_pdf) * 100
+
+    # スコアの平均を計算
+    total_score = (mean_score + upper_score + lower_score) / 3
+    print(f'mean_score: {mean_score}')
+    print(f'upper_score: {upper_score}')
+    print(f'lower_score: {lower_score}')
+    print(f'total_score: {total_score}')
     return total_score
 
 def load_data(file_path, config):
