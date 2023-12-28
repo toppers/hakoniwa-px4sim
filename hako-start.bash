@@ -49,7 +49,7 @@ fi
 CURR_DIR=`pwd`
 echo "INFO: Activating hakoniwa"
 cd hakoniwa/cmake-build
-./src/hako-px4sim 127.0.0.1 4560 asim &
+./src/hako-px4sim 127.0.0.1 4560 sim &
 pids+=($!)
 cd ${CURR_DIR}
 

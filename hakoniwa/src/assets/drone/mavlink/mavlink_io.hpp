@@ -3,7 +3,6 @@
 
 #include "iaircraft.hpp"
 #include "hako/pdu/hako_pdu_data.hpp"
-#include "config/config.hpp"
 #include <iostream>
 
 namespace hako::assets::drone {

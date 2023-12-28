@@ -1,6 +1,5 @@
 #include "px4sim_thread_receiver.hpp"
 #include "mavlink.h"
-#include "../hako/runner/common/drone_types.hpp"
 #include "../mavlink/mavlink_decoder.hpp"
 #include "../mavlink/mavlink_dump.hpp"
 #include "../comm/tcp_connector.hpp"

@@ -68,11 +68,11 @@
           },
           "mag": {
             "sampleCount": 1,
-            "noise": 0.005
+            "noise": 0.05
           },
           "baro": {
             "sampleCount": 1,
-            "noise": 0
+            "noise": 0.005
           },
           "gps": {
             "sampleCount": 1,

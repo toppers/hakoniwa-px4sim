@@ -7,7 +7,9 @@
 #include <vector>
 
 using json = nlohmann::json;
-
+//#define DRONE_PX4_RX_DEBUG_ENABLE
+//DRONE_PX4_TX_DEBUG_ENABLE
+//DRONE_PID_CONTROL_CPP
 struct RotorPosition {
     std::vector<double> position;
     double rotationDirection;

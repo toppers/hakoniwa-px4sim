@@ -1,7 +1,7 @@
 relative_start_time: 16.687
 relative_end_time: 21.687
-actual_mean: -4.996027305338933
-actual_stdev: 0.01563753845926962
-mean_diff_score: 100.07945389322134
-stdev_diff_score: 84.36246154073038
-Score: 92.22095771697586
+actual_mean: -4.997980656268745
+actual_stdev: 0.010131681211683969
+mean_diff_score: 100.0403868746251
+stdev_diff_score: 89.86831878831603
+Score: 94.95435283147057

@@ -23,11 +23,6 @@ add_executable(
     hako/pdu/hako_pdu_data.cpp
     ${HAKONIWA_SOURCE_DIR}/hako_capi.cpp
     hako/runner/hako_px4_master.cpp
-    hako/runner/hako_px4_runner.cpp
-    hako/runner/hako_sim_runner.cpp
-    hako/runner/drone/drone_phys.cpp
-    hako/runner/drone/drone_phys_sensor.cpp
-    hako/runner/control/drone_control.cpp
 
     threads/px4sim_thread_receiver.cpp
     threads/px4sim_thread_sender.cpp
