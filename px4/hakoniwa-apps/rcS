@@ -1,0 +1,343 @@
+#!/bin/sh
+
+# Un comment and use set +e to ignore and set -e to enable 'exit on error control'
+set +e
+# Un comment the line below to help debug scripts by printing a trace of the script commands
+#set -x
+
+# PX4 commands need the 'px4-' prefix in bash.
+# (px4-alias.sh is expected to be in the PATH)
+# shellcheck disable=SC1091
+. px4-alias.sh
+
+#search path for sourcing px4-rc.*
+PATH="$PATH:${R}etc/init.d-posix"
+
+#
+# Main SITL startup script
+#
+
+# check for ekf2 replay
+# shellcheck disable=SC2154
+if [ "$replay_mode" = "ekf2" ]
+then
+	. ${R}etc/init.d-posix/rc.replay
+	exit 0
+fi
+
+# initialize script variables
+set VEHICLE_TYPE                none
+set LOGGER_ARGS                 ""
+set LOGGER_BUF                  1000
+
+set RUN_MINIMAL_SHELL           no
+
+set SYS_AUTOSTART=0
+
+if [ "$PX4_SIM_MODEL" = "shell" ]
+then
+	set RUN_MINIMAL_SHELL yes
+
+elif [ -n "$PX4_SYS_AUTOSTART" ]
+then
+	echo "env SYS_AUTOSTART: ${PX4_SYS_AUTOSTART}"
+	SYS_AUTOSTART=${PX4_SYS_AUTOSTART}
+
+elif [ "$PX4_SIM_MODEL" = "none" ] || [ -z $PX4_SIM_MODEL ]
+then
+	# no airframe selected
+	SYS_AUTOSTART=0
+
+elif [ -n "$PX4_SIM_MODEL" ]
+then
+	# Find the matching Autostart ID (file name has the form: [0-9]+_${PX4_SIM_MODEL})
+	# TODO: unify with rc.autostart generation
+	# shellcheck disable=SC2012
+	REQUESTED_AUTOSTART=$(ls "${R}etc/init.d-posix/airframes" | sed -n 's/^\([0-9][0-9]*\)_'${PX4_SIM_MODEL}'$/\1/p')
+	if [ -z "$REQUESTED_AUTOSTART" ]; then
+		echo "ERROR [init] Unknown model $PX4_SIM_MODEL (not found by name on ${R}etc/init.d-posix/airframes)"
+		exit 1
+	else
+		SYS_AUTOSTART=$REQUESTED_AUTOSTART
+		echo "INFO  [init] found model autostart file as SYS_AUTOSTART=$REQUESTED_AUTOSTART"
+	fi
+fi
+
+# Load parameters
+set PARAM_FILE parameters.bson
+set PARAM_BACKUP_FILE parameters_backup.bson
+
+param select $PARAM_FILE
+if [ -f $PARAM_FILE ]; then
+
+	if ! param import
+	then
+		echo "ERROR [init] param import failed"
+
+		bsondump $PARAM_FILE
+
+		# try to make a backup copy
+		cp $PARAM_FILE param_import_fail.bson
+
+		# try importing from backup file
+		if [ -f $PARAM_BACKUP_FILE ]
+		then
+			echo "[init] importing from parameter backup"
+
+			# dump current backup file contents for comparison
+			bsondump $PARAM_BACKUP_FILE
+
+			param import $PARAM_BACKUP_FILE
+
+			# overwrite invalid $PARAM_FILE with backup
+			cp $PARAM_BACKUP_FILE $PARAM_FILE
+		fi
+
+		param status
+	fi
+
+elif [ -f $PARAM_BACKUP_FILE ]; then
+	echo "ERROR [init] primary param file $PARAM_FILE unavailable, using backup $PARAM_BACKUP_FILE"
+	param import $PARAM_BACKUP_FILE
+fi
+
+param select-backup $PARAM_BACKUP_FILE
+
+
+# exit early when the minimal shell is requested
+[ $RUN_MINIMAL_SHELL = yes ] && exit 0
+
+if param compare SYS_AUTOSTART $SYS_AUTOSTART
+then
+	set AUTOCNF no
+
+elif [ "$SYS_AUTOSTART" -eq 0 ]
+then
+	set AUTOCNF no
+else
+	set AUTOCNF yes
+	param set SYS_AUTOCONFIG 1
+fi
+
+if param compare SYS_AUTOCONFIG 1
+then
+	# Reset params except Airframe, RC calibration, sensor calibration, flight modes, total flight time, and next flight UUID.
+	param reset_all SYS_AUTOSTART RC* CAL_* COM_FLTMODE* LND_FLIGHT* TC_* COM_FLIGHT*
+	set AUTOCNF yes
+fi
+
+# multi-instance setup
+# shellcheck disable=SC2154
+param set MAV_SYS_ID $((px4_instance+1))
+param set UXRCE_DDS_KEY $((px4_instance+1))
+
+if [ $AUTOCNF = yes ]
+then
+	param set SYS_AUTOSTART $SYS_AUTOSTART
+
+	param set CAL_ACC0_ID  1310988 # 1310988: DRV_IMU_DEVTYPE_SIM, BUS: 1, ADDR: 1, TYPE: SIMULATION
+	param set CAL_GYRO0_ID 1310988 # 1310988: DRV_IMU_DEVTYPE_SIM, BUS: 1, ADDR: 1, TYPE: SIMULATION
+	param set CAL_ACC1_ID  1310996 # 1310996: DRV_IMU_DEVTYPE_SIM, BUS: 2, ADDR: 1, TYPE: SIMULATION
+	param set CAL_GYRO1_ID 1310996 # 1310996: DRV_IMU_DEVTYPE_SIM, BUS: 2, ADDR: 1, TYPE: SIMULATION
+	param set CAL_ACC2_ID  1311004 # 1311004: DRV_IMU_DEVTYPE_SIM, BUS: 3, ADDR: 1, TYPE: SIMULATION
+	param set CAL_GYRO2_ID 1311004 # 1311004: DRV_IMU_DEVTYPE_SIM, BUS: 3, ADDR: 1, TYPE: SIMULATION
+
+	param set CAL_MAG0_ID 197388
+	param set CAL_MAG0_PRIO 50
+	param set CAL_MAG1_ID 197644
+	param set CAL_MAG1_PRIO 50
+
+	param set SENS_BOARD_X_OFF 0.000001
+	param set SENS_DPRES_OFF 0.001
+fi
+
+param set-default BAT1_N_CELLS 4
+
+param set-default CBRK_SUPPLY_CHK 894281
+
+# disable check, no CPU load reported on posix yet
+param set-default COM_CPU_MAX -1
+
+# Don't require RC calibration and configuration
+param set-default COM_RC_IN_MODE 1
+
+# Speedup SITL startup
+param set-default EKF2_REQ_GPS_H 0.5
+
+# Multi-EKF
+param set-default EKF2_MULTI_IMU 3
+param set-default SENS_IMU_MODE 0
+
+param set-default IMU_GYRO_FFT_EN 1
+param set-default MAV_PROTO_VER 2 # Ensures QGC does not drop the first few packets after a SITL restart due to MAVLINK 1 packets
+
+param set-default -s MC_AT_EN 1
+
+# By default log from boot until first disarm.
+param set-default SDLOG_MODE 1
+# enable default, estimator replay and vision/avoidance logging profiles
+param set-default SDLOG_PROFILE 131
+param set-default SDLOG_DIRS_MAX 7
+
+param set-default TRIG_INTERFACE 3
+
+param set-default SYS_FAILURE_EN 1
+# Enable low-battery actions by default for (automated) testing. Battery sim
+# does not go below 50% by default, but failure injection can trigger failsafes.
+param set-default COM_LOW_BAT_ACT 2
+
+# Allow to override SYS_MC_EST_GROUP via env
+if [ -n "$SYS_MC_EST_GROUP" ]; then
+	param set SYS_MC_EST_GROUP $SYS_MC_EST_GROUP
+fi
+
+# Adapt timeout parameters if simulation runs faster or slower than realtime.
+if [ -n "$PX4_SIM_SPEED_FACTOR" ]; then
+	COM_DL_LOSS_T_LONGER=$(echo "$PX4_SIM_SPEED_FACTOR * 10" | bc)
+	echo "COM_DL_LOSS_T set to $COM_DL_LOSS_T_LONGER"
+	param set COM_DL_LOSS_T $COM_DL_LOSS_T_LONGER
+
+	COM_RC_LOSS_T_LONGER=$(echo "$PX4_SIM_SPEED_FACTOR * 0.5" | bc)
+	echo "COM_RC_LOSS_T set to $COM_RC_LOSS_T_LONGER"
+	param set COM_RC_LOSS_T $COM_RC_LOSS_T_LONGER
+
+	COM_OF_LOSS_T_LONGER=$(echo "$PX4_SIM_SPEED_FACTOR * 0.5" | bc)
+	echo "COM_OF_LOSS_T set to $COM_OF_LOSS_T_LONGER"
+	param set COM_OF_LOSS_T $COM_OF_LOSS_T_LONGER
+
+	COM_OBC_LOSS_T_LONGER=$(echo "$PX4_SIM_SPEED_FACTOR * 5.0" | bc)
+	echo "COM_OBC_LOSS_T set to $COM_OBC_LOSS_T_LONGER"
+	param set COM_OBC_LOSS_T $COM_OBC_LOSS_T_LONGER
+fi
+
+# Autostart ID
+autostart_file=''
+# shellcheck disable=SC2231
+for f in ${R}etc/init.d-posix/airframes/"$(param show -q SYS_AUTOSTART)"_*
+do
+	filename=$(basename "$f")
+	case "$filename" in
+		*\.*)
+			# ignore files that contain a dot (e.g. <vehicle>.post)
+			;;
+		*)
+			autostart_file="$f"
+			;;
+	esac
+done
+
+if [ -e "$autostart_file" ]
+then
+	. "$autostart_file"
+
+elif [ ! -e "$autostart_file" ] && [ "$SYS_AUTOSTART" -ne "0" ]
+then
+	echo "Error: no autostart file found ($autostart_file)"
+	exit 1
+fi
+
+#user defined params for instances can be in PATH
+. px4-rc.params
+
+dataman start
+
+# only start the simulator if not in replay mode, as both control the lockstep time
+if ! replay tryapplyparams
+then
+	. px4-rc.simulator
+fi
+
+load_mon start
+battery_simulator start
+tone_alarm start
+rc_update start
+manual_control start
+sensors start
+commander start
+
+if ! pwm_out_sim start -m sim
+then
+	tune_control play error
+fi
+
+#
+# Configure vehicle type specific parameters.
+# Note: rc.vehicle_setup is the entry point for all vehicle type specific setup.
+. ${R}etc/init.d/rc.vehicle_setup
+
+navigator start
+
+# Try to start the UXRCE-DDS Client with UDP transport if module exists
+uxrce_dds_ns=""
+if [ "$px4_instance" -ne "0" ]
+then
+	# for multi intances setup, add namespace prefix
+	uxrce_dds_ns="-n px4_$px4_instance"
+fi
+if [ -n "$PX4_UXRCE_DDS_NS" ]
+then
+	# Override namespace if environment variable is defined
+	uxrce_dds_ns="-n $PX4_UXRCE_DDS_NS"
+fi
+if [ -n "$ROS_DOMAIN_ID" ]
+then
+	# Match UXRCE_DDS_DOM_ID with ROS_DOMAIN_ID, if defined
+	param set UXRCE_DDS_DOM_ID $ROS_DOMAIN_ID
+else
+	param set UXRCE_DDS_DOM_ID 0
+fi
+uxrce_dds_port=8888
+if [ -n "$PX4_UXRCE_DDS_PORT" ]
+then
+	# Override port if environment variable is defined
+	uxrce_dds_port="$PX4_UXRCE_DDS_PORT"
+fi
+
+uxrce_dds_client start -t udp -h 127.0.0.1 -p $uxrce_dds_port $uxrce_dds_ns
+
+if param greater -s MNT_MODE_IN -1
+then
+	gimbal start
+fi
+
+if param greater -s TRIG_MODE 0
+then
+	camera_trigger start
+	camera_feedback start
+fi
+
+if param compare -s IMU_GYRO_FFT_EN 1
+then
+	gyro_fft start
+fi
+
+if param compare -s IMU_GYRO_CAL_EN 1
+then
+	gyro_calibration start
+fi
+
+# Payload deliverer module if gripper is enabled
+if param compare -s PD_GRIPPER_EN 1
+then
+	payload_deliverer start
+fi
+
+#user defined mavlink streams for instances can be in PATH
+. px4-rc.mavlink
+
+# execute autostart post script if any
+[ -e "$autostart_file".post ] && . "$autostart_file".post
+
+# Run script to start logging
+if param compare SYS_MC_EST_GROUP 2
+then
+	set LOGGER_ARGS "-p ekf2_timestamps"
+else
+	set LOGGER_ARGS "-p vehicle_attitude"
+fi
+. ${R}etc/init.d/rc.logging
+
+param set MPC_XY_CRUISE 4
+
+mavlink boot_complete
+replay trystart
