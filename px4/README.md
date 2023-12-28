@@ -3,8 +3,8 @@
 動作チェック状況
 
 - [X] Mac
-- [] Windows/WSL2
-- [] Ubuntu
+- [X] Windows/WSL2
+- [ ] Ubuntu
 
 
 ## 共通手順
