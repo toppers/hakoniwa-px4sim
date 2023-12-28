@@ -150,7 +150,7 @@ ERROR [simulator_mavlink] poll timeout 0, 111
 ERROR [simulator_mavlink] poll timeout 0, 111
 ```
 
-### Unity
+## Unity
 
 この状態で、Unityのシミュレーションを開始してください。
 
@@ -159,7 +159,7 @@ ERROR [simulator_mavlink] poll timeout 0, 111
 そして、`START` ボタンを押下すると、シミュレーションが動き出します。
 
 
-### 端末B
+## 端末B
 
 この時、端末Bでは以下のように、準備状態になります。
 
@@ -193,11 +193,61 @@ commander takeoff
 
 ![スクリーンショット 2023-11-11 14 46 36](https://github.com/toppers/hakoniwa-px4sim/assets/164193/59a5bf25-8256-4a14-b901-4144e3fbcac8)
 
-### シミュレーション停止方法
+## シミュレーション停止方法
 
 シミュレーションを停止するには、以下の順番で停止してください。
 
 1. Unityのシミュレーションを止める
 2. PX4のシミュレーションを　CTRL＋Cで止める
 3. 箱庭のシミュレーションを CTRL+C で止める
+
+
+## QGroundControlとの連携方法
+
+[QGroundControl](http://qgroundcontrol.com/)をインストールすることで、QGC側から機体を操作できます。
+
+QGCを起動した後に、PX4との接続設定が必要となります。
+
+画面右上のロゴをクリックすると、下図のように「アプリケーション設定」ができますので、クリックします。
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/b17cd3a1-23c3-4b0b-b46c-d4c98d375102)
+
+次に、「通信リンク」をクリックし、「追加」ボタンを押下します。
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/60389069-46a5-4801-aba5-af06f7582a53)
+
+必要な設定をします。
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/6d916332-7be6-4f33-855d-cc657919076b)
+
+以下を設定しましょう。
+
+* 名前：`hakoniwa` (お好きな名前を指定できます)
+* タイプ：`UDP`
+* ポート：`18570`
+* サーバーアドレス：OSによって設定が違います
+  * Windowsの場合：WSL2上で、eth0 のIPアドレスを調べて設定してください。
+  * Windows以外の場合：お使いのethernetのIPアドレスを調べて設定してください。
+
+IPアドレスの調べ方（例）
+
+```
+$ ifconfig eth0
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 172.29.246.4  netmask 255.255.240.0  broadcast 172.29.255.255
+        inet6 fe80::215:5dff:feae:5d59  prefixlen 64  scopeid 0x20<link>
+        ether 00:15:5d:ae:5d:59  txqueuelen 1000  (Ethernet)
+        RX packets 2104410  bytes 2461696811 (2.4 GB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1152573  bytes 1569239960 (1.5 GB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+設定後、「サーバー追加」ボタンをおして、「OK」ボタンをクリックします。
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/1da37afa-886d-4122-b115-b7f12808fb75)
+
+最後に、「接続」ボタンをクリックすれば設定完了です。
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/cb40933f-329c-4f86-bac8-782be71f7de2)
 
