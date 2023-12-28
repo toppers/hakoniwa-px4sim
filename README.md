@@ -106,6 +106,12 @@ INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port
 cd hakoniwa-px4sim/hakoniwa
 ```
 
+Windowsの場合は、以下のコマンドで docker コンテナに入ってください。
+
+```
+bash docker/run.bash
+```
+
 箱庭を起動するためのスクリプトを実行します。
 
 
