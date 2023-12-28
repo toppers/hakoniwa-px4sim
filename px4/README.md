@@ -43,14 +43,12 @@ bash Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
 make px4_sitl_default
 ```
 
-
 クリーン方法：
 
 ```
 make clean
 ```
 
-参考にしたサイト：https://docs.px4.io/main/en/dev_setup/dev_env_mac.html
 
 ## Mac向け PX4ビルド手順
 
@@ -76,3 +74,5 @@ make px4_sitl_default
 ```
 make clean
 ```
+
+参考にしたサイト：https://docs.px4.io/main/en/dev_setup/dev_env_mac.html
