@@ -1,16 +1,12 @@
-# hakoniwa-px4sim
-
 [![Build](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml)
 
-## 環境
+# 環境
 
 * サポートOS
   * Arm系Mac (M1Mac, M2Mac)
   * Windows 10/11
 * 利用する環境
   * Arm系Macの場合
-    * Docker Desktop
-      * 本環境のインストールを実施する場合は、事前に、Docker Desktop を起動してください。
     * Python 3.10
       * pyenvでインストールされたものを推奨
       * Jinja2 (`pip install -U jinja2`)
@@ -24,7 +20,7 @@
     hakoniwa-px4sim/
     ```
 
-## 事前準備
+# 事前準備
 
 ２つのリポジトリをクローンします。
 
@@ -41,169 +37,43 @@ hakoniwa-unity-drone-model のインストール手順は、以下を参照く�
 https://github.com/toppers/hakoniwa-unity-drone-model/tree/px4
 
 
-## hakoniwa-px4sim のインストール手順
+# hakoniwa-px4sim のインストール手順
 
-### px4 の準備
+以下の手順に従って、PX4 のインストールを実施します。
 
-```
-cd hakoniwa-px4sim/px4
-```
+https://github.com/toppers/hakoniwa-px4sim/tree/main/px4
 
-#### Mac版の場合
 
-docker イメージを作成します。
+# 箱庭のインストール手順
 
-```
-bash docker/create-image.bash 
-```
+以下の手順に従って、箱庭のインストールを実施します。
 
-#### Windows版の場合
+https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa
 
-docker イメージを作成することもできますが、すでに docker hub にアップ済みのものがありますので、以下のコマンドで pull したほうが早いです。
-
-```
-bash docker/pull-image.bash 
-```
-
-#### 確認
-
-イメージが出来上がると、以下のように、`docker images`コマンドで、docker イメージを確認できます。
-
-```
-$ docker images
-REPOSITORY                            TAG       IMAGE ID       CREATED        SIZE
-toppersjp/hakoniwa-px4-runner         v1.0.0    bca5febae6f5   3 weeks ago    3.7GB
-```
-
-### 箱庭の準備
-
-```
-cd hakoniwa-px4sim/hakoniwa
-```
-
-#### Windows版の場合の下準備
-
-Windowsの場合は、docker コンテナ内での作業になります。
-
-以下のコマンドで docker イメージを pull してください。
-
-```
-bash docker/pull-image.bash 
-```
-
-成功した場合は、以下のように`toppersjp/hakoniwa-px4sim`が作成されます。
-
-```
-$ docker images
-REPOSITORY                                TAG       IMAGE ID       CREATED         SIZE
-toppersjp/hakoniwa-px4sim                 v1.0.0    6bd3f5c27966   15 hours ago    4.1GB
-```
-
-なお、イメージは一度作成できればWindows内に残り続けますので、一度だけ実行すればOKです。
-
-次に、以下のコマンドで docker コンテナに入ってください。
-
-```
-bash docker/run.bash 
-```
-
-#### 箱庭のコンフィグファイルの編集
-
-[config.hpp](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/src/config/config.hpp)を開いて、以下のように変更してください。
-
-変更前：
-
-```
-//#define DRONE_PX4_ENABLE
-```
-
-変更後：
-
-```
-#define DRONE_PX4_ENABLE
-```
-
-上記のように変更すると、PX4との連携が可能になります。
-
-なお、この変更をしない場合は、PX4を起動せずに、箱庭側だけでのシミュレーションとなります。
-
-#### 箱庭のビルド
-
-箱庭環境をビルドします。
-
-```
-bash build.bash
-```
-
-成功すると、` cmake-build/src/hako-px4sim` というファイルが作成されます。
-
-## シミュレーション実行手順
+# シミュレーション実行手順
 
 端末を２つ用意してください。
 
 * 端末A：PX4のシミュレータ実行用
 * 端末B：箱庭実行用
 
-### 端末A
+## 端末A
 
 ```
-cd hakoniwa-px4sim/px4
+cd hakoniwa-px4sim/px4/PX4-Autopilot
 ```
 
-PX4 on SITL を起動するための docker コンテナを起動します。
+PX4 on SITL をを起動します。
 
 ```
-bash docker/run.bash
-```
-
-成功すると、こうなります。
-
-```
-% bash docker/run.bash 
-arm64
-Darwin
-root@97fa2a50d6df:~/workspace/px4/PX4-Autopilot# 
-```
-
-次に、箱庭用の制御アプリを組み込むために、ビルドを実行します。
-このオペレーションは、docker コンテナを起動するたびに行う必要があります。
-
-```
-bash /root/workspace/sim/build.bash 
-```
-
-ビルド終了後に、以下のコマンドで PX4 on SITL を起動します。
-
-```
-bash /root/workspace/sim/simstart.bash 
+bash ../sim/simstart.bash
 ```
 
 成功すると、以下のように、TCPポートのコネクション待ちになります。
 
+
 ```
-root@97fa2a50d6df:~/workspace/px4/PX4-Autopilot# bash /root/workspace/sim/build.bash 
-[0/1] Re-running CMake...
--- PX4 version: v1.14.0-rc2 (1.14.0)
--- PX4 config file: /root/workspace/px4/PX4-Autopilot/boards/px4/sitl/default.px4board
--- PLATFORM posix
--- ROMFSROOT px4fmu_common
--- ROOTFSDIR .
--- TESTING y
--- ETHERNET y
--- PX4 config: px4_sitl_default
--- PX4 platform: posix
--- PX4 lockstep: enabled
--- cmake build type: RelWithDebInfo
--- Could NOT find gz-transport (missing: gz-transport_DIR)
--- Could NOT find Java (missing: Java_JAVA_EXECUTABLE Java_JAR_EXECUTABLE Java_JAVAC_EXECUTABLE Java_JAVAH_EXECUTABLE Java_JAVADOC_EXECUTABLE) 
--- ROMFS: ROMFS/px4fmu_common
-Architecture:  arm64
-==> CPACK_INSTALL_PREFIX = @DEB_INSTALL_PREFIX@
--- Configuring done
--- Generating done
--- Build files have been written to: /root/workspace/px4/PX4-Autopilot/build/px4_sitl_default
-[824/824] Linking CXX shared library s...s/dyn_hello/examples__dyn_hello.px4mod
-root@97fa2a50d6df:~/workspace/px4/PX4-Autopilot# bash /root/workspace/sim/simstart.bash 
+% bash ../sim/simstart.bash
 [0/1] launching px4 none_iris (SYS_AUTOSTART=10016)
 
 ______  __   __    ___ 
@@ -218,57 +88,41 @@ px4 starting.
 INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
 env SYS_AUTOSTART: 10016
 INFO  [param] selected parameter default file parameters.bson
+INFO  [param] importing from 'parameters.bson'
+INFO  [parameters] BSON document size 568 bytes, decoded 568 bytes (INT32:14, FLOAT:13)
 INFO  [param] selected parameter backup file parameters_backup.bson
-  SYS_AUTOCONFIG: curr: 0 -> new: 1
-  SYS_AUTOSTART: curr: 0 -> new: 10016
-  CAL_ACC0_ID: curr: 0 -> new: 1310988
-  CAL_GYRO0_ID: curr: 0 -> new: 1310988
-  CAL_ACC1_ID: curr: 0 -> new: 1310996
-  CAL_GYRO1_ID: curr: 0 -> new: 1310996
-  CAL_ACC2_ID: curr: 0 -> new: 1311004
-  CAL_GYRO2_ID: curr: 0 -> new: 1311004
-  CAL_MAG0_ID: curr: 0 -> new: 197388
-  CAL_MAG0_PRIO: curr: -1 -> new: 50
-  CAL_MAG1_ID: curr: 0 -> new: 197644
-  CAL_MAG1_PRIO: curr: -1 -> new: 50
-* SENS_BOARD_X_OFF: curr: 0.0000 -> new: 0.0000
-* SENS_DPRES_OFF: curr: 0.0000 -> new: 0.0010
-INFO  [dataman] data manager file './dataman' size is 7866640 bytes
-etc/init.d-posix/rcS: 39: [: Illegal number: 
-INFO  [init] PX4_SIM_HOSTNAME: 192.168.65.254
-INFO  [simulator_mavlink] using TCP on remote host 192.168.65.254 port 4560
-WARN  [simulator_mavlink] Please ensure port 4560 is not blocked by a firewall.
+INFO  [dataman] data manager file './dataman' size is 7868392 bytes
+INFO  [init] PX4_SIM_HOSTNAME: localhost
 INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port 4560
 ```
 
+
+
 ここから先は、端末Bです。
 
-### 端末B
+## 端末B
 
 ```
 cd hakoniwa-px4sim/hakoniwa
 ```
 
-#### Windows版の場合の下準備
-
-Windowsの場合は、docker コンテナ内での作業になりますので、最初に以下のコマンドで docker コンテナに入ってください。
-
-```
-bash docker/run.bash 
-```
-
-#### 箱庭の起動
-
 箱庭を起動するためのスクリプトを実行します。
 
+
 ```
-bash run.bash
+bash run.bash 
 ```
+
 
 成功すると、こうなります。
 
 ```
-bash run.bash 
+% bash run.bash 
+HAKO_CAPTURE_SAVE_FILEPATH : ./capture.bin
+HAKO_BYPASS_IPADDR : 127.0.0.1
+HAKO_CUSTOM_JSON_PATH : ../config/custom.json
+DRONE_CONFIG_PATH : ../config/drone_config.json
+HAKO_BYPASS_PORTNO : 54001
 INFO: shmget() key=255 size=1129352 
 INFO: hako_master_init() success
 Robot: DroneAvator, PduWriter: DroneAvator_drone_motor
@@ -278,6 +132,8 @@ Robot: DroneAvator, PduWriter: DroneAvator_drone_pos
 channel_id: 1 pdu_size: 48
 INFO: DroneAvator create_lchannel: logical_id=1 real_id=1 size=48
 WAIT START
+INFO: px4 reciver start
+INFO: COMMAND_LONG ack sended
 ```
 
 この際、端末A側で、以下のように poll timeout のメッセージが出ますが、特に問題ないです。
@@ -339,76 +195,3 @@ commander takeoff
 2. PX4のシミュレーションを　CTRL＋Cで止める
 3. 箱庭のシミュレーションを CTRL+C で止める
 
-
-# MAVLINK仕様データ
-
-MAVLINK仕様データは、以下を参照すること。
-
-https://mavlink.io/en/messages/common.html
-
-ただし、座標系が曖昧なものがあるので、ここで定義する。
-
-(現状、仮説であるため、適宜変更対応予定)
-
-## HIL_STATE_QUATERNION
-
-|名前|座標系|備考|
-|---|---|---|
-|time_usec|-|-|
-|rollspeed|航空|機体座標系|
-|pitchspeed|航空|機体座標系|
-|yawspeed|航空|機体座標系|
-|vx|航空|地上座標系、Ground X Speed (Latitude)|
-|vy|航空|地上座標系、Ground Y Speed (Longitude)|
-|vz|航空|地上座標系、Ground Z Speed (Longitude)|
-|xacc|航空|地上座標系|
-|yacc|航空|地上座標系|
-|zacc|航空|地上座標系、重力は含めない|
-|attitude_quaternion|航空|-|
-|lat|航空|-|
-|lon|航空|-|
-|alt|航空|-|
-|ind_airspeed|-|-|
-|true_airspeed|-|-|
-
-
-## HIL_SENSOR
-
-|名前|座標系|備考|
-|---|---|---|
-|time_usec|-|-|
-|xacc|航空|機体座標系|
-|yacc|航空|機体座標系|
-|zacc|航空|機体座標系、重力を含む|
-|xgyro|航空|機体座標系|
-|ygyro|航空|機体座標系|
-|zgyro|航空|機体座標系|
-|xmag|-|-|
-|ymag|-|-|
-|zmag|-|-|
-|abs_pressure|-|-|
-|diff_pressure|-|-|
-|pressure_alt|-|-|
-|temperature|-|-|
-|fields_updated|-|-|
-|id|-|-|
-
-## HIL_GPS
-
-|名前|座標系|備考|
-|---|---|---|
-|time_usec|-|-|
-|fix_type||-|
-|lat|航空|-|
-|lon|航空|-|
-|alt|ROS|-|
-|eph|-|-|
-|epv|-|-|
-|vel|-|-|
-|vn|航空|GPS velocity in north direction in earth-fixed NED frame|
-|ve|航空|GPS velocity in east direction in earth-fixed NED frame|
-|vd|航空|GPS velocity in down direction in earth-fixed NED frame|
-|cog|-|-|
-|satelites_visible|-|-|
-|id|-|-|
-|yaw|-|-|
