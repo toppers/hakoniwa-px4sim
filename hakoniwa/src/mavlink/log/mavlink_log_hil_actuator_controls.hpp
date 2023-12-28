@@ -21,7 +21,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", 
+        return { "timestamp", 
                  "mode", "flags", 
                  "controls[0]", "controls[1]", "controls[2]", "controls[3]", 
                  "controls[4]", "controls[5]", "controls[6]", "controls[7]",

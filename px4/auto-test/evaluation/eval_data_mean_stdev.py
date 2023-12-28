@@ -16,11 +16,16 @@ def evaluate(actual_mean, actual_stdev, expected_mean, expected_stdev):
 
 def load_data(file_path, config):
     data = pd.read_csv(file_path)
+
+    # 最後の行はデータが中途半端な可能性があるため
+    data = data.drop(data.index[-1])
+
+    #print("file_path: ", file_path)
     time_col = config['time_colname']
     data_col = config['data_colname']
 
-
     data[time_col] = (data[time_col] - data[time_col].iloc[0])
+    #print(data[1:10])
     # タイムスタンプを秒単位に変換 (マイクロ秒から秒へ)
     if config["time_unit"] == "usec":
         data[time_col] = data[time_col] / 1e6
@@ -29,7 +34,10 @@ def load_data(file_path, config):
     offset = config['offset_sec']
     duration = config['duration_sec']
     last_time = data.tail(1)[time_col].iloc[0]
-
+    #print(data.tail())
+    #print(f'offset: {offset}')
+    #print(f'duration: {duration}')
+    #print(f'last_time: {last_time}')
 
     # 相対時間を計算
     if config['data_range_from_end']:

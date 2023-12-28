@@ -46,7 +46,8 @@ int main(int argc, char* argv[])
     int serverPort = std::atoi(argv[2]);
     const char* arg_mode = argv[3];
     hako_param_env_init();
-    if (drone_config.init("../config/drone_config.json") == false)
+    std::string drone_config_path = hako_param_env_get_string(DRONE_CONFIG_PATH);
+    if (drone_config.init(drone_config_path) == false)
     {
         std::cerr << "ERROR: can not find ../config/drone_config.json" << std::endl;
         return -1;

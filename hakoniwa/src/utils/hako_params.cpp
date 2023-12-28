@@ -13,7 +13,7 @@ typedef struct {
     int value;
 } HakoParamIntegerType;
 
-#define HAKO_PARAM_STRING_NUM 3
+#define HAKO_PARAM_STRING_NUM 4
 static HakoParamStringType hako_param_string[HAKO_PARAM_STRING_NUM] = {
     {
        HAKO_CAPTURE_SAVE_FILEPATH,
@@ -26,6 +26,10 @@ static HakoParamStringType hako_param_string[HAKO_PARAM_STRING_NUM] = {
     {
         HAKO_CUSTOM_JSON_PATH,
         "../config/custom.json"
+    },
+    {
+        DRONE_CONFIG_PATH,
+        "../config/drone_config.json"
     },
 };
 #define HAKO_PARAM_INTEGER_NUM 1

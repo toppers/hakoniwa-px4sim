@@ -13,7 +13,7 @@
 #include "utils/csv_logger.hpp"
 #include "mavlink/log/mavlink_log_hil_sensor.hpp"
 #include "mavlink/log/mavlink_log_hil_gps.hpp"
-
+#include "config/drone_config.hpp"
 #include "../mavlink/mavlink_msg_types.hpp"
 //#define DRONE_PX4_SEND_STATE_QUATERNION
 
@@ -60,8 +60,8 @@ void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
     //px4sim_sender_timing_config.state_quaternion.cycle = 8000;
     px4sim_sender_timing_config.gps.cycle = 21000;
 
-    logger_hil_sensor.add_entry(log_hil_sensor, "./log_comm_hil_sensor.csv");
-    logger_hil_gps.add_entry(log_hil_gps, "./log_comm_hil_gps.csv");
+    logger_hil_sensor.add_entry(log_hil_sensor, drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
+    logger_hil_gps.add_entry(log_hil_gps, drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));
     return;
 }
 static inline bool is_send_cycle(Px4SimSenderTimingType &timing, uint64_t boot_time_usec)

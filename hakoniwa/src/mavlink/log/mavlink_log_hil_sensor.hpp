@@ -21,7 +21,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", 
+        return { "timestamp", 
                  "xacc", "yacc", "zacc", 
                  "xgyro", "ygyro", "zgyro", 
                  "xmag", "ymag", "zmag", 

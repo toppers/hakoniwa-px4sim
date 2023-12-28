@@ -31,7 +31,11 @@ def update_json_value(json_data, path, new_value):
         ref[keys[-1]] = convert_value(ref[keys[-1]], new_value)
         return True, "Success"
     except ValueError as e:
-        return False, f"Type conversion error: {e}"
+        try:
+            ref[keys[-1]] = json.loads(new_value)
+            return True, "Success"
+        except ValueError as e:
+            return False, f"Type conversion error: {e}"
 
 def main():
     parser = argparse.ArgumentParser(description="Update a value in a JSON file.")

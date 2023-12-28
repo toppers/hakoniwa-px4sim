@@ -21,7 +21,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "TIME", 
+        return { "timestamp", 
                  "lat", "lon", "alt", 
                  "eph", "epv", "vel", 
                  "vn", "ve", "vd", 

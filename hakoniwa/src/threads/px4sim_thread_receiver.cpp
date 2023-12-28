@@ -6,7 +6,7 @@
 #include "../comm/tcp_connector.hpp"
 #include "../threads/px4sim_thread_sender.hpp"
 #include "../hako/pdu/hako_pdu_data.hpp"
-
+#include "config/drone_config.hpp"
 #include <iostream>
 
 #include "../mavlink/mavlink_msg_types.hpp"
@@ -55,7 +55,7 @@ static void hako_mavlink_write_data(MavlinkDecodedMessage &message)
 void *px4sim_thread_receiver(void *arg)
 {
     std::cout << "INFO: px4 reciver start" << std::endl;
-    logger_recv.add_entry(log_hil_actuator_controls, "./log_comm_hil_actuator_controls.csv");
+    logger_recv.add_entry(log_hil_actuator_controls, drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
     hako::px4::comm::ICommIO *clientConnector = static_cast<hako::px4::comm::ICommIO *>(arg);
     while (true) {
         char recvBuffer[1024];
