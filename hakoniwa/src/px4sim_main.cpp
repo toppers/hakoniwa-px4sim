@@ -12,7 +12,7 @@ class DroneConfig drone_config;
 int main(int argc, char* argv[]) 
 {
     if(argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|bypass|phys}> "  << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys}> "  << std::endl;
         return -1;
     }
     const char* serverIp = argv[1];
@@ -38,8 +38,12 @@ int main(int argc, char* argv[])
         //not returned function.
         //do not pass
     }
-    else if (strcmp("sim", arg_mode) == 0) {
-        hako_sim_main(serverEndpoint);
+    else if ((strcmp("sim", arg_mode) == 0) ||  (strcmp("wsim", arg_mode) == 0)) {
+        bool master = true;
+        if  (strcmp("wsim", arg_mode) == 0) {
+            master = false;
+        }
+        hako_sim_main(master, serverEndpoint);
         //not returned function.
         //do not pass
     }

@@ -29,8 +29,8 @@ then
         -e PX4_HOME_ALT=0.0 \
         --name ${IMAGE_NAME_ARG} ${DOCKER_IMAGE} 
 else
-    export DELTA_MSEC=3
-    export MAX_DELAY_MSEC=1
+    export DELTA_MSEC=20
+    export MAX_DELAY_MSEC=100
 	export RESOLV_IPADDR=`cat /etc/resolv.conf  | grep nameserver | awk '{print $NF}'`
 	NETWORK_INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$' | tr -d '\n')
 	CORE_IPADDR=$(ifconfig "${NETWORK_INTERFACE}" | grep netmask | awk '{print $2}')

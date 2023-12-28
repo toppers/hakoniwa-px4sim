@@ -45,7 +45,7 @@ sleep 1
 
 echo "INFO: ACTIVATING hako-px4sim"
 cd cmake-build
-./src/hako-px4sim ${CORE_IPADDR} 4560 sim
+./src/hako-px4sim ${CORE_IPADDR} 4560 wsim
 
 echo "INFO: NOW STOPPING SIMULATION" 
 

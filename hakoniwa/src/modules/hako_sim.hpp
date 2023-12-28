@@ -3,6 +3,6 @@
 
 #include "comm/tcp_connector.hpp"
 
-extern void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint);
+extern void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoint);
 
 #endif /* _HAKO_SIM_HPP_ */

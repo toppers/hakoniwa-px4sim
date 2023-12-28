@@ -25,21 +25,24 @@ static void* asset_runner(void*);
 
 static IAirCraft *drone;
 
-void hako_sim_main(hako::px4::comm::IcommEndpointType serverEndpoint)
+void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoint)
 {
     hako::px4::comm::TcpServer server;
-    if (!hako_master_init()) {
-        std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
-        return;
-    }
-    else {
-        std::cout << "INFO: hako_master_init() success" << std::endl;
-    }
-    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
     pthread_t thread;
-    if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
-        std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
-        return;
+    if (master) {
+        if (!hako_master_init()) {
+            std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
+            return;
+        }
+        else {
+            std::cout << "INFO: hako_master_init() success" << std::endl;
+        }
+        hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
+        
+        if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
+            std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
+            return;
+        }
     }
     if (pthread_create(&thread, NULL, asset_runner, nullptr) != 0) {
         std::cerr << "Failed to create asset_runner thread!" << std::endl;
