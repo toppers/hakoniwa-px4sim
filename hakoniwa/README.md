@@ -18,8 +18,8 @@ bash docker/pull-image.bash
 
 ```
 $ docker images
-REPOSITORY                                TAG       IMAGE ID       CREATED         SIZE
-toppersjp/hakoniwa-px4sim                 v1.0.0    6bd3f5c27966   15 hours ago    4.1GB
+REPOSITORY                        TAG       IMAGE ID       CREATED             SIZE
+toppersjp/hakoniwa-px4sim         v1.0.1    c34c696b8007   About an hour ago   3.98GB
 ```
 
 なお、イメージは一度作成できればWindows内に残り続けますので、一度だけ実行すればOKです。
