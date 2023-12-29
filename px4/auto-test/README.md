@@ -226,7 +226,47 @@ python hako_QgcStub.py <config_path> <drone_config_path> <test_scenario_path>
 
 ## Test Result Evaluator
 
-TODO
+テスト結果の評価は、出力されたログデータをベースに行います。`TestResultEvaluator` スクリプトとしてはさまざまなものが考えられますが、一例として、データの平均値と標準偏差を計算し、それらを予め定義された期待値と比較してスコアを計算する [eval_data_mean_stdev.py](https://github.com/toppers/hakoniwa-px4sim/blob/main/px4/auto-test/evaluation/eval_data_mean_stdev.py) を用意しています。
+
+テスト内容に応じてこれと同等なスクリプトを作成することで、さまざまなテスト評価をすることができます。
+
+### eval_data_mean_stdev.py の機能
+
+- ログデータから特定の時間範囲のデータを抽出し、平均値と標準偏差を計算します。
+- これらの計算された値を、事前に定義された期待値と比較し、どの程度一致しているかを評価します。
+
+### 使用方法
+
+以下のようにコマンドラインからスクリプトを実行します：
+
+```
+python eval_data_mean_stdev.py <input_json> <data_location_path>
+```
+
+- `input_json`: 設定を含むJSONファイルへのパス。
+- `data_location_path`: データが保存されているディレクトリへのパス。
+
+`input_json`の設定例：
+
+```json
+{
+    "file": "drone_dynamics.csv",
+    "time_colname": "timestamp",
+    "time_unit": "usec",
+    "data_colname": "Z",
+    "data_range_from_end": true,
+    "offset_sec": 0,
+    "duration_sec": 5, 
+    "expected_mean_value": -5,
+    "expected_stdev_value": 0.1
+}
+```
+
+### 注意
+
+- このスクリプトは一例であり、異なるタイプのデータや評価基準に応じてカスタマイズすることが可能です。
+- データの解析と評価は、統計的な手法に基づいています。したがって、データの性質や評価の目的に応じて適切な手法を選択する必要があります。
+
 
 # テスト実行方法
 
