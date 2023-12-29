@@ -37,14 +37,71 @@
 
 ## Drone Parameter Generator
 
+[機体のパラメータ](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README.md#機体のパラメータ説明)は、[drone_config.py](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/python/drone_config.py)で設定できます。
+
+このスクリプトを使用して、指定されたJSONファイル内の値を更新できます。
+
+### 使い方
+
+スクリプトはコマンドラインから次のように実行されます：
+
+```
+python drone_config.py <json_file> <path> <new_value>
+```
+
+### 引数
+
+- `json_file`: 更新するJSONファイルへのパスを指定します。
+- `path`: 更新する要素へのドット区切りパス。例えば、`components.droneDynamics.mass_kg`のように指定します。
+- `new_value`: 要素に設定する新しい値。値の型は自動的に元の値の型に合わせて変換されます。
+
+### 値の型変換
+
+プログラムは、新しい値を次のルールに従って適切な型に変換します：
+
+- 整数（`int`）への変換が必要な場合、新しい値は整数に変換されます。
+- 浮動小数点数（`float`）への変換が必要な場合、新しい値は浮動小数点数に変換されます。
+- 文字列（`str`）への変換が必要な場合、新しい値は文字列に変換されます。
+- 真偽値（`bool`）への変換が必要な場合、`"true"`または`"false"`の文字列が真偽値に変換されます。
+- JSON配列やオブジェクトなど、その他のデータ型を更新する場合、適切なJSON形式の文字列を使用します（例: `'[0.015, 0.015, 0.03]'`）。
+
+### エラーハンドリング
+
+- もし指定したパスが存在しない場合、プログラムはエラーメッセージを出力します。
+- もし指定したキーが存在しない場合、プログラムはエラーメッセージを出力します。
+- 型変換に失敗した場合、プログラムはエラーメッセージを出力します。
+
+### 実行例
+
+JSONファイル内の`components.droneDynamics.mass_kg`の値を`1.5`に更新するには、次のコマンドを実行します：
+
+```
+python drone_config.py path_to_file.json components.droneDynamics.mass_kg 1.5
+```
+
+### 注意
+
+- このスクリプトは、コマンドライン引数として有効なJSONファイルのパスと、更新する要素の有効なパス、そして有効な新しい値が提供されることを前提としています。
+- JSONファイルはプログラムによって上書きされます。元のファイルのバックアップを取っておくことを推奨します。
+
+
 ## Test Scenario
+
+TODO
 
 ## Test Scenario Executor
 
+TODO
+
 ## Logs / LogOutputDirectory
+
+TODO
 
 ## Test Result Evaluator
 
+TODO
 
 # テスト実行方法
+
+TODO
 
