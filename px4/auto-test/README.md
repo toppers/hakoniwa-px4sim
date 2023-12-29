@@ -87,7 +87,57 @@ python drone_config.py path_to_file.json components.droneDynamics.mass_kg 1.5
 
 ## Test Scenario
 
-TODO
+テストシナリオは、ドローンの飛行テストを自動化するためにJSON形式で定義されます。各シナリオは、特定の操作とその操作に必要なパラメータを含むオブジェクトのリストです。
+
+### シナリオの形式
+
+テストシナリオは以下の形式で定義します：
+
+```json
+{
+    "scenario": [
+        {
+            "operation": "<操作名>",
+            "param1": <値1>,
+            "param2": <値2>,
+            ...
+        },
+        ...
+    ]
+}
+```
+
+### オペレーション項目
+
+テストシナリオでは、以下のオペレーション項目を設定できます：
+
+* takeoff: ドローンに離陸命令を出します。
+* start_landing: ドローンに特定の位置に向かって移動します。
+
+現時点でサポートされているオペレーションは takeoff と start_landing のみです。
+
+#### takeoff
+
+離陸を指示します。
+
+* alt: 離陸後の目標高度。単位はメートル(m)。
+* duration_sec: 離陸操作を続ける時間。単位は秒(sec)。
+
+#### start_landing
+
+移動を指示します。
+
+* lat: 初期位置の緯度からの相対位置。単位はメートル(m)。
+* lon: 初期位置の経度からの相対位置。単位はメートル(m)。
+* alt: 初期位置の高度からの相対位置。単位はメートル(m)。
+* duration_sec: 移動操作を続ける時間。単位は秒(sec)。
+
+### 設定例
+
+* [takeoff](https://github.com/toppers/hakoniwa-px4sim/blob/main/px4/auto-test/test_scenario/takeoff.json)
+  * 離陸指示を出し、5m上昇してホバリングを続けます。20秒経過するとこのオペレーションは終了します。
+* [takeoff_and_move.json](https://github.com/toppers/hakoniwa-px4sim/blob/main/px4/auto-test/test_scenario/takeoff_and_move.json)
+  * 離陸指示を出し、10m上昇してホバリングを続けます。その後、東→北→西→南の順番で10m移動し続けます。各オペレーションは20秒間持続します。 
 
 ## Test Scenario Executor
 
