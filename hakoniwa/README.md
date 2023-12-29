@@ -47,3 +47,48 @@ bash build.bash
 ```
 
 成功すると、` cmake-build/src/hako-px4sim` というファイルが作成されます。
+
+
+# 機体のパラメータ説明
+
+機体のパラメータは、[drone_config.json](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json)で設定できます。
+
+各項目の設定内容は以下のとおりです。
+
+## シミュレーション設定
+- **lockstep**: シミュレーションのロックステップモード。`true` で同期モードに設定されます。
+- **timeStep**: シミュレーションのタイムステップ間隔。単位は秒(`s`)。例: `0.003`。
+- **logOutputDirectory**: ログファイルの出力ディレクトリへのパス。例: `"./"`。
+- **logOutput**: 各種センサーとMAVLinkのログ出力の有効/無効。
+  - **sensors**: 各センサーのログ出力設定。`true` または `false`。
+  - **mavlink**: MAVLinkメッセージのログ出力設定。`true` または `false`。
+- **mavlink_tx_period_msec**: MAVLinkメッセージの送信周期。単位はミリ秒(`ms`)。
+- **location**: シミュレーションの地理的位置。
+  - **latitude**: 緯度。単位は度(`deg`)。
+  - **longitude**: 経度。単位は度(`deg`)。
+  - **altitude**: 高度。単位はメートル(`m`)。
+  - **magneticField**: 地磁気の強度と方向。
+    - **intensity_nT**: 地磁気の強度。単位はナノテスラ(`nT`)。
+    - **declination_deg**: 地磁気の偏角。単位は度(`deg`)。
+    - **inclination_deg**: 地磁気の傾斜角。単位は度(`deg`)。
+
+## コンポーネント設定
+- **droneDynamics**: ドローンの動力学モデル。
+  - **physicsEquation**: 運動方程式のタイプ(BodyFrameのみ対応しています)。
+  - **airFrictionCoefficient**: 空気抵抗係数。
+  - **inertia**: 慣性モーメントのリスト。単位はキログラム・メートル二乗(`kg*m^2`)。
+  - **mass_kg**: ドローンの質量。単位はキログラム(`kg`)。
+  - **position_meter**: 機体の初期位置。単位はメートル(`m`)。
+  - **angle_degree**: 機体の初期角度。単位は度(`deg`)。
+- **rotor**: ローターの設定。
+  - **Tr**: ローターの応答時間。単位は秒(`s`)。
+  - **Kr**: ローターの力定数。
+  - **rpmMax**: ローターの最大回転数。単位は回転/分(`rpm`)。
+- **thruster**: スラスターの設定。
+  - **rotorPositions**: ローターの位置と回転方向。単位はメートル(`m`)。rotationDirectionはローターの回転方向(CW:-1.0, CCW: 1.0)
+  - **HoveringRpm**: ホバリング時の回転数。単位は回転/分(`rpm`)。
+  - **parameterB**: スラスターのパラメータB。
+  - **parameterJr**: スラスターの慣性モーメントパラメータ。
+- **sensors**: 各種センサーの設定。
+  - **sampleCount**: サンプル数
+  - **noise**:ノイズレベル(標準偏差)。ノイズ未設定の場合は0。
