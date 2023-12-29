@@ -188,10 +188,41 @@ python hako_QgcStub.py <config_path> <drone_config_path> <test_scenario_path>
 - このプログラムは、有効なJSONファイルのパスと正しいフォーマットのテストシナリオが提供されることを前提としています。
 - テストシナリオの実行中にプログラムを中断する場合は、シグナルを送信してください。
 
-
 ## Logs / LogOutputDirectory
 
-TODO
+箱庭シミュレーションは、実行中の内部コンポーネントのロギングデータをCSVファイルとして `LogOutputDirectory` に出力します。`logOutputDirectory` は、[機体のパラメータ](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa#機体のパラメータ説明)で指定された場所に設定されます。
+
+### ログの内容
+
+出力されるログには以下のデータが含まれます。各CSVファイルの第一カラムには `timestamp` があり、この値はマイクロ秒単位(`usec`)で、PX4の時間と同じです。
+
+#### PX4との通信データ
+
+- **hil_sensor (log_hil_sensor.csv)**: HILセンサーデータ。
+- **hil_gps (log_comm_hil_gps.csv)**: HIL GPSデータ。
+- **hil_actuator (log_comm_hil_actuator_controls.csv)**: HILアクチュエータコントロールデータ。
+
+#### センサ/アクチュエータのログ
+
+- **drone_dynamics (drone_dynamics.csv)**
+  - `X`, `Y`, `Z`: ドローンの位置（初期位置からの相対位置、単位：メートル）。
+  - `Rx`, `Ry`, `Rz`: ドローンの姿勢角（単位：ラジアン）。
+- **rotor (log_rotor_<id>.csv)**
+  - `RPM`: ローターの回転数。
+- **thruster (log_thrust.csv)**
+  - `Thrust`: 推力。
+  - `Tx`, `Ty`, `Tz`: トルク。
+- **acc (log_acc.csv)**
+  - `X`, `Y`, `Z`: 加速度（単位：m/s^2）。
+- **gyro (log_gyro.csv)**
+  - `X`, `Y`, `Z`: 角速度（単位：rad/s）。
+- **mag (log_mag.csv)**
+  - `X`, `Y`, `Z`: 磁気センサの値（単位：nT）。
+- **baro (log_baro.csv)**
+  - `abs_p`, `diff_p`, `p_alt`: 気圧センサデータ（MAVLinkと同じ情報）。
+- **gps (log_gps.csv)**
+  - `lat`, `lon`, `alt`, `vel`, `vn`, `ve`, `vd`, `cog`: GPSデータ（MAVLinkと同じ情報）。
+
 
 ## Test Result Evaluator
 
