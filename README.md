@@ -1,5 +1,23 @@
 [![Build](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml)
 
+このリポジトリは、PX4と連携可能なドローンのプラントモデル用シミュレーション環境です。このシミュレーション環境は、ドローンの動作を物理式ベースで正確にモデル化し、C言語で実装しています。
+
+# 特徴
+
+1. **物理式ベースのプラントモデル:** ドローンの動作は、物理学に基づいた高精度なモデルで表現されています。これはC言語で開発されており、PX4とシームレスに連携します。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_physics)を参照ください。
+
+2. **ゲームエンジンによるビジュアライズ:** ドローンのビジュアル表現は、ゲームエンジンを使用して実現しています。このビジュアライズは、物理シミュレーションの補助として機能し、主に可視化を目的としています。
+
+3. **エンジンの柔軟性:** 現時点ではUnityエンジンをサポートしていますが、アーキテクチャは他のゲームエンジンとの連携も可能に設計されています。
+
+4. **MATLAB/Simulinkとの互換性:** 物理式モデルは、MATLAB/Simulinkで作成したモデルとも連携できるようになっています。
+
+5. **センサモデルの整備:** センサモデルはアーキテクチャ内で整理され、明確な仕様に基づいています。これにより、ユーザーはセンサモデルを仕様に合わせて交換することが可能です。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs)を参照ください。
+
+6. **ヘッドレス対応:** Unityなしでのシミュレーションが可能です。これにより、グラフィカルなインターフェースを必要としない環境でも、シミュレーションの実行が可能になります。
+
+7. **自動テストのサポート:** テストシナリオベースでの自動テストが可能です。これにより、繰り返しのテストや連続したテストの自動化が実現可能になり、開発プロセスの効率化が図れます。
+
 # 環境
 
 * サポートOS
@@ -29,12 +47,12 @@ git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
 ```
 
 ```
-git clone -b px4 --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
+git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
 ```
 
 hakoniwa-unity-drone-model のインストール手順は、以下を参照ください。
 
-https://github.com/toppers/hakoniwa-unity-drone-model/tree/px4
+https://github.com/toppers/hakoniwa-unity-drone-model
 
 
 # hakoniwa-px4sim のインストール手順
