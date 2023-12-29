@@ -8,6 +8,8 @@
 
 # 自動テストシステムのアーキテクチャ
 
+<img width="929" alt="スクリーンショット 2023-12-29 10 59 02" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/6115dfa5-8cf6-47ff-b6d6-843aca488422">
+
 自動テストシステムは、複数のコンポーネントから構成され、ドローンの動作テスト、機体パラメータのチューニング、ドローン制御プログラムの検証を可能にします。以下の説明は、システムの各コンポーネントとその機能を明確にします。
 
 - **Drone Parameter Generator**: 
@@ -33,9 +35,15 @@
 
 これらのコンポーネントは連携して動作し、柔軟かつ精密なテストを実現します。結果として、開発プロセスが大幅に加速されます。
 
+## Drone Parameter Generator
 
+## Test Scenario
 
-# テストシナリオの仕様
+## Test Scenario Executor
+
+## Logs / LogOutputDirectory
+
+## Test Result Evaluator
 
 
 # テスト実行方法
