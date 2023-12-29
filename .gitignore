@@ -9,6 +9,10 @@
 */cmake-build/*
 __pycache__
 
+px4/auto-test/test_resource/eval/*.txt
+px4/auto-test/test_resource/logs/*.csv
+px4/auto-test/test_resource/work/*.json
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
