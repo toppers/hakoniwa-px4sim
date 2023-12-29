@@ -268,7 +268,61 @@ python eval_data_mean_stdev.py <input_json> <data_location_path>
 - データの解析と評価は、統計的な手法に基づいています。したがって、データの性質や評価の目的に応じて適切な手法を選択する必要があります。
 
 
-# テスト実行方法
+# テスト自動実行方法
 
-TODO
+このセクションでは、システムの各コンポーネントを組み合わせてテストを自動化する方法を説明します。以下のスクリプトは、シミュレーションの設定、テストの実行、そして結果の評価を一連のステップとして実行します。
 
+## テストスクリプトの概要
+
+テストを自動化するためのBashスクリプト([auto-test.bash](https://github.com/toppers/hakoniwa-px4sim/blob/main/px4/auto-test/auto-test.bash))は以下の手順でテストを自動実行します：
+
+1. **テスト条件の準備**：
+   - ベースとなるドローンの機体パラメータ設定をコピーし、必要に応じて特定のパラメータを変更します。
+
+2. **テストの実行**：
+   - [hako-start.bash](https://github.com/toppers/hakoniwa-px4sim/blob/main/hako-start.bash) スクリプトを使用して、指定された設定とテストシナリオでシミュレーションを実行します。
+
+3. **テスト結果の評価**：
+   - `eval_data_mean_stdev.py` スクリプトを使用して、テスト結果を評価し、結果をテキストファイルに出力します。
+
+## 使用方法
+
+スクリプトはコマンドラインから以下のように実行します：
+
+```
+bash auto-test.bash <test-resource-path> <test_scenario>
+```
+
+- `<test-resource-path>`：テストリソースのパス（設定ファイルやログ出力ディレクトリが含まれます）。
+- `<test_scenario>`：実行するテストシナリオへのパス。
+
+```
+test_resource
+├── configs
+│   ├── config.json
+│   └── drone_config_base.json
+├── eval
+├── logs
+└── work 
+```
+
+## テストの例
+
+以下は、空気抵抗係数の異なる複数のテストを実行するサンプルコードです。
+このコードは、異なる空気抵抗係数を設定し、それぞれのシナリオでテストを実行し、結果を評価します。
+
+```bash
+
+for p in 0 1 2 3 4
+do
+    echo "INFO: START TEST PARAM=${p}"
+    do_test components.droneDynamics.airFrictionCoefficient 0.${p} result_0${p}
+    sleep 5
+    echo "INFO: END TEST"
+done
+```
+
+## 注意
+
+このスクリプトは一例であり、異なるテストパラメータやシナリオに応じてカスタマイズすることが可能です。
+スクリプトを実行する前に、必要なすべての依存関係が正しく設定されていることを確認してください。
