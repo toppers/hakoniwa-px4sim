@@ -33,7 +33,7 @@
   * Windowsの場合
     * [Windowsの場合の箱庭構成例](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md)と同じです。
 * 利用するドローン
-  * https://github.com/toppers/hakoniwa-unity-drone-model/tree/px4
+  * https://github.com/toppers/hakoniwa-unity-drone-model/tree/main
   * 下記のディレクトリ構成のように、本リポジトリと同じ階層でクローンしてください。
     ```
     hakoniwa-unity-drone-model/
