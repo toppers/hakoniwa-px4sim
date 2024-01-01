@@ -19,7 +19,16 @@ VectorType operator + (const VectorType& u, const VectorType& v);
  * <1> theta(y-rotation or pitch), -PI/2 <= theta < PI/2
  * <2> psi(z-rotation or yaw),       -PI <= psi   < PI
  * and (0,0,0) is the initial state.
+ * 
+ * From ground to body, vectors are transformed in the order 
+ * of psi, theta, phi. The coordinate system is right-handed, and
+ * the rotation matrix is calculated as follows,
+ * where v_e = (x_e, y_e, z_e), v_b = (x_b, y_b, z_b).
+ * 
+ *     v_e = R_z(psi)R_y(theta)R_x(phi) v_b
+ * 
  * See https://www.sky-engin.jp/blog/eulerian-angles/
+ * https://mtkbirdman.com/flight-dynamics-body-axes-system
 */
 
 /* maths for frame transformations */
