@@ -24,8 +24,19 @@ function do_test()
     bash hako-start.bash ${TEST_RESOURCE_PATH}/configs/config.json ${TEST_RESOURCE_PATH}/work/drone_config.json ${TEST_SCENARIO}
 
     # EVALUATE TEST RESULTS
-    python3 px4/auto-test/evaluation/eval_data_mean_stdev.py  px4/auto-test/evaluation_input/eval_height.json  ${TEST_RESOURCE_PATH}/logs \
-            | tee ${TEST_RESOURCE_PATH}/eval/${result_name}.txt
+    if [ ! -d ${TEST_RESOURCE_PATH}/eval/last_point ]
+    then
+        mkdir ${TEST_RESOURCE_PATH}/eval/last_point
+    fi
+    python3 px4/auto-test/evaluation/eval_data_mean_stdev.py  \
+        px4/auto-test/evaluation_input/eval_height.json  ${TEST_RESOURCE_PATH}/logs \
+        | tee ${TEST_RESOURCE_PATH}/eval/last_point/alt_${result_name}.txt
+    python3 px4/auto-test/evaluation/eval_data_mean_stdev.py  \
+        px4/auto-test/evaluation_input/eval_lat.json  ${TEST_RESOURCE_PATH}/logs \
+        | tee ${TEST_RESOURCE_PATH}/eval/last_point/lat_${result_name}.txt
+    python3 px4/auto-test/evaluation/eval_data_mean_stdev.py  \
+        px4/auto-test/evaluation_input/eval_lon.json  ${TEST_RESOURCE_PATH}/logs \
+        | tee ${TEST_RESOURCE_PATH}/eval/last_point/lon_${result_name}.txt
 }
 function do_test_move()
 {
@@ -68,27 +79,33 @@ function do_config_thruster()
 
     python3 hakoniwa/python/drone_config.py ${TEST_RESOURCE_PATH}/work/drone_config.json \
         components.thruster.parameterB "${p1}e-09"
-    echo "components.thruster.parameterB "${p1}e-09"
+    echo "components.thruster.parameterB ${p1}e-09"
 
     python3 hakoniwa/python/drone_config.py ${TEST_RESOURCE_PATH}/work/drone_config.json \
         components.thruster.parameterJr  "${p2}e-08"
-    echo "components.thruster.parameterJr  "${p2}e-08"
+    echo "components.thruster.parameterJr  ${p2}e-08"
 }
 
 # 以下はサンプルとしてのテストプログラムです。
 #for p1 in 0.05 0.1 0.15 0.2 0.25
 #for p1 in 0.5 1.0 2.0 5.0 10.0 20.0
-for p1 in 30.0 40.0 50.0 60.0 70.0 80.0
-#for p1 in 0.1
+for p1 in 20.0 30.0 60.0 80.0 100.0
+#for p1 in 60.0
 do
 #    for p2 in 0.001 0.005 0.01 0.015 0.02
-    for p2 in 0.1 0.2 0.5 1.0 1.5 2.0 4.0
-#    for p2 in 0.01
+    for p2 in 1.0 2.0 4.0 6.0 8.0
+#    for p2 in 5.5
     do
-        echo "INFO: START TEST PARAM=${p}"
+        echo "INFO: START TEST PARAM=${p1}-${p2}"
         do_config_thruster ${p1} ${p2}
         FILENAME=$(echo "result-p${p1}-p${p2}" | sed 's/\./_/g')
-        do_test_move ${FILENAME}
+        do_test ${FILENAME}
+        if [ ! -d  ${TEST_RESOURCE_PATH}/eval/logs ]
+        then
+            mkdir ${TEST_RESOURCE_PATH}/eval/logs
+        fi
+        cp ${TEST_RESOURCE_PATH}/logs/drone_dynamics.csv \
+            ${TEST_RESOURCE_PATH}/eval/logs/drone_dynamics-p${p1}-p${p2}.csv
         sleep 5
         echo "INFO: END TEST"
     done

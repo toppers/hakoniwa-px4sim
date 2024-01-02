@@ -3,7 +3,7 @@
 # プロセス終了
 terminate_px4_process()
 {
-    ps aux | grep px4_sitl_default | grep -v grep | awk '{print $2}' | xargs kill -TERM
+    ps aux | grep px4_sitl_default | grep -v grep | awk '{print $2}' | xargs kill -9
 }
 
 terminate_processes() {

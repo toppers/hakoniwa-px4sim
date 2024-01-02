@@ -3,35 +3,35 @@
         {
             "operation": "takeoff",
             "alt": 10,
-            "duration_sec": 20
+            "duration_sec": 25
         },
         {
             "operation": "start_landing",
             "lat": 0,
-            "lon": 100,
+            "lon": -40,
             "alt": 10,
-            "duration_sec": 60
+            "duration_sec": 55
         },
         {
             "operation": "start_landing",
-            "lat": 100,
-            "lon": 100,
-            "alt": 10,
-            "duration_sec": 60
-        },
-        {
-            "operation": "start_landing",
-            "lat": 100,
+            "lat": 40,
             "lon": 0,
             "alt": 10,
-            "duration_sec": 60
+            "duration_sec": 55
         },
         {
             "operation": "start_landing",
             "lat": 0,
             "lon": 0,
             "alt": 10,
-            "duration_sec": 60
+            "duration_sec": 55
+        },
+        {
+            "operation": "start_landing",
+            "lat": 40,
+            "lon": 0,
+            "alt": 10,
+            "duration_sec": 55
         }
-    ]
+   ]
 }
