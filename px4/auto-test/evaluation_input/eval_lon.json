@@ -1,0 +1,11 @@
+{
+    "file": "drone_dynamics.csv",
+    "time_colname": "timestamp",
+    "time_unit": "usec",
+    "data_colname": "Y",
+    "data_range_from_end": true,
+    "offset_sec": 0,
+    "duration_sec": 5, 
+    "expected_mean_value": 5,
+    "expected_stdev_value": 0.1
+}

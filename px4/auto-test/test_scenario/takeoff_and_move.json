@@ -8,30 +8,30 @@
         {
             "operation": "start_landing",
             "lat": 0,
-            "lon": 10,
+            "lon": 100,
             "alt": 10,
-            "duration_sec": 20
+            "duration_sec": 60
         },
         {
             "operation": "start_landing",
-            "lat": 10,
-            "lon": 10,
+            "lat": 100,
+            "lon": 100,
             "alt": 10,
-            "duration_sec": 20
+            "duration_sec": 60
         },
         {
             "operation": "start_landing",
-            "lat": 10,
+            "lat": 100,
             "lon": 0,
             "alt": 10,
-            "duration_sec": 20
+            "duration_sec": 60
         },
         {
             "operation": "start_landing",
             "lat": 0,
             "lon": 0,
             "alt": 10,
-            "duration_sec": 20
+            "duration_sec": 60
         }
     ]
 }
