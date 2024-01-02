@@ -44,9 +44,20 @@ for file_name in os.listdir(directory):
 df = pd.DataFrame(data, columns=[args.first, args.second, 'Score'])
 
 # DataFrame をカラム名でソート
-df.sort_values(by=[args.first, args.second], inplace=True)
+#df.sort_values(by=[args.first, args.second], inplace=True)
+
+# 同じパラメータの組み合わせで平均化
+df_avg = df.groupby([args.first, args.second]).mean().reset_index()
+
+# カラムを数値型に変換
+df_avg[args.first] = pd.to_numeric(df_avg[args.first], errors='coerce')
+df_avg[args.second] = pd.to_numeric(df_avg[args.second], errors='coerce')
+
+# DataFrame をカラム名でソート
+df_avg.sort_values(by=[args.first, args.second], inplace=True)
+
 
 # CSV に変換
-df.to_csv('result.csv', index=False)
+df_avg.to_csv('averaged_result.csv', index=False)
 
-print('CSVファイルに変換されました: result.csv')
+print('平均化されたスコアのCSVファイルに変換されました: averaged_result.csv')
