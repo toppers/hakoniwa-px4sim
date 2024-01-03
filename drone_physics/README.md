@@ -24,6 +24,8 @@ I hope this can be a reference implmentation for the basic drone dynamics.
 
 ## Hello World
 
+### In C++
+
 ```cpp
 #include <iostream>
 
@@ -60,6 +62,8 @@ int main() {
 }
 ```
 
+### In C
+
 ```C
 #include <stdio.h>
 
@@ -94,14 +98,25 @@ int main() {
 
 ## Installation
 
-TODO: Not yet written.
-Copy the source code to your project.
+Copy this whole directory to your project.
+There is `CMkakeLists.txt`, use CMake to build.
 
-- In C++, `drone_physics.hpp` is the header file you need. See the header file for the prototypes of the functions.
-- In C, `drone_physics_c.h` is the header file.
+```bash
+$ cmake .
+$ make
+```
 
-`examples.cpp`` and `utest.cpp` are the examples and unit tests for the functions in C++.
-`cexamples.c`` and `ctest.c` are the examples and unit tests for the functions in C.
+- The C++ library is built as `libdrone_physics.a`.
+- The C library is built as `libdrone_physics_c.a`.
+- Test programs `utest` `ctest` `examples` `cexamples` are also built as unit tests and examples.
+
+I your programs,
+
+- In C++, include `drone_physics.hpp` into your C++ code and link with libdrone_physics.a.
+- In C, include `drone_physics_c.h` into your C code and link with libdrone_physics_c.a.
+
+See `examples.cpp`, `utest.cpp` for more examples in C++,
+and `cexamples.c`, `ctest.c` for more examples in C.
 
 ## List of functions
 
@@ -133,10 +148,6 @@ Functions are implemented in the following categories, with the referece to the 
 |----------|-----------|------|
 |`body_thrust` | (2.61) | Sum of the $n$ trust from the rotors |
 |`body_torque` | (2.60)-(2.62) | Sum of the torques from the $n$ rotors based on the positionings of them |
-
-## Usage
-
-See examples.cpp and utest.cpp for more examples.
 
 ## Equations
 
@@ -288,7 +299,8 @@ Mission:
 
 ## Tests
 
-utest.cpp has unit tests for the functions.
+`utest.cpp` has unit tests for all the functions. It is not easy to read, but you can use it as a reference.
+`ctest.c` has C interface tests.
 
 ## Implementation Policy
 - All the functions are implemented in standard C++17.

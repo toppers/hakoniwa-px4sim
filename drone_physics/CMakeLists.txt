@@ -13,33 +13,57 @@ else()
     include(default-cmake-options.cmake)
 endif()
 
+add_library(
+    drone_physics
+    body_physics.cpp
+    rotor_physics.cpp
+)
+
+add_library(
+    drone_physics_c
+    drone_physics_c.cpp
+    body_physics.cpp
+    rotor_physics.cpp
+)
+
 add_executable(
     utest
-    ${PROJECT_SOURCE_DIR}/body_physics.cpp
-    ${PROJECT_SOURCE_DIR}/rotor_physics.cpp
-    ${PROJECT_SOURCE_DIR}/utest.cpp
+    utest.cpp
 )
-add_executable(
+
+target_link_libraries(
+    utest
+    drone_physics
+ )
+
+ add_executable(
     ctest
-    ${PROJECT_SOURCE_DIR}/ctest.c
-    ${PROJECT_SOURCE_DIR}/drone_physics_c.cpp
-    ${PROJECT_SOURCE_DIR}/body_physics.cpp
-    ${PROJECT_SOURCE_DIR}/rotor_physics.cpp
+    ctest.c
+)
+
+target_link_libraries(
+    ctest
+    drone_physics_c
 )
 
 add_executable(
     examples
-    ${PROJECT_SOURCE_DIR}/examples.cpp
-    ${PROJECT_SOURCE_DIR}/body_physics.cpp
-    ${PROJECT_SOURCE_DIR}/rotor_physics.cpp
+    examples.cpp
+)
+
+target_link_libraries(
+    examples
+    drone_physics
 )
 
 add_executable(
     cexamples
-    ${PROJECT_SOURCE_DIR}/cexamples.c
-    ${PROJECT_SOURCE_DIR}/drone_physics_c.cpp
-    ${PROJECT_SOURCE_DIR}/body_physics.cpp
-    ${PROJECT_SOURCE_DIR}/rotor_physics.cpp
+    cexamples.c
+)
+
+target_link_libraries(
+    cexamples
+    drone_physics_c
 )
 
 enable_testing()
