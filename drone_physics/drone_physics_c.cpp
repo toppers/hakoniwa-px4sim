@@ -33,4 +33,23 @@ dp_velocity_t dp_velocity_body_to_ground(
         );
 }
 
+/* maths for frame transformations */
+dp_velocity_t dp_velocity_ground_to_body(
+    const dp_velocity_t* ground, /* non-null */
+    const dp_angle_t* angle /* non-null */)
+{
+    assert(ground);
+    assert(angle);
+
+    return to_dp_vector(
+        hako::drone_physics::velocity_ground_to_body(
+            to_vector(ground),
+            to_vector(angle)
+            )
+        );
 }
+
+
+
+
+} // extern "C"

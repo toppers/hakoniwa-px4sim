@@ -15,6 +15,8 @@
 すべての関数は、以下の書籍の式の C++ 実装であり、ソースコードコメントに式番号が記載されています。
 本のすべての式を実装しているわけではありませんが、箱庭プロジェクトのドローンはこのライブラリを使って実際に飛行しています。
 
+なお，C 言語の I/F もあります．
+
 このライブラリが、本を読んで実際にコードを書く方の参考になれば嬉しいです。
 
 - [『ドローン工学入門』工学博士 野波健蔵【著】](https://www.coronasha.co.jp/np/isbn/9784339032307/)
@@ -24,6 +26,8 @@
 
 
 ## Hello World
+
+C++では，
 
 ```cpp
 #include <iostream>
@@ -61,15 +65,53 @@ int main() {
 }
 ```
 
+C言語では，
+
+```c
+#include <stdio.h>
+
+// include the library header
+#include "drone_physics_c.h"
+
+int main() {
+    // 機体座標系を Euler 角で指定, dp_ は dron_physics の接頭
+    dp_angle_t frame = {0, 0, M_PI/2};
+    dp_velocity_t body_velocity = {100, 200, 300};
+
+    // 機体座標系から地上座標系への速度変換
+    dp_velocity_t g = dp_velocity_body_to_ground(&body_velocity, &frame);
+
+    // x,y,z 座標を取り出す
+    printf("x=%g, y=%g, z=%g\n", g.x, g.y, g.z);
+    // output: u = 200, v = -100, w = 300
+
+    // このように、初期化指定を使うこともできる
+    // 逆変換して戻す
+    dp_velocity_t body_velocity2 = dp_velocity_ground_to_body(
+        &g, &(dp_angle_t){0, 0, M_PI/2}
+    );
+
+    printf("x=%g, y=%g, z=%g\n", b.x, b.y, b.z);
+    // output: x = 100, y = 200, z = 300, back again.
+
+}
+```
+
+
 ## インストール
 
-TODO: まだインストール方法が書けていません。ソースコードをコピーしてください。`drone_physics.hpp` をインクルードし、ヘッダーファイルのプロとタプ宣言をみて利用してください。
+TODO: まだインストール方法が書けていません。ソースコードをコピーしてください。
 
-`examples.cpp` と `utest.cpp` に呼び出し例があります。
+- C++言語では，`drone_physics.hpp` をインクルードし、プロトタイプ宣言をみて利用してください。
+- C言語では，`drone_physics_c.h`をインクルードし、プロトタイプ宣言をみて利用してください。
+
+`examples.cpp` と `utest.cpp` にC++言語での呼び出し例があります。
+`cexamples.c` と `ctest.c` にC言語での呼び出し例があります。
+
 
 ## 関数リスト
 
-関数は以下のカテゴリから構成され、書籍の式番号が記載されています。
+関数は以下のカテゴリから構成され、書籍の式番号が記載されています（C++）。
 
 ### 座標変換
 | 関数 | 数式 | 意味 |
