@@ -52,8 +52,8 @@ int main() {
     // you can also use explicit constructors.
     // reverse the conversion to the body frame.
     VelocityType body_velocity2 = velocity_ground_to_body(
-        VelocityType(u, v, w),
-        AngleType(0, 0, M_PI/2)
+        VelocityType{u, v, w},
+        AngleType{0, 0, M_PI/2}
     );
 
     auto [u2, v2, w2] = body_velocity2;

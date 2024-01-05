@@ -87,7 +87,7 @@ int main() {
 
     // このように、初期化指定を使うこともできる
     // 逆変換して戻す
-    dp_velocity_t body_velocity2 = dp_velocity_ground_to_body(
+    dp_velocity_t b = dp_velocity_ground_to_body(
         &g, &(dp_angle_t){0, 0, M_PI/2}
     );
 
@@ -300,7 +300,6 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 ## 実装方針
 - すべての関数は、標準 C++17 で実装されています。
 - std:: 名前空間以外の外部ライブラリは使用していません。
-- 他のライブラリ（std:: 名前空間を除く）に依存ていません。
 - すべて関数として実装され、クラスはありません。すなわち内部状態を持ちません。
 
 ## 謝辞
