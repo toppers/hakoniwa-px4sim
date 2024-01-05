@@ -140,7 +140,7 @@ static void* asset_runner(void*)
     }
     while (true) {
         Hako_uint64 hako_asset_time_usec = microseconds;
-        Hako_uint64 px4_time_usec;
+        Hako_uint64 px4_time_usec = 0;
         hako_sim_asset_time = 0;
         bool isRecvControl = false;
         std::cout << "INFO: start simulation" << std::endl;
@@ -174,9 +174,14 @@ static void* asset_runner(void*)
             }
             else {
                 hako_asset_time_usec += delta_time_usec;
-                //write Mavlink Message
                 mavlink_io.write_sensor_data(*drone);
-                px4sim_send_sensor_data(hako_asset_time_usec, microseconds);
+                if (px4_time_usec == 0) {
+                    //write Mavlink Message
+                    px4sim_send_sensor_data(hako_asset_time_usec, microseconds);
+                }
+                else {
+                    px4sim_send_sensor_data(px4_time_usec + delta_time_usec, microseconds);
+                }
                 hako_sim_asset_time += delta_time_usec;
             }
         }
