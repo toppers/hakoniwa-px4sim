@@ -15,8 +15,16 @@ typedef struct {
     double x, y, z;
 } dp_vector_t;
 
+typedef struct {
+    double phi;   // rotation round x-axis
+    double theta; // rotation round y-axis
+    double psi;   // rotation round z-axis
+} dp_angle_t;
+
 typedef dp_vector_t
-    dp_velocity_t, dp_acceleration_t, dp_angle_t, dp_angular_velocity_t, dp_angular_acceleration_t;
+    dp_velocity_t, dp_acceleration_t;
+typedef dp_angle_t
+    dp_angular_velocity_t, dp_angular_acceleration_t;
 
 /* maths for frame transformations */
 dp_velocity_t dp_velocity_body_to_ground(

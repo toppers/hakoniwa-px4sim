@@ -1,24 +1,52 @@
 #ifndef _BODY_PHYSICS_HPP_
 #define _BODY_PHYSICS_HPP_
-#include <tuple>
+
+#ifdef BP_INCLUDE_IO /* for printint out */
+#include <iostream>
+#endif /* BP_INCLUDE_IO */
+
 
 namespace hako::drone_physics {
 
-typedef std::tuple<double, double, double> VectorType;
-typedef VectorType
-    VelocityType, AccelerationType, AngleType, AngularVelocityType, AngularAccelerationType;
+typedef struct vector_type_t {
+    double x, y, z;
+} VectorType;
+typedef VectorType VelocityType;
+typedef VectorType AccelerationType;
+typedef VectorType TorqueType;
+
+typedef struct angle_type_t {
+    double phi;   // rotation round x-axis
+    double theta; // rotation round y-axis
+    double psi;   // rotation round z-axis
+} AngleType;
+typedef AngleType AngularVelocityType;
+typedef AngleType AngularAccelerationType;
 
 /* basic operators */
 VectorType cross(const VectorType& u, const VectorType& v);
 VectorType& operator += (VectorType& u, const VectorType& v);
 VectorType operator + (const VectorType& u, const VectorType& v);
 
+#ifdef BP_INCLUDE_IO /* for printint out */
+std::ostream& operator << (std::ostream& os, const VectorType& v) {
+    os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
+    return os;
+}
+std::ostream& operator << (std::ostream& os, const AngleType& v) {
+    os << "(" << v.phi << "r, " << v.theta << "r, " << v.psi << "r)";
+    return os;
+}
+#endif /* BP_INCLUDE_IO */
+
 
 /* NOTE: for AnguleType, 
  * <0> phi(x-rotation or roll),      -PI <= phi   < PI
  * <1> theta(y-rotation or pitch), -PI/2 <= theta < PI/2
- * <2> psi(z-rotation or yaw),       -PI <= psi   < PI
- * and (0,0,0) is the initial state.
+ * <2> psi(z-rotation or yaw),       -PI <= psi   < PI,
+ * but for psi, all range are possible(exceeding PI even 2PI) when traveling around circles,
+ * 
+ * The initial angle is (0, 0, 0).
  * 
  * From ground to body, vectors are transformed in the order 
  * of psi, theta, phi. The coordinate system is right-handed, and
@@ -73,6 +101,6 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
 
-#endif /* _BODY_PHYSICS_HPP_ */
-
 } /* namespace hako::drone_physics */
+
+#endif /* _BODY_PHYSICS_HPP_ */

@@ -1,18 +1,11 @@
 #ifndef _ROTOR_PHYSICS_HPP_
 #define _ROTOR_PHYSICS_HPP_
 
-#include <tuple>
+#include "body_physics.hpp"
+
 namespace hako::drone_physics {
 
-typedef std::tuple<double, double, double> VectorType;
-typedef VectorType
-    TorqueType, PositionType;
-
-/* basic operators */
-VectorType cross(const VectorType& u, const VectorType& v);
-VectorType& operator += (VectorType& u, const VectorType& v);
-VectorType operator + (const VectorType& u, const VectorType& v);
-
+typedef VectorType TorqueType;
 
 /**
  * These functions are rotor dynamics.
@@ -59,7 +52,7 @@ TorqueType body_torque(
     double B, /* parameter B in Ta = B*(Omega)^2 + Jr* (d(Omega)/dt) */
     double Jr,
     unsigned n, /* number of rotors */
-    PositionType position[], /* position of each rotor */
+    VectorType position[], /* position of each rotor */
     double ccw[], /* 1 or -1 */
     double omega[], /* in rpm */
     double omega_acceleration[] /* in rpm/s */ );

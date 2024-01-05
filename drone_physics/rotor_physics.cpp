@@ -89,10 +89,9 @@ double body_thrust(double A, unsigned n, double omega[])
 /* the sum of the n torques from the rotors including anti-torque */
 /* eq.(2.60)-(2.62)*/
 TorqueType body_torque(double A, double B, double Jr, unsigned n,
-    PositionType position[], double ccw[], double omega[],
+    VectorType position[], double ccw[], double omega[],
     double omega_acceleration[])
 {
-    using std::get;
     TorqueType total_torque = {0, 0, 0};
     for (unsigned i = 0; i < n; i++) {
         /**
@@ -112,7 +111,7 @@ TorqueType body_torque(double A, double B, double Jr, unsigned n,
             rotor_anti_torque(B, Jr, omega[i], omega_acceleration[i], ccw[i]);
         
         total_torque += thrust_torque;
-        get<2>(total_torque) += anti_torque;
+        total_torque.z += anti_torque;
     }
     return total_torque;
 }

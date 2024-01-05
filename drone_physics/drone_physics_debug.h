@@ -1,0 +1,80 @@
+#ifndef _DRONE_PHYSICS_DEBUG_H_
+/* Only for test files in this directory. User of this library do not use this. */
+
+#ifdef __cplusplus
+#include <iostream>
+#include <cassert>
+#include <cmath>
+#include "drone_physics.hpp"
+
+static double diff(const hako::drone_physics::VectorType& v, const hako::drone_physics::VectorType& w) {
+    auto [x, y, z] = v;
+    auto [x2, y2, z2] = w;
+    return (x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2);
+}
+
+static double diff(const hako::drone_physics::AngleType& a, const hako::drone_physics::AngleType b) {
+    auto [phi, theta, psi] = a;
+    auto [phi2, theta2, psi2] = b;
+    return (phi-phi2)*(phi-phi2) + (theta-theta2)*(theta-theta2) + (psi-psi2)*(psi-psi2);
+}
+
+#define assert_almost_equal(a, b) \
+    assert(diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << ", " #b "=" << (b) << std::endl, 0))
+
+#define print_vec(v) std::cerr << #v "=" << v << std::endl
+
+/* for testing. use like T(test_func_name). */
+#define T(f) do {std::cerr<< #f ; f(); std::cerr << "... PASS" << std::endl;} while(false)
+
+#else /* __cplusplus */
+
+/* C lang section */
+#include "drone_physics_c.h"
+#include <stdio.h>
+#include <assert.h>
+#include <math.h>
+
+static double diff(const dp_vector_t* v, const dp_vector_t* w) {
+    double x = v->x;
+    double y = v->y;
+    double z = v->z;
+    double x2 = w->x;
+    double y2 = w->y;
+    double z2 = w->z;
+  
+    return (x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2);
+}
+
+/* TOBE INCLUDED LATERS. just to erase compile -unused warning.
+static double diff_a(const dp_angle_t* a, const dp_angle_t* b) {
+    double phi = a->phi;
+    double theta = a->theta;
+    double psi = a->psi;
+    double phi2 = b->phi;
+    double theta2 = b->theta;
+    double psi2 = b->psi;
+    return (phi-phi2)*(phi-phi2) + (theta-theta2)*(theta-theta2) + (psi-psi2)*(psi-psi2);
+}
+*/
+
+/** Extract some tests from utest.cpp, via C interface */
+
+#define assert_almost_equal(a, b) \
+    assert(diff(&a, &b) < 0.0001 || (fprintf(stderr, "%s=%g,%s=%g\n", #a, a.x, #b, b.x), 0))
+
+#define assert_almost_equal_angle(a, b) \
+    assert(diff_a(&a, &b) < 0.0001 || (fprintf(stderr, "%s=%g,%s=%g\n", #a, a.x, #b, b.x), 0))
+
+#define print_vec(v) \
+    fprintf(stderr, "%s=(%g,%g,%g)\n", #v, v.x, v.y, v.z)
+
+#define print_ang(a) \
+    fprintf(stderr, "%s=(%g r,%g r,%g r)\n", #a, a.phi, a.theta, a.psi)
+
+#define T(f) do {fprintf(stderr, #f); f(); fprintf(stderr, "... PASS\n");} while(0)
+
+
+#endif /* __cplusplus */
+
+#endif /* _DRONE_PHYSICS_DEBUG_H_ */

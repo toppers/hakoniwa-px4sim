@@ -7,6 +7,8 @@
  *       + Rotor ... Drone Rotor Physics(Rotor Dynamics)
  */
 
+#define BP_INCLUDE_IO /* for printint out support */
+
 #include "body_physics.hpp"
 #include "rotor_physics.hpp"
 
