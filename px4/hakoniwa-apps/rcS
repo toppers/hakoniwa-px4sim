@@ -337,7 +337,7 @@ else
 fi
 . ${R}etc/init.d/rc.logging
 
-param set MPC_XY_CRUISE 4
+param set MPC_XY_CRUISE 3.5
 
 mavlink boot_complete
 replay trystart

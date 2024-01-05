@@ -35,5 +35,5 @@ if __name__ == "__main__":
     parser.add_argument('csv_file', help='CSV file containing moving data')
     args = parser.parse_args()
 
-    total_distance = calculate_total_distance(args.csv_file)
+    total_distance = calculate_total_distance_quick(args.csv_file)
     print(f"Total distance: {total_distance}")
