@@ -21,7 +21,7 @@ function do_test()
     local result_name=${1}
 
     # DO TEST
-    bash hako-start.bash ${TEST_RESOURCE_PATH}/configs/config.json ${TEST_RESOURCE_PATH}/work/drone_config.json ${TEST_SCENARIO}
+    bash hako-start.bash ${TEST_RESOURCE_PATH}/configs/config.json `pwd`/${TEST_RESOURCE_PATH}/work/drone_config.json ${TEST_SCENARIO}
 
     # EVALUATE TEST RESULTS
     if [ ! -d ${TEST_RESOURCE_PATH}/eval/last_point ]
@@ -78,23 +78,18 @@ function do_config_thruster()
     cp ${TEST_RESOURCE_PATH}/configs/drone_config_base.json ${TEST_RESOURCE_PATH}/work/drone_config.json 
 
     python3 hakoniwa/python/drone_config.py ${TEST_RESOURCE_PATH}/work/drone_config.json \
-        components.thruster.parameterB "${p1}e-09"
-    echo "components.thruster.parameterB ${p1}e-09"
+        components.thruster.parameterB "${p1}e-11"
 
     python3 hakoniwa/python/drone_config.py ${TEST_RESOURCE_PATH}/work/drone_config.json \
-        components.thruster.parameterJr  "${p2}e-08"
-    echo "components.thruster.parameterJr  ${p2}e-08"
+        components.thruster.parameterJr  "${p2}e-10"
 }
 
 # 以下はサンプルとしてのテストプログラムです。
-#for p1 in 0.05 0.1 0.15 0.2 0.25
-#for p1 in 0.5 1.0 2.0 5.0 10.0 20.0
-for p1 in 20.0 30.0 60.0 80.0 100.0
-#for p1 in 60.0
+for p1 in 1.0 2.0 3.0 4.0. 5.0 6.0 7.0 8.0 9.0 10.0
+#for p1 in 0.8
 do
-#    for p2 in 0.001 0.005 0.01 0.015 0.02
-    for p2 in 1.0 2.0 4.0 6.0 8.0
-#    for p2 in 5.5
+    for p2 in 1.0 2.0 4.0 8.0 16.0
+#    for p2 in 1.0
     do
         echo "INFO: START TEST PARAM=${p1}-${p2}"
         do_config_thruster ${p1} ${p2}
