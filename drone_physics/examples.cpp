@@ -28,7 +28,7 @@ int main() {
         AngleType{0, 0, M_PI/2}
     );
 
-    // another way to get the x,y,z components using std::get
+    // another way to get the x,y,z components.
     double u2 = body_velocity2.x;
     double v2 = body_velocity2.y;
     double w2 = body_velocity2.z;
