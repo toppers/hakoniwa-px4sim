@@ -24,7 +24,7 @@ private:
     DroneRotorSpeedType prev_rotor_speed[ROTOR_NUM];
     RotorConfigType rotor_config[ROTOR_NUM];
     double omega[ROTOR_NUM];
-    drone_physics::PositionType position[ROTOR_NUM];
+    drone_physics::VectorType position[ROTOR_NUM];
     double ccw[ROTOR_NUM];
     double omega_acceleration[ROTOR_NUM];
 

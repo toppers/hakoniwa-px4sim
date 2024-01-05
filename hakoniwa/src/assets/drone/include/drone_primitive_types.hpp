@@ -3,13 +3,13 @@
 
 #include <glm/vec3.hpp>
 #include <math.h>
-#include <tuple>
 #include "body_physics.hpp"
 
 namespace hako::assets::drone {
 
 const double GRAVITY = 9.81;
-extern glm::dvec3 tupleToVec3(const std::tuple<double, double, double>& tuple);
+extern glm::dvec3 tupleToVec3(const hako::drone_physics::VectorType& t);
+extern glm::dvec3 tupleToVec3(const hako::drone_physics::AngleType& t);
 
 /*
  * Coordinate System: Ground Coordinate System (NED)
@@ -23,13 +23,13 @@ extern glm::dvec3 tupleToVec3(const std::tuple<double, double, double>& tuple);
 typedef struct DronePosition {
     glm::dvec3 data;
     DronePosition(){}
-    DronePosition(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DronePosition& operator=(const std::tuple<double, double, double>& rhs) {
+    DronePosition(const hako::drone_physics::VectorType& rhs) : data(tupleToVec3(rhs)) {} 
+    DronePosition& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::VectorType() const {
+        return hako::drone_physics::VectorType{data.x, data.y, data.z};
     }
 } DronePositionType;
 
@@ -45,13 +45,13 @@ typedef struct DronePosition {
 typedef struct DroneVelocity {
     glm::dvec3 data;
     DroneVelocity(){}
-    DroneVelocity(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneVelocity& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneVelocity(const hako::drone_physics::VectorType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneVelocity& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::VectorType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneVelocityType;
 
@@ -68,13 +68,13 @@ typedef struct DroneVelocity {
 typedef struct DroneVelocityBodyFrame {
     glm::dvec3 data;
     DroneVelocityBodyFrame(){}
-    DroneVelocityBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneVelocityBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneVelocityBodyFrame(const hako::drone_physics::VectorType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneVelocityBodyFrame& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::VectorType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneVelocityBodyFrameType;
 
@@ -90,13 +90,13 @@ typedef struct DroneVelocityBodyFrame {
 typedef struct DroneAngle {
     glm::dvec3 data;
     DroneAngle(){}
-    DroneAngle(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneAngle& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneAngle(const hako::drone_physics::AngleType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngle& operator=(const hako::drone_physics::AngleType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::AngleType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneAngleType;
 
@@ -112,13 +112,13 @@ typedef struct DroneAngle {
 typedef struct DroneAngularVelocity {
     glm::dvec3 data;
     DroneAngularVelocity(){}
-    DroneAngularVelocity(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneAngularVelocity& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneAngularVelocity(const hako::drone_physics::AngleType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngularVelocity& operator=(const hako::drone_physics::AngleType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::AngleType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneAngularVelocityType;
 
@@ -135,26 +135,26 @@ typedef struct DroneAngularVelocity {
 typedef struct DroneAngularVelocityBodyFrame {
     glm::dvec3 data;
     DroneAngularVelocityBodyFrame(){}
-    DroneAngularVelocityBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneAngularVelocityBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneAngularVelocityBodyFrame(const hako::drone_physics::AngleType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngularVelocityBodyFrame& operator=(const hako::drone_physics::AngleType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::AngleType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneAngularVelocityBodyFrameType;
 
 typedef struct DroneAngularAccelerationBodyFrame {
     glm::dvec3 data;
     DroneAngularAccelerationBodyFrame(){}
-    DroneAngularAccelerationBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneAngularAccelerationBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneAngularAccelerationBodyFrame(const hako::drone_physics::AngleType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAngularAccelerationBodyFrame& operator=(const hako::drone_physics::AngleType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::AngleType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneAngularAccelerationBodyFrameType;
 
@@ -189,13 +189,13 @@ typedef struct {
 typedef struct DroneTorque {
     glm::dvec3 data;
     DroneTorque(){}
-    DroneTorque(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneTorque& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneTorque(const hako::drone_physics::VectorType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneTorque& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::VectorType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneTorqueType;
 
@@ -218,13 +218,13 @@ typedef struct {
 typedef struct DroneAccelerationBodyFrame {
     glm::dvec3 data;
     DroneAccelerationBodyFrame(){}
-    DroneAccelerationBodyFrame(const std::tuple<double, double, double>& rhs) : data(tupleToVec3(rhs)) {} 
-    DroneAccelerationBodyFrame& operator=(const std::tuple<double, double, double>& rhs) {
+    DroneAccelerationBodyFrame(const hako::drone_physics::VectorType& rhs) : data(tupleToVec3(rhs)) {} 
+    DroneAccelerationBodyFrame& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = tupleToVec3(rhs);
         return *this;
     }
-    operator std::tuple<double, double, double>() const {
-        return std::make_tuple(data.x, data.y, data.z);
+    operator hako::drone_physics::VectorType() const {
+        return {data.x, data.y, data.z};
     }
 } DroneAccelerationBodyFrameType;
 
