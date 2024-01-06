@@ -8,9 +8,7 @@
 #include "drone_physics.hpp"
 
 static double diff(const hako::drone_physics::VectorType& v, const hako::drone_physics::VectorType& w) {
-    auto [x, y, z] = v;
-    auto [x2, y2, z2] = w;
-    return (x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2);
+    return length_squared(v - w);
 }
 
 static double diff(const hako::drone_physics::AngleType& a, const hako::drone_physics::AngleType b) {

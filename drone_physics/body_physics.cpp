@@ -24,11 +24,21 @@ VectorType cross(const VectorType& u, const VectorType& v)
         u.x * v.y - u.y * v.x
     };
 }
+double dot(const VectorType& u, const VectorType& v)
+{
+    return u.x * v.x + u.y * v.y + u.z * v.z;
+}
+double length_squared(const VectorType& v)
+{
+    return dot(v, v);
+}
+double length(const VectorType& v)
+{
+    return std::sqrt(length_squared(v));
+}
 VectorType& operator += (VectorType& u, const VectorType& v)
 {
-    u.x += v.x;
-    u.y += v.y;
-    u.z += v.z;
+    u.x += v.x;    u.y += v.y;    u.z += v.z;
     return u;
 }
 VectorType operator + (const VectorType& u, const VectorType& v)
@@ -36,6 +46,29 @@ VectorType operator + (const VectorType& u, const VectorType& v)
     VectorType result = u;
     return result += v;
 }
+VectorType& operator -= (VectorType& u, const VectorType& v)
+{
+    u.x -= v.x;    u.y -= v.y;    u.z -= v.z;
+    return u;
+}
+VectorType operator - (const VectorType& u, const VectorType& v)
+{
+    VectorType result = u;
+    return result -= v;
+}
+VectorType operator * (double s, const VectorType& v)
+{
+    return {s*v.x, s*v.y, s*v.z};
+}
+VectorType operator * (const VectorType& v, double s)
+{
+    return {s*v.x, s*v.y, s*v.z};
+}
+VectorType operator / (const VectorType& v, double s)
+{
+    return {v.x/s, v.y/s, v.z/s};
+}
+
 
 /**
  *  Maths section (3D frame transformations between body and ground)
@@ -313,5 +346,33 @@ AccelerationType acceleration_in_ground_frame(
 
     return AccelerationType{dot_u, dot_v, dot_w};
 }
+
+VectorType velocity_after_contact_with_wall(
+    const VectorType& before_contact,
+    const VectorType& normal_vector, /* of the wall, will be normalized internally */
+    double restitution_coeff /* 0.0 - 1.0 */)
+{
+    assert(length_squared(normal_vector) > 1.0e-10);
+
+    /* normalize the normal vector */
+    const auto n = normal_vector / length(normal_vector);
+
+    return restitution_coeff
+        * (before_contact - 2*dot(before_contact, n) * n);
+}
+
+VectorType velocity_after_contact_with_wall(
+    const VectorType& velocity_before_contact,
+    const VectorType& center_position,
+    const VectorType& contact_position,
+    double restitution_coefficient /* 0.0 - 1.0 */)
+{
+    const auto normal_vector = contact_position - center_position;
+    if (length_squared(normal_vector) <= 1.0e-10)
+        return {0, 0, 0};
+
+    return velocity_after_contact_with_wall(velocity_before_contact, normal_vector, restitution_coefficient);
+}
+
 
 } /* namespace hako::drone_physics */

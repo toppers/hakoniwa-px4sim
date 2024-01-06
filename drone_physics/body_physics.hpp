@@ -25,8 +25,16 @@ typedef AngleType AngularAccelerationType;
 
 /* basic operators */
 VectorType cross(const VectorType& u, const VectorType& v);
+double dot(const VectorType& u, const VectorType& v);
+double length_squared(const VectorType& v);
+double length(const VectorType& v);
 VectorType& operator += (VectorType& u, const VectorType& v);
 VectorType operator + (const VectorType& u, const VectorType& v);
+VectorType& operator -= (VectorType& u, const VectorType& v);
+VectorType operator - (const VectorType& u, const VectorType& v);
+VectorType operator * (double s, const VectorType& v);
+VectorType operator * (const VectorType& v, double s);
+VectorType operator / (const VectorType& v, double s);
 
 #ifdef BP_INCLUDE_IO /* for printint out */
 std::ostream& operator << (std::ostream& os, const VectorType& v) {
@@ -100,6 +108,23 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
+
+/* physics for collision */
+
+/**
+ * Calculates the velocity after the collision.
+ * Input vectors in the same frame, return vector in the same frame.
+*/
+VectorType velocity_after_contact_with_wall(
+    const VectorType& velocity_before_contact,
+    const VectorType& normal_vector,  /* of the wall, will be normalized internally */
+    double restitution_coefficient /* 0.0 - 1.0 */);
+
+VectorType velocity_after_contact_with_wall(
+    const VectorType& velocity_before_contact,
+    const VectorType& center_position,
+    const VectorType& contact_position,
+    double restitution_coefficient /* 0.0 - 1.0 */);
 
 } /* namespace hako::drone_physics */
 

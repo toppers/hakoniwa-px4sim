@@ -39,27 +39,22 @@ void test_frame_all_unit_vectors_with_some_angles() {
     assert_almost_equal((VelocityType{sqrt(3)/2, 0.5, 0}), v2);
 }
 
-static double length(VelocityType v) {
-    auto [x, y, z] = v; // C++17 structured binding declaration
-    return sqrt(x*x + y*y + z*z);
-}
-
 void test_frame_matrix_is_unitary() {
     VelocityType v1{1, 0, 0};
     for (int i = -180; i < 180; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType{i * (PI/180), 0, 0});
-        double len = length(v2);
+        double len = length_squared(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
     for (int i = 0; i < 90; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType{0, i * (PI/180), 0});
-        double len = length(v2);
+        double len = length_squared(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
   
     for (int i = -180; i < 360; i+=30) {
         VelocityType v2 = velocity_body_to_ground(v1, AngleType{0, 0, i * (PI/180)});
-        double len = length(v2);
+        double len = length_squared(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
 
@@ -70,16 +65,16 @@ void test_frame_matrix_is_unitary() {
         for (int j = -90; j < 90; j+=30) {
             for (int k = -180; k < 180; k+=30) {
                 VelocityType V = velocity_body_to_ground(v1, AngleType{i * (PI/180), j * (PI/180), k * (PI/180)});
-                double len = length(V);
+                double len = length_squared(V);
                 assert(fabs(len - 1.0) < 0.0001);
 
                 // bug #89 indicated that need testing (0,1,0) and (0,0,1) vectors.
                 V = velocity_body_to_ground(u1, AngleType{i * (PI/180), j * (PI/180), k * (PI/180)});
-                len = length(V);
+                len = length_squared(V);
                 assert(fabs(len - 1.0) < 0.0001);
 
                 V = velocity_body_to_ground(w1, AngleType{i * (PI/180), j * (PI/180), k * (PI/180)});
-                len = length(V);
+                len = length_squared(V);
                 assert(fabs(len - 1.0) < 0.0001);
 
             }
@@ -389,6 +384,19 @@ void test_body_anti_Jr_torque() {
     assert_almost_equal(torque, (TorqueType{0, 0, 10*Jr}));
 }
 
+void test_collision()
+{
+    VectorType before{10, 10, 10};
+    VectorType center{1, 2, 3};
+    VectorType contact{1, 2, 4};
+    VectorType after = velocity_after_contact_with_wall(before, center, contact, 1);
+    assert_almost_equal(after, (VectorType{10, 10, -10}));
+    after = velocity_after_contact_with_wall(before, center, contact, 0.5);
+    assert_almost_equal(after, (VectorType{5, 5, -5}));
+    after = velocity_after_contact_with_wall(before, center, contact, 0);
+    assert_almost_equal(after, (VectorType{0, 0, 0}));
+}
+
 int main() {
     std::cerr << "-------start unit test-------\n";
     T(test_frame_all_unit_vectors_with_angle0);
@@ -406,6 +414,7 @@ int main() {
     T(test_body_torque);
     T(test_body_anti_torque);
     T(test_body_anti_Jr_torque);
+    T(test_collision);
     std::cerr << "-------all standard test PASSSED!!----\n";
     T(test_issue_89_yaw_angle_bug);
     std::cerr << "-------all bug issue test PASSSED!!----\n";
