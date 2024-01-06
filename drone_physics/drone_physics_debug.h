@@ -18,7 +18,7 @@ static double diff(const hako::drone_physics::AngleType& a, const hako::drone_ph
 }
 
 #define assert_almost_equal(a, b) \
-    assert(diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << ", " #b "=" << (b) << std::endl, 0))
+    assert(diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << ", " #b "=" << (b) << " ----> see next line Assert "<< std::endl, 0))
 
 #define print_vec(v) std::cerr << #v "=" << v << std::endl
 

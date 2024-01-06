@@ -93,11 +93,11 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
-    const AngularVelocityType& body_angular_velocity,
+    const AngularVelocityType& body_angular_velocity, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
-AccelerationType acceleration_in_ground_frame(
+AccelerationType acceleration_in_ground_frame( /* no Coriolis needed */
     const VelocityType& body,
     const AngleType& angle,
     double thrust,
@@ -108,6 +108,12 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
+
+AngularAccelerationType angular_acceleration_in_ground_frame(
+    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngleType& angle,
+    double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
+    double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
 
 /* physics for collision */
 

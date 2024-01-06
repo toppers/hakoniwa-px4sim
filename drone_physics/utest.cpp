@@ -176,6 +176,7 @@ void test_angular_frame_roundtrip() {
     }
 }
 
+
 void test_body_acceleration() {
     const VelocityType v{1, 2, 3};
 
@@ -225,6 +226,41 @@ void test_body_acceleration() {
     assert_almost_equal(a, (AccelerationType{-1, 2, -trust/mass+gravity-1}));
 }
 
+void test_ground_acceleration() {
+    VelocityType v{1, 2, 3};
+    AngleType angle{0, 0, 0};
+    AccelerationType a_g, a_g2, a_g3;
+    AccelerationType a_b, a_b2;
+    const double trust = 1, mass = 1, gravity = 9.8, drag = 0;
+    a_g = acceleration_in_ground_frame(v, angle, trust, mass, gravity, drag);
+    assert_almost_equal(a_g, (AccelerationType{0, 0, -trust/mass+gravity}));
+
+    /* use translation round trip */
+    angle = {PI/3, PI/4, PI/6};
+    v = {0, 0, 0};
+    a_g = acceleration_in_ground_frame({0,0,0}, angle, trust, mass, gravity, drag);
+    a_b = acceleration_in_body_frame({0,0,0}, angle, {0, 0, 0}, trust, mass, gravity, drag);
+    a_g2 = velocity_body_to_ground(a_b, angle);
+    assert_almost_equal(a_g, a_g2);
+
+    a_b2 = velocity_ground_to_body(a_g, angle);
+    assert_almost_equal(a_b, a_b2);
+    a_g3 = velocity_body_to_ground(a_b2, angle);
+    assert_almost_equal(a_g, a_g3);
+
+    v = {1, 2, 3};
+    a_g = acceleration_in_ground_frame(v, angle, trust, mass, gravity, drag);
+    a_b = acceleration_in_body_frame(v, angle, {0, 0, 0}, trust, mass, gravity, drag);
+    a_g2 = velocity_body_to_ground(a_b, angle);
+    assert_almost_equal(a_g, a_g2);
+
+    a_b2 = velocity_ground_to_body(a_g, angle);
+    assert_almost_equal(a_b, a_b2);
+    a_g3 = velocity_body_to_ground(a_b2, angle);
+    assert_almost_equal(a_g, a_g3);
+}
+
+
 void test_body_angular_acceleration() {
     const AngularVelocityType v{1, 2, 3};
     double I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 0, torque_y = 0, torque_z = 0;
@@ -242,6 +278,29 @@ void test_body_angular_acceleration() {
         (torque_x - 2*3*(I_zz - I_yy))/I_xx,
         (torque_y - 1*3*(I_xx - I_zz))/I_yy,
         (torque_z - 1*2*(I_yy - I_xx))/I_zz}));
+}
+
+void test_ground_angular_acceleration()
+{
+    AngularVelocityType av_g{0, 0, 0}, av_b;
+    AngleType angle{0, 0, 0};
+    AngularAccelerationType a_g, a_g2;
+    AngularAccelerationType a_b;
+    double I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 0, torque_z = 0; /** all in BODY */
+    
+    a_g = angular_acceleration_in_ground_frame(av_g, angle, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    assert_almost_equal(a_g, (AngularAccelerationType{0, 0, 0}));
+
+    /* round trip */
+    angle = {PI/3, PI/4, PI/6};
+    av_g = {1, 2, 3};
+    av_b = angular_velocity_ground_to_body(av_g, angle);
+    a_g = angular_acceleration_in_ground_frame(av_g, angle, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    a_b = angular_acceleration_in_body_frame(av_b, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    a_g2 = angular_velocity_body_to_ground(a_b, angle);
+    assert_almost_equal(a_g, a_g2);
+
+
 }
 
 #include <fstream>
@@ -404,8 +463,10 @@ int main() {
     T(test_frame_matrix_is_unitary);
     T(test_frame_roundtrip);
     T(test_body_acceleration);
+    T(test_ground_acceleration);
     T(test_angular_frame_roundtrip);
     T(test_body_angular_acceleration);
+    T(test_ground_angular_acceleration);
     T(test_rotor_omega_accesleration);
     T(test_vector_operators);
     T(test_rotor_thrust);

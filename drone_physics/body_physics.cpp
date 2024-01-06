@@ -283,6 +283,25 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return AngularAccelerationType{dot_p, dot_q, dot_r};
 }
 
+AngularAccelerationType angular_acceleration_in_ground_frame(
+    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngleType& angle,
+    double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
+    double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
+{
+    const auto angular_velocity_in_body_frame = 
+        angular_velocity_ground_to_body(angular_velocity_in_ground_frame, angle);
+
+    const auto acceleration_in_body_frame = angular_acceleration_in_body_frame(
+        angular_velocity_in_body_frame,
+        torque_x, torque_y, torque_z,
+        I_xx, I_yy, I_zz);
+    
+    return angular_velocity_body_to_ground(acceleration_in_body_frame, angle);
+
+}    
+
+
 /* Obsolete. for testing only. */
 AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     const VelocityType& body,
@@ -311,14 +330,15 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 }
 
 
-/* Obsolete: this is not well-implemented, use acceleration_in_body_frame, then translate to ground instead */
+/**
+ * Acceleration in body frame based on eq.(2.46), (2.47) in Nonami's book.
+ * My guess is that (2.46) z-axis is inverted(and also psi is inverted) in (2.47).
+ */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
-    assert(false && "this is not well-implemented, use acceleration_in_body_frame instead");
-     assert(mass != 0.0); // TODO: remove this line
     using std::sin; using std::cos;
 
     const auto
@@ -332,21 +352,32 @@ AccelerationType acceleration_in_ground_frame(
     const auto c = drag;
     const auto T = thrust;
 
+    /**
+     * See eq.(2.46), (2.47) in Nonami's book.
+    */
+    /*****************************************************************/  
+    double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c/m * u;
+    double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c/m * v;
+    double dot_w =  -T/m * (c_phi * c_theta)                   + g   - c/m * w;
+    /*****************************************************************/  
     /*
      * See https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
      * and z-axis is inverted(and also psi is inverted).
      * these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
      */
-
     /*****************************************************************/  
-    double dot_u = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * u;
-    double dot_v = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * v;
-    double dot_w = -T/m * (c_phi * c_theta)                   + g   - c * w;
+    // double dot_u = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * u;
+    // double dot_v = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * v;
+    // double dot_w = -T/m * (c_phi * c_theta)                   + g   - c * w;
     /*****************************************************************/  
 
     return AccelerationType{dot_u, dot_v, dot_w};
 }
 
+/**
+ * Collision section.
+ * The functions below calculates collision related quantities.
+ */
 VectorType velocity_after_contact_with_wall(
     const VectorType& before_contact,
     const VectorType& normal_vector, /* of the wall, will be normalized internally */
