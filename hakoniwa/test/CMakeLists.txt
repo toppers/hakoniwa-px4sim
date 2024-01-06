@@ -21,7 +21,6 @@ add_executable(
 
     ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
     ${PHYSICS_SOURCE_DIR}/body_physics.cpp
-    ${PROJECT_SOURCE_DIR}/../src/assets/drone/physics/math_and_physics_convertor.cpp
     main.cpp
 )
 

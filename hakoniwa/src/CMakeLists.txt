@@ -32,7 +32,6 @@ add_executable(
     assets/drone/physics/body_frame/drone_dynamics_body_frame.cpp
     assets/drone/physics/ground_frame/drone_dynamics_ground_frame.cpp
     assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.cpp
-    assets/drone/physics/math_and_physics_convertor.cpp
 
     ${PHYSICS_SOURCE_DIR}/body_physics.cpp
     ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
