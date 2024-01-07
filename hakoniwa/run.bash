@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $# -eq 1 ]
+then
+    export HAKO_CUSTOM_JSON_PATH=../config/custom_collision.json
+fi
+
 if [ ! -f cmake-build/src/hako-px4sim ]
 then
     echo "ERROR: can not find ./src/hako-px4sim"

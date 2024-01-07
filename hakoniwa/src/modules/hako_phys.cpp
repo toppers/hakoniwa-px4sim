@@ -162,8 +162,11 @@ static void my_task()
         torque.data.y = control.angular.y;
         torque.data.z = control.angular.z;
     }
-    drone_dynamics_ground->run(thrust, torque);
-    drone_dynamics_body->run(thrust, torque);
+    hako::assets::drone::DroneDynamicsInputType input;
+    input.thrust = thrust;
+    input.torque = torque;
+    drone_dynamics_ground->run(input);
+    drone_dynamics_body->run(input);
 #ifdef DRONE_PID_CONTROL_CPP
     drone_pid_control_run();
 #endif

@@ -147,15 +147,15 @@ public:
     }
 
     // Implementation for the run function is required
-    void run(const DroneThrustType &thrust, const DroneTorqueType &torque) override 
+    void run(const DroneDynamicsInputType &input) override 
     {
         this->cache = drone_phys_calc_cache(this->angle);
-        run_x(thrust, torque);
-        run_y(thrust, torque);
-        run_z(thrust, torque);
-        run_rx(thrust, torque);
-        run_ry(thrust, torque);
-        run_rz(thrust, torque);
+        run_x(input.thrust, input.torque);
+        run_y(input.thrust, input.torque);
+        run_z(input.thrust, input.torque);
+        run_rx(input.thrust, input.torque);
+        run_ry(input.thrust, input.torque);
+        run_rz(input.thrust, input.torque);
 
         this->velocityBodyFrame = this->next_velocityBodyFrame;
         this->angularVelocityBodyFrame = this->next_angularVelocityBodyFrame;

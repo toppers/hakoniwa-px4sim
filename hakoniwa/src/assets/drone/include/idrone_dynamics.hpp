@@ -6,6 +6,23 @@
 
 namespace hako::assets::drone {
 
+#define MAX_CONTAT_NUM 10
+
+typedef struct {
+    bool collision;
+    int contact_num;
+    drone_physics::VectorType relative_velocity;
+    drone_physics::VectorType contact_position[MAX_CONTAT_NUM];
+    double restitution_coefficient;
+} DroneDynamicsCollisionType;
+
+typedef struct {
+    DroneDynamicsCollisionType collision;
+    DroneThrustType thrust;
+    DroneTorqueType torque;
+} DroneDynamicsInputType;
+
+
 class IDroneDynamics: public ICsvLog {
 protected:
     DronePhysCalcCacheType cache;
@@ -29,7 +46,7 @@ public:
     virtual double get_mass() const = 0;
     virtual void set_mass(double mass) = 0;
 
-    virtual void run(const DroneThrustType &thrust, const DroneTorqueType& torque) = 0;
+    virtual void run(const DroneDynamicsInputType &input) = 0;
 };
 
 }

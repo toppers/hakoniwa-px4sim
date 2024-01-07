@@ -23,7 +23,10 @@ public:
             rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
         }
         thrust_dynamis->run(rotor_speed);
-        drone_dynamics->run(thrust_dynamis->get_thrust(), thrust_dynamis->get_torque());
+        DroneDynamicsInputType input;
+        input.thrust = thrust_dynamis->get_thrust();
+        input.torque = thrust_dynamis->get_torque();
+        drone_dynamics->run(input);
 
         //sensors
         acc->run(drone_dynamics->get_vel_body_frame());

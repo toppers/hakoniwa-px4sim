@@ -125,8 +125,10 @@ public:
     }
 
     // Implementation for the run function is required
-    void run(const DroneThrustType &thrust, const DroneTorqueType &torque) override 
+    void run(const DroneDynamicsInputType &input) override 
     {
+        DroneTorqueType torque = input.torque;
+        DroneThrustType thrust = input.thrust;
         this->cache = drone_phys_calc_cache(this->angle);
 
         DroneAccelerationBodyFrame acc = drone_physics::acceleration_in_body_frame(
