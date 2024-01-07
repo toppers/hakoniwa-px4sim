@@ -9,6 +9,9 @@ if(WIN32)
     set(OS_TYPE "win")
 endif(WIN32)
 MESSAGE(STATUS "OS_TYPE=" ${OS_TYPE})
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_MakeAvailable(json)
 
 add_executable(
     hako-px4sim
@@ -56,8 +59,8 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/assets/drone/include
     PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
-    PRIVATE ${NLOHMANN_SOURCE_DIR}
     PRIVATE ${PHYSICS_SOURCE_DIR}
+    PRIVATE ${nlohmann_json_SOURCE_DIR}/single_include
 )
 
 target_link_libraries(hako-px4sim hakoarun)
