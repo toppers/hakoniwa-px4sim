@@ -25,7 +25,7 @@ protected:
     ISensorMag *mag;
 public:
     virtual ~IAirCraft() {}
-    virtual void run(double controls[ROTOR_NUM]) = 0;
+    virtual void run(DroneDynamicsInputType& input) = 0;
 
      void set_drone_dynamics(IDroneDynamics *src)
     {

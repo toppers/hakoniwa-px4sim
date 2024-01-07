@@ -7,6 +7,7 @@
 namespace hako::assets::drone {
 
 #define MAX_CONTAT_NUM 10
+#define MAX_ROTOR_NUM  16
 
 typedef struct {
     bool collision;
@@ -17,6 +18,7 @@ typedef struct {
 } DroneDynamicsCollisionType;
 
 typedef struct {
+    double controls[MAX_ROTOR_NUM];
     DroneDynamicsCollisionType collision;
     DroneThrustType thrust;
     DroneTorqueType torque;

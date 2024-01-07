@@ -15,9 +15,9 @@
 #include <iostream>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
-#define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
-#define HAKO_AVATOR_CHANNLE_ID_POS      1
-#define HAKO_AVATOR_CHANNLE_ID_CTRL     2
+#define HAKO_AVATOR_CHANNLE_ID_MOTOR        0
+#define HAKO_AVATOR_CHANNLE_ID_POS          1
+#define HAKO_AVATOR_CHANNLE_ID_COLLISION    2
 
 #define HAKO_ROBO_NAME "px4sim"
 
@@ -70,7 +70,57 @@ static void my_setup()
     std::cout << "INFO: setup done" << std::endl;
     return;
 }
+static void debug_print(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
+{
+    std::cout << "Collision: " << (drone_collision.collision ? "Yes" : "No") << std::endl;
+    std::cout << "Contact Number: " << drone_collision.contact_num << std::endl;
+    std::cout << "Relative Velocity: (" 
+                    << drone_collision.relative_velocity.x << ", " 
+                    << drone_collision.relative_velocity.y << "," 
+                    << drone_collision.relative_velocity.z << ")"
+                    << std::endl;
 
+    for (int i = 0; i < drone_collision.contact_num; ++i) {
+        std::cout << "Contact Positions[" << i << "]: (" 
+                    << drone_collision.contact_position[i].x << ", " 
+                    << drone_collision.contact_position[i].y << "," 
+                    << drone_collision.contact_position[i].z << ")"
+                    << std::endl;
+    }
+    std::cout << "Restitution Coefficient: " << drone_collision.restitution_coefficient << std::endl;
+}
+
+static void do_io_read(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
+{
+    Hako_Collision hako_collision;
+    memset(&drone_collision, 0, sizeof(drone_collision));
+    if (!hako_asset_runner_pdu_read(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_COLLISION, (char*)&hako_collision, sizeof(hako_collision))) {
+        std::cerr << "ERROR: can not read pdu data: Hako_Collision" << std::endl;
+    }
+    drone_collision.collision = hako_collision.collision;
+    if (drone_collision.collision) {
+        drone_collision.contact_num = hako_collision.contact_num;
+        //ROS座標系 ==> 航空座標系
+        drone_collision.relative_velocity.x = hako_collision.relative_velocity.x;
+        drone_collision.relative_velocity.y = -hako_collision.relative_velocity.y;
+        drone_collision.relative_velocity.z = -hako_collision.relative_velocity.z;
+        drone_collision.restitution_coefficient = hako_collision.restitution_coefficient;
+        for (int i = 0; i < drone_collision.contact_num; i++) {
+            drone_collision.contact_position[i].x = hako_collision.contact_position[i].x;
+            drone_collision.contact_position[i].y = -hako_collision.contact_position[i].y;
+            drone_collision.contact_position[i].z = -hako_collision.contact_position[i].z;
+        }
+        debug_print(drone_collision);
+        /*
+         * Unityのシミュレーションは20msec周期で動作する。
+         * 一方、こちらは 3msec周期で動作するので、衝突データを打ち消しておかないと、次のタイミングで拾ってしまう。
+         */
+        hako_collision.collision = false;
+        if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_COLLISION, (const char*)&hako_collision, sizeof(hako_collision))) {
+            std::cerr << "ERROR: can not write pdu data: Hako_Collision" << std::endl;
+        }
+    }
+}
 static void do_io_write(double controls[hako::assets::drone::ROTOR_NUM])
 {
     Hako_HakoHilActuatorControls hil_actuator_controls;
@@ -102,8 +152,12 @@ static double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 static hako::assets::drone::MavlinkIO mavlink_io;
 static void my_task()
 {
-    //std::cout << "drone run()" << std::endl;
-    drone->run(controls);
+    hako::assets::drone::DroneDynamicsInputType drone_input;
+    do_io_read(drone_input.collision);
+    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+        drone_input.controls[i] = controls[i];
+    }
+    drone->run(drone_input);
     do_io_write(controls);
     return;
 }
