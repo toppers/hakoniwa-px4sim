@@ -35,59 +35,14 @@ private:
     double delta_time_sec;
     double total_time_sec;
 
-    void run_x(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_y(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_z(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_rx(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque);
-
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
-#if 0
-        DroneVelocityType earthFrameVelocity;
-        const double cos_phi = this->cache.cos_phi;
-        const double cos_theta = this->cache.cos_theta;
-        const double cos_psi = this->cache.cos_psi;
-        const double sin_phi = this->cache.sin_phi;
-        const double sin_theta = this->cache.sin_theta;
-        const double sin_psi = this->cache.sin_psi;
-
-        earthFrameVelocity.data.x = cos_theta * cos_psi * src.data.x +
-                                    (sin_phi * sin_theta * cos_psi - cos_phi * sin_psi) * src.data.y +
-                                    (cos_phi * sin_theta * cos_psi + sin_phi * sin_psi) * src.data.z;
-
-        earthFrameVelocity.data.y = cos_theta * sin_psi * src.data.x +
-                                    (sin_phi * sin_theta * sin_psi + cos_phi * cos_psi) * src.data.y +
-                                    (cos_phi * sin_theta * sin_psi - sin_phi * cos_psi) * src.data.z;
-
-        earthFrameVelocity.data.z = -sin_theta * src.data.x +
-                                    sin_phi * cos_theta * src.data.y +
-                                    cos_phi * cos_theta * src.data.z;
-
-        return earthFrameVelocity;
-#else
         return drone_physics::velocity_body_to_ground(src, angle);
-#endif
     }
 
     DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
     {
-#if 0
-        DroneAngularVelocityType eulerRate;
-        const double sin_phi = this->cache.sin_phi;
-        const double cos_phi = this->cache.cos_phi;
-        const double tan_theta = this->cache.tan_theta;
-        const double sec_theta = this->cache.sec_theta;
-
-        eulerRate.data.x = src.data.x + sin_phi * tan_theta * src.data.y + cos_phi * tan_theta * src.data.z;
-        eulerRate.data.y = cos_phi * src.data.y - sin_phi * src.data.z;
-        eulerRate.data.z = sin_phi * sec_theta * src.data.y + cos_phi * sec_theta * src.data.z;
-
-        return eulerRate;
-#else
         return drone_physics::angular_velocity_body_to_ground(src, angle);
-#endif
     }
     glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
     {

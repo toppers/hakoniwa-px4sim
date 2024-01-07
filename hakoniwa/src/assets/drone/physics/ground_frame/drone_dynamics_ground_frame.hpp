@@ -24,20 +24,16 @@ private:
     DroneAngleType angle;                 // Initialized to zero by default (glm::dvec3)
     DroneAngularVelocityType angularVelocity; // Initialized to zero by default (glm::dvec3)
 
-    DronePositionType next_position;           // Initialized to zero by default (glm::dvec3)
-    DroneVelocityType next_velocity;           // Initialized to zero by default (glm::dvec3)
-    DroneAngleType next_angle;                 // Initialized to zero by default (glm::dvec3)
-    DroneAngularVelocityType next_angularVelocity; // Initialized to zero by default (glm::dvec3)
-
     double delta_time_sec;
     double total_time_sec;
-
-    void run_x(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_y(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_z(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_rx(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque);
+    glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
+    {
+        glm::dvec3 r;
+        r.x = p.x + (v.x * this->delta_time_sec);
+        r.y = p.y + (v.y * this->delta_time_sec);
+        r.z = p.z + (v.z * this->delta_time_sec);
+        return r;
+    }
 
 public:
     // Constructor with zero initialization
@@ -116,25 +112,26 @@ public:
     // Implementation for the run function is required
     void run(const DroneThrustType &thrust, const DroneTorqueType &torque) override 
     {
-        this->cache = drone_phys_calc_cache(this->angle);
-        run_x(thrust, torque);
-        run_y(thrust, torque);
-        run_z(thrust, torque);
-        run_rx(thrust, torque);
-        run_ry(thrust, torque);
-        run_rz(thrust, torque);
+        drone_physics::AccelerationType acc = drone_physics::acceleration_in_ground_frame(
+                                                            this->velocity, this->angle, 
+                                                            thrust.data, this->param_mass, GRAVITY, this->param_drag);
+        drone_physics::AngularAccelerationType acc_angular = drone_physics::angular_acceleration_in_ground_frame(
+                                                            this->angularVelocity, this->angle,
+                                                            torque.data.x, torque.data.y, torque.data.z,
+                                                            this->param_cx, this->param_cy, this->param_cz);
 
+        //integral to velocity on ground frame
+        this->velocity.data = integral(this->velocity.data, {acc.x, acc.y, acc.z});
+        this->angularVelocity.data = integral(this->angularVelocity.data, {acc_angular.phi, acc_angular.theta, acc_angular.psi});
+
+        //integral to pos, angle on ground frame
+        this->position.data = integral(this->position.data, this->velocity.data);
+        this->angle.data = integral(this->angle.data, this->angularVelocity.data);
         //boundary condition
-        if (this->next_position.data.z > 0) {
-            this->next_position.data.z = 0;
-            this->next_velocity.data.z = 0;
-        }
-
-        this->position = this->next_position;
-        this->velocity = this->next_velocity;
-        this->angle = this->next_angle;
-        this->angularVelocity = this->next_angularVelocity;
-        
+        if (this->position.data.z > 0) {
+            this->position.data.z = 0;
+            this->velocity.data.z = 0;
+        }        
         this->total_time_sec += this->delta_time_sec;
     }
     const std::vector<std::string> log_head() override
