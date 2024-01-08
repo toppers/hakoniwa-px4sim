@@ -2,6 +2,9 @@
 #include <cassert>
 #include <cmath>
 
+const double eps = 1.0e-30; // for double values are ZERO for assertion. almost MIN_FLT.
+static bool is_zero(double a){return std::abs(a) < eps;}
+
 namespace hako::drone_physics {
 
 /*
@@ -105,7 +108,7 @@ VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
             + (c_phi * c_theta)                         * z;
     /*****************************************************************/
 
-    return VectorType{x_e, y_e, z_e};
+    return {x_e, y_e, z_e};
 }
 
 /* Transform velocity in body frame to ground frame */
@@ -146,7 +149,7 @@ VectorType vector_ground_to_body(const VectorType& ground,
         + (c_phi * c_theta)                         * z_e;
     /*****************************************************************/  
 
-    return VectorType{x, y, z};
+    return {x, y, z};
 }
 
 /* Tranlsform velocity in ground frame to body frame */
@@ -180,7 +183,7 @@ AngularVelocityType angular_velocity_body_to_ground(
     double dot_psi   = (r * c_phi + q * s_phi) / c_theta; /** zero div INF possible */
     /*****************************************************************/  
 
-    return AngularVelocityType{dot_phi, dot_theta, dot_psi};
+    return {dot_phi, dot_theta, dot_psi};
 }
 
 /* Tranlsform angular velocity in ground frame to body frame (eq.106)*/
@@ -200,12 +203,12 @@ AngularVelocityType angular_velocity_ground_to_body(
      * See also https://mtkbirdman.com/flight-dynamics-body-axes-system
      */
     /*****************************************************************/  
-    double p = dot_phi                   - dot_psi * s_theta;
-    double q = dot_theta * c_phi         + dot_psi * s_phi * c_theta;
-    double r = dot_psi * c_phi * c_theta - dot_theta * s_phi;
+    double p =  1 * (dot_phi)                 - s_theta * (dot_psi);
+    double q =  c_phi  * (dot_theta)  + s_phi * c_theta * (dot_psi);
+    double r =  -s_phi * (dot_theta)  + c_phi * c_theta * (dot_psi);
     /*****************************************************************/  
 
-    return AngularVelocityType{p, q, r};
+    return {p, q, r};
 }
 
 /**
@@ -217,14 +220,14 @@ AngularVelocityType angular_velocity_ground_to_body(
  * So the results should be transformed to the ground frame, if needed.
  */
 
-/* acceleration in body frame based on mV'+ w x mV = F ... eq.(1.36),(2.31)*/
+/* acceleration in body frame based on mV'+ w x mV = F ... eq.(1.136),(2.31)*/
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
     const AngularVelocityType& body_angular_velocity,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
-    assert(mass != 0.0); // TODO: remove this line
+    assert(!is_zero(mass));
     using std::sin; using std::cos;
 
     const auto
@@ -239,7 +242,13 @@ AccelerationType acceleration_in_body_frame(
 
     /*
      * See nonami's book eq.(1.136).(2.31)
-     * Colioris's force is (p, q, r) x (u, v, w)
+     * Colioris's force is (p, q, r) x (u, v, w).
+     * 
+     * Difference with the 'ground' version is that
+     * (1) 'g' is broken down to x, y, z components.
+     * (2) T is only relavant to z-axis.
+     * (3) Coriolis force(using uvw,pqr) IS needed(because the body frame is rotating!)
+
      */
     /*****************************************************************/  
     double dot_u =       - g * s_theta            - (q*w - r*v) - c/m * u;
@@ -247,59 +256,8 @@ AccelerationType acceleration_in_body_frame(
     double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - c/m * w;
     /*****************************************************************/  
 
-    return AccelerationType{dot_u, dot_v, dot_w};
+    return {dot_u, dot_v, dot_w};
 }
-
-/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.37),(2.31) */
-AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularVelocityType& angular_velocity_in_body_frame,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
-    double I_xx, /* in body frame, 0 is not allowed */
-    double I_yy, /* in body frame, 0 is not allowed */
-    double I_zz /* in body frame, 0 is not allowed */)
-{
-    assert(I_xx != 0.0); // TODO: remove this line
-    assert(I_yy != 0.0); // TODO: remove this line
-    assert(I_zz != 0.0); // TODO: remove this line
-
-    // current angular velocities in body frame
-    const auto [p, q, r] = angular_velocity_in_body_frame;
- 
-    /*
-     * See also Nonami's book eq. (2.31)(1.137), where L=tau_x, M=tau_y, N=tau_z.
-     * and Ixz = Iyz = Izx = 0 is assumed.
-     * See also https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq.(21)
-     * and the rest.
-     */
- 
-    /*****************************************************************/
-    double dot_p = (torque_x - q*r*(I_zz -I_yy)) / I_xx;
-    double dot_q = (torque_y - r*p*(I_xx -I_zz)) / I_yy;
-    double dot_r = (torque_z - p*q*(I_yy -I_xx)) / I_zz;
-    /*****************************************************************/  
-
-    return AngularAccelerationType{dot_p, dot_q, dot_r};
-}
-
-AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularVelocityType& angular_velocity_in_ground_frame,
-    const AngleType& angle,
-    double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
-    double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
-{
-    const auto angular_velocity_in_body_frame = 
-        angular_velocity_ground_to_body(angular_velocity_in_ground_frame, angle);
-
-    const auto acceleration_in_body_frame = angular_acceleration_in_body_frame(
-        angular_velocity_in_body_frame,
-        torque_x, torque_y, torque_z,
-        I_xx, I_yy, I_zz);
-    
-    return angular_velocity_body_to_ground(acceleration_in_body_frame, angle);
-
-}    
 
 
 /* Obsolete. for testing only. */
@@ -308,7 +266,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     const AngleType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
-    assert(mass != 0.0); // TODO: remove this line
+    assert(!is_zero(mass));
     using std::sin; using std::cos;
 
     const auto
@@ -326,7 +284,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     double dot_w = -T/m  + g * c_theta * c_phi    - c/m * w;
     /*****************************************************************/  
 
-    return AccelerationType{dot_u, dot_v, dot_w};
+    return {dot_u, dot_v, dot_w};
 }
 
 
@@ -354,25 +312,81 @@ AccelerationType acceleration_in_ground_frame(
 
     /**
      * See eq.(2.46), (2.47) in Nonami's book.
-    */
+     * and y, z-axis is inverted(and also theta, psi is inverted).
+     * these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
+     * See https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
+     * 
+     * Difference with the 'body' version is that
+     * (1) 'g' is only relavant to z-axis.
+     * (2) T is broken down to x, y, z components.
+     * (3) Coriolis force is not needed, which is great.
+     * 
+     * I found the exact same equations in the following link.
+     * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
+     */
     /*****************************************************************/  
     double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c/m * u;
     double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c/m * v;
     double dot_w =  -T/m * (c_phi * c_theta)                   + g   - c/m * w;
     /*****************************************************************/  
+
+    return {dot_u, dot_v, dot_w};
+}
+
+
+/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.37),(2.31) */
+AngularAccelerationType angular_acceleration_in_body_frame(
+    const AngularVelocityType& angular_velocity_in_body_frame,
+    double torque_x, /* in body frame */
+    double torque_y, /* in body frame */
+    double torque_z, /* in body frame */
+    double I_xx, /* in body frame, 0 is not allowed */
+    double I_yy, /* in body frame, 0 is not allowed */
+    double I_zz /* in body frame, 0 is not allowed */)
+{
+    assert(!is_zero(I_xx)); assert(!is_zero(I_yy)); assert(!is_zero(I_zz));
+
+    // current angular velocities in body frame
+    const auto [p, q, r] = angular_velocity_in_body_frame;
+ 
     /*
-     * See https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
-     * and z-axis is inverted(and also psi is inverted).
-     * these inversions lead to the following minus signs in EVERY LINE(diff from PDF).
+     * See also Nonami's book eq. (2.31)(1.137), where L=tau_x, M=tau_y, N=tau_z.
+     * and Ixz = Iyz = Izx = 0 is assumed.
+     * See also https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq.(21)
+     * and the rest.
+     * 
+     * I found the exact same equations in the following link, too.
+     * (2.7) The Equations of Motion
+     * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
      */
-    /*****************************************************************/  
-    // double dot_u = -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c * u;
-    // double dot_v = -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c * v;
-    // double dot_w = -T/m * (c_phi * c_theta)                   + g   - c * w;
+ 
+    /*****************************************************************/
+    double dot_p = (torque_x - q*r*(I_zz - I_yy)) / I_xx;
+    double dot_q = (torque_y - r*p*(I_xx - I_zz)) / I_yy;
+    double dot_r = (torque_z - p*q*(I_yy - I_xx)) / I_zz;
     /*****************************************************************/  
 
-    return AccelerationType{dot_u, dot_v, dot_w};
+    return {dot_p, dot_q, dot_r};
 }
+
+AngularAccelerationType angular_acceleration_in_ground_frame(
+    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngleType& angle,
+    double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
+    double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
+{
+    /* transform angular velocity in ground frame to BODY frame */
+    const auto angular_velocity_in_body_frame = 
+        angular_velocity_ground_to_body(angular_velocity_in_ground_frame, angle);
+
+    const auto acceleration_in_body_frame = angular_acceleration_in_body_frame(
+        angular_velocity_in_body_frame,
+        torque_x, torque_y, torque_z,
+        I_xx, I_yy, I_zz);
+    /* transform angular acceleration in body frame back to GROUND frame */
+    return angular_velocity_body_to_ground(acceleration_in_body_frame, angle);
+}    
+
 
 /**
  * Collision section.
@@ -383,7 +397,7 @@ VectorType velocity_after_contact_with_wall(
     const VectorType& normal_vector, /* of the wall, will be normalized internally */
     double restitution_coeff /* 0.0 - 1.0 */)
 {
-    assert(length_squared(normal_vector) > 1.0e-10);
+    assert(!is_zero(length_squared(normal_vector)));
 
     /* normalize the normal vector */
     const auto n = normal_vector / length(normal_vector);
