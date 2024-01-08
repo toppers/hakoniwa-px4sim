@@ -172,9 +172,9 @@ public:
                 hako::drone_physics::VectorType velocity_before_contact = this->velocity;
                 hako::drone_physics::VectorType center_position = this->position;
                 hako::drone_physics::VectorType contact_position = { 
-                    this->position.data.x + input.collision.contact_position[0].x * param_size_x,
-                    this->position.data.y + input.collision.contact_position[0].y * param_size_y,
-                    this->position.data.z + input.collision.contact_position[0].z * param_size_z
+                    input.collision.contact_position[0].x,
+                    input.collision.contact_position[0].y,
+                    input.collision.contact_position[0].z
                 };
                 double restitution_coefficient = input.collision.restitution_coefficient;
                 //std::cout << "velocity_before_contact.x: " << velocity_before_contact.x << std::endl;
