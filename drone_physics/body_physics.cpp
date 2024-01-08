@@ -321,13 +321,14 @@ AccelerationType acceleration_in_ground_frame(
      * (2) T is broken down to x, y, z components.
      * (3) Coriolis force is not needed, which is great.
      * 
-     * I found the exact same equations in the following link.
+     * I found exactly the same equations in the following link.
+     * (2.7) The Equations of Motion
      * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
      */
     /*****************************************************************/  
     double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - d/m * u;
     double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - d/m * v;
-    double dot_w =  -T/m * (s_phi * c_theta)                   + g   - d/m * w;
+    double dot_w =  -T/m * (c_phi * c_theta)                   + g   - d/m * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
@@ -355,7 +356,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
      * See also https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq.(21)
      * and the rest.
      * 
-     * I found the exact same equations in the following link, too.
+     * I found exactly the same equations in the following link.
      * (2.7) The Equations of Motion
      * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
      */
