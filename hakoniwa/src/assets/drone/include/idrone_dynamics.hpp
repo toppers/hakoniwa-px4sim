@@ -32,6 +32,7 @@ public:
     virtual ~IDroneDynamics() {}
 
     virtual void set_drag(double drag) = 0;
+    virtual void set_collision_detection(bool enable) = 0;
     virtual void set_body_size(double x, double y, double z) = 0;
     virtual void set_torque_constants(double cx, double cy, double cz) = 0;
     virtual void set_pos(const DronePositionType &pos) = 0;
@@ -48,6 +49,7 @@ public:
     virtual DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const = 0;
     virtual double get_mass() const = 0;
     virtual void set_mass(double mass) = 0;
+    virtual bool has_collision_detection() = 0;
 
     virtual void run(const DroneDynamicsInputType &input) = 0;
 };

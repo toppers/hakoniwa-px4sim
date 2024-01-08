@@ -75,6 +75,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     HAKO_ASSERT(drone_dynamics != nullptr);
     drone_dynamics->set_drag(HAKO_PHYS_DRAG);
     drone_dynamics->set_mass(drone_config.getCompDroneDynamicsMass());
+    drone_dynamics->set_collision_detection(drone_config.getCompDroneDynamicsCollisionDetection());
     auto body_size = drone_config.getCompDroneDynamicsBodySize();
     drone_dynamics->set_body_size(body_size[0], body_size[1], body_size[2]);
     auto inertia = drone_config.getCompDroneDynamicsInertia();

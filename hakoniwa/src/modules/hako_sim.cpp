@@ -153,7 +153,9 @@ static hako::assets::drone::MavlinkIO mavlink_io;
 static void my_task()
 {
     hako::assets::drone::DroneDynamicsInputType drone_input;
-    do_io_read(drone_input.collision);
+    if (drone->get_drone_dynamics().has_collision_detection()) {
+        do_io_read(drone_input.collision);
+    }
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
         drone_input.controls[i] = controls[i];
     }

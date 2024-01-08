@@ -19,6 +19,7 @@ private:
     double param_size_x;
     double param_size_y;
     double param_size_z;
+    bool param_collision_detection;
     /*
      * internal state
      */
@@ -52,8 +53,16 @@ public:
         this->param_size_x = 1;
         this->param_size_y = 1;
         this->param_size_z = 0.1;
+        this->param_collision_detection = false;
     }
     virtual ~DroneDynamicsGroundFrame() {}
+    void set_collision_detection(bool enable) override {
+        this->param_collision_detection = enable;
+    }
+    bool has_collision_detection() override {
+        return this->param_collision_detection;
+    }
+
     void set_body_size(double x, double y, double z) override
     {
         this->param_size_x = x;
