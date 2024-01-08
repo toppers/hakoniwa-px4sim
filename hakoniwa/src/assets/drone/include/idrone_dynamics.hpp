@@ -32,6 +32,7 @@ public:
     virtual ~IDroneDynamics() {}
 
     virtual void set_drag(double drag) = 0;
+    virtual void set_body_size(double x, double y, double z) = 0;
     virtual void set_torque_constants(double cx, double cy, double cz) = 0;
     virtual void set_pos(const DronePositionType &pos) = 0;
     virtual void set_vel(const DroneVelocityType &vel) = 0;

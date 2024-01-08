@@ -16,6 +16,9 @@ private:
     double param_cx;
     double param_cy;
     double param_cz;
+    double param_size_x;
+    double param_size_y;
+    double param_size_z;
     /*
      * internal state
      */
@@ -46,8 +49,17 @@ public:
         this->param_cx = 1;
         this->param_cy = 1;
         this->param_cz = 1;
+        this->param_size_x = 1;
+        this->param_size_y = 1;
+        this->param_size_z = 0.1;
     }
     virtual ~DroneDynamicsGroundFrame() {}
+    void set_body_size(double x, double y, double z) override
+    {
+        this->param_size_x = x;
+        this->param_size_y = y;
+        this->param_size_z = z;
+    }
 
     void set_torque_constants(double cx, double cy, double cz) override
     {

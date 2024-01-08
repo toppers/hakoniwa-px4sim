@@ -19,6 +19,9 @@ private:
     double param_cx;
     double param_cy;
     double param_cz;
+    double param_size_x;
+    double param_size_y;
+    double param_size_z;
     /*
      * internal state
      */
@@ -64,8 +67,17 @@ public:
         this->param_cx = 1;
         this->param_cy = 1;
         this->param_cz = 1;
+        this->param_size_x = 1;
+        this->param_size_y = 1;
+        this->param_size_z = 0.1;
     }
     virtual ~DroneDynamicsBodyFrame() {}
+    void set_body_size(double x, double y, double z) override
+    {
+        this->param_size_x = x;
+        this->param_size_y = y;
+        this->param_size_z = z;
+    }
     void set_torque_constants(double cx, double cy, double cz) override
     {
         this->param_cx = cx;
@@ -139,7 +151,6 @@ public:
                                                             this->angularVelocityBodyFrame,
                                                             torque.data.x, torque.data.y, torque.data.z,
                                                             this->param_cx, this->param_cy, this->param_cz);
-
         //integral to velocity on body frame
         this->velocityBodyFrame.data = integral(this->velocityBodyFrame.data, acc.data);
         this->angularVelocityBodyFrame.data = integral(this->angularVelocityBodyFrame.data, acc_angular.data);
@@ -147,6 +158,28 @@ public:
         //convert to ground frame
         this->velocity = this->convert(this->velocityBodyFrame);
         this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
+
+        //collision detection
+        if (input.collision.collision) {
+            hako::drone_physics::VectorType velocity_before_contact = this->velocity;
+            hako::drone_physics::VectorType center_position = this->position;
+            hako::drone_physics::VectorType contact_position = { 
+                this->position.data.x + input.collision.contact_position[0].x * param_size_x,
+                this->position.data.y + input.collision.contact_position[0].y * param_size_y,
+                this->position.data.z + input.collision.contact_position[0].z * param_size_z
+            };
+            double restitution_coefficient = input.collision.restitution_coefficient;
+            //std::cout << "velocity_before_contact.x: " << velocity_before_contact.x << std::endl;
+            //std::cout << "velocity_before_contact.y: " << velocity_before_contact.y << std::endl;
+            //std::cout << "velocity_before_contact.z: " << velocity_before_contact.z << std::endl;
+            hako::drone_physics::VectorType col_vel = hako::drone_physics::velocity_after_contact_with_wall(
+                    velocity_before_contact, center_position, contact_position, restitution_coefficient);
+            //std::cout << "velocity_after_contact.x: " << col_vel.x << std::endl;
+            //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
+            //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
+            this->velocity = col_vel;
+            this->velocityBodyFrame = drone_physics::velocity_ground_to_body(this->velocity, angle);
+        }
 
         //integral to pos, angle on ground frame
         this->position.data = integral(this->position.data, this->velocity.data);

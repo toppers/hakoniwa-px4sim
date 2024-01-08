@@ -119,6 +119,13 @@ public:
         return configJson["components"]["droneDynamics"]["airFrictionCoefficient"].get<double>();
     }
 
+    std::vector<double> getCompDroneDynamicsBodySize() const {
+        std::vector<double> body_size;
+        for (const auto& item : configJson["components"]["droneDynamics"]["body_size"]) {
+            body_size.push_back(item);
+        }
+        return body_size;
+    }
     std::vector<double> getCompDroneDynamicsInertia() const {
         std::vector<double> inertia;
         for (const auto& item : configJson["components"]["droneDynamics"]["inertia"]) {
