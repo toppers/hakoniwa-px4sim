@@ -275,13 +275,13 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     const auto [u, v, w]  = body;
     const auto g = gravity;
     const auto m = mass;
-    const auto c = drag;
+    const auto d = drag;
     const auto T = thrust;
 
     /*****************************************************************/  
-    double dot_u =       - g * s_theta            - c/m * u;
-    double dot_v =         g * c_theta * s_phi    - c/m * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - c/m * w;
+    double dot_u =       - g * s_theta            - d/m * u;
+    double dot_v =         g * c_theta * s_phi    - d/m * v;
+    double dot_w = -T/m  + g * c_theta * c_phi    - d/m * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
@@ -290,7 +290,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 
 /**
  * Acceleration in body frame based on eq.(2.46), (2.47) in Nonami's book.
- * My guess is that (2.46) z-axis is inverted(and also psi is inverted) in (2.47).
+ * A mistake in the book: (2.46) z-axis should be inverted (and also psi is inverted) in (2.47).
  */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
@@ -307,7 +307,7 @@ AccelerationType acceleration_in_ground_frame(
     const auto [u, v, w] = ground;
     const auto g = gravity;
     const auto m = mass;
-    const auto c = drag;
+    const auto d = drag;
     const auto T = thrust;
 
     /**
@@ -321,20 +321,21 @@ AccelerationType acceleration_in_ground_frame(
      * (2) T is broken down to x, y, z components.
      * (3) Coriolis force is not needed, which is great.
      * 
-     * I found the exact same equations in the following link.
+     * I found exactly the same equations in the following link.
+     * (2.7) The Equations of Motion
      * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
      */
     /*****************************************************************/  
-    double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - c/m * u;
-    double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - c/m * v;
-    double dot_w =  -T/m * (c_phi * c_theta)                   + g   - c/m * w;
+    double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - d/m * u;
+    double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - d/m * v;
+    double dot_w =  -T/m * (c_phi * c_theta)                   + g   - d/m * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
 }
 
 
-/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.37),(2.31) */
+/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
     double torque_x, /* in body frame */
@@ -350,12 +351,12 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     const auto [p, q, r] = angular_velocity_in_body_frame;
  
     /*
-     * See also Nonami's book eq. (2.31)(1.137), where L=tau_x, M=tau_y, N=tau_z.
+     * See also Nonami's book eq.(2.31)(1.137)(1.109), where L=tau_x, M=tau_y, N=tau_z.
      * and Ixz = Iyz = Izx = 0 is assumed.
      * See also https://www.sky-engin.jp/blog/eulers-equations-of-motion/ eq.(21)
      * and the rest.
      * 
-     * I found the exact same equations in the following link, too.
+     * I found exactly the same equations in the following link.
      * (2.7) The Equations of Motion
      * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
      */

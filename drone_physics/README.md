@@ -134,9 +134,12 @@ Functions are implemented in the following categories, with the referece to the 
 | Function | equations in the book | note |
 |----------|-----------|------|
 |`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame |
-|`angular_acceleration_in_body_frame` | (1.37),(2.31) | Angular acceleration in body frame |
+|`angular_acceleration_in_body_frame` | (1.137),(2.31) | Angular acceleration in body frame |
+|`acceleration_in_ground_frame` | (2.46), (2.47) | Acceleration in ground frame |
+|`angular_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | Angular acceleration in ground frame |
 
-### Rotor dynamics(1 rotor, rotation speed and thrust):
+
+### Rotor dynamics(for one rotor, rotation speed and thrust):
 | Function | equations in the book | note |
 |----------|-----------|------|
 |`rotor_omega_acceleration` | (2.48) | Rotor angular velocity acceleration from dury rate |
@@ -159,6 +162,9 @@ The body frame coordinate system is defined by right hand rule, in which $x$-axi
 The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
 
 The rotation order from ground to body is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$). 
+
+Note $\phi, \theta, \psi$ are the bridge across the two frames and the same values are used in both frames.
+In other words, the angles are the same in the equations of the ground frame and the body frame(not converted from/to one another).
 
 ### Body dynamics
 
@@ -200,13 +206,31 @@ where;
 - $d$ is the air friction coefficient called "drag", affecting the velocity terms.
 - $I_{xx}​,I_{yy}, I_{zz}$ are inertia moments around the body-frame axes $x, y, z$ respectively($x, y, z$ should be aligned with the drone's principal axes, from the gravity-center(other slant inertia $I_{xy}, I_{yz}, I_{zx}$ are assumed to be zero).
 
+The ground frame dynamics (converted from body) are as follows. 
+
+$$
+\begin{array}{l}
+\dot{u_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) - \frac{d}{m}u_e \\
+\dot{v_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) -\frac{d}{m}v_e \\
+\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e \\
+\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \ldots (\text{in the body frame}) \\
+\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \ldots (\text{in the body frame}) \\
+\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \ldots (\text{in the body frame}) \\
+\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \ldots (\text{in the ground frame}) \\
+\dot{\theta} = q \cos{\phi} - r \sin{\phi} \ldots (\text{in the ground frame}) \\
+\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta} \ldots (\text{in the ground frame})
+\end{array}
+$$
+
 The transformation from/to the body frame and the ground frame is as follows.
 
 ### Frame transformation
 
+The dynamics above are calculated using the transformations between the ground frame and the body frame.
+
 #### Velocity, Acceleration
 
-The body velocity $v = (u, v, w)$ is transformed to ground $v_e = (u_e, v_e, w_e)$ by the following matrix.
+The body velocity $v = (u, v, w)$ is transformed to ground $v_e = (u_e, v_e, w_e)$ by the following matrix. The acceleration is transformed in the same way.
 
 $$
 \left[
