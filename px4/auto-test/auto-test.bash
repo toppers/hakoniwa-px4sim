@@ -78,18 +78,19 @@ function do_config_thruster()
     cp ${TEST_RESOURCE_PATH}/configs/drone_config_base.json ${TEST_RESOURCE_PATH}/work/drone_config.json 
 
     python3 hakoniwa/python/drone_config.py ${TEST_RESOURCE_PATH}/work/drone_config.json \
-        components.thruster.parameterB "${p1}e-11"
+        components.thruster.parameterB "${p1}e-10"
 
     python3 hakoniwa/python/drone_config.py ${TEST_RESOURCE_PATH}/work/drone_config.json \
         components.thruster.parameterJr  "${p2}e-10"
 }
 
 # 以下はサンプルとしてのテストプログラムです。
-for p1 in 1.0 2.0 3.0 4.0. 5.0 6.0 7.0 8.0 9.0 10.0
-#for p1 in 0.8
+#for p1 in 1.0 2.0 3.0 4.0. 5.0 6.0 7.0 8.0 9.0 10.0
+#for p1 in 1.4 1.5 1.6 1.7 1.8 1.9 2.0
+for p1 in 1.3
 do
-    for p2 in 1.0 2.0 4.0 8.0 16.0
-#    for p2 in 1.0
+#    for p2 in 1.0 2.0 4.0 6.0 10.0
+    for p2 in 0.6
     do
         echo "INFO: START TEST PARAM=${p1}-${p2}"
         do_config_thruster ${p1} ${p2}

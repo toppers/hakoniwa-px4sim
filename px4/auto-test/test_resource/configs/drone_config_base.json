@@ -35,9 +35,11 @@
   "components": {
       "droneDynamics": {
           "physicsEquation": "BodyFrame",
+          "collision_detection": false,
           "airFrictionCoefficient": 0.0001,
           "inertia": [ 0.0000625, 0.00003125, 0.00009375 ],
           "mass_kg": 0.1,
+          "body_size": [ 0.1, 0.1, 0.01 ],
           "position_meter": [ 0, 0, 0 ],
           "angle_degree": [ 0, 0, 90 ]
         },
@@ -54,7 +56,7 @@
             {"position": [ -0.05,  0.05, 0 ], "rotationDirection": -1.0 }
             ],
           "HoveringRpm": 4000,
-          "parameterB":  3.0e-11,
+          "parameterB":  1.0e-10,
           "parameterJr": 1.0e-10
         },
         "sensors": {
