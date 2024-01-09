@@ -2,7 +2,7 @@
 
 ## Input 
 
-* [AngularVelocity](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angular-velocity-in-body-coordinate-system)
+* [](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angular-velocity-in-body-coordinate-system)
 * [Angle](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angle)
 
 ## Output

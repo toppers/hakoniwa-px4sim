@@ -127,8 +127,8 @@ Functions are implemented in the following categories, with the referece to the 
 |----------|-----------|------|
 |`velocity_body_to_ground`  | (1.71), (1.124) | Body velocity to ground velocity |
 |`velocity_ground_to_body`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
-|`angular_rate_body_to_ground` | (1.109) | Body angular velocity to ground angular velocity |
-|`angular_rate_ground_to_body` | (1.106) | Ground angular velocity to body angular velocity |
+|`angular_rate_body_to_ground` | (1.109) | Body angular rate to ground angular rate |
+|`angular_rate_ground_to_body` | (1.106) | Ground angular rate to body angular rate |
 
 ### Body dynamics(Acceleration):
 | Function | equations in the book | note |
@@ -142,8 +142,8 @@ Functions are implemented in the following categories, with the referece to the 
 ### Rotor dynamics(for one rotor, rotation speed and thrust):
 | Function | equations in the book | note |
 |----------|-----------|------|
-|`rotor_omega_acceleration` | (2.48) | Rotor angular velocity acceleration from dury rate |
-|`rotor_thrust` | (2.50) | Rotor thrust from rotor angular velocity |
+|`rotor_omega_acceleration` | (2.48) | Rotor angular rate acceleration from dury rate |
+|`rotor_thrust` | (2.50) | Rotor thrust from rotor angular rate |
 |`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
 
 ### Body dynamics(n rotors, thrust and torque to the body):
@@ -182,7 +182,7 @@ where;
 - $m$ - mass of the drone
 - $I$ - inertia matrix of the drone 
 - $v$ - linear velocity of the drone $v=(u, v, w)$
-- $\omega$ - angular velocity of the drone $\omega = (p, q, r)$
+- $\omega$ - angular rate of the drone $\omega = (p, q, r)$
 - $F$ - force vector including gravity($mg$), drag($-dv)$, and thrust $(T)$
 - $\tau$ - torque vector from the rotors
 
@@ -252,9 +252,9 @@ $$
 $$
 
 
-#### Angular Velocity, Angular Acceleration
+#### angular rate, Angular Acceleration
 
-The body angular velocity $\omega = (p, q, r)$ 
+The body angular rate $\omega = (p, q, r)$ 
 is transformed to ground($\omega_e = (p_e, q_e, r_e$).
 From the body to the ground, the transformation matrix is;
 
@@ -278,7 +278,7 @@ $$
 
 ### Rotor dynamics
 
-Each rotor can be modeled as a first-order lag system, in which the rotor angular velocity
+Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
 
@@ -294,7 +294,7 @@ where;
 - $T_r$ is the rotor time constant.
 - $d(t)$ is the duty rate of the rotor. ($0.0 - 1.0$)
 
-The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity $\Omega$ eq.(2.50). $A$ is a parameter related to the rotor size and the air density.
+The thrust $T$ of the rotor is proportional to the square of the rotor angular rate $\Omega$ eq.(2.50). $A$ is a parameter related to the rotor size and the air density.
 
 $T = A \Omega^2 $
 

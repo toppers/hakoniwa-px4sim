@@ -130,29 +130,29 @@ void test_frame_roundtrip() {
 }
 
 void test_angular_frame_roundtrip() {
-    AngularVelocityType v1{1, 0, 0};
-    AngularVelocityType v2 = angular_velocity_body_to_ground(v1, AngleType{0, 0, 0});
+    AngularRateType v1{1, 0, 0};
+    AngularRateType v2 = angular_rate_body_to_ground(v1, AngleType{0, 0, 0});
     assert_almost_equal(v1, v2);
 
     for (int i = -180; i < 180; i+=30) {  // 0 to 360 degree x-axis
-        v2 = angular_velocity_body_to_ground(v1, AngleType{i * PI / 180, 0, 0});
-        AngularVelocityType v3 = angular_velocity_ground_to_body(v2, AngleType{i * PI / 180, 0, 0});
+        v2 = angular_rate_body_to_ground(v1, AngleType{i * PI / 180, 0, 0});
+        AngularRateType v3 = angular_rate_ground_to_body(v2, AngleType{i * PI / 180, 0, 0});
         assert_almost_equal(v1, v3);
     }
     for (int i = -90; i < 90; i+=30) {  // y-axis
-        v2 = angular_velocity_body_to_ground(v1, AngleType{0, i * PI / 180, 0});
-        AngularVelocityType v3 = angular_velocity_ground_to_body(v2, AngleType{0, i * PI / 180, 0});
+        v2 = angular_rate_body_to_ground(v1, AngleType{0, i * PI / 180, 0});
+        AngularRateType v3 = angular_rate_ground_to_body(v2, AngleType{0, i * PI / 180, 0});
         assert_almost_equal(v1, v3);
     }
     for (int i = -180; i < 180; i+=30) {  // z-axis
-        v2 = angular_velocity_body_to_ground(v1, AngleType{0, 0, i * PI / 180});
-        AngularVelocityType v3 = angular_velocity_ground_to_body(v2, AngleType{0, 0, i * PI / 180});
+        v2 = angular_rate_body_to_ground(v1, AngleType{0, 0, i * PI / 180});
+        AngularRateType v3 = angular_rate_ground_to_body(v2, AngleType{0, 0, i * PI / 180});
         assert_almost_equal(v1, v3);
     }
     // conbinations
-    AngularVelocityType u1 = {1, 0, 0};
+    AngularRateType u1 = {1, 0, 0};
     v1 = {0, 1, 0};
-    AngularVelocityType w1 = {0, 0, 1};
+    AngularRateType w1 = {0, 0, 1};
     AngleType ans;
     for (int i = -90; i < 180; i+=30) {
          for (int j = -90; j < 90; j+=30) {
@@ -160,16 +160,16 @@ void test_angular_frame_roundtrip() {
             for (int k = -180; k < 180; k+=30) {
                 AngleType rot_angle{i * (PI/180), j * (PI/180), k * (PI/180)};
 
-                v2 = angular_velocity_body_to_ground(v1, rot_angle);
-                ans = angular_velocity_ground_to_body(v2, rot_angle);
+                v2 = angular_rate_body_to_ground(v1, rot_angle);
+                ans = angular_rate_ground_to_body(v2, rot_angle);
                 assert_almost_equal(v1, ans);
 
-                v2 = angular_velocity_body_to_ground(u1, rot_angle);
-                ans= angular_velocity_ground_to_body(v2, rot_angle);
+                v2 = angular_rate_body_to_ground(u1, rot_angle);
+                ans= angular_rate_ground_to_body(v2, rot_angle);
                 assert_almost_equal(u1, ans);
 
-                v2 = angular_velocity_body_to_ground(w1, rot_angle);
-                ans = angular_velocity_ground_to_body(v2, rot_angle);
+                v2 = angular_rate_body_to_ground(w1, rot_angle);
+                ans = angular_rate_ground_to_body(v2, rot_angle);
                 assert_almost_equal(w1, ans);
             }
          }
@@ -181,33 +181,33 @@ void test_body_acceleration() {
     const VelocityType v{1, 2, 3};
 
     double trust = 1, mass = 1, gravity = 1, drag = 0;
-    AccelerationType a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularVelocityType{0, 0, 0},
+    AccelerationType a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularRateType{0, 0, 0},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{0, 0, 0}));
 
     trust = 10, mass = 2, gravity = 1, drag = 0;
-    a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularVelocityType{0, 0, 0},
+    a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularRateType{0, 0, 0},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{0, 0, -trust/mass+gravity}));
 
     /* change psi angle (doesn't matter) */
-    a = acceleration_in_body_frame(v, AngleType{0, 0, PI/6}, AngularVelocityType{0, 0, 0},
+    a = acceleration_in_body_frame(v, AngleType{0, 0, PI/6}, AngularRateType{0, 0, 0},
         trust, mass, gravity, drag);
         assert_almost_equal(a, (AccelerationType{0, 0, -trust/mass+gravity}));
 
     /* change phi */
-    a = acceleration_in_body_frame(v, AngleType{PI/6, 0, 0}, AngularVelocityType{0, 0, 0},
+    a = acceleration_in_body_frame(v, AngleType{PI/6, 0, 0}, AngularRateType{0, 0, 0},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{0, gravity*sin(PI/6), -trust/mass+gravity*cos(PI/6)}));
 
     /* change theta */
-    a = acceleration_in_body_frame(v, AngleType{0, PI/6, 0}, AngularVelocityType{0, 0, 0},
+    a = acceleration_in_body_frame(v, AngleType{0, PI/6, 0}, AngularRateType{0, 0, 0},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{-gravity*sin(PI/6), 0, -trust/mass+gravity*cos(PI/6)}));
 
     /* add drag */
     trust = 10, mass = 2, gravity = 1, drag = 0.1;
-    a = acceleration_in_body_frame(v, AngleType{0, PI/6, 0}, AngularVelocityType{0, 0, 0},
+    a = acceleration_in_body_frame(v, AngleType{0, PI/6, 0}, AngularRateType{0, 0, 0},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{
         -gravity*sin(PI/6)-drag/mass*1,
@@ -216,12 +216,12 @@ void test_body_acceleration() {
 
     trust = 10, mass = 2, gravity = 1, drag = 0;
     // setting angle to (0,0,0), drag = 0, same anglular and linear velocity, so Coliori=(0,0,0)
-    a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularVelocityType{1, 2, 3},
+    a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularRateType{1, 2, 3},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{0, 0, -trust/mass+gravity}));
     
     // now Coliori is (1,1,1)x(1,2,3) = (1,-2,1)
-    a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularVelocityType{1, 1, 1},
+    a = acceleration_in_body_frame(v, AngleType{0, 0, 0}, AngularRateType{1, 1, 1},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{-1, 2, -trust/mass+gravity-1}));
 }
@@ -262,7 +262,7 @@ void test_ground_acceleration() {
 
 
 void test_body_angular_acceleration() {
-    const AngularVelocityType v{1, 2, 3};
+    const AngularRateType v{1, 2, 3};
     double I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 0, torque_y = 0, torque_z = 0;
     AngularAccelerationType a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
     assert_almost_equal(a, (AngularAccelerationType{0, 0, 0}));
@@ -282,7 +282,7 @@ void test_body_angular_acceleration() {
 
 void test_ground_angular_acceleration()
 {
-    AngularVelocityType av_g{0, 0, 0}, av_b;
+    AngularRateType av_g{0, 0, 0}, av_b;
     AngleType angle{0, 0, 0};
     AngularAccelerationType a_g, a_g2;
     AngularAccelerationType a_b;
@@ -294,10 +294,10 @@ void test_ground_angular_acceleration()
     /* round trip */
     angle = {PI/3, PI/4, PI/6};
     av_g = {1, 2, 3};
-    av_b = angular_velocity_ground_to_body(av_g, angle);
+    av_b = angular_rate_ground_to_body(av_g, angle);
     a_g = angular_acceleration_in_ground_frame(av_g, angle, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
     a_b = angular_acceleration_in_body_frame(av_b, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
-    a_g2 = angular_velocity_body_to_ground(a_b, angle);
+    a_g2 = angular_rate_body_to_ground(a_b, angle);
     assert_almost_equal(a_g, a_g2);
 
 

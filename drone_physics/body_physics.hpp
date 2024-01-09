@@ -23,7 +23,7 @@ typedef VectorType TorqueType;
  * This type is used for "Euler Angles" in this library,
  * including rotation, angular rate, angular acceleration, etc.
  * Note that the order of rotation is phi, theta, psi.
- * Angular velocity (omega) is expressed in VectorType.
+ * angular rate (omega) is expressed in VectorType.
  * Angular rate/acceleration is derived from Euler angles and expressed in AngleType.
  *
  * - phi(x-rotation or roll),      -PI <= phi   < PI

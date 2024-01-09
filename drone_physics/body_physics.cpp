@@ -160,7 +160,7 @@ VelocityType velocity_ground_to_body(
     return vector_ground_to_body(ground, angle);
 }
 
-/* Tranlsform angular velocity in body frame to ground frame eq.(1.109)*/
+/* Tranlsform angular rate in body frame to ground frame eq.(1.109)*/
 AngularRateType angular_rate_body_to_ground(
     const AngularRateType& body,
     const AngleType& angle)
@@ -186,7 +186,7 @@ AngularRateType angular_rate_body_to_ground(
     return {dot_phi, dot_theta, dot_psi};
 }
 
-/* Tranlsform angular velocity in ground frame to body frame (eq.106)*/
+/* Tranlsform angular rate in ground frame to body frame (eq.106)*/
 AngularRateType angular_rate_ground_to_body(
     const AngularRateType& ground,
     const AngleType& angle)
@@ -376,7 +376,7 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
-    /* transform angular velocity in ground frame to BODY frame */
+    /* transform angular rate in ground frame to BODY frame */
     const auto angular_rate_in_body_frame = 
         angular_rate_ground_to_body(angular_rate_in_ground_frame, angle);
 

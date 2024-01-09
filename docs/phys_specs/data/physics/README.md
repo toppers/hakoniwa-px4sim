@@ -100,9 +100,9 @@ These angular orientations help in understanding the drone's attitude in 3D spac
 
 
 
-# AngularVelocity
+# 
 
-This section explains the measurement of the drone's angular velocity, which is the rate of change of its angular position over time.
+This section explains the measurement of the drone's , which is the rate of change of its angular position over time.
 
 | Attribute          | Description                                           |
 |--------------------|-------------------------------------------------------|
@@ -113,7 +113,7 @@ This section explains the measurement of the drone's angular velocity, which is 
 | Yaw Rate           | Angular velocity around the Z-axis (Down)             |
 
 ## About the Coordinate System
-- **Ground Coordinate System (NED)**: In this system, the angular velocity is measured relative to the North (X), East (Y), and Down (Z) axes, corresponding to roll, pitch, and yaw movements.
+- **Ground Coordinate System (NED)**: In this system, the  is measured relative to the North (X), East (Y), and Down (Z) axes, corresponding to roll, pitch, and yaw movements.
 
 ## About the Unit
 - **Radian per Second (rad/s)**: Angular velocity is measured in radians per second. This unit quantifies how quickly the drone is rotating about each of the three axes.
@@ -123,11 +123,11 @@ This section explains the measurement of the drone's angular velocity, which is 
 - **Pitch Rate**: A positive value denotes a nose-up rotation around the Y-axis.
 - **Yaw Rate**: A positive value signifies a clockwise rotation around the Z-axis when viewed from above.
 
-Understanding these rates of angular velocity is crucial for controlling the drone's orientation and for stabilizing its flight.
+Understanding these rates of  is crucial for controlling the drone's orientation and for stabilizing its flight.
 
 # Angular Velocity in Body Coordinate System
 
-This section explains the measurement of the drone's angular velocity in the body coordinate system, which is the rate of change of its angular position over time, relative to its own body axes.
+This section explains the measurement of the drone's  in the body coordinate system, which is the rate of change of its angular position over time, relative to its own body axes.
 
 | Attribute          | Description                                           |
 |--------------------|-------------------------------------------------------|
@@ -138,7 +138,7 @@ This section explains the measurement of the drone's angular velocity in the bod
 | Yaw Rate           | Angular velocity around the downward (Z) axis         |
 
 ## About the Coordinate System
-- **Body Coordinate System (FRD)**: In this system, angular velocity is measured relative to the aircraft's own Forward (X), Right (Y), and Downward (Z) axes, which align with the fuselage of the aircraft.
+- **Body Coordinate System (FRD)**: In this system,  is measured relative to the aircraft's own Forward (X), Right (Y), and Downward (Z) axes, which align with the fuselage of the aircraft.
 
 ## About the Unit
 - **Radian per Second (rad/s)**: Angular velocity is measured in radians per second. This unit quantifies the rate at which the drone is rotating about its own body axes.
@@ -148,7 +148,7 @@ This section explains the measurement of the drone's angular velocity in the bod
 - **Pitch Rate**: A positive value denotes a nose-up rotation around the drone's lateral axis.
 - **Yaw Rate**: A positive value signifies a rotation to the right around the drone's vertical axis.
 
-Understanding the drone's angular velocity in the body frame is essential for maneuvers, orientation control, and the stabilization of the aircraft during flight.
+Understanding the drone's  in the body frame is essential for maneuvers, orientation control, and the stabilization of the aircraft during flight.
 
 
 # Rotor Speed

@@ -22,7 +22,7 @@ where;
 - $m$ - the mass of the drone
 - $I$ - the inertia matrix of the drone 
 - $v$ - the linear velocity of the drone $v=(u, v, w)$
-- $\omega$ - the angular velocity of the drone $\omega = (p, q, r)$
+- $\omega$ - the  of the drone $\omega = (p, q, r)$
 - $F$ - the force vector including gravity($mg$), drag($-dv)$, and thrust $(T)$
 - $\tau$ - the torque vector including the propeller torque
 
@@ -65,7 +65,7 @@ Velocity:
 ![スクリーンショット 2023-12-05 10 04 44](https://github.com/toppers/hakoniwa-px4sim/assets/164193/992bb7fe-0d50-47a5-aab5-e17aba4f716d)
 
 
-AngularVelocity:
+:
 
 ![スクリーンショット 2023-12-05 10 05 51](https://github.com/toppers/hakoniwa-px4sim/assets/164193/9b036e35-6ed5-4fd0-8ceb-05364e5cccdb)
 
@@ -73,4 +73,4 @@ AngularVelocity:
 
 ## Integrator
 
-The `Integrator` function numerically integrates time-dependent variables, such as velocity to determine position, or angular velocity to ascertain orientation angles. Within drone dynamics, it is utilized to compile incremental changes over time, thereby updating the drone's state, including its position and orientation in the ground coordinate frame. This continuous integration is crucial for plotting the drone's trajectory and for the feedback control systems that depend on the knowledge of the drone's historical path.
+The `Integrator` function numerically integrates time-dependent variables, such as velocity to determine position, or  to ascertain orientation angles. Within drone dynamics, it is utilized to compile incremental changes over time, thereby updating the drone's state, including its position and orientation in the ground coordinate frame. This continuous integration is crucial for plotting the drone's trajectory and for the feedback control systems that depend on the knowledge of the drone's historical path.

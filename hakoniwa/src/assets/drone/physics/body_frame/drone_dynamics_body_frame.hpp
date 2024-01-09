@@ -46,7 +46,7 @@ private:
 
     DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)
     {
-        return drone_physics::angular_velocity_body_to_ground(src, angle);
+        return drone_physics::angular_rate_body_to_ground(src, angle);
     }
     glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
     {
