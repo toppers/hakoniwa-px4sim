@@ -29,7 +29,7 @@ private:
     DronePositionType position;
     DroneVelocityType velocity;
     DroneAngleType angle;
-    DroneAngularVelocityType angularVelocity;
+    DroneAngularRateType angularVelocity;
 
     DroneVelocityBodyFrameType velocityBodyFrame;
     DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
@@ -44,7 +44,7 @@ private:
         return drone_physics::velocity_body_to_ground(src, angle);
     }
 
-    DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
+    DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)
     {
         return drone_physics::angular_velocity_body_to_ground(src, angle);
     }
@@ -116,7 +116,7 @@ public:
     bool has_collision_detection() override {
         return this->param_collision_detection;
     }
-    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
+    void set_angular_vel(const DroneAngularRateType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -133,7 +133,7 @@ public:
         return angle;
     }
 
-    DroneAngularVelocityType get_angular_vel() const override {
+    DroneAngularRateType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {

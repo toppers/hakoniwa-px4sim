@@ -161,8 +161,8 @@ VelocityType velocity_ground_to_body(
 }
 
 /* Tranlsform angular velocity in body frame to ground frame eq.(1.109)*/
-AngularVelocityType angular_velocity_body_to_ground(
-    const AngularVelocityType& body,
+AngularRateType angular_rate_body_to_ground(
+    const AngularRateType& body,
     const AngleType& angle)
 {
     using std::sin; using std::cos;
@@ -187,8 +187,8 @@ AngularVelocityType angular_velocity_body_to_ground(
 }
 
 /* Tranlsform angular velocity in ground frame to body frame (eq.106)*/
-AngularVelocityType angular_velocity_ground_to_body(
-    const AngularVelocityType& ground,
+AngularRateType angular_rate_ground_to_body(
+    const AngularRateType& ground,
     const AngleType& angle)
 {
     using std::sin; using std::cos; using std::tan;
@@ -224,7 +224,7 @@ AngularVelocityType angular_velocity_ground_to_body(
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
-    const AngularVelocityType& body_angular_velocity,
+    const AngularRateType& body_angular_rate,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
     assert(!is_zero(mass));
@@ -234,7 +234,7 @@ AccelerationType acceleration_in_body_frame(
         c_phi   = cos(angle.phi),   s_phi   = sin(angle.phi),
         c_theta = cos(angle.theta), s_theta = sin(angle.theta);
     const auto [u, v, w] = body_velocity;
-    const auto [p, q, r] = body_angular_velocity;
+    const auto [p, q, r] = body_angular_rate;
     const auto g = gravity;
     const auto m = mass;
     const auto c = drag;
@@ -337,7 +337,7 @@ AccelerationType acceleration_in_ground_frame(
 
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularVelocityType& angular_velocity_in_body_frame,
+    const AngularRateType& angular_rate_in_body_frame,
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
@@ -348,7 +348,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     assert(!is_zero(I_xx)); assert(!is_zero(I_yy)); assert(!is_zero(I_zz));
 
     // current angular velocities in body frame
-    const auto [p, q, r] = angular_velocity_in_body_frame;
+    const auto [p, q, r] = angular_rate_in_body_frame;
  
     /*
      * See also Nonami's book eq.(2.31)(1.137)(1.109), where L=tau_x, M=tau_y, N=tau_z.
@@ -371,21 +371,21 @@ AngularAccelerationType angular_acceleration_in_body_frame(
 }
 
 AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngularRateType& angular_rate_in_ground_frame,
     const AngleType& angle,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
     /* transform angular velocity in ground frame to BODY frame */
-    const auto angular_velocity_in_body_frame = 
-        angular_velocity_ground_to_body(angular_velocity_in_ground_frame, angle);
+    const auto angular_rate_in_body_frame = 
+        angular_rate_ground_to_body(angular_rate_in_ground_frame, angle);
 
     const auto acceleration_in_body_frame = angular_acceleration_in_body_frame(
-        angular_velocity_in_body_frame,
+        angular_rate_in_body_frame,
         torque_x, torque_y, torque_z,
         I_xx, I_yy, I_zz);
     /* transform angular acceleration in body frame back to GROUND frame */
-    return angular_velocity_body_to_ground(acceleration_in_body_frame, angle);
+    return angular_rate_body_to_ground(acceleration_in_body_frame, angle);
 }    
 
 

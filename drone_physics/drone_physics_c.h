@@ -24,7 +24,7 @@ typedef struct {
 typedef dp_vector_t
     dp_velocity_t, dp_acceleration_t;
 typedef dp_angle_t
-    dp_angular_velocity_t, dp_angular_acceleration_t;
+    dp_angular_rate_t, dp_angular_acceleration_t;
 
 /* maths for frame transformations */
 dp_velocity_t dp_velocity_body_to_ground(
@@ -35,12 +35,12 @@ dp_velocity_t dp_velocity_ground_to_body(
     const dp_velocity_t* ground /* non-null*/,
     const dp_angle_t* angle);
 
-dp_angular_velocity_t dp_angular_velocity_body_to_ground(
-    const dp_vector_t* angular_velocity_body_frame,
+dp_angular_rate_t dp_angular_rate_body_to_ground(
+    const dp_vector_t* angular_rate_body_frame,
     const dp_angle_t* angle);
 
-dp_angular_velocity_t dp_angular_velocity_ground_to_body(
-    const dp_vector_t* angular_velocity_ground_frame,
+dp_angular_rate_t dp_angular_rate_ground_to_body(
+    const dp_vector_t* angular_rate_ground_frame,
     const dp_angle_t* angle);
 
 #ifdef __cplusplus

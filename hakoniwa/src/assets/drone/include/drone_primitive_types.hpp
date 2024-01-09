@@ -118,7 +118,7 @@ typedef struct DroneAngularVelocity {
     operator hako::drone_physics::AngleType() const {
         return {data.x, data.y, data.z};
     }
-} DroneAngularVelocityType;
+} DroneAngularRateType;
 
 
 /*

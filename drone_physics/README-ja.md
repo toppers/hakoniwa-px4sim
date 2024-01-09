@@ -130,8 +130,8 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 |----------|-----------|------|
 |`velocity_body_to_ground`  | (1.71), (1.124) | 機体座標の速度を地上座標に変換 |
 |`velocity_ground_to_body`  | (1.69), (1.124)の逆変換 | 地上座標の速度を機体座標に変換 |
-|`angular_velocity_body_to_ground` | (1.109) | 機体角速度を地上座標に変換 |
-|`angular_velocity_ground_to_body` | (1.106) | 地上角速度を機体座標に変換 |
+|`angular_rate_body_to_ground` | (1.109) | 機体角速度を地上座標に変換 |
+|`angular_rate_ground_to_body` | (1.106) | 地上角速度を機体座標に変換 |
 
 ### 機体の力学(力と加速度)
 | 関数 | 数式 | 意味 |

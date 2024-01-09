@@ -26,7 +26,7 @@ private:
     DronePositionType position;           // Initialized to zero by default (glm::dvec3)
     DroneVelocityType velocity;           // Initialized to zero by default (glm::dvec3)
     DroneAngleType angle;                 // Initialized to zero by default (glm::dvec3)
-    DroneAngularVelocityType angularVelocity; // Initialized to zero by default (glm::dvec3)
+    DroneAngularRateType angularVelocity; // Initialized to zero by default (glm::dvec3)
 
     double delta_time_sec;
     double total_time_sec;
@@ -103,7 +103,7 @@ public:
         angle = ang;
     }
 
-    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
+    void set_angular_vel(const DroneAngularRateType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -120,14 +120,14 @@ public:
         return angle;
     }
 
-    DroneAngularVelocityType get_angular_vel() const override {
+    DroneAngularRateType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return drone_physics::velocity_ground_to_body(velocity, angle);
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
-        return drone_physics::angular_velocity_ground_to_body(angularVelocity, angle);
+        return drone_physics::angular_rate_ground_to_body(angularVelocity, angle);
     }
 
     // Implementation for the run function is required

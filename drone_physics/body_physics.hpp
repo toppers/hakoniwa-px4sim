@@ -8,6 +8,10 @@
 
 namespace hako::drone_physics {
 
+/**
+ * This type is used for "Vectors" in this library,
+ * including relative position, velocity, acceleration, force, torque, etc.
+*/
 typedef struct vector_type_t {
     double x, y, z;
 } VectorType;
@@ -15,12 +19,37 @@ typedef VectorType VelocityType;
 typedef VectorType AccelerationType;
 typedef VectorType TorqueType;
 
+/*
+ * This type is used for "Euler Angles" in this library,
+ * including rotation, angular rate, angular acceleration, etc.
+ * Note that the order of rotation is phi, theta, psi.
+ * Angular velocity (omega) is expressed in VectorType.
+ * Angular rate/acceleration is derived from Euler angles and expressed in AngleType.
+ *
+ * - phi(x-rotation or roll),      -PI <= phi   < PI
+ * - theta(y-rotation or pitch), -PI/2 <= theta < PI/2
+ * - psi(z-rotation or yaw),       -PI <= psi   < PI,
+ * but for psi, all range are possible(exceeding PI even 2PI) when traveling around circles,
+ * 
+ * The initial angle is (0, 0, 0).
+ * 
+ * From ground to body, Vectors are transformed in the order 
+ * of psi, theta, phi. The coordinate system is right-handed, and
+ * the rotation matrix is calculated as follows,
+ * where v_e = (x_e, y_e, z_e), v_b = (x_b, y_b, z_b).
+ * 
+ *     v_e = R_z(psi)R_y(theta)R_x(phi) v_b
+ * 
+ * See https://www.sky-engin.jp/blog/eulerian-angles/
+ * https://mtkbirdman.com/flight-dynamics-body-axes-system
+*/
+
 typedef struct angle_type_t {
     double phi;   // rotation round x-axis
     double theta; // rotation round y-axis
     double psi;   // rotation round z-axis
 } AngleType;
-typedef AngleType AngularVelocityType;
+typedef AngleType AngularRateType;
 typedef AngleType AngularAccelerationType;
 
 /* basic operators */
@@ -48,25 +77,6 @@ std::ostream& operator << (std::ostream& os, const AngleType& v) {
 #endif /* BP_INCLUDE_IO */
 
 
-/* NOTE: for AnguleType, 
- * <0> phi(x-rotation or roll),      -PI <= phi   < PI
- * <1> theta(y-rotation or pitch), -PI/2 <= theta < PI/2
- * <2> psi(z-rotation or yaw),       -PI <= psi   < PI,
- * but for psi, all range are possible(exceeding PI even 2PI) when traveling around circles,
- * 
- * The initial angle is (0, 0, 0).
- * 
- * From ground to body, vectors are transformed in the order 
- * of psi, theta, phi. The coordinate system is right-handed, and
- * the rotation matrix is calculated as follows,
- * where v_e = (x_e, y_e, z_e), v_b = (x_b, y_b, z_b).
- * 
- *     v_e = R_z(psi)R_y(theta)R_x(phi) v_b
- * 
- * See https://www.sky-engin.jp/blog/eulerian-angles/
- * https://mtkbirdman.com/flight-dynamics-body-axes-system
-*/
-
 /* maths for frame transformations */
 VelocityType velocity_body_to_ground(
     const VelocityType& body,
@@ -75,11 +85,11 @@ VelocityType velocity_ground_to_body(
     const VelocityType& ground,
     const AngleType& angle);
 
-AngularVelocityType angular_velocity_body_to_ground(
-    const AngularVelocityType& angular_veleocy,
+AngularRateType angular_rate_body_to_ground(
+    const AngularRateType& angular_veleocy,
     const AngleType& angle);
-AngularVelocityType angular_velocity_ground_to_body(
-    const AngularVelocityType& angular_velocity_ground_frame,
+AngularRateType angular_rate_ground_to_body(
+    const AngularRateType& angular_rate_ground_frame,
     const AngleType& angle);
 
 /* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
@@ -93,7 +103,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
-    const AngularVelocityType& body_angular_velocity, /* for Coriolis */
+    const AngularRateType& body_angular_rate, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
@@ -105,12 +115,12 @@ AccelerationType acceleration_in_ground_frame( /* no Coriolis needed */
     double gravity, double drag);
 
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularVelocityType& angular_velocity_in_body_frame,
+    const AngularRateType& angular_rate_in_body_frame,
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
 
 AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularVelocityType& angular_velocity_in_ground_frame,
+    const AngularRateType& angular_rate_in_ground_frame,
     const AngleType& angle,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
