@@ -5,8 +5,6 @@
 
 namespace hako::drone_physics {
 
-typedef VectorType TorqueType;
-
 /**
  * These functions are rotor dynamics.
  * Treats the rotor as a single unit.
@@ -56,6 +54,15 @@ TorqueType body_torque(
     double ccw[], /* 1 or -1 */
     double omega[], /* in rpm */
     double omega_acceleration[] /* in rpm/s */ );
+
+
+double rotor_thrust_linear(
+    double A, /* the A parameter in Trust = A*(Omega) */
+    double omega /* in rpm */ );
+double rotor_anti_torque_linear(double B, double omega, double ccw);
+TorqueType body_torque_linear(double A, double B, unsigned n,
+    VectorType position[], double ccw[], double omega[]);
+
 
 } /* namespace hako::drone_physics */
 

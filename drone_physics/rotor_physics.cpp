@@ -76,6 +76,7 @@ double rotor_anti_torque(double B,
    return ccw * ( B * omega * omega + Jr * omega_acceleratoin );
 }
 
+
 /* the sum of the n trust from the rotors eq.(2.61) */
 double body_thrust(double A, unsigned n, double omega[])
 {
@@ -115,5 +116,48 @@ TorqueType body_torque(double A, double B, double Jr, unsigned n,
     }
     return total_torque;
 }
+
+/**
+ * jMAVsim implemntation
+ * thrust from omega linearly
+ */
+double rotor_thrust_linear(
+    double A, /* the A parameter in Trust = A*(Omega) */
+    double omega /* in rpm */ )
+{
+    return A * omega;
+}
+double rotor_anti_torque_linear(double B, double omega, double ccw)
+{
+   return ccw * ( B * omega );
+}
+TorqueType body_torque_linear(double A, double B, unsigned n,
+    VectorType position[], double ccw[], double omega[])
+{
+    TorqueType total_torque = {0, 0, 0};
+    for (unsigned i = 0; i < n; i++) {
+        /**
+         * The Torque from each rotor is made of two parts.
+         * 1. the torque from the thrust of the rotor.
+         * 2. the torque from the anti-torque of the rotor.
+         * 
+         * See Nonami's book (2.60)-(2.62)
+         */
+        // (1)thrust(calculated always +) is upper direction. change to alight z-axis.
+        // then the torque is (position vector) x (thrust vector).
+        const VectorType thrust_vector = { 0, 0, -rotor_thrust_linear(A, omega[i]) };
+        auto thrust_torque = cross(position[i], thrust_vector);
+
+        // (2) anti-torque around z-axis = yaw.
+        const auto anti_torque =
+            rotor_anti_torque_linear(B, omega[i], ccw[i]);
+        
+        total_torque += thrust_torque;
+        total_torque.z += anti_torque;
+    }
+    return total_torque;
+}
+
+
 
 } /* namespace hako::drone_physics */
