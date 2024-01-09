@@ -59,9 +59,11 @@ TorqueType body_torque(
 double rotor_thrust_linear(
     double A, /* the A parameter in Trust = A*(Omega) */
     double omega /* in rpm */ );
-double rotor_anti_torque_linear(double B, double omega, double ccw);
-TorqueType body_torque_linear(double A, double B, unsigned n,
+double rotor_anti_torque_linear(double B2, double omega, double ccw);
+TorqueType body_torque_linear(double A2, double B2, unsigned n,
     VectorType position[], double ccw[], double omega[]);
+double body_thrust_linear(double A2, unsigned n, double omega[]);
+
 
 
 } /* namespace hako::drone_physics */
