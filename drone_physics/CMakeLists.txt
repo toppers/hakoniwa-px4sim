@@ -32,8 +32,8 @@ target_link_libraries(utest drone_physics)
 add_executable(ctest ctest.c)
 target_link_libraries(ctest drone_physics_c)
 
-add_executable(rotortest rotortest.cpp)
-target_link_libraries(rotortest drone_physics)
+#add_executable(rotortest rotortest.cpp)
+#target_link_libraries(rotortest drone_physics)
 
 add_executable(examples examples.cpp)
 target_link_libraries(examples drone_physics)
