@@ -178,7 +178,22 @@ public:
         return positions;
     }
     double getCompThrusterParameter(const std::string& param_name) const {
-        return configJson["components"]["thruster"][param_name].get<double>();
+        // 指定されたパスにパラメータが存在するかチェック
+        if (configJson["components"]["thruster"].contains(param_name)) {
+            return configJson["components"]["thruster"][param_name].get<double>();
+        } else {
+            // パラメータが存在しない場合は 0 を返す
+            return 0.0;
+        }
+    }
+    std::string getCompThrusterVendor() const {
+        // 指定されたパスにパラメータが存在するかチェック
+        if (configJson["components"]["thruster"].contains("vendor")) {
+            return configJson["components"]["thruster"]["vendor"].get<std::string>();
+        } else {
+            // パラメータが存在しない場合は 0 を返す
+            return "None";
+        }
     }
     double getCompSensorSampleCount(const std::string& sensor_name) const {
         return configJson["components"]["sensors"][sensor_name]["sampleCount"].get<double>();

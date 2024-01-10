@@ -41,14 +41,15 @@
           "mass_kg": 0.1,
           "body_size": [ 0.1, 0.1, 0.01 ],
           "position_meter": [ 0, 0, 0 ],
-          "angle_degree": [ 0, 0, 90 ]
+          "angle_degree": [ 0, 0, 0 ]
         },
         "rotor": {
-          "Tr": 0.14,
-          "Kr": 8000,
+          "Tr": 0.11,
+          "Kr": 6000,
           "rpmMax": 8000
         },
         "thruster": {
+          "vendor": "None",
           "rotorPositions": [
             {"position": [  0.05,  0.05, 0 ], "rotationDirection":  1.0 },
             {"position": [ -0.05, -0.05, 0 ], "rotationDirection":  1.0 },
@@ -56,8 +57,8 @@
             {"position": [ -0.05,  0.05, 0 ], "rotationDirection": -1.0 }
             ],
           "HoveringRpm": 4000,
-          "parameterB":  1.3e-10,
-          "parameterJr": 6.0e-10
+          "parameterB":  30.0e-10,
+          "parameterJr": 2500.0e-10
         },
         "sensors": {
           "acc": {
