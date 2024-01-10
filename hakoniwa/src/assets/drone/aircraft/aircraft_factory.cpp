@@ -109,7 +109,18 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     IThrustDynamics *thrust = nullptr;
     auto thrust_vendor = drone_config.getCompThrusterVendor();
     std::cout<< "Thruster vendor: " << thrust_vendor << std::endl;
-    if (thrust_vendor == "None") {
+    if (thrust_vendor == "linear") {
+        thrust = new ThrustDynamicsLinear(DELTA_TIME_SEC);
+        HAKO_ASSERT(thrust != nullptr);
+        static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
+            drone_config.getCompThrusterParameter("parameterA_linear"),
+            drone_config.getCompThrusterParameter("parameterB_linear")
+        );
+        std::cout << "param_A_linear: " << drone_config.getCompThrusterParameter("parameterA_linear") << std::endl;
+        std::cout << "param_B_linear: " << drone_config.getCompThrusterParameter("parameterB_linear") << std::endl;
+        drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH("log_thrust.csv"));
+    }
+    else {
         thrust = new ThrustDynamicsNonLinear(DELTA_TIME_SEC);
         HAKO_ASSERT(thrust != nullptr);
         double mass = drone_dynamics->get_mass();
@@ -124,17 +135,6 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
         std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
         static_cast<ThrustDynamicsNonLinear*>(thrust)->set_params(param_A, THRUST_PARAM_B, THRUST_PARAM_JR);
         drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), LOGPATH("log_thrust.csv"));
-    }
-    else if (thrust_vendor == "linear") {
-        thrust = new ThrustDynamicsLinear(DELTA_TIME_SEC);
-        HAKO_ASSERT(thrust != nullptr);
-        static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
-            drone_config.getCompThrusterParameter("parameterA_linear"),
-            drone_config.getCompThrusterParameter("parameterB_linear")
-        );
-        std::cout << "param_A_linear: " << drone_config.getCompThrusterParameter("parameterA_linear") << std::endl;
-        std::cout << "param_B_linear: " << drone_config.getCompThrusterParameter("parameterB_linear") << std::endl;
-        drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH("log_thrust.csv"));
     }
     drone->set_thrus_dynamics(thrust);
 
