@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "utils/csv_logger.hpp"
-#include "thrust_dynamics.hpp"
+#include "thruster/thrust_dynamics_nonlinear.hpp"
 #include "rotor_dynamics.hpp"
 
 class ThrustDynamicsTest : public ::testing::Test {
@@ -20,7 +20,7 @@ protected:
     }
 
 };
-using hako::assets::drone::ThrustDynamics;
+using hako::assets::drone::ThrustDynamicsNonLinear;
 using hako::assets::drone::DroneRotorSpeedType;
 using hako::assets::drone::DroneThrustType;
 using hako::assets::drone::DroneTorqueType;

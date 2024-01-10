@@ -4,7 +4,8 @@
 #include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
 #include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include "assets/drone/physics/rotor_dynamics.hpp"
-#include "assets/drone/physics/thrust_dynamics.hpp"
+#include "assets/drone/physics/thruster/thrust_dynamics_linear.hpp"
+#include "assets/drone/physics/thruster/thrust_dynamics_nonlinear.hpp"
 #include "assets/drone/sensors/acc/sensor_acceleration.hpp"
 #include "assets/drone/sensors/baro/sensor_baro.hpp"
 #include "assets/drone/sensors/gps/sensor_gps.hpp"
@@ -24,7 +25,8 @@ using hako::assets::drone::SensorGps;
 using hako::assets::drone::SensorMag;
 using hako::assets::drone::SensorGyro;
 using hako::assets::drone::RotorDynamics;
-using hako::assets::drone::ThrustDynamics;
+using hako::assets::drone::ThrustDynamicsLinear;
+using hako::assets::drone::ThrustDynamicsNonLinear;
 using hako::assets::drone::SensorNoise;
 
 #define DELTA_TIME_SEC              drone_config.getSimTimeStep()
@@ -104,20 +106,37 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     drone->set_rotor_dynamics(rotors);
 
     //thrust dynamics
-    auto thrust = new ThrustDynamics(DELTA_TIME_SEC);
-    HAKO_ASSERT(thrust != nullptr);
+    IThrustDynamics *thrust = nullptr;
+    auto thrust_vendor = drone_config.getCompThrusterVendor();
+    std::cout<< "Thruster vendor: " << thrust_vendor << std::endl;
+    if (thrust_vendor == "linear") {
+        thrust = new ThrustDynamicsLinear(DELTA_TIME_SEC);
+        HAKO_ASSERT(thrust != nullptr);
+        static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
+            drone_config.getCompThrusterParameter("parameterA_linear"),
+            drone_config.getCompThrusterParameter("parameterB_linear")
+        );
+        std::cout << "param_A_linear: " << drone_config.getCompThrusterParameter("parameterA_linear") << std::endl;
+        std::cout << "param_B_linear: " << drone_config.getCompThrusterParameter("parameterB_linear") << std::endl;
+        drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH("log_thrust.csv"));
+    }
+    else {
+        thrust = new ThrustDynamicsNonLinear(DELTA_TIME_SEC);
+        HAKO_ASSERT(thrust != nullptr);
+        double mass = drone_dynamics->get_mass();
+        double param_A = ( 
+                            mass * GRAVITY / 
+                            (
+                                pow(drone_config.getCompThrusterParameter("HoveringRpm"), 2) * ROTOR_NUM
+                            )
+                        );
+        std::cout << "param_A: " << param_A << std::endl;
+        std::cout << "param_B: " << THRUST_PARAM_B << std::endl;
+        std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
+        static_cast<ThrustDynamicsNonLinear*>(thrust)->set_params(param_A, THRUST_PARAM_B, THRUST_PARAM_JR);
+        drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), LOGPATH("log_thrust.csv"));
+    }
     drone->set_thrus_dynamics(thrust);
-    double mass = drone_dynamics->get_mass();
-    double param_A = ( 
-                        mass * GRAVITY / 
-                        (
-                            pow(drone_config.getCompThrusterParameter("HoveringRpm"), 2) * ROTOR_NUM
-                        )
-                    );
-    std::cout << "param_A: " << param_A << std::endl;
-    std::cout << "param_B: " << THRUST_PARAM_B << std::endl;
-    std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
-    thrust->set_params(param_A, THRUST_PARAM_B, THRUST_PARAM_JR);
 
     RotorConfigType rotor_config[ROTOR_NUM];
     std::vector<RotorPosition> pos = drone_config.getCompThrusterRotorPositions();
@@ -130,7 +149,6 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     }    
 
     thrust->set_rotor_config(rotor_config);
-    drone->get_logger().add_entry(*thrust, LOGPATH("log_thrust.csv"));
 
     //sensor acc
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);

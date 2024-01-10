@@ -8,6 +8,7 @@
 namespace hako::assets::drone {
 
 const double GRAVITY = 9.81;
+const int HOVERING_ROTOR_RPM = 6000;
 
 /*
  * Coordinate System: Ground Coordinate System (NED)
