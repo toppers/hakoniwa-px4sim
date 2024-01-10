@@ -29,7 +29,7 @@ private:
     DronePositionType position;
     DroneVelocityType velocity;
     DroneAngleType angle;
-    DroneAngularRateType angularVelocity;
+    DroneAngularVelocityType angularVelocity;
 
     DroneVelocityBodyFrameType velocityBodyFrame;
     DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
@@ -44,9 +44,12 @@ private:
         return drone_physics::velocity_body_to_ground(src, angle);
     }
 
-    DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)
+    DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
     {
-        return drone_physics::angular_rate_body_to_ground(src, angle);
+        // TODO hiranabe 2020/12/10
+        drone_physics::AngularRateType rate = drone_physics::body_angular_velocity_to_euler_rate(src, angle);
+        drone_physics::AngularVelocityType dest = { rate.phi, rate.theta, rate.psi };
+        return dest;
     }
     glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
     {
@@ -116,7 +119,7 @@ public:
     bool has_collision_detection() override {
         return this->param_collision_detection;
     }
-    void set_angular_vel(const DroneAngularRateType &angularVel) override {
+    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -133,7 +136,7 @@ public:
         return angle;
     }
 
-    DroneAngularRateType get_angular_vel() const override {
+    DroneAngularVelocityType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {

@@ -26,7 +26,7 @@ private:
     DronePositionType position;           // Initialized to zero by default (glm::dvec3)
     DroneVelocityType velocity;           // Initialized to zero by default (glm::dvec3)
     DroneAngleType angle;                 // Initialized to zero by default (glm::dvec3)
-    DroneAngularRateType angularVelocity; // Initialized to zero by default (glm::dvec3)
+    DroneAngularVelocity angularVelocity; // Initialized to zero by default (glm::dvec3)
 
     double delta_time_sec;
     double total_time_sec;
@@ -103,7 +103,7 @@ public:
         angle = ang;
     }
 
-    void set_angular_vel(const DroneAngularRateType &angularVel) override {
+    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -120,14 +120,17 @@ public:
         return angle;
     }
 
-    DroneAngularRateType get_angular_vel() const override {
+    DroneAngularVelocityType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return drone_physics::velocity_ground_to_body(velocity, angle);
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
-        return drone_physics::angular_rate_ground_to_body(angularVelocity, angle);
+        // TODO: hiranabe 2021/10/13
+        drone_physics::AngularRateType rate = {angularVelocity.data.x, angularVelocity.data.y, angularVelocity.data.z};
+        drone_physics::AngularVelocityType ret =  drone_physics::euler_rate_to_body_angular_velocity(rate, angle);
+        return ret;
     }
 
     // Implementation for the run function is required
@@ -145,7 +148,7 @@ public:
 
         //integral to velocity on ground frame
         this->velocity.data = integral(this->velocity.data, {acc.x, acc.y, acc.z});
-        this->angularVelocity.data = integral(this->angularVelocity.data, {acc_angular.phi, acc_angular.theta, acc_angular.psi});
+        this->angularVelocity.data = integral(this->angularVelocity.data, {acc_angular.x, acc_angular.y, acc_angular.z});
 
         //integral to pos, angle on ground frame
         this->position.data = integral(this->position.data, this->velocity.data);

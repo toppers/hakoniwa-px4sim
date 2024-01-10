@@ -23,8 +23,7 @@ typedef VectorType ForceType;
 /* angular vectors omega=(p,q,r) in x, y, z , not phi, theta, psi */
 typedef VectorType AngularVectorType;
 typedef AngularVectorType AngularVelocityType;
-//typedef AngularVectorType AngularAccelerationType; TODO
-
+typedef AngularVectorType AngularAccelerationType;
 
 /*
  * These Angle or Angular types are used for "Euler Angles" in this library,
@@ -59,7 +58,6 @@ typedef struct angle_type_t {
 
 /* angular rate is the time derivative of Euler Angles (phi', theta' psi') */
 typedef AngleType AngularRateType;
-typedef AngleType AngularAccelerationType;
 
 /* basic operators */
 VectorType cross(const VectorType& u, const VectorType& v);
@@ -112,7 +110,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
-    const AngularRateType& body_angular_rate, /* for Coriolis */
+    const AngularVelocityType& body_angular_velocity, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
@@ -124,7 +122,7 @@ AccelerationType acceleration_in_ground_frame( /* no Coriolis needed */
     double gravity, double drag);
 
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularRateType& angular_rate_in_body_frame,
+    const AngularVelocityType& angular_velocity_in_body_frame,
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
 

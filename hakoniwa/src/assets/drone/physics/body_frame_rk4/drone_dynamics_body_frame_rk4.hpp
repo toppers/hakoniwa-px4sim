@@ -28,7 +28,7 @@ private:
     DronePositionType position;
     DroneVelocityType velocity;
     DroneAngleType angle;
-    DroneAngularRateType angularVelocity;
+    DroneAngularVelocityType angularVelocity;
 
     DroneVelocityBodyFrameType velocityBodyFrame;
     DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
@@ -50,9 +50,12 @@ private:
         return drone_physics::velocity_body_to_ground(src, angle);
     }
 
-    DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)
+    DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
     {
-        return drone_physics::angular_rate_body_to_ground(src, angle);
+        // TODO hiranabe 2020/12/10
+        hako::drone_physics::AngularRateType rate = drone_physics::body_angular_velocity_to_euler_rate(src, angle);
+        hako::drone_physics::AngularVectorType lhs{rate.phi, rate.theta, rate.psi};
+        return lhs;
     }
     void integral(const DroneVelocityType& src)
     {
@@ -60,7 +63,7 @@ private:
         this->position.data.y += src.data.y * this->delta_time_sec;
         this->position.data.z += src.data.z * this->delta_time_sec;
     }
-    void integral(const DroneAngularRateType& src)
+    void integral(const DroneAngularVelocityType& src)
     {
         this->angle.data.x += src.data.x * this->delta_time_sec;
         this->angle.data.y += src.data.y * this->delta_time_sec;
@@ -140,7 +143,7 @@ public:
         angle = ang;
     }
 
-    void set_angular_vel(const DroneAngularRateType &angularVel) override {
+    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -157,7 +160,7 @@ public:
         return angle;
     }
 
-    DroneAngularRateType get_angular_vel() const override {
+    DroneAngularVelocityType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {

@@ -224,8 +224,7 @@ AngularVelocityType euler_rate_to_body_angular_velocity(
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
-    const AngularRateType& body_angular_rate,
-//    const AngularVectorType& body_angular_velocity,
+    const AngularVelocityType& body_angular_velocity,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
     assert(!is_zero(mass));
@@ -235,8 +234,7 @@ AccelerationType acceleration_in_body_frame(
         c_phi   = cos(angle.phi),   s_phi   = sin(angle.phi),
         c_theta = cos(angle.theta), s_theta = sin(angle.theta);
     const auto [u, v, w] = body_velocity;
-    const auto [p, q, r] = body_angular_rate;
-//    const auto [p, q, r] = body_angular_velocity;
+    const auto [p, q, r] = body_angular_velocity;
     const auto g = gravity;
     const auto m = mass;
     const auto c = drag;
@@ -339,8 +337,7 @@ AccelerationType acceleration_in_ground_frame(
 
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularRateType& angular_rate_in_body_frame,
-//    const AngularVelocityType& angular_velocity_in_body_frame,
+    const AngularVelocityType& angular_velocity_in_body_frame,
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
@@ -351,8 +348,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     assert(!is_zero(I_xx)); assert(!is_zero(I_yy)); assert(!is_zero(I_zz));
 
     // current angular velocities in body frame
-    const auto [p, q, r] = angular_rate_in_body_frame;
-//    const auto [p, q, r] = angular_velocity_in_body_frame;
+    const auto [p, q, r] = angular_velocity_in_body_frame;
  
     /*
      * See also Nonami's book eq.(2.31)(1.137)(1.109), where L=tau_x, M=tau_y, N=tau_z.
@@ -374,15 +370,18 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return {dot_p, dot_q, dot_r};
 }
 
-#if 0
+// TODO: hiranabe 2020/12/10, use rate. for the upper interface only now.
+//AngularRateType angular_acceleration_in_ground_frame(
 AngularAccelerationType angular_acceleration_in_ground_frame(
-//AngularRateType euler_angular_rate_from_body_angular_vector(
-//AngularVelocityType angular_acceleration_in_ground_frame(
-    const AngularAccelerationType& euler_rate,
+    const AngularVelocityType& angular_velocity, // sould be euler.
     const AngleType& euler,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
+    // TODO: hiranabe 2020/12/10, use rate. for the upper interface only now.
+    AngularRateType euler_rate = {angular_velocity.x, 
+                                    angular_velocity.y, 
+                                    angular_velocity.z};
     /* transform euler angle velocity to BODY frame anglular velocity */
     const auto body_angular_velocity = 
         euler_rate_to_body_angular_velocity(euler_rate, euler);
@@ -392,10 +391,10 @@ AngularAccelerationType angular_acceleration_in_ground_frame(
         torque_x, torque_y, torque_z,
         I_xx, I_yy, I_zz);
     /* transform angular acceleration in body frame back to GROUND frame */
-    return body_angular_velocity_to_euler_rate(acceleration_in_body_frame, angle);
+    AngularRateType a =  body_angular_velocity_to_euler_rate(
+        angular_acceleration , euler);
+    return {a.phi, a.theta, a.psi};
 }    
-#endif
-
 
 /**
  * Collision section.

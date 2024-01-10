@@ -28,7 +28,7 @@ using hako::assets::drone::IDroneDynamics;
 using hako::assets::drone::DronePositionType;
 using hako::assets::drone::DroneAngleType;
 using hako::assets::drone::DroneVelocityType;
-using hako::assets::drone::DroneAngularRateType;
+using hako::assets::drone::DroneAngularVelocityType;
 using hako::assets::drone::DroneTorqueType;
 using hako::assets::drone::DroneThrustType;
 
@@ -133,8 +133,8 @@ static void cross_check_angle(void)
 
 static void cross_check_anglular_velocity(void)
 {
-    const DroneAngularRateType ground_angle = drone_dynamics_ground->get_angular_vel();
-    const DroneAngularRateType body_angle = drone_dynamics_body->get_angular_vel();
+    const DroneAngularVelocityType ground_angle = drone_dynamics_ground->get_angular_vel();
+    const DroneAngularVelocityType body_angle = drone_dynamics_body->get_angular_vel();
     if (std::abs(ground_angle.data.x - body_angle.data.x) > POSITION_DIFF_VEL_MAX) {
         std::cerr << "WARNING: CROSS_CHECK ERROR<AngleVel> ground_x: " << ground_angle.data.x << " body_x: " << body_angle.data.x << std::endl;
     }
