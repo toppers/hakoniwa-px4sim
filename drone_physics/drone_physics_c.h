@@ -35,11 +35,11 @@ dp_velocity_t dp_velocity_ground_to_body(
     const dp_velocity_t* ground /* non-null*/,
     const dp_angle_t* angle);
 
-dp_angular_rate_t dp_angular_rate_body_to_ground(
+dp_angular_rate_t dp_body_angular_velocity_to_euler_rate(
     const dp_vector_t* angular_rate_body_frame,
     const dp_angle_t* angle);
 
-dp_angular_rate_t dp_angular_rate_ground_to_body(
+dp_angular_rate_t dp_euler_rate_to_body_angular_velocity(
     const dp_vector_t* angular_rate_ground_frame,
     const dp_angle_t* angle);
 

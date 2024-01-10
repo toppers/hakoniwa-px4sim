@@ -127,8 +127,8 @@ Functions are implemented in the following categories, with the referece to the 
 |----------|-----------|------|
 |`velocity_body_to_ground`  | (1.71), (1.124) | Body velocity to ground velocity |
 |`velocity_ground_to_body`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
-|`angular_rate_body_to_ground` | (1.109) | Body angular rate to ground angular rate |
-|`angular_rate_ground_to_body` | (1.106) | Ground angular rate to body angular rate |
+|`body_angular_velocity_to_euler_rate` | (1.109) | Body angular rate to ground angular rate |
+|`euler_rate_to_body_angular_velocity` | (1.106) | Ground angular rate to body angular rate |
 
 ### Body dynamics(Acceleration):
 | Function | equations in the book | note |

@@ -7,11 +7,11 @@
 #include <cmath>
 #include "drone_physics.hpp"
 
-static double diff(const hako::drone_physics::VectorType& v, const hako::drone_physics::VectorType& w) {
+inline double diff(const hako::drone_physics::VectorType& v, const hako::drone_physics::VectorType& w) {
     return length_squared(v - w);
 }
 
-static double diff(const hako::drone_physics::AngleType& a, const hako::drone_physics::AngleType b) {
+inline double diff(const hako::drone_physics::AngleType& a, const hako::drone_physics::AngleType b) {
     auto [phi, theta, psi] = a;
     auto [phi2, theta2, psi2] = b;
     return (phi-phi2)*(phi-phi2) + (theta-theta2)*(theta-theta2) + (psi-psi2)*(psi-psi2);
@@ -33,7 +33,7 @@ static double diff(const hako::drone_physics::AngleType& a, const hako::drone_ph
 #include <assert.h>
 #include <math.h>
 
-static double diff(const dp_vector_t* v, const dp_vector_t* w) {
+inline double diff(const dp_vector_t* v, const dp_vector_t* w) {
     double x = v->x;
     double y = v->y;
     double z = v->z;

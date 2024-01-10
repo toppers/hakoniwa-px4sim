@@ -26,45 +26,20 @@ add_library(
     rotor_physics.cpp
 )
 
-add_executable(
-    utest
-    utest.cpp
-)
+add_executable(utest utest.cpp)
+target_link_libraries(utest drone_physics)
 
-target_link_libraries(
-    utest
-    drone_physics
- )
+add_executable(ctest ctest.c)
+target_link_libraries(ctest drone_physics_c)
 
- add_executable(
-    ctest
-    ctest.c
-)
+add_executable(rotortest rotortest.cpp)
+target_link_libraries(rotortest drone_physics)
 
-target_link_libraries(
-    ctest
-    drone_physics_c
-)
+add_executable(examples examples.cpp)
+target_link_libraries(examples drone_physics)
 
-add_executable(
-    examples
-    examples.cpp
-)
-
-target_link_libraries(
-    examples
-    drone_physics
-)
-
-add_executable(
-    cexamples
-    cexamples.c
-)
-
-target_link_libraries(
-    cexamples
-    drone_physics_c
-)
+add_executable(cexamples cexamples.c)
+target_link_libraries(cexamples drone_physics_c)
 
 enable_testing()
 add_test(NAME test COMMAND ./utest)

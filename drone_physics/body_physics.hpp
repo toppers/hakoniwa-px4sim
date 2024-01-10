@@ -20,6 +20,12 @@ typedef VectorType AccelerationType;
 typedef VectorType TorqueType;
 typedef VectorType ForceType;
 
+/* angular vectors omega=(p,q,r) in x, y, z , not phi, theta, psi */
+typedef VectorType AngularVectorType;
+typedef AngularVectorType AngularVelocityType;
+//typedef AngularVectorType AngularAccelerationType; TODO
+
+
 /*
  * These Angle or Angular types are used for "Euler Angles" in this library,
  * including rotation, angular rate, angular acceleration, etc.
@@ -44,11 +50,14 @@ typedef VectorType ForceType;
  * https://mtkbirdman.com/flight-dynamics-body-axes-system
 */
 
+/* Euler Angles */
 typedef struct angle_type_t {
     double phi;   // rotation round x-axis
     double theta; // rotation round y-axis
     double psi;   // rotation round z-axis
 } AngleType;
+
+/* angular rate is the time derivative of Euler Angles (phi', theta' psi') */
 typedef AngleType AngularRateType;
 typedef AngleType AngularAccelerationType;
 
@@ -85,12 +94,12 @@ VelocityType velocity_ground_to_body(
     const VelocityType& ground,
     const AngleType& angle);
 
-AngularRateType angular_rate_body_to_ground(
-    const AngularRateType& angular_veleocy,
-    const AngleType& angle);
-AngularRateType angular_rate_ground_to_body(
-    const AngularRateType& angular_rate_ground_frame,
-    const AngleType& angle);
+AngularRateType body_angular_velocity_to_euler_rate(
+    const AngularVelocityType& angular_veleocy,
+    const AngleType& euler);
+AngularVelocityType euler_rate_to_body_angular_velocity(
+    const AngularRateType& euler_rate,
+    const AngleType& euler);
 
 /* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
 AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
@@ -120,7 +129,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
 
 AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularRateType& angular_rate_in_ground_frame,
+    const AngularAccelerationType& angular_rate_in_ground_frame,
     const AngleType& angle,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
