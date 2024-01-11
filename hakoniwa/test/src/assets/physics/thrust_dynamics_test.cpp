@@ -2,7 +2,7 @@
 #include <iostream>
 #include "utils/csv_logger.hpp"
 #include "thruster/thrust_dynamics_nonlinear.hpp"
-#include "rotor_dynamics.hpp"
+#include "rotor/rotor_dynamics.hpp"
 
 class ThrustDynamicsTest : public ::testing::Test {
 protected:

@@ -152,6 +152,15 @@ public:
     double getCompDroneDynamicsMass() const {
         return configJson["components"]["droneDynamics"]["mass_kg"].get<double>();
     }
+    std::string getCompRotorVendor() const {
+        // 指定されたパスにパラメータが存在するかチェック
+        if (configJson["components"]["rotor"].contains("vendor")) {
+            return configJson["components"]["rotor"]["vendor"].get<std::string>();
+        } else {
+            // パラメータが存在しない場合は 0 を返す
+            return "None";
+        }
+    }
 
     // Rotor parameters
     double getCompRotorTr() const {

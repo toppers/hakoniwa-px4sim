@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "utils/csv_logger.hpp"
-#include "rotor_dynamics.hpp"
+#include "rotor/rotor_dynamics.hpp"
 
 class RotorDynamicsTest : public ::testing::Test {
 protected:

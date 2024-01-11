@@ -3,7 +3,8 @@
 #include "assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
 #include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
 #include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
-#include "assets/drone/physics/rotor_dynamics.hpp"
+#include "assets/drone/physics/rotor/rotor_dynamics.hpp"
+#include "assets/drone/physics/rotor/rotor_dynamics_jmavsim.hpp"
 #include "assets/drone/physics/thruster/thrust_dynamics_linear.hpp"
 #include "assets/drone/physics/thruster/thrust_dynamics_nonlinear.hpp"
 #include "assets/drone/sensors/acc/sensor_acceleration.hpp"
@@ -95,13 +96,24 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
 
     //rotor dynamics
     IRotorDynamics* rotors[hako::assets::drone::ROTOR_NUM];
+    auto rotor_vendor = drone_config.getCompRotorVendor();
+    std::cout<< "Rotor vendor: " << rotor_vendor << std::endl;
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
-        auto rotor = new RotorDynamics(DELTA_TIME_SEC);
-        HAKO_ASSERT(rotor != nullptr);
-        rotors[i] = rotor;
-        rotor->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
+        IRotorDynamics *rotor = nullptr;
         std::string logfilename= "log_rotor_" + std::to_string(i) + ".csv";
-        drone->get_logger().add_entry(*rotor, LOGPATH(logfilename));
+        if (rotor_vendor == "jmavsim") {
+            rotor = new RotorDynamicsJmavsim(DELTA_TIME_SEC);
+            HAKO_ASSERT(rotor != nullptr);
+            static_cast<RotorDynamicsJmavsim*>(rotor)->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
+            drone->get_logger().add_entry(*static_cast<RotorDynamicsJmavsim*>(rotor), LOGPATH(logfilename));
+        }
+        else {
+            rotor = new RotorDynamics(DELTA_TIME_SEC);
+            HAKO_ASSERT(rotor != nullptr);
+            static_cast<RotorDynamics*>(rotor)->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
+            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(logfilename));
+        }
+        rotors[i] = rotor;
     }
     drone->set_rotor_dynamics(rotors);
 
