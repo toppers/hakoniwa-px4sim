@@ -28,10 +28,10 @@ private:
     DronePositionType position;
     DroneVelocityType velocity;
     DroneAngleType angle;
-    DroneAngularVelocityType angularVelocity;
+    DroneAngularRateType angularVelocity;
 
     DroneVelocityBodyFrameType velocityBodyFrame;
-    DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
+    DroneAngularRateBodyFrameType angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -41,12 +41,10 @@ private:
         return drone_physics::velocity_body_to_ground(src, angle);
     }
 
-    DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
+    DroneAngularRateType convert(const DroneAngularRateBodyFrameType& src)
     {
         // TODO hiranabe 2020/12/10
-        hako::drone_physics::AngularRateType rate = drone_physics::body_angular_velocity_to_euler_rate(src, angle);
-        hako::drone_physics::AngularVectorType lhs{rate.phi, rate.theta, rate.psi};
-        return lhs;
+        return drone_physics::body_angular_velocity_to_euler_rate(src, angle);
     }
     void integral(const DroneVelocityType& src)
     {
@@ -54,15 +52,15 @@ private:
         this->position.data.y += src.data.y * this->delta_time_sec;
         this->position.data.z += src.data.z * this->delta_time_sec;
     }
-    void integral(const DroneAngularVelocityType& src)
+    void integral(const DroneAngularRateType& src)
     {
         this->angle.data.x += src.data.x * this->delta_time_sec;
         this->angle.data.y += src.data.y * this->delta_time_sec;
         this->angle.data.z += src.data.z * this->delta_time_sec;
     }
-    void rungeKutta4_k(const DroneVelocityBodyFrame& v_vel, const DroneAngularVelocityBodyFrame& v_rate, 
+    void rungeKutta4_k(const DroneVelocityBodyFrame& v_vel, const DroneAngularRateBodyFrame& v_rate, 
                        const DroneAccelerationBodyFrame& k_acc, DroneAngularAccelerationBodyFrame& k_acc_angular,
-                       double rate, DroneVelocityBodyFrame& k_vec, DroneAngularVelocityBodyFrame& k_rate)
+                       double rate, DroneVelocityBodyFrame& k_vec, DroneAngularRateBodyFrame& k_rate)
     {
         k_vec.data.x  = v_vel.data.x  + rate * k_acc.data.x * this->delta_time_sec; 
         k_vec.data.y  = v_vel.data.y  + rate * k_acc.data.y * this->delta_time_sec; 
@@ -71,7 +69,7 @@ private:
         k_rate.data.y = v_rate.data.y + rate * k_acc_angular.data.y * this->delta_time_sec; 
         k_rate.data.z = v_rate.data.z + rate * k_acc_angular.data.z * this->delta_time_sec;
     }
-    DroneAccelerationBodyFrame rungeKutta4_acc(const DroneVelocityBodyFrame &v_vel, const DroneAngularVelocityBodyFrame& v_rate, const DroneThrustType& thrust)
+    DroneAccelerationBodyFrame rungeKutta4_acc(const DroneVelocityBodyFrame &v_vel, const DroneAngularRateBodyFrame& v_rate, const DroneThrustType& thrust)
     {
         return drone_physics::acceleration_in_body_frame(
                         v_vel, 
@@ -79,7 +77,7 @@ private:
                         v_rate, 
                         thrust.data, this->param_mass, GRAVITY, this->param_drag);
     }
-    DroneAngularAccelerationBodyFrame rungeKutta4_acc_angular(const DroneAngularVelocityBodyFrame& v_rate, const DroneTorqueType& torque)
+    DroneAngularAccelerationBodyFrame rungeKutta4_acc_angular(const DroneAngularRateBodyFrame& v_rate, const DroneTorqueType& torque)
     {
         return drone_physics::angular_acceleration_in_body_frame(
                         v_rate,
@@ -97,25 +95,25 @@ private:
     void rungeKutta4(const DroneThrustType& thrust, const DroneTorqueType& torque) 
     {
         DroneVelocityBodyFrame v_vel(this->velocityBodyFrame);
-        DroneAngularVelocityBodyFrame v_rate(this->angularVelocityBodyFrame);
+        DroneAngularRateBodyFrame v_rate(this->angularVelocityBodyFrame);
         //k1
         DroneAccelerationBodyFrame k1_acc = rungeKutta4_acc(v_vel, v_rate, thrust);
         DroneAngularAccelerationBodyFrame k1_acc_angular = rungeKutta4_acc_angular(v_rate, torque);
         //k2
         DroneVelocityBodyFrame k2_vec;
-        DroneAngularVelocityBodyFrame k2_rate;
+        DroneAngularRateBodyFrame k2_rate;
         rungeKutta4_k(v_vel, v_rate, k1_acc, k1_acc_angular, 0.5, k2_vec, k2_rate);
         DroneAccelerationBodyFrame k2_acc = rungeKutta4_acc(k2_vec, k2_rate, thrust);
         DroneAngularAccelerationBodyFrame k2_acc_angular = rungeKutta4_acc_angular(k2_rate, torque);
         //k3
         DroneVelocityBodyFrame k3_vec;
-        DroneAngularVelocityBodyFrame k3_rate;
+        DroneAngularRateBodyFrame k3_rate;
         rungeKutta4_k(v_vel, v_rate, k2_acc, k2_acc_angular, 0.5, k3_vec, k3_rate);
         DroneAccelerationBodyFrame k3_acc = rungeKutta4_acc(k3_vec, k3_rate, thrust);
         DroneAngularAccelerationBodyFrame k3_acc_angular = rungeKutta4_acc_angular(k3_rate, torque);
         //k4
         DroneVelocityBodyFrame k4_vec;
-        DroneAngularVelocityBodyFrame k4_rate;
+        DroneAngularRateBodyFrame k4_rate;
         rungeKutta4_k(v_vel, v_rate, k3_acc, k3_acc_angular, 1.0, k4_vec, k4_rate);
         DroneAccelerationBodyFrame k4_acc = rungeKutta4_acc(k4_vec, k4_rate, thrust);
         DroneAngularAccelerationBodyFrame k4_acc_angular = rungeKutta4_acc_angular(k4_rate, torque);
@@ -187,7 +185,7 @@ public:
         angle = ang;
     }
 
-    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
+    void set_angular_vel(const DroneAngularRateType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -204,13 +202,13 @@ public:
         return angle;
     }
 
-    DroneAngularVelocityType get_angular_vel() const override {
+    DroneAngularRateType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return velocityBodyFrame;
     }
-    DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
+    DroneAngularRateBodyFrameType get_angular_vel_body_frame() const override {
         return angularVelocityBodyFrame;
     }
 

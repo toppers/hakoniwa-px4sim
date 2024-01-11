@@ -29,12 +29,12 @@ private:
     DronePositionType position;
     DroneVelocityType velocity;
     DroneAngleType angle;
-    DroneAngularVelocityType angularVelocity;
+    DroneAngularRateType angularVelocity;
 
     DroneVelocityBodyFrameType velocityBodyFrame;
-    DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
+    DroneAngularRateBodyFrameType angularVelocityBodyFrame;
     DroneVelocityBodyFrameType next_velocityBodyFrame;
-    DroneAngularVelocityBodyFrameType next_angularVelocityBodyFrame;
+    DroneAngularRateBodyFrameType next_angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -44,11 +44,11 @@ private:
         return drone_physics::velocity_body_to_ground(src, angle);
     }
 
-    DroneAngularVelocityType convert(const DroneAngularVelocityBodyFrameType& src)
+    DroneAngularRateType convert(const DroneAngularRateBodyFrameType& src)
     {
         // TODO hiranabe 2020/12/10
         drone_physics::AngularRateType rate = drone_physics::body_angular_velocity_to_euler_rate(src, angle);
-        drone_physics::AngularVelocityType dest = { rate.phi, rate.theta, rate.psi };
+        drone_physics::AngularRateType dest = { rate.phi, rate.theta, rate.psi };
         return dest;
     }
     glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
@@ -119,7 +119,7 @@ public:
     bool has_collision_detection() override {
         return this->param_collision_detection;
     }
-    void set_angular_vel(const DroneAngularVelocityType &angularVel) override {
+    void set_angular_vel(const DroneAngularRateType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -136,13 +136,13 @@ public:
         return angle;
     }
 
-    DroneAngularVelocityType get_angular_vel() const override {
+    DroneAngularRateType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return velocityBodyFrame;
     }
-    DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
+    DroneAngularRateBodyFrameType get_angular_vel_body_frame() const override {
         return angularVelocityBodyFrame;
     }
 

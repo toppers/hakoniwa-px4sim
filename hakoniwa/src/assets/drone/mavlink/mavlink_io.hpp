@@ -18,7 +18,7 @@ private:
         sensor.yacc = static_cast<float>(acc.data.y);
         sensor.zacc = static_cast<float>(acc.data.z);
 
-        DroneAngularVelocityBodyFrameType gyro = drone.get_gyro().sensor_value();
+        DroneAngularRateBodyFrameType gyro = drone.get_gyro().sensor_value();
         sensor.xgyro = static_cast<float>(gyro.data.x);
         sensor.ygyro = static_cast<float>(gyro.data.y);
         sensor.zgyro = static_cast<float>(gyro.data.z);

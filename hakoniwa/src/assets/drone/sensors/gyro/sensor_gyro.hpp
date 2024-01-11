@@ -23,16 +23,16 @@ public:
         this->noise = nullptr;
     }
     virtual ~SensorGyro() {}
-    void run(const DroneAngularVelocityBodyFrameType& data) override
+    void run(const DroneAngularRateBodyFrameType& data) override
     {
         this->gyro_x.add_data(data.data.x);
         this->gyro_y.add_data(data.data.y);
         this->gyro_z.add_data(data.data.z);
         total_time_sec += delta_time_sec;
     }
-    DroneAngularVelocityBodyFrameType sensor_value() override
+    DroneAngularRateBodyFrameType sensor_value() override
     {
-        DroneAngularVelocityBodyFrameType value;
+        DroneAngularRateBodyFrameType value;
         value.data.x = this->gyro_x.get_calculated_value();
         value.data.y = this->gyro_y.get_calculated_value();
         value.data.z = this->gyro_z.get_calculated_value();

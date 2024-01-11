@@ -38,15 +38,15 @@ public:
     virtual void set_pos(const DronePositionType &pos) = 0;
     virtual void set_vel(const DroneVelocityType &vel) = 0;
     virtual void set_angle(const DroneAngleType &angle) = 0;
-    virtual void set_angular_vel(const DroneAngularVelocityType &angular_vel) = 0;
+    virtual void set_angular_vel(const DroneAngularRateType &angular_vel) = 0;
 
     virtual DronePositionType get_pos() const = 0;
     virtual DroneVelocityType get_vel() const = 0;
     virtual DroneAngleType get_angle() const = 0;
-    virtual DroneAngularVelocityType get_angular_vel() const = 0;
+    virtual DroneAngularRateType get_angular_vel() const = 0;
 
     virtual DroneVelocityBodyFrameType get_vel_body_frame() const = 0;
-    virtual DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const = 0;
+    virtual DroneAngularRateBodyFrameType get_angular_vel_body_frame() const = 0;
     virtual double get_mass() const = 0;
     virtual void set_mass(double mass) = 0;
     virtual bool has_collision_detection() = 0;
