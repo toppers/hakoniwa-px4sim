@@ -44,6 +44,7 @@
           "angle_degree": [ 0, 0, 90 ]
         },
         "rotor": {
+          "vendor": "jmavsim",
           "Tr": 0.12,
           "Kr": 8000,
           "rpmMax": 8000
