@@ -32,8 +32,6 @@ add_executable(
     threads/px4sim_thread_replay.cpp
     threads/px4sim_thread_capture.cpp
 
-    assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.cpp
-
     ${PHYSICS_SOURCE_DIR}/body_physics.cpp
     ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
     
