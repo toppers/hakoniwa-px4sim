@@ -202,7 +202,7 @@ public:
             this->position.data.z = 0;
             this->velocity.data.z = 0;
             this->velocityBodyFrame.data.x = 0;
-            this->velocityBodyFrame.data.y = 0;
+            //this->velocityBodyFrame.data.y = 0;
             this->velocityBodyFrame.data.z = 0;
             //this->angularVelocityBodyFrame.data.x = 0;
             //this->angularVelocityBodyFrame.data.y = 0;

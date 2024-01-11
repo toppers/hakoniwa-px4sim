@@ -36,13 +36,6 @@ private:
     double delta_time_sec;
     double total_time_sec;
 
-    void run_x(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_y(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_z(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_rx(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_ry(const DroneThrustType &thrust, const DroneTorqueType &torque);
-    void run_rz(const DroneThrustType &thrust, const DroneTorqueType &torque);
-
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
         return drone_physics::velocity_body_to_ground(src, angle);
@@ -67,84 +60,68 @@ private:
         this->angle.data.y += src.data.y * this->delta_time_sec;
         this->angle.data.z += src.data.z * this->delta_time_sec;
     }
+    void rungeKutta4_k(const DroneVelocityBodyFrame& v_vel, const DroneAngularVelocityBodyFrame& v_rate, 
+                       const DroneAccelerationBodyFrame& k_acc, DroneAngularAccelerationBodyFrame& k_acc_angular,
+                       double rate, DroneVelocityBodyFrame& k_vec, DroneAngularVelocityBodyFrame& k_rate)
+    {
+        k_vec.data.x  = v_vel.data.x  + rate * k_acc.data.x * this->delta_time_sec; 
+        k_vec.data.y  = v_vel.data.y  + rate * k_acc.data.y * this->delta_time_sec; 
+        k_vec.data.z  = v_vel.data.z  + rate * k_acc.data.z * this->delta_time_sec;
+        k_rate.data.x = v_rate.data.x + rate * k_acc_angular.data.x * this->delta_time_sec; 
+        k_rate.data.y = v_rate.data.y + rate * k_acc_angular.data.y * this->delta_time_sec; 
+        k_rate.data.z = v_rate.data.z + rate * k_acc_angular.data.z * this->delta_time_sec;
+    }
+    DroneAccelerationBodyFrame rungeKutta4_acc(const DroneVelocityBodyFrame &v_vel, const DroneAngularVelocityBodyFrame& v_rate, const DroneThrustType& thrust)
+    {
+        return drone_physics::acceleration_in_body_frame(
+                        v_vel, 
+                        this->angle, 
+                        v_rate, 
+                        thrust.data, this->param_mass, GRAVITY, this->param_drag);
+    }
+    DroneAngularAccelerationBodyFrame rungeKutta4_acc_angular(const DroneAngularVelocityBodyFrame& v_rate, const DroneTorqueType& torque)
+    {
+        return drone_physics::angular_acceleration_in_body_frame(
+                        v_rate,
+                        torque.data.x, torque.data.y, torque.data.z,
+                        this->param_cx, this->param_cy, this->param_cz);
+    }
+    glm::dvec3 rungeKutta4_sum(const glm::dvec3& v, const glm::dvec3& k1, const glm::dvec3& k2, const glm::dvec3& k3, const glm::dvec3& k4)
+    {
+        glm::dvec3 ret;
+        ret.x = v.x + (this->delta_time_sec / 6.0) * (k1.x + 2 * k2.x + 2 * k3.x + k4.x);
+        ret.y = v.y + (this->delta_time_sec / 6.0) * (k1.y + 2 * k2.y + 2 * k3.y + k4.y);
+        ret.z = v.z + (this->delta_time_sec / 6.0) * (k1.z + 2 * k2.z + 2 * k3.z + k4.z);
+        return ret;
+    }
     void rungeKutta4(const DroneThrustType& thrust, const DroneTorqueType& torque) 
     {
         DroneVelocityBodyFrame v_vel(this->velocityBodyFrame);
         DroneAngularVelocityBodyFrame v_rate(this->angularVelocityBodyFrame);
         //k1
-        DroneAccelerationBodyFrame k1_acc = drone_physics::acceleration_in_body_frame(
-                        v_vel, 
-                        this->angle, 
-                        v_rate, 
-                        thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        DroneAngularAccelerationBodyFrame k1_acc_angular = drone_physics::angular_acceleration_in_body_frame(
-                        v_rate,
-                        torque.data.x, torque.data.y, torque.data.z,
-                        this->param_cx, this->param_cy, this->param_cz);
+        DroneAccelerationBodyFrame k1_acc = rungeKutta4_acc(v_vel, v_rate, thrust);
+        DroneAngularAccelerationBodyFrame k1_acc_angular = rungeKutta4_acc_angular(v_rate, torque);
         //k2
         DroneVelocityBodyFrame k2_vec;
         DroneAngularVelocityBodyFrame k2_rate;
-        k2_vec.data.x = v_vel.data.x + 0.5 * k1_acc.data.x * this->delta_time_sec; 
-        k2_vec.data.y = v_vel.data.y + 0.5 * k1_acc.data.y * this->delta_time_sec; 
-        k2_vec.data.z = v_vel.data.z + 0.5 * k1_acc.data.z * this->delta_time_sec;
-        k2_rate.data.x = v_rate.data.x + 0.5 * k1_acc_angular.data.x * this->delta_time_sec; 
-        k2_rate.data.y = v_rate.data.y + 0.5 * k1_acc_angular.data.y * this->delta_time_sec; 
-        k2_rate.data.z = v_rate.data.z + 0.5 * k1_acc_angular.data.z * this->delta_time_sec;
-        DroneAccelerationBodyFrame k2_acc = drone_physics::acceleration_in_body_frame(
-                        k2_vec, 
-                        this->angle, 
-                        k2_rate, 
-                        thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        DroneAngularAccelerationBodyFrame k2_acc_angular = drone_physics::angular_acceleration_in_body_frame(
-                        k2_rate,
-                        torque.data.x, torque.data.y, torque.data.z,
-                        this->param_cx, this->param_cy, this->param_cz);
-
+        rungeKutta4_k(v_vel, v_rate, k1_acc, k1_acc_angular, 0.5, k2_vec, k2_rate);
+        DroneAccelerationBodyFrame k2_acc = rungeKutta4_acc(k2_vec, k2_rate, thrust);
+        DroneAngularAccelerationBodyFrame k2_acc_angular = rungeKutta4_acc_angular(k2_rate, torque);
         //k3
         DroneVelocityBodyFrame k3_vec;
         DroneAngularVelocityBodyFrame k3_rate;
-        k3_vec.data.x = v_vel.data.x + 0.5 * k2_acc.data.x * this->delta_time_sec; 
-        k3_vec.data.y = v_vel.data.y + 0.5 * k2_acc.data.y * this->delta_time_sec; 
-        k3_vec.data.z = v_vel.data.z + 0.5 * k2_acc.data.z * this->delta_time_sec;
-        k3_rate.data.x = v_rate.data.x + 0.5 * k2_acc_angular.data.x * this->delta_time_sec; 
-        k3_rate.data.y = v_rate.data.y + 0.5 * k2_acc_angular.data.y * this->delta_time_sec; 
-        k3_rate.data.z = v_rate.data.z + 0.5 * k2_acc_angular.data.z * this->delta_time_sec;
-        DroneAccelerationBodyFrame k3_acc = drone_physics::acceleration_in_body_frame(
-                        k3_vec, 
-                        this->angle, 
-                        k3_rate, 
-                        thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        DroneAngularAccelerationBodyFrame k3_acc_angular = drone_physics::angular_acceleration_in_body_frame(
-                        k3_rate,
-                        torque.data.x, torque.data.y, torque.data.z,
-                        this->param_cx, this->param_cy, this->param_cz);
-
+        rungeKutta4_k(v_vel, v_rate, k2_acc, k2_acc_angular, 0.5, k3_vec, k3_rate);
+        DroneAccelerationBodyFrame k3_acc = rungeKutta4_acc(k3_vec, k3_rate, thrust);
+        DroneAngularAccelerationBodyFrame k3_acc_angular = rungeKutta4_acc_angular(k3_rate, torque);
         //k4
         DroneVelocityBodyFrame k4_vec;
         DroneAngularVelocityBodyFrame k4_rate;
-        k4_vec.data.x = v_vel.data.x + k3_acc.data.x * this->delta_time_sec; 
-        k4_vec.data.y = v_vel.data.y + k3_acc.data.y * this->delta_time_sec; 
-        k4_vec.data.z = v_vel.data.z + k3_acc.data.z * this->delta_time_sec;
-        k4_rate.data.x = v_rate.data.x + k3_acc_angular.data.x * this->delta_time_sec; 
-        k4_rate.data.y = v_rate.data.y + k3_acc_angular.data.y * this->delta_time_sec; 
-        k4_rate.data.z = v_rate.data.z + k3_acc_angular.data.z * this->delta_time_sec;
-        DroneAccelerationBodyFrame k4_acc = drone_physics::acceleration_in_body_frame(
-                        k4_vec, 
-                        this->angle, 
-                        k4_rate, 
-                        thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        DroneAngularAccelerationBodyFrame k4_acc_angular = drone_physics::angular_acceleration_in_body_frame(
-                        k4_rate,
-                        torque.data.x, torque.data.y, torque.data.z,
-                        this->param_cx, this->param_cy, this->param_cz);
+        rungeKutta4_k(v_vel, v_rate, k3_acc, k3_acc_angular, 1.0, k4_vec, k4_rate);
+        DroneAccelerationBodyFrame k4_acc = rungeKutta4_acc(k4_vec, k4_rate, thrust);
+        DroneAngularAccelerationBodyFrame k4_acc_angular = rungeKutta4_acc_angular(k4_rate, torque);
 
-
-        this->velocityBodyFrame.data.x = v_vel.data.x + (delta_time_sec / 6.0) * (k1_acc.data.x + 2 * k2_acc.data.x + 2 * k3_acc.data.x + k4_acc.data.x);
-        this->velocityBodyFrame.data.y = v_vel.data.y + (delta_time_sec / 6.0) * (k1_acc.data.y + 2 * k2_acc.data.y + 2 * k3_acc.data.y + k4_acc.data.y);
-        this->velocityBodyFrame.data.z = v_vel.data.z + (delta_time_sec / 6.0) * (k1_acc.data.z + 2 * k2_acc.data.z + 2 * k3_acc.data.z + k4_acc.data.z);
-        this->angularVelocityBodyFrame.data.x = v_rate.data.x + (delta_time_sec / 6.0) * (k1_acc_angular.data.x + 2 * k2_acc_angular.data.x + 2 * k3_acc_angular.data.x + k4_acc_angular.data.x);
-        this->angularVelocityBodyFrame.data.y = v_rate.data.y + (delta_time_sec / 6.0) * (k1_acc_angular.data.y + 2 * k2_acc_angular.data.y + 2 * k3_acc_angular.data.y + k4_acc_angular.data.y);
-        this->angularVelocityBodyFrame.data.z = v_rate.data.z + (delta_time_sec / 6.0) * (k1_acc_angular.data.z + 2 * k2_acc_angular.data.z + 2 * k3_acc_angular.data.z + k4_acc_angular.data.z);
+        this->velocityBodyFrame.data = rungeKutta4_sum(v_vel.data, k1_acc.data, k2_acc.data, k3_acc.data, k4_acc.data);
+        this->angularVelocityBodyFrame.data = rungeKutta4_sum(v_rate.data, k1_acc_angular.data, k2_acc_angular.data, k3_acc_angular.data, k4_acc_angular.data);
     }
 
 
@@ -250,8 +227,13 @@ public:
         //boundary condition
         if (this->position.data.z > 0) {
             this->position.data.z = 0;
-            this->velocity.data.x = 0;
-            this->velocity.data.y = 0;
+            this->velocity.data.z = 0;
+            this->velocityBodyFrame.data.x = 0;
+            //this->velocityBodyFrame.data.y = 0;
+            this->velocityBodyFrame.data.z = 0;
+            //this->angularVelocityBodyFrame.data.x = 0;
+            //this->angularVelocityBodyFrame.data.y = 0;
+            //this->angularVelocityBodyFrame.data.z = 0;
         }        
         this->total_time_sec += this->delta_time_sec;
     }
