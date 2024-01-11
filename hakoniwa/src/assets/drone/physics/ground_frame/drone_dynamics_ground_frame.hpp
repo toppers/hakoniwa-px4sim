@@ -141,14 +141,17 @@ public:
         drone_physics::AccelerationType acc = drone_physics::acceleration_in_ground_frame(
                                                             this->velocity, this->angle, 
                                                             thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        drone_physics::AngularAccelerationType acc_angular = drone_physics::angular_acceleration_in_ground_frame(
+        drone_physics::AngularAccelerationType acc_angular_body = drone_physics::angular_acceleration_in_ground_frame(
                                                             this->angularVelocity, this->angle,
                                                             torque.data.x, torque.data.y, torque.data.z,
                                                             this->param_cx, this->param_cy, this->param_cz);
 
         //integral to velocity on ground frame
         this->velocity.data = integral(this->velocity.data, {acc.x, acc.y, acc.z});
-        this->angularVelocity.data = integral(this->angularVelocity.data, {acc_angular.phi, acc_angular.theta, acc_angular.psi});
+        auto angular_rate_body = integral(this->get_angular_vel_body_frame().data, {acc_angular_body.phi, acc_angular_body.theta, acc_angular_body.psi});
+
+        this->angularVelocity = drone_physics::body_angular_velocity_to_euler_rate(
+                                    {angular_rate_body.x, angular_rate_body.y, angular_rate_body.z}, angle);
 
         //integral to pos, angle on ground frame
         this->position.data = integral(this->position.data, this->velocity.data);
