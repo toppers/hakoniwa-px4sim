@@ -112,22 +112,29 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     if (thrust_vendor == "linear") {
         thrust = new ThrustDynamicsLinear(DELTA_TIME_SEC);
         HAKO_ASSERT(thrust != nullptr);
+        double HoveringRpm = drone_config.getCompThrusterParameter("HoveringRpm");
+        HAKO_ASSERT(HoveringRpm != 0);
+        double mass = drone_dynamics->get_mass();
+        double param_A = (mass * GRAVITY / (HoveringRpm * ROTOR_NUM));
+        double param_B = drone_config.getCompThrusterParameter("parameterB_linear");
         static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
-            drone_config.getCompThrusterParameter("parameterA_linear"),
-            drone_config.getCompThrusterParameter("parameterB_linear")
+            param_A,
+            param_B
         );
-        std::cout << "param_A_linear: " << drone_config.getCompThrusterParameter("parameterA_linear") << std::endl;
-        std::cout << "param_B_linear: " << drone_config.getCompThrusterParameter("parameterB_linear") << std::endl;
+        std::cout << "param_A_linear: " << param_A << std::endl;
+        std::cout << "param_B_linear: " << param_B << std::endl;
         drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH("log_thrust.csv"));
     }
     else {
         thrust = new ThrustDynamicsNonLinear(DELTA_TIME_SEC);
         HAKO_ASSERT(thrust != nullptr);
+        double HoveringRpm = drone_config.getCompThrusterParameter("HoveringRpm");
+        HAKO_ASSERT(HoveringRpm != 0);
         double mass = drone_dynamics->get_mass();
         double param_A = ( 
                             mass * GRAVITY / 
                             (
-                                pow(drone_config.getCompThrusterParameter("HoveringRpm"), 2) * ROTOR_NUM
+                                pow(HoveringRpm, 2) * ROTOR_NUM
                             )
                         );
         std::cout << "param_A: " << param_A << std::endl;
