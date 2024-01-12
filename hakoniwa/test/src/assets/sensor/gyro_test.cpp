@@ -21,12 +21,12 @@ protected:
 };
 using hako::assets::drone::SensorGyro;
 using hako::assets::drone::SensorNoise;
-using hako::assets::drone::DroneAngularRateBodyFrameType;
+using hako::assets::drone::DroneAngularVelocityBodyFrameType;
 
 TEST_F(GyroTest, SensorGyro_001) 
 {
     SensorGyro gyro(0.001, 3);
-    DroneAngularRateBodyFrameType value;
+    DroneAngularVelocityBodyFrameType value;
     value.data.x = 1;
     value.data.y = 2;
     value.data.z = 3;
@@ -40,7 +40,7 @@ TEST_F(GyroTest, SensorGyro_001)
     value.data.z = 5;
     gyro.run(value);
 
-    DroneAngularRateBodyFrameType result = gyro.sensor_value();
+    DroneAngularVelocityBodyFrameType result = gyro.sensor_value();
 
     EXPECT_EQ(2, result.data.x);
     EXPECT_EQ(3, result.data.y);
@@ -52,7 +52,7 @@ TEST_F(GyroTest, SensorGyro_002)
     SensorGyro gyro(0.001, 3);
     SensorNoise noise(10/1000);
     gyro.set_noise(&noise);
-    DroneAngularRateBodyFrameType value;
+    DroneAngularVelocityBodyFrameType value;
     value.data.x = 1;
     value.data.y = 2;
     value.data.z = 3;
@@ -66,7 +66,7 @@ TEST_F(GyroTest, SensorGyro_002)
     value.data.z = 5;
     gyro.run(value);
 
-    DroneAngularRateBodyFrameType result = gyro.sensor_value();
+    DroneAngularVelocityBodyFrameType result = gyro.sensor_value();
 
     EXPECT_GT(result.data.x, 1.980);
     EXPECT_LT(result.data.x, 2.020);

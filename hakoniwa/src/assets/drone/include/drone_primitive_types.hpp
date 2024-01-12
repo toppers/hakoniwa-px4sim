@@ -132,28 +132,28 @@ typedef struct DroneAngularRate {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/phys_specs/data/physics/README.md#angular-velocity-in-body-coordinate-system
  */
-typedef struct DroneAngularRateBodyFrame {
+typedef struct DroneAngularVelocityBodyFrame {
     glm::dvec3 data;
-    DroneAngularRateBodyFrame(){}
-    DroneAngularRateBodyFrame(const hako::drone_physics::AngularRateType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
-    DroneAngularRateBodyFrame& operator=(const hako::drone_physics::AngularRateType& rhs) {
-        this->data = {rhs.phi, rhs.theta, rhs.psi};
+    DroneAngularVelocityBodyFrame(){}
+    DroneAngularVelocityBodyFrame(const hako::drone_physics::AngularVelocityType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
+    DroneAngularVelocityBodyFrame& operator=(const hako::drone_physics::AngularVelocityType& rhs) {
+        this->data = {rhs.x, rhs.y, rhs.z};
         return *this;
     }
-    operator hako::drone_physics::AngularRateType() const {
+    operator hako::drone_physics::AngularVelocityType() const {
         return {data.x, data.y, data.z};
     }
-} DroneAngularRateBodyFrameType;
+} DroneAngularVelocityBodyFrameType;
 
 typedef struct DroneAngularAccelerationBodyFrame {
     glm::dvec3 data;
     DroneAngularAccelerationBodyFrame(){}
-    DroneAngularAccelerationBodyFrame(const hako::drone_physics::AngularAccelerationType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
+    DroneAngularAccelerationBodyFrame(const hako::drone_physics::AngularAccelerationType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneAngularAccelerationBodyFrame& operator=(const hako::drone_physics::AngularAccelerationType& rhs) {
-        this->data = {rhs.phi, rhs.theta, rhs.psi};
+        this->data = {rhs.x, rhs.y, rhs.z};
         return *this;
     }
-    operator hako::drone_physics::AngularRateType() const {
+    operator hako::drone_physics::AngularVelocityType() const {
         return {data.x, data.y, data.z};
     }
 } DroneAngularAccelerationBodyFrameType;

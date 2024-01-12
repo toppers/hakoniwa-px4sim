@@ -10,8 +10,8 @@ class ISensorGyro : public hako::assets::drone::ISensor {
 protected:
 public:
     virtual ~ISensorGyro() {}
-    virtual void run(const DroneAngularRateBodyFrameType& data) = 0;
-    virtual DroneAngularRateBodyFrameType sensor_value() = 0;
+    virtual void run(const DroneAngularVelocityBodyFrameType& data) = 0;
+    virtual DroneAngularVelocityBodyFrameType sensor_value() = 0;
 };
 
 }

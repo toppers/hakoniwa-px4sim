@@ -126,16 +126,18 @@ public:
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return drone_physics::velocity_ground_to_body(velocity, angle);
     }
-    DroneAngularRateBodyFrameType get_angular_vel_body_frame() const override {
+    DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
         // TODO: hiranabe 2021/10/13
         drone_physics::AngularRateType rate = {angularVelocity.data.x, angularVelocity.data.y, angularVelocity.data.z};
-        drone_physics::AngularRateType ret =  drone_physics::euler_rate_to_body_angular_velocity(rate, angle);
+        drone_physics::AngularVelocityType ret =  drone_physics::euler_rate_to_body_angular_velocity(rate, angle);
         return ret;
     }
 
     // Implementation for the run function is required
     void run(const DroneDynamicsInputType &input) override 
     {
+        (void)input;
+#if 0 // not supported..
         DroneTorqueType torque = input.torque;
         DroneThrustType thrust = input.thrust;
         drone_physics::AccelerationType acc = drone_physics::acceleration_in_ground_frame(
@@ -161,6 +163,7 @@ public:
             this->position.data.z = 0;
             this->velocity.data.z = 0;
         }        
+#endif
         this->total_time_sec += this->delta_time_sec;
     }
     const std::vector<std::string> log_head() override
