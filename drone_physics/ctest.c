@@ -2,7 +2,7 @@
 
 const double PI = M_PI;
 
-void test_frame_all_unit_vectors_with_some_angles() {
+void static test_frame_all_unit_vectors_with_some_angles() {
     const dp_velocity_t v1 = {1, 0, 0};
     dp_velocity_t v2 = dp_vector_body_to_ground(&v1, &(dp_angle_t){0, 0, 0});
     assert_almost_equal(v1, v2);
@@ -22,7 +22,7 @@ void test_frame_all_unit_vectors_with_some_angles() {
     assert_almost_equal(((dp_velocity_t){sqrt(3)/2, 0.5, 0}), v2);
 }
 
-void test_frame_roundtrip() {
+void static test_frame_roundtrip() {
     dp_velocity_t v1 = {1, 0, 0};
     dp_velocity_t v2 = dp_vector_body_to_ground(&v1, &(dp_angle_t){PI/6, PI/4, 0});
     dp_velocity_t v3 = dp_vector_ground_to_body(&v2, &(dp_angle_t){PI/6, PI/4, 0});

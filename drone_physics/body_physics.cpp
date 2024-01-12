@@ -77,7 +77,10 @@ VectorType operator / (const VectorType& v, double s)
  *  Maths section (3D frame transformations between body and ground)
  */
 
-/* for generic vectors. use the meaningful aliases below  */
+/*
+ * For generic vectors. all vector types can be available including
+ * velocity, acceleration, angular ones, but NOT for angles/angular rates(EULERS).
+ */
 VectorType vector_body_to_ground(
     const VectorType& body,
     const AngleType& angle)
@@ -365,16 +368,27 @@ AngularRateType euler_acceleration(
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
-    /* transform euler angle velocity to BODY frame anglular velocity */
-    const auto body_angular_velocity = 
-        euler_rate_to_body_angular_velocity(current_euler_rate, euler);
+    assert(false); /* not implemented right */
+    (void)current_euler_rate;(void)euler;
+    (void)torque_x;(void)torque_y;(void)torque_z;(void)I_xx;(void)I_yy;(void)I_zz;
+    /* You need to 
+     * 1. convert euler -> body(pqr)
+     * 2. get acceleration
+     * 3. get new body(pqr)
+     * 4. convert pqr to euler
+     * */
+    return {0, 0, 0};
 
-    const auto angular_acceleration = angular_acceleration_in_body_frame(
-        body_angular_velocity,
-        torque_x, torque_y, torque_z,
-        I_xx, I_yy, I_zz);
-    /* transform angular acceleration in body frame back to GROUND frame */
-    return body_angular_velocity_to_euler_rate(angular_acceleration , euler);
+    // /* transform euler angle velocity to BODY frame anglular velocity */
+    // const auto body_angular_velocity = 
+    //     euler_rate_to_body_angular_velocity(current_euler_rate, euler);
+
+    // const auto angular_acceleration = angular_acceleration_in_body_frame(
+    //     body_angular_velocity,
+    //     torque_x, torque_y, torque_z,
+    //     I_xx, I_yy, I_zz);
+    // /* transform angular acceleration in body frame back to GROUND frame */
+    // return body_angular_velocity_to_euler_rate(angular_acceleration , euler);
 }    
 
 /**
