@@ -29,8 +29,10 @@ add_library(
 add_executable(utest utest.cpp)
 target_link_libraries(utest drone_physics)
 
+if (NOT CMAKE_SYSTEM_NAME MATCHES "Linux")
 add_executable(ctest ctest.c)
 target_link_libraries(ctest drone_physics_c)
+endif()
 
 #add_executable(rotortest rotortest.cpp)
 #target_link_libraries(rotortest drone_physics)
