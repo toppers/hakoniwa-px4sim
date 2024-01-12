@@ -38,6 +38,8 @@ import argparse
 import sys
 import os
 
+timecolumn = 'timestamp'
+
 def read_and_preprocess(file_paths, start_time, duration, diff):
     df_list = []
 
@@ -46,11 +48,11 @@ def read_and_preprocess(file_paths, start_time, duration, diff):
 
         # --diff オプションが指定されている場合、時間差分を計算し、単位を秒に変換
         if diff:
-            df['TIME'] = (df['TIME'] - df['TIME'].iloc[0]) / 1e6
+            df[timecolumn] = (df[timecolumn] - df[timecolumn].iloc[0]) / 1e6
 
         # 時間範囲でフィルタリング
         end_time = start_time + duration
-        filtered_df = df[(df['TIME'] >= start_time) & (df['TIME'] <= end_time)]
+        filtered_df = df[(df[timecolumn] >= start_time) & (df[timecolumn] <= end_time)]
 
         df_list.append(filtered_df)
 
@@ -70,12 +72,12 @@ def prepare_scatter_data(df_list, independent_var, dependent_var):
 
     # 独立変数のデータをループ
     for _, row in independent_df.iterrows():
-        closest_time = row['TIME']
+        closest_time = row[timecolumn]
         closest_value = None
 
         # 従属変数のデータを検索
         for idx in range(last_index, len(dependent_df)):
-            dependent_time = dependent_df.iloc[idx]['TIME']
+            dependent_time = dependent_df.iloc[idx][timecolumn]
 
             if dependent_time >= closest_time:
                 closest_value = dependent_df.iloc[idx][dependent_var]
@@ -84,7 +86,7 @@ def prepare_scatter_data(df_list, independent_var, dependent_var):
 
         if closest_value is not None:
             scatter_data.append({
-                'TIME': closest_time,
+                timecolumn: closest_time,
                 independent_var: row[independent_var],
                 dependent_var: closest_value
             })
@@ -111,10 +113,10 @@ def prepare_line_data(df_list, independent_var, dependent_var):
         dependent_df = df_list[1] if independent_var in df_list[0] else df_list[0]
 
         # データフレームを時間でソートし、最も近い時間のデータ同士でマージ
-        line_data = pd.merge_asof(independent_df.sort_values('TIME'), dependent_df.sort_values('TIME'), on='TIME')
+        line_data = pd.merge_asof(independent_df.sort_values(timecolumn), dependent_df.sort_values(timecolumn), on=timecolumn)
 
     # 必要なカラムのみを選択
-    line_data = line_data[[independent_var, dependent_var, 'TIME']].dropna()
+    line_data = line_data[[independent_var, dependent_var, timecolumn]].dropna()
 
     return line_data
 
@@ -143,14 +145,14 @@ def plot_data(df, independent_var, dependent_var, graph_type):
         plt.grid(True)
     elif graph_type == 'line':
         # 独立変数のプロット
-        ax1.plot(df['TIME'], df[independent_var], color='blue', label=independent_var)
-        ax1.set_xlabel('Time')
+        ax1.plot(df[timecolumn], df[independent_var], color='blue', label=independent_var)
+        ax1.set_xlabel(timecolumn)
         ax1.set_ylabel(independent_var, color='blue')
         ax1.tick_params(axis='y', labelcolor='blue')
 
         # 従属変数のプロットのための第二のy軸を作成
         ax2 = ax1.twinx()
-        ax2.plot(df['TIME'], df[dependent_var], color='orange', label=dependent_var)
+        ax2.plot(df[timecolumn], df[dependent_var], color='orange', label=dependent_var)
         ax2.set_ylabel(dependent_var, color='orange')
         ax2.tick_params(axis='y', labelcolor='orange')
 

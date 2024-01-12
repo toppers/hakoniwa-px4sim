@@ -37,13 +37,13 @@ void drone_pid_control_init()
 
     // PIDコントローラのインスタンス化
     pid_height = new DronePidControl(Kp_height, Ki_height, Kd_height, setpoint_height,
-                                     "python/results/height_data.csv", {"Time", "Height"});
+                                     "python/results/height_data.csv", {"timestamp", "Height"});
     pid_phi = new DronePidControl(Kp_phi, Ki_phi, Kd_phi, setpoint_phi,
-                                  "python/results/phi_data.csv", {"Time", "Phi"});
+                                  "python/results/phi_data.csv", {"timestamp", "Phi"});
     pid_theta = new DronePidControl(Kp_theta, Ki_theta, Kd_theta, setpoint_theta,
-                                    "python/results/theta_data.csv", {"Time", "Theta"});
+                                    "python/results/theta_data.csv", {"timestamp", "Theta"});
     pid_psi = new DronePidControl(Kp_psi, Ki_psi, Kd_psi, setpoint_psi,
-                                  "python/results/psi_data.csv", {"Time", "Psi"});
+                                  "python/results/psi_data.csv", {"timestamp", "Psi"});
 }
 static void do_io_read(DronePositionType& dpos, DroneAngleType& dangle)
 {
