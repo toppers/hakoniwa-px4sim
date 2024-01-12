@@ -20,8 +20,10 @@ typedef VectorType AccelerationType;
 typedef VectorType TorqueType;
 typedef VectorType ForceType;
 
-/* angular vectors omega=(p,q,r) in x, y, z , not phi, theta, psi */
+/* angular VECTORS omega=(p,q,r) in x, y, z , NOT PHI, THTEA, PSI */
 typedef VectorType AngularVectorType;
+typedef AngularVectorType AngularVelocityType;
+typedef AngularVectorType AngularAccelerationType;
 
 /*
  * These Angle or Angular types are used for "Euler Angles" in this library,
@@ -47,7 +49,7 @@ typedef VectorType AngularVectorType;
  * https://mtkbirdman.com/flight-dynamics-body-axes-system
 */
 
-/* Euler Angles */
+/* Euler Angles (NOT A VECTOR)*/
 typedef struct angle_type_t {
     double phi;   // rotation round x-axis
     double theta; // rotation round y-axis
@@ -56,7 +58,6 @@ typedef struct angle_type_t {
 
 /* angular rate is the time derivative of Euler Angles (phi', theta' psi') */
 typedef AngleType AngularRateType;
-typedef AngularRateType AngularAccelerationType;
 
 /* basic operators */
 VectorType cross(const VectorType& u, const VectorType& v);
@@ -92,9 +93,9 @@ VelocityType velocity_ground_to_body(
     const AngleType& angle);
 
 AngularRateType body_angular_velocity_to_euler_rate(
-    const AngularRateType& angular_veleocy,
+    const AngularVelocityType& angular_veleocy,
     const AngleType& euler);
-AngularRateType euler_rate_to_body_angular_velocity(
+AngularVelocityType euler_rate_to_body_angular_velocity(
     const AngularRateType& euler_rate,
     const AngleType& euler);
 
@@ -109,7 +110,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const AngleType& angle,
-    const AngularRateType& body_angular_velocity, /* for Coriolis */
+    const AngularVelocityType& body_angular_velocity, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
@@ -121,7 +122,7 @@ AccelerationType acceleration_in_ground_frame( /* no Coriolis needed */
     double gravity, double drag);
 
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularRateType& angular_velocity_in_body_frame,
+    const AngularVelocityType& angular_velocity_in_body_frame,
     double torque_x, double torque_y, double torque_z, /* in body frame */
     double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
 
