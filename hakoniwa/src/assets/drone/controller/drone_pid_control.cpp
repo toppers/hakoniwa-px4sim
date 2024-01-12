@@ -86,9 +86,9 @@ void drone_pid_control_run()
     double phi_output = pid_phi->calculate(phi_input);
     double theta_output = pid_theta->calculate(theta_input);
     double psi_output = pid_psi->calculate(psi_input);
-    phi_output = get_limit_value(phi_output, 0, -2, 2);
-    theta_output = get_limit_value(theta_output, 0, -2, 2);
-    psi_output = get_limit_value(psi_output, 0, -2, 2);
+    phi_output = get_limit_value(phi_output, 0, -M_PI_4, M_PI_4);
+    theta_output = get_limit_value(theta_output, 0, -M_PI_4, M_PI_4);
+    psi_output = get_limit_value(psi_output, 0, -M_PI_4, M_PI_4);
 
     // CSVファイルに記録
     pid_height->write_to_csv({std::to_string(current_time), std::to_string(height_input)});

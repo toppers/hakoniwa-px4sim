@@ -47,7 +47,6 @@ public:
         for (int i = 0; i < i_num; i++) {
             integral += i_values[i];
         }
-        //integral = integral / i_num;
         return Kp * error + Ki * integral + Kd * derivative;
     }
 
