@@ -124,7 +124,7 @@ public:
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
-        return drone_physics::velocity_ground_to_body(velocity, angle);
+        return drone_physics::vector_ground_to_body(velocity, angle);
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
         // TODO: hiranabe 2021/10/13

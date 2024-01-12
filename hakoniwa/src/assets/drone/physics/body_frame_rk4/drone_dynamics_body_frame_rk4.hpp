@@ -38,7 +38,7 @@ private:
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
-        return drone_physics::velocity_body_to_ground(src, angle);
+        return drone_physics::vector_body_to_ground(src, angle);
     }
 
     DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)

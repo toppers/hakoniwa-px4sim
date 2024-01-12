@@ -41,7 +41,7 @@ private:
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
-        return drone_physics::velocity_body_to_ground(src, angle);
+        return drone_physics::vector_body_to_ground(src, angle);
     }
 
     DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)
@@ -189,7 +189,7 @@ public:
                 //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
                 //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
                 this->velocity = col_vel;
-                this->velocityBodyFrame = drone_physics::velocity_ground_to_body(this->velocity, angle);
+                this->velocityBodyFrame = drone_physics::vector_ground_to_body(this->velocity, angle);
             }
         }
 
