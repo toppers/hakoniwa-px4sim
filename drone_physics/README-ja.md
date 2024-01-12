@@ -44,7 +44,7 @@ int main() {
     VelocityType body_velocity = {100, 200, 300};
     
     // 機体座標系から地上座標系への速度変換
-    VelocityType ground_velocity = velocity_body_to_ground(body_velocity, frame);
+    VelocityType ground_velocity = vector_body_to_ground(body_velocity, frame);
 
     // x,y,z 座標を取り出す
     auto [u, v, w] = ground_velocity;
@@ -54,7 +54,7 @@ int main() {
 
     // このように，明示的にコンストラクタを使うこともできる
     // 逆変換して戻す
-    VelocityType body_velocity2 = velocity_ground_to_body(
+    VelocityType body_velocity2 = vector_ground_to_body(
         VelocityType(u, v, w),
         AngleType(0, 0, M_PI/2)
     );
@@ -79,7 +79,7 @@ int main() {
     dp_velocity_t body_velocity = {100, 200, 300};
 
     // 機体座標系から地上座標系への速度変換
-    dp_velocity_t g = dp_velocity_body_to_ground(&body_velocity, &frame);
+    dp_velocity_t g = dp_vector_body_to_ground(&body_velocity, &frame);
 
     // x,y,z 座標を取り出す
     printf("x=%g, y=%g, z=%g\n", g.x, g.y, g.z);
@@ -87,7 +87,7 @@ int main() {
 
     // このように，初期化指定を使うこともできる
     // 逆変換して戻す
-    dp_velocity_t b = dp_velocity_ground_to_body(
+    dp_velocity_t b = dp_vector_ground_to_body(
         &g, &(dp_angle_t){0, 0, M_PI/2}
     );
 
@@ -128,8 +128,8 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 ### 座標変換
 | 関数 | 数式 | 意味 |
 |----------|-----------|------|
-|`velocity_body_to_ground`  | (1.71), (1.124) | 機体座標の速度を地上座標に変換 |
-|`velocity_ground_to_body`  | (1.69), (1.124)の逆変換 | 地上座標の速度を機体座標に変換 |
+|`vector_body_to_ground`  | (1.71), (1.124) | 機体座標の速度を地上座標に変換 |
+|`vector_ground_to_body`  | (1.69), (1.124)の逆変換 | 地上座標の速度を機体座標に変換 |
 |`body_angular_velocity_to_euler_rate` | (1.109) | 機体角速度を地上座標に変換 |
 |`euler_rate_to_body_angular_velocity` | (1.106) | 地上角速度を機体座標に変換 |
 

@@ -27,11 +27,11 @@ typedef dp_angle_t
     dp_angular_rate_t, dp_angular_acceleration_t;
 
 /* maths for frame transformations */
-dp_velocity_t dp_velocity_body_to_ground(
+dp_velocity_t dp_vector_body_to_ground(
     const dp_velocity_t* body, /* non-null */
     const dp_angle_t* angle /* non-null */);
 
-dp_velocity_t dp_velocity_ground_to_body(
+dp_velocity_t dp_vector_ground_to_body(
     const dp_velocity_t* ground /* non-null*/,
     const dp_angle_t* angle);
 

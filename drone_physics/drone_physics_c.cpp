@@ -29,7 +29,7 @@ static dp_angle_t to_dp_angle(const hako::drone_physics::AngleType& v)
 extern "C" {
 
 /* maths for frame transformations */
-dp_velocity_t dp_velocity_body_to_ground(
+dp_velocity_t dp_vector_body_to_ground(
     const dp_velocity_t* body, /* non-null */
     const dp_angle_t* angle /* non-null */)
 {
@@ -37,14 +37,14 @@ dp_velocity_t dp_velocity_body_to_ground(
     assert(angle);
 
     return to_dp_vector(
-        hako::drone_physics::velocity_body_to_ground(
+        hako::drone_physics::vector_body_to_ground(
             to_Vector(body),
             to_Angle(angle)
             )
         );
 }
 
-dp_velocity_t dp_velocity_ground_to_body(
+dp_velocity_t dp_vector_ground_to_body(
     const dp_velocity_t* ground, /* non-null */
     const dp_angle_t* angle /* non-null */)
 {
@@ -52,7 +52,7 @@ dp_velocity_t dp_velocity_ground_to_body(
     assert(angle);
 
     return to_dp_vector(
-        hako::drone_physics::velocity_ground_to_body(
+        hako::drone_physics::vector_ground_to_body(
             to_Vector(ground),
             to_Angle(angle)
             )

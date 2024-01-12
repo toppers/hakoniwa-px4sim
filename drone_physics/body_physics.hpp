@@ -85,11 +85,12 @@ std::ostream& operator << (std::ostream& os, const AngleType& v) {
 
 
 /* maths for frame transformations */
-VelocityType velocity_body_to_ground(
-    const VelocityType& body,
+    /* vector types works for angular vectors, and velocities, accelerations */
+VectorType vector_body_to_ground(
+    const VectorType& body,
     const AngleType& angle);
-VelocityType velocity_ground_to_body(
-    const VelocityType& ground,
+VectorType vector_ground_to_body(
+    const VectorType& ground,
     const AngleType& angle);
 
 AngularRateType body_angular_velocity_to_euler_rate(
@@ -98,6 +99,11 @@ AngularRateType body_angular_velocity_to_euler_rate(
 AngularVelocityType euler_rate_to_body_angular_velocity(
     const AngularRateType& euler_rate,
     const AngleType& euler);
+
+AccelerationType acceleration_in_ground_frame(
+    const VelocityType& ground,
+    const AngleType& angle,
+    double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
 
 /* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
 AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
@@ -114,21 +120,19 @@ AccelerationType acceleration_in_body_frame(
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
-AccelerationType acceleration_in_ground_frame( /* no Coriolis needed */
-    const VelocityType& body,
-    const AngleType& angle,
-    double thrust,
-    double mass, /* 0 is not allowed */
-    double gravity, double drag);
-
+/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& angular_velocity_in_body_frame,
-    double torque_x, double torque_y, double torque_z, /* in body frame */
-    double I_xx, double I_yy, double I_zz /* in body frame, 0 is not allowed */);
+    double torque_x, /* in body frame */
+    double torque_y, /* in body frame */
+    double torque_z, /* in body frame */
+    double I_xx, /* in body frame, 0 is not allowed */
+    double I_yy, /* in body frame, 0 is not allowed */
+    double I_zz /* in body frame, 0 is not allowed */);
 
-AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularAccelerationType& angular_rate_in_ground_frame,
-    const AngleType& angle,
+AngularRateType euler_acceleration(
+    const AngularRateType& current_euler_rate,
+    const AngleType& euler,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
 

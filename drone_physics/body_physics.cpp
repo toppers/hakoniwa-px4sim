@@ -78,7 +78,9 @@ VectorType operator / (const VectorType& v, double s)
  */
 
 /* for generic vectors. use the meaningful aliases below  */
-VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
+VectorType vector_body_to_ground(
+    const VectorType& body,
+    const AngleType& angle)
 {
     using std::sin; using std::cos;
     const auto
@@ -111,14 +113,9 @@ VectorType vector_body_to_ground(const VectorType& body, const AngleType& angle)
     return {x_e, y_e, z_e};
 }
 
-/* Transform velocity in body frame to ground frame */
-VelocityType velocity_body_to_ground(const VelocityType& body, const AngleType& angle)
-{
-    return vector_body_to_ground(body, angle);
-}
-
 /* for generic vectors. use the meaningful aliases below  */
-VectorType vector_ground_to_body(const VectorType& ground,
+VectorType vector_ground_to_body(
+    const VectorType& ground,
     const AngleType& angle)
 {
     using std::sin; using std::cos;
@@ -150,14 +147,6 @@ VectorType vector_ground_to_body(const VectorType& ground,
     /*****************************************************************/  
 
     return {x, y, z};
-}
-
-/* Tranlsform velocity in ground frame to body frame */
-VelocityType velocity_ground_to_body(
-    const VelocityType& ground,
-    const AngleType& angle)
-{
-    return vector_ground_to_body(ground, angle);
 }
 
 /* Tranlsform angular rate in body frame to ground frame eq.(1.109)*/
@@ -370,30 +359,22 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return {dot_p, dot_q, dot_r};
 }
 
-// TODO: hiranabe 2020/12/10, use rate. for the upper interface only now.
-//AngularRateType angular_acceleration_in_ground_frame(
-AngularAccelerationType angular_acceleration_in_ground_frame(
-    const AngularVelocityType& angular_velocity, // sould be euler.
+AngularRateType euler_acceleration(
+    const AngularRateType& current_euler_rate,
     const AngleType& euler,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
-    // TODO: hiranabe 2020/12/10, use rate. for the upper interface only now.
-    AngularRateType euler_rate = {angular_velocity.x, 
-                                    angular_velocity.y, 
-                                    angular_velocity.z};
     /* transform euler angle velocity to BODY frame anglular velocity */
     const auto body_angular_velocity = 
-        euler_rate_to_body_angular_velocity(euler_rate, euler);
+        euler_rate_to_body_angular_velocity(current_euler_rate, euler);
 
     const auto angular_acceleration = angular_acceleration_in_body_frame(
         body_angular_velocity,
         torque_x, torque_y, torque_z,
         I_xx, I_yy, I_zz);
     /* transform angular acceleration in body frame back to GROUND frame */
-    AngularRateType a =  body_angular_velocity_to_euler_rate(
-        angular_acceleration , euler);
-    return {a.phi, a.theta, a.psi};
+    return body_angular_velocity_to_euler_rate(angular_acceleration , euler);
 }    
 
 /**

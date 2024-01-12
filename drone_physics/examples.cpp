@@ -13,7 +13,7 @@ int main() {
     VelocityType body_velocity = {100, 200, 300};
     
     // Convert the body velocity to the ground frame.
-    VelocityType ground_velocity = velocity_body_to_ground(body_velocity, frame);
+    VelocityType ground_velocity = vector_body_to_ground(body_velocity, frame);
 
     // get the x,y,z components of the velocity.
     auto [u, v, w] = ground_velocity;
@@ -23,7 +23,7 @@ int main() {
 
     // you can also use stuct explicit initialization.
     // reverse the conversion to the body frame.
-    VelocityType body_velocity2 = velocity_ground_to_body(
+    VelocityType body_velocity2 = vector_ground_to_body(
         VelocityType{u, v, w},
         AngleType{0, 0, M_PI/2}
     );
