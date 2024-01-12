@@ -32,9 +32,9 @@ private:
     DroneAngularRateType angularVelocity;
 
     DroneVelocityBodyFrameType velocityBodyFrame;
-    DroneAngularRateBodyFrameType angularVelocityBodyFrame;
+    DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
     DroneVelocityBodyFrameType next_velocityBodyFrame;
-    DroneAngularRateBodyFrameType next_angularVelocityBodyFrame;
+    DroneAngularVelocityBodyFrameType next_angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -44,7 +44,7 @@ private:
         return drone_physics::velocity_body_to_ground(src, angle);
     }
 
-    DroneAngularRateType convert(const DroneAngularRateBodyFrameType& src)
+    DroneAngularRateType convert(const DroneAngularVelocityBodyFrameType& src)
     {
         // TODO hiranabe 2020/12/10
         drone_physics::AngularRateType rate = drone_physics::body_angular_velocity_to_euler_rate(src, angle);
@@ -142,7 +142,7 @@ public:
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return velocityBodyFrame;
     }
-    DroneAngularRateBodyFrameType get_angular_vel_body_frame() const override {
+    DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
         return angularVelocityBodyFrame;
     }
 
