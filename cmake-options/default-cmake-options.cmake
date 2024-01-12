@@ -1,6 +1,7 @@
 set(CMAKE_C_FLAGS "-std=gnu99")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-params")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-prototypes")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wtrigraphs")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wimplicit-int")
 
