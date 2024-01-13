@@ -280,28 +280,32 @@ void test_body_angular_acceleration() {
         (torque_z - 1*2*(I_yy - I_xx))/I_zz}));
 }
 
-#if 0
 void test_ground_angular_acceleration()
 {
-    AngularVelocityType av_g{0, 0, 0}, av_b;
-    AngleType angle{0, 0, 0};
-    AngularAccelerationType a_g, a_g2;
-    AngularAccelerationType a_b;
+    AngularRateType e_rate{0, 0, 0};
+    AngleType euler{0, 0, 0};
+    AngularRateDotType a_g;
     double I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 0, torque_z = 0; /** all in BODY */
     
-    a_g = angular_acceleration_in_ground_frame(av_g, angle, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
-    assert_almost_equal(a_g, (AngularAccelerationType{0, 0, 0}));
+    /* ZERO euler/rate, no Torque */
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    assert_almost_equal(a_g, (AngularRateDotType{0, 0, 0}));
 
-    /* round trip */
-    angle = {PI/3, PI/4, PI/6};
-    av_g = {1, 2, 3};
-    av_b = euler_rate_to_body_angular_velocity(av_g, angle);
-    a_g = angular_acceleration_in_ground_frame(av_g, angle, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
-    a_b = angular_acceleration_in_body_frame(av_b, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
-    a_g2 = body_angular_velocity_to_euler_rate(a_b, angle);
-    assert_almost_equal(a_g, a_g2);
+    /* X torque */
+    I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 100, torque_y = 0, torque_z = 0;
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    assert_almost_equal(a_g, (AngularRateDotType{100, 0, 0}));
+
+    /* Y torque */
+    I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 100, torque_z = 0;
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    assert_almost_equal(a_g, (AngularRateDotType{0, 50, 0}));
+
+    /* Z torque */
+    I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 0, torque_z = 150;
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    assert_almost_equal(a_g, (AngularRateDotType{0, 0, 50}));
 }
-#endif
 
 #include <fstream>
 void test_rotor_omega_acceleration() {
@@ -331,7 +335,7 @@ void test_rotor_omega_acceleration() {
     ofs.close();
 }
 
-void test_vector_operators(){
+void test_vector_operators() {
     VectorType v1{1, 2, 3};
     VectorType v2{4, 5, 6};
     assert_almost_equal(v1+v2, (VectorType{5, 7, 9}));
@@ -466,7 +470,7 @@ int main() {
     T(test_ground_acceleration);
     T(test_angular_frame_roundtrip);
     T(test_body_angular_acceleration);
-//    T(test_ground_angular_acceleration);
+    T(test_ground_angular_acceleration);
     T(test_vector_operators);
     T(test_rotor_thrust);
     T(test_rotor_anti_torque);

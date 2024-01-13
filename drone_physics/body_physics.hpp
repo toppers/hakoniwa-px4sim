@@ -58,6 +58,7 @@ typedef struct angle_type_t {
 
 /* angular rate is the time derivative of Euler Angles (phi', theta' psi') */
 typedef AngleType AngularRateType;
+typedef AngleType AngularRateDotType;
 
 /* basic operators */
 VectorType cross(const VectorType& u, const VectorType& v);
@@ -130,9 +131,9 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */);
 
-AngularRateType euler_acceleration(
+AngularRateDotType euler_acceleration_in_ground_frame(
     const AngularRateType& current_euler_rate,
-    const AngleType& euler,
+    const AngleType& current_euler,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
 

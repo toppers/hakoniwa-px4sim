@@ -362,34 +362,60 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return {dot_p, dot_q, dot_r};
 }
 
-AngularRateType euler_acceleration(
+AngularRateDotType euler_acceleration_in_ground_frame(
     const AngularRateType& current_euler_rate,
-    const AngleType& euler,
+    const AngleType& current_euler,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
-    assert(false); /* not implemented right */
-    (void)current_euler_rate;(void)euler;
-    (void)torque_x;(void)torque_y;(void)torque_z;(void)I_xx;(void)I_yy;(void)I_zz;
     /* You need to 
      * 1. convert euler -> body(pqr)
      * 2. get acceleration
      * 3. get new body(pqr)
-     * 4. convert pqr to euler
+     * 4. calculate dot_dot_euler using body(pqr), dot_body, euler, dot_euler.
+     *    (very complicated messy equations)
      * */
-    return {0, 0, 0};
+    const auto [phi, theta, psi] = current_euler;
+    const auto [dot_phi, dot_theta, dot_psi] = current_euler_rate;
 
-    // /* transform euler angle velocity to BODY frame anglular velocity */
-    // const auto body_angular_velocity = 
-    //     euler_rate_to_body_angular_velocity(current_euler_rate, euler);
+    /* transform euler angle velocity to BODY frame anglular velocity */
+    const auto [p, q, r] = euler_rate_to_body_angular_velocity(current_euler_rate, current_euler);
+    const auto [dot_p, dot_q, dot_r] = angular_acceleration_in_body_frame(
+        {p, q, r},
+        torque_x, torque_y, torque_z,
+        I_xx, I_yy, I_zz);
 
-    // const auto angular_acceleration = angular_acceleration_in_body_frame(
-    //     body_angular_velocity,
-    //     torque_x, torque_y, torque_z,
-    //     I_xx, I_yy, I_zz);
-    // /* transform angular acceleration in body frame back to GROUND frame */
-    // return body_angular_velocity_to_euler_rate(angular_acceleration , euler);
-}    
+    const double c_phi = cos(phi), s_phi = sin(phi);
+    const double c_theta = cos(theta), s_theta = sin(theta);
+    const double sec_theta = 1.0 / c_theta, t_theta = tan(theta);
+
+    /**
+     * I calculated the differential of eq.(1.109) in Nonami's book
+     * by hand, checked with Walfraam Alpha.
+     */
+    /************************************************************************/
+    double dot_dot_phi
+        = q * (c_phi * t_theta * dot_phi + s_phi * sec_theta * sec_theta * dot_theta)
+        + dot_q * s_phi * t_theta
+        + r * (c_phi * c_theta * dot_theta - s_phi * s_theta * dot_phi)
+        + dot_r * c_phi * s_theta
+        + dot_p;
+
+    double dot_dot_theta
+        = - q * s_phi * dot_phi   +       dot_q * c_phi
+        - r * c_phi * dot_phi     -       dot_r * s_phi;
+    
+    double dot_dot_psi
+        = sec_theta * (
+            q * (c_phi * dot_phi + s_phi * t_theta * dot_theta)
+            + dot_q * s_phi
+            + r * (c_phi * t_theta * dot_theta - s_phi * dot_phi)
+            + dot_r * c_phi
+            );
+    /************************************************************************/
+
+    return {dot_dot_phi, dot_dot_theta, dot_dot_psi};
+}
 
 /**
  * Collision section.
