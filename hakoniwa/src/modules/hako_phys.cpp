@@ -5,6 +5,7 @@
 #include "../hako/pdu/hako_pdu_data.hpp"
 #include "../hako/runner/hako_px4_master.hpp"
 #include "../assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
+#include "../assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include "../assets/drone/controller/drone_pid_control.hpp"
 #include <unistd.h>
 #include <memory.h>
@@ -22,6 +23,7 @@
 
 static void asset_runner();
 using hako::assets::drone::DroneDynamicsBodyFrame;
+using hako::assets::drone::DroneDynamicsGroundFrame;
 using hako::assets::drone::IDroneDynamics;
 using hako::assets::drone::DronePositionType;
 using hako::assets::drone::DroneAngleType;
@@ -50,13 +52,14 @@ void hako_phys_main()
     return;
 }
 
-static IDroneDynamics *drone_dynamics_body = nullptr;
+static IDroneDynamics *drone_dynamics = nullptr;
 
 static void my_setup()
 {
-    drone_dynamics_body = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
+    drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
+    //drone_dynamics = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics_body->set_drag(HAKO_PHYS_DRAG);
+    drone_dynamics->set_drag(HAKO_PHYS_DRAG);
     drone_pid_control_init();
     std::cout << "INFO: setup done" << std::endl;
     return;
@@ -66,8 +69,8 @@ static void do_io_write()
 {
     Hako_Twist pos;
 
-    DronePositionType dpos = drone_dynamics_body->get_pos();
-    DroneAngleType dangle = drone_dynamics_body->get_angle();
+    DronePositionType dpos = drone_dynamics->get_pos();
+    DroneAngleType dangle = drone_dynamics->get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;
@@ -98,7 +101,7 @@ static void my_task()
     hako::assets::drone::DroneDynamicsInputType input;
     input.thrust = thrust;
     input.torque = torque;
-    drone_dynamics_body->run(input);
+    drone_dynamics->run(input);
     drone_pid_control_run();
     do_io_write();
     return;
