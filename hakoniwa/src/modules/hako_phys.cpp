@@ -5,7 +5,6 @@
 #include "../hako/pdu/hako_pdu_data.hpp"
 #include "../hako/runner/hako_px4_master.hpp"
 #include "../assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
-#include "../assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include "../assets/drone/controller/drone_pid_control.hpp"
 #include <unistd.h>
 #include <memory.h>
@@ -23,7 +22,6 @@
 
 static void asset_runner();
 using hako::assets::drone::DroneDynamicsBodyFrame;
-using hako::assets::drone::DroneDynamicsGroundFrame;
 using hako::assets::drone::IDroneDynamics;
 using hako::assets::drone::DronePositionType;
 using hako::assets::drone::DroneAngleType;
@@ -52,15 +50,12 @@ void hako_phys_main()
     return;
 }
 
-static IDroneDynamics *drone_dynamics_ground = nullptr;
 static IDroneDynamics *drone_dynamics_body = nullptr;
 
 static void my_setup()
 {
-    drone_dynamics_ground = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     drone_dynamics_body = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics_ground->set_drag(HAKO_PHYS_DRAG);
     drone_dynamics_body->set_drag(HAKO_PHYS_DRAG);
     drone_pid_control_init();
     std::cout << "INFO: setup done" << std::endl;
@@ -71,8 +66,8 @@ static void do_io_write()
 {
     Hako_Twist pos;
 
-    DronePositionType dpos = drone_dynamics_ground->get_pos();
-    DroneAngleType dangle = drone_dynamics_ground->get_angle();
+    DronePositionType dpos = drone_dynamics_body->get_pos();
+    DroneAngleType dangle = drone_dynamics_body->get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;
@@ -81,68 +76,6 @@ static void do_io_write()
     pos.angular.z = dangle.data.z;
     if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_POS, (const char*)&pos, sizeof(pos))) {
         std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
-    }
-}
-
-#define POSITION_DIFF_POS_MAX   0.1
-#define POSITION_DIFF_ANG_MAX   0.1
-#define POSITION_DIFF_VEL_MAX   0.1
-static void cross_check_position(void)
-{
-    const DronePositionType ground_pos = drone_dynamics_ground->get_pos();
-    const DronePositionType body_pos = drone_dynamics_body->get_pos();
-    if (std::abs(ground_pos.data.x - body_pos.data.x) > POSITION_DIFF_POS_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Pos> ground_x: " << ground_pos.data.x << " body_x: " << body_pos.data.x << std::endl;
-    }
-    if (std::abs(ground_pos.data.y - body_pos.data.y) > POSITION_DIFF_POS_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Pos> ground_y: " << ground_pos.data.y << " body_y: " << body_pos.data.y << std::endl;
-    }
-    if (std::abs(ground_pos.data.z - body_pos.data.z) > POSITION_DIFF_POS_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Pos> ground_z: " << ground_pos.data.z << " body_z: " << body_pos.data.z << std::endl;
-    }
-}
-static void cross_check_velocity(void)
-{
-    const DroneVelocityType ground = drone_dynamics_ground->get_vel();
-    const DroneVelocityType body = drone_dynamics_body->get_vel();
-    if (std::abs(ground.data.x - body.data.x) > POSITION_DIFF_VEL_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Vel> ground_x: " << ground.data.x << " body_x: " << body.data.x << std::endl;
-    }
-    if (std::abs(ground.data.y - body.data.y) > POSITION_DIFF_VEL_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Vel> ground_y: " << ground.data.y << " body_y: " << body.data.y << std::endl;
-    }
-    if (std::abs(ground.data.z - body.data.z) > POSITION_DIFF_VEL_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Vel> ground_z: " << ground.data.z << " body_z: " << body.data.z << std::endl;
-    }
-}
-
-static void cross_check_angle(void)
-{
-    const DroneAngleType ground_angle = drone_dynamics_ground->get_angle();
-    const DroneAngleType body_angle = drone_dynamics_body->get_angle();
-    if (std::abs(ground_angle.data.x - body_angle.data.x) > POSITION_DIFF_ANG_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Angle> ground_x: " << ground_angle.data.x << " body_x: " << body_angle.data.x << std::endl;
-    }
-    if (std::abs(ground_angle.data.y - body_angle.data.y) > POSITION_DIFF_ANG_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Angle> ground_y: " << ground_angle.data.y << " body_y: " << body_angle.data.y << std::endl;
-    }
-    if (std::abs(ground_angle.data.z - body_angle.data.z) > POSITION_DIFF_ANG_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<Angle> ground_z: " << ground_angle.data.z << " body_z: " << body_angle.data.z << std::endl;
-    }
-}
-
-static void cross_check_anglular_velocity(void)
-{
-    const DroneAngularRateType ground_angle = drone_dynamics_ground->get_angular_vel();
-    const DroneAngularRateType body_angle = drone_dynamics_body->get_angular_vel();
-    if (std::abs(ground_angle.data.x - body_angle.data.x) > POSITION_DIFF_VEL_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<AngleVel> ground_x: " << ground_angle.data.x << " body_x: " << body_angle.data.x << std::endl;
-    }
-    if (std::abs(ground_angle.data.y - body_angle.data.y) > POSITION_DIFF_VEL_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<AngleVel> ground_y: " << ground_angle.data.y << " body_y: " << body_angle.data.y << std::endl;
-    }
-    if (std::abs(ground_angle.data.z - body_angle.data.z) > POSITION_DIFF_VEL_MAX) {
-        std::cerr << "WARNING: CROSS_CHECK ERROR<AngleVel> ground_z: " << ground_angle.data.z << " body_z: " << body_angle.data.z << std::endl;
     }
 }
 
@@ -165,15 +98,8 @@ static void my_task()
     hako::assets::drone::DroneDynamicsInputType input;
     input.thrust = thrust;
     input.torque = torque;
-    drone_dynamics_ground->run(input);
     drone_dynamics_body->run(input);
-#ifdef DRONE_PID_CONTROL_CPP
     drone_pid_control_run();
-#endif
-    cross_check_position();
-    cross_check_velocity();
-    cross_check_angle();
-    cross_check_anglular_velocity();
     do_io_write();
     return;
 }
