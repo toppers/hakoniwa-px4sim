@@ -18,7 +18,7 @@ public:
         this->params_I = i;
         this->params_D = d;
     }
-    virtual void run(const DroneAngleType& angle) = 0;
+    virtual void run(const DroneEulerType& angle) = 0;
     virtual DroneMagDataType sensor_value() = 0;
 };
 

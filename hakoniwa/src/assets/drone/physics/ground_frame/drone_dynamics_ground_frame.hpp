@@ -25,7 +25,7 @@ private:
      */
     DronePositionType position;           // Initialized to zero by default (glm::dvec3)
     DroneVelocityType velocity;           // Initialized to zero by default (glm::dvec3)
-    DroneAngleType angle;                 // Initialized to zero by default (glm::dvec3)
+    DroneEulerType angle;                 // Initialized to zero by default (glm::dvec3)
     DroneAngularRate angularVelocity; // Initialized to zero by default (glm::dvec3)
 
     double delta_time_sec;
@@ -99,11 +99,11 @@ public:
         velocity = vel;
     }
 
-    void set_angle(const DroneAngleType &ang) override {
+    void set_angle(const DroneEulerType &ang) override {
         angle = ang;
     }
 
-    void set_angular_vel(const DroneAngularRateType &angularVel) override {
+    void set_angular_vel(const DroneEulerRateType &angularVel) override {
         angularVelocity = angularVel;
     }
 
@@ -116,11 +116,11 @@ public:
         return velocity;
     }
 
-    DroneAngleType get_angle() const override {
+    DroneEulerType get_angle() const override {
         return angle;
     }
 
-    DroneAngularRateType get_angular_vel() const override {
+    DroneEulerRateType get_angular_vel() const override {
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
@@ -128,7 +128,7 @@ public:
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
         // TODO: hiranabe 2021/10/13
-        drone_physics::AngularRateType rate = {angularVelocity.data.x, angularVelocity.data.y, angularVelocity.data.z};
+        drone_physics::EulerRateType rate = {angularVelocity.data.x, angularVelocity.data.y, angularVelocity.data.z};
         drone_physics::AngularVelocityType ret =  drone_physics::euler_rate_to_body_angular_velocity(rate, angle);
         return ret;
     }
@@ -142,7 +142,7 @@ public:
         drone_physics::AccelerationType acc = drone_physics::acceleration_in_ground_frame(
                                                             this->velocity, this->angle, 
                                                             thrust.data, this->param_mass, GRAVITY, this->param_drag);
-        drone_physics::AngularRateDotType acc_angular_body = drone_physics::euler_acceleration_in_ground_frame(
+        drone_physics::EulerAccelerationType acc_angular_body = drone_physics::euler_acceleration_in_ground_frame(
                                                             this->angularVelocity, this->angle,
                                                             torque.data.x, torque.data.y, torque.data.z,
                                                             this->param_cx, this->param_cy, this->param_cz);

@@ -37,13 +37,13 @@ public:
     virtual void set_torque_constants(double cx, double cy, double cz) = 0;
     virtual void set_pos(const DronePositionType &pos) = 0;
     virtual void set_vel(const DroneVelocityType &vel) = 0;
-    virtual void set_angle(const DroneAngleType &angle) = 0;
-    virtual void set_angular_vel(const DroneAngularRateType &angular_vel) = 0;
+    virtual void set_angle(const DroneEulerType &angle) = 0;
+    virtual void set_angular_vel(const DroneEulerRateType &angular_vel) = 0;
 
     virtual DronePositionType get_pos() const = 0;
     virtual DroneVelocityType get_vel() const = 0;
-    virtual DroneAngleType get_angle() const = 0;
-    virtual DroneAngularRateType get_angular_vel() const = 0;
+    virtual DroneEulerType get_angle() const = 0;
+    virtual DroneEulerRateType get_angular_vel() const = 0;
 
     virtual DroneVelocityBodyFrameType get_vel_body_frame() const = 0;
     virtual DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const = 0;

@@ -56,7 +56,7 @@ int main() {
     // 逆変換して戻す
     VelocityType body_velocity2 = vector_ground_to_body(
         VelocityType(u, v, w),
-        AngleType(0, 0, M_PI/2)
+        EulerType(0, 0, M_PI/2)
     );
 
     auto [u2, v2, w2] = body_velocity2;
@@ -75,7 +75,7 @@ int main() {
 
 int main() {
     // 機体座標系を Euler 角で指定, dp_ は dron_physics の接頭
-    dp_angle_t frame = {0, 0, M_PI/2};
+    dp_euler_t frame = {0, 0, M_PI/2};
     dp_velocity_t body_velocity = {100, 200, 300};
 
     // 機体座標系から地上座標系への速度変換
@@ -88,7 +88,7 @@ int main() {
     // このように，初期化指定を使うこともできる
     // 逆変換して戻す
     dp_velocity_t b = dp_vector_ground_to_body(
-        &g, &(dp_angle_t){0, 0, M_PI/2}
+        &g, &(dp_euler_t){0, 0, M_PI/2}
     );
 
     printf("x=%g, y=%g, z=%g\n", b.x, b.y, b.z);

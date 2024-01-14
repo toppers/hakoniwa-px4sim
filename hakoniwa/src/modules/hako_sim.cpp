@@ -135,7 +135,7 @@ static void do_io_write(double controls[hako::assets::drone::ROTOR_NUM])
     }
 
     DronePositionType dpos = drone->get_drone_dynamics().get_pos();
-    DroneAngleType dangle = drone->get_drone_dynamics().get_angle();
+    DroneEulerType dangle = drone->get_drone_dynamics().get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = -dpos.data.y;
     pos.linear.z = -dpos.data.z;

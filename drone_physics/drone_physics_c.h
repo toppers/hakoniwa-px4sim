@@ -19,29 +19,29 @@ typedef struct {
     double phi;   // rotation round x-axis
     double theta; // rotation round y-axis
     double psi;   // rotation round z-axis
-} dp_angle_t;
+} dp_euler_t;
 
 typedef dp_vector_t
     dp_velocity_t, dp_acceleration_t;
-typedef dp_angle_t
+typedef dp_euler_t
     dp_angular_rate_t, dp_angular_acceleration_t;
 
 /* maths for frame transformations */
 dp_velocity_t dp_vector_body_to_ground(
     const dp_velocity_t* body, /* non-null */
-    const dp_angle_t* angle /* non-null */);
+    const dp_euler_t* angle /* non-null */);
 
 dp_velocity_t dp_vector_ground_to_body(
     const dp_velocity_t* ground /* non-null*/,
-    const dp_angle_t* angle);
+    const dp_euler_t* angle);
 
 dp_angular_rate_t dp_body_angular_velocity_to_euler_rate(
     const dp_vector_t* angular_rate_body_frame,
-    const dp_angle_t* angle);
+    const dp_euler_t* angle);
 
 dp_angular_rate_t dp_euler_rate_to_body_angular_velocity(
     const dp_vector_t* angular_rate_ground_frame,
-    const dp_angle_t* angle);
+    const dp_euler_t* angle);
 
 #ifdef __cplusplus
 }

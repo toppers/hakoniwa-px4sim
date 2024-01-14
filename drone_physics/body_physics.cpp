@@ -83,7 +83,7 @@ VectorType operator / (const VectorType& v, double s)
  */
 VectorType vector_body_to_ground(
     const VectorType& body,
-    const AngleType& angle)
+    const EulerType& angle)
 {
     using std::sin; using std::cos;
     const auto
@@ -119,7 +119,7 @@ VectorType vector_body_to_ground(
 /* for generic vectors. use the meaningful aliases below  */
 VectorType vector_ground_to_body(
     const VectorType& ground,
-    const AngleType& angle)
+    const EulerType& angle)
 {
     using std::sin; using std::cos;
     const auto
@@ -153,9 +153,9 @@ VectorType vector_ground_to_body(
 }
 
 /* Tranlsform angular rate in body frame to ground frame eq.(1.109)*/
-AngularRateType body_angular_velocity_to_euler_rate(
+EulerRateType body_angular_velocity_to_euler_rate(
     const AngularVelocityType& body,
-    const AngleType& angle)
+    const EulerType& angle)
 {
     using std::sin; using std::cos;
     const auto
@@ -180,8 +180,8 @@ AngularRateType body_angular_velocity_to_euler_rate(
 
 /* Tranlsform angular rate in ground frame to body frame (eq.106)*/
 AngularVelocityType euler_rate_to_body_angular_velocity(
-    const AngularRateType& euler_rate,
-    const AngleType& euler)
+    const EulerRateType& euler_rate,
+    const EulerType& euler)
 {
     using std::sin; using std::cos; using std::tan;
     const auto
@@ -215,7 +215,7 @@ AngularVelocityType euler_rate_to_body_angular_velocity(
 /* acceleration in body frame based on mV'+ w x mV = F ... eq.(1.136),(2.31)*/
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
-    const AngleType& angle,
+    const EulerType& angle,
     const AngularVelocityType& body_angular_velocity,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
@@ -255,7 +255,7 @@ AccelerationType acceleration_in_body_frame(
 /* Obsolete. for testing only. */
 AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     const VelocityType& body,
-    const AngleType& angle,
+    const EulerType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
     assert(!is_zero(mass));
@@ -286,7 +286,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
  */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
-    const AngleType& angle,
+    const EulerType& angle,
     double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
 {
     using std::sin; using std::cos;
@@ -362,9 +362,9 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     return {dot_p, dot_q, dot_r};
 }
 
-AngularRateDotType euler_acceleration_in_ground_frame(
-    const AngularRateType& current_euler_rate,
-    const AngleType& current_euler,
+EulerAccelerationType euler_acceleration_in_ground_frame(
+    const EulerRateType& current_euler_rate,
+    const EulerType& current_euler,
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {

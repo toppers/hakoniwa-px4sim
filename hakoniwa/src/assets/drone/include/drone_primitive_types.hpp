@@ -89,15 +89,15 @@ typedef struct DroneVelocityBodyFrame {
 typedef struct DroneAngle {
     glm::dvec3 data;
     DroneAngle(){}
-    DroneAngle(const hako::drone_physics::AngleType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
-    DroneAngle& operator=(const hako::drone_physics::AngleType& rhs) {
+    DroneAngle(const hako::drone_physics::EulerType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
+    DroneAngle& operator=(const hako::drone_physics::EulerType& rhs) {
         this->data = {rhs.phi, rhs.theta, rhs.psi};
         return *this;
     }
-    operator hako::drone_physics::AngleType() const {
+    operator hako::drone_physics::EulerType() const {
         return {data.x, data.y, data.z};
     }
-} DroneAngleType;
+} DroneEulerType;
 
 /*
  * Coordinate System: Ground Coordinate System (NED)
@@ -112,15 +112,15 @@ typedef struct DroneAngle {
 typedef struct DroneAngularRate {
     glm::dvec3 data;
     DroneAngularRate(){}
-    DroneAngularRate(const hako::drone_physics::AngularRateType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
-    DroneAngularRate& operator=(const hako::drone_physics::AngularRateType& rhs) {
+    DroneAngularRate(const hako::drone_physics::EulerRateType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
+    DroneAngularRate& operator=(const hako::drone_physics::EulerRateType& rhs) {
         this->data = {rhs.phi, rhs.theta, rhs.psi};
         return *this;
     }
-    operator hako::drone_physics::AngularRateType() const {
+    operator hako::drone_physics::EulerRateType() const {
         return {data.x, data.y, data.z};
     }
-} DroneAngularRateType;
+} DroneEulerRateType;
 
 
 /*
@@ -389,7 +389,7 @@ typedef struct {
     double sec_theta;
 } DronePhysCalcCacheType;
 
-static inline DronePhysCalcCacheType drone_phys_calc_cache(DroneAngleType angle)
+static inline DronePhysCalcCacheType drone_phys_calc_cache(DroneEulerType angle)
 {
     DronePhysCalcCacheType cache;
     cache.cos_phi = cos(angle.data.x);

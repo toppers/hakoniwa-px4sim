@@ -26,9 +26,9 @@ using hako::assets::drone::DroneDynamicsBodyFrame;
 using hako::assets::drone::DroneDynamicsGroundFrame;
 using hako::assets::drone::IDroneDynamics;
 using hako::assets::drone::DronePositionType;
-using hako::assets::drone::DroneAngleType;
+using hako::assets::drone::DroneEulerType;
 using hako::assets::drone::DroneVelocityType;
-using hako::assets::drone::DroneAngularRateType;
+using hako::assets::drone::DroneEulerRateType;
 using hako::assets::drone::DroneTorqueType;
 using hako::assets::drone::DroneThrustType;
 
@@ -70,7 +70,7 @@ static void do_io_write()
     Hako_Twist pos;
 
     DronePositionType dpos = drone_dynamics->get_pos();
-    DroneAngleType dangle = drone_dynamics->get_angle();
+    DroneEulerType dangle = drone_dynamics->get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;

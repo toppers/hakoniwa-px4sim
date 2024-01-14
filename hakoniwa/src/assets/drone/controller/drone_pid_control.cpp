@@ -5,7 +5,7 @@
 #include "hako_asset_runner.h"
 
 using hako::assets::drone::DronePositionType;
-using hako::assets::drone::DroneAngleType;
+using hako::assets::drone::DroneEulerType;
 using hako::assets::drone::DroneThrustType;
 using hako::assets::drone::DroneTorqueType;
 
@@ -45,7 +45,7 @@ void drone_pid_control_init()
     pid_psi = new DronePidControl(Kp_psi, Ki_psi, Kd_psi, setpoint_psi,
                                   "python/results/psi_data.csv", {"timestamp", "Psi"});
 }
-static void do_io_read(DronePositionType& dpos, DroneAngleType& dangle)
+static void do_io_read(DronePositionType& dpos, DroneEulerType& dangle)
 {
     Hako_Twist pos;
 
@@ -70,7 +70,7 @@ void drone_pid_control_run()
     static double current_time = 0;
     static double last_time = 0;
     DronePositionType dpos;
-    DroneAngleType dangle;
+    DroneEulerType dangle;
 
     // PDUからデータを読み取る
     do_io_read(dpos, dangle);

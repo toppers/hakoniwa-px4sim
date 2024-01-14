@@ -36,7 +36,7 @@ private:
 
         return rot;
     }
-    void run_old(const DroneAngleType& angle)
+    void run_old(const DroneEulerType& angle)
     {
         double theta = angle.data.y + params_I;
         double psi = angle.data.z - params_D;
@@ -50,7 +50,7 @@ private:
         this->mag_y.add_data(y);
         this->mag_z.add_data(z);
     }
-    void run_fix(const DroneAngleType& angle)
+    void run_fix(const DroneEulerType& angle)
     {
         double x =   (cos(params_I) * cos(params_D));
         double y =   (cos(params_I) * sin(params_D));
@@ -64,7 +64,7 @@ private:
         this->mag_y.add_data(y * params_F);
         this->mag_z.add_data(z * params_F);
     }
-    void run_new(const DroneAngleType& angle)
+    void run_new(const DroneEulerType& angle)
     {
         glm::dvec3 mag = get_mag_field(); // 磁場ベクトルを取得
         glm::mat3 rot = getRotationMatrix(angle.data); // 回転行列を取得
@@ -89,7 +89,7 @@ public:
     }
     virtual ~SensorMag() {}
 
-    void run(const DroneAngleType& angle) override
+    void run(const DroneEulerType& angle) override
     {
         run_new(angle);
         total_time_sec += delta_time_sec;

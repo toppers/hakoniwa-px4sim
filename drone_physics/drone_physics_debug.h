@@ -11,7 +11,7 @@ inline double diff(const hako::drone_physics::VectorType& v, const hako::drone_p
     return length_squared(v - w);
 }
 
-inline double diff(const hako::drone_physics::AngleType& a, const hako::drone_physics::AngleType b) {
+inline double diff(const hako::drone_physics::EulerType& a, const hako::drone_physics::EulerType b) {
     auto [phi, theta, psi] = a;
     auto [phi2, theta2, psi2] = b;
     return (phi-phi2)*(phi-phi2) + (theta-theta2)*(theta-theta2) + (psi-psi2)*(psi-psi2);
@@ -45,7 +45,7 @@ inline double diff(const dp_vector_t* v, const dp_vector_t* w) {
 }
 
 /* TOBE INCLUDED LATERS. just to erase compile -unused warning.
-static double diff_a(const dp_angle_t* a, const dp_angle_t* b) {
+static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
     double phi = a->phi;
     double theta = a->theta;
     double psi = a->psi;

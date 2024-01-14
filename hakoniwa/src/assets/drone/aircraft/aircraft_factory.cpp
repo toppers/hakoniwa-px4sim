@@ -88,7 +88,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     drone_pos.data = { position[0], position[1], position[2] }; 
     drone_dynamics->set_pos(drone_pos);
     auto angle = drone_config.getCompDroneDynamicsAngle();
-    DroneAngleType rot;
+    DroneEulerType rot;
     rot.data = { DEGREE2RADIAN(angle[0]), DEGREE2RADIAN(angle[1]), DEGREE2RADIAN(angle[2]) };
     drone_dynamics->set_angle(rot);
     drone->set_drone_dynamics(drone_dynamics);

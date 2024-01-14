@@ -31,6 +31,6 @@ using hako::assets::drone::IThrustDynamics;
 using hako::assets::drone::DroneThrustType;
 using hako::assets::drone::DroneTorqueType;
 using hako::assets::drone::DronePositionType;
-using hako::assets::drone::DroneAngleType;
+using hako::assets::drone::DroneEulerType;
 
 #endif /* _AIRCRAFT_FACTORY_HPP_ */

@@ -21,7 +21,7 @@ protected:
 };
 using hako::assets::drone::SensorMag;
 using hako::assets::drone::SensorNoise;
-using hako::assets::drone::DroneAngleType;
+using hako::assets::drone::DroneEulerType;
 
 #define REFERENCE_LATITUDE      47.641468
 #define REFERENCE_LONGTITUDE    -122.140165
@@ -47,7 +47,7 @@ TEST_F(MagTest, SensorMag_001)
 {
     SensorMag mag(0.001, 1);
     mag.set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
-    DroneAngleType angle;
+    DroneEulerType angle;
     // head => north
     {
         angle.data.x = DEGREE2RADIAN(0);
@@ -102,7 +102,7 @@ TEST_F(MagTest, SensorMag_002)
 {
     SensorMag mag(0.001, 1);
     mag.set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
-    DroneAngleType angle;
+    DroneEulerType angle;
     // head => horizontal
     // head => north
     {

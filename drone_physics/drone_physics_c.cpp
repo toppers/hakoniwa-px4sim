@@ -8,10 +8,10 @@ static hako::drone_physics::VectorType to_Vector(const dp_vector_t* v)
     return hako::drone_physics::VectorType{v->x, v->y, v->z};
 }
 
-static hako::drone_physics::AngleType to_Angle(const dp_angle_t* v)
+static hako::drone_physics::EulerType to_Angle(const dp_euler_t* v)
 {
     assert(v);
-    return hako::drone_physics::AngleType{v->phi, v->theta, v->psi};
+    return hako::drone_physics::EulerType{v->phi, v->theta, v->psi};
 }
 
 static dp_vector_t to_dp_vector(const hako::drone_physics::VectorType& v)
@@ -20,9 +20,9 @@ static dp_vector_t to_dp_vector(const hako::drone_physics::VectorType& v)
 }
 
 #ifdef TO_BE_IMPLEMENTED
-static dp_angle_t to_dp_angle(const hako::drone_physics::AngleType& v)
+static dp_euler_t to_dp_angle(const hako::drone_physics::EulerType& v)
 {
-    return dp_angle_t{v.phi, v.theta, v.psi};
+    return dp_euler_t{v.phi, v.theta, v.psi};
 }
 #endif
 
@@ -31,7 +31,7 @@ extern "C" {
 /* maths for frame transformations */
 dp_velocity_t dp_vector_body_to_ground(
     const dp_velocity_t* body, /* non-null */
-    const dp_angle_t* angle /* non-null */)
+    const dp_euler_t* angle /* non-null */)
 {
     assert(body);
     assert(angle);
@@ -46,7 +46,7 @@ dp_velocity_t dp_vector_body_to_ground(
 
 dp_velocity_t dp_vector_ground_to_body(
     const dp_velocity_t* ground, /* non-null */
-    const dp_angle_t* angle /* non-null */)
+    const dp_euler_t* angle /* non-null */)
 {
     assert(ground);
     assert(angle);

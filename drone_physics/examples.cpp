@@ -9,7 +9,7 @@ int main() {
     using namespace hako::drone_physics;
 
     // create a body frame from Euler angles.
-    AngleType frame = {0, 0, M_PI/2};
+    EulerType frame = {0, 0, M_PI/2};
     VelocityType body_velocity = {100, 200, 300};
     
     // Convert the body velocity to the ground frame.
@@ -25,7 +25,7 @@ int main() {
     // reverse the conversion to the body frame.
     VelocityType body_velocity2 = vector_ground_to_body(
         VelocityType{u, v, w},
-        AngleType{0, 0, M_PI/2}
+        EulerType{0, 0, M_PI/2}
     );
 
     // another way to get the x,y,z components.
