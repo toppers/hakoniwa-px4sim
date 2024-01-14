@@ -84,7 +84,9 @@ std::ostream& operator << (std::ostream& os, const EulerType& v) {
 #endif /* BP_INCLUDE_IO */
 
 
-/* maths for frame transformations */
+/*
+ *  Maths for frame, coordinate/angle transformations.
+ */
 /* vector types works for angular vectors, and velocities, accelerations */
 VectorType ground_vector_from_body(
     const VectorType& body,
@@ -101,6 +103,9 @@ AngularVelocityType body_angular_velocity_from_euler_rate(
     const EulerRateType& euler_rate,
     const EulerType& euler);
 
+/*
+ *  Dynamics(differential quuations) for accelertion from force and torque.
+ */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const EulerType& angle,
@@ -113,7 +118,7 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
-/* replaces the above with Coriolis's Force */
+/* The right dynamics including Coriolis's Force */
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const EulerType& angle,
@@ -138,9 +143,8 @@ EulerAccelerationType euler_acceleration_in_ground_frame(
     double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
 
-/* physics for collision */
-
 /**
+ * Physics for collision with wall(walls don't move).
  * Calculates the velocity after the collision.
  * Input vectors in the same frame, return vector in the same frame.
 */
