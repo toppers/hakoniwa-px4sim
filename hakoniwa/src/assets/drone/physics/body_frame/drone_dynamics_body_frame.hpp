@@ -41,13 +41,13 @@ private:
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
-        return drone_physics::vector_body_to_ground(src, angle);
+        return drone_physics::ground_vector_from_body(src, angle);
     }
 
     DroneEulerRateType convert(const DroneAngularVelocityBodyFrameType& src)
     {
         // TODO hiranabe 2020/12/10
-        drone_physics::EulerRateType rate = drone_physics::body_angular_velocity_to_euler_rate(src, angle);
+        drone_physics::EulerRateType rate = drone_physics::euler_rate_from_body_angular_velocity(src, angle);
         drone_physics::EulerRateType dest = { rate.phi, rate.theta, rate.psi };
         return dest;
     }
@@ -189,7 +189,7 @@ public:
                 //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
                 //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
                 this->velocity = col_vel;
-                this->velocityBodyFrame = drone_physics::vector_ground_to_body(this->velocity, angle);
+                this->velocityBodyFrame = drone_physics::body_vector_from_ground(this->velocity, angle);
             }
         }
 

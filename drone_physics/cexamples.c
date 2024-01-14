@@ -10,7 +10,7 @@ int main() {
     dp_velocity_t body_velocity = {100, 200, 300};
     
     // Convert the body velocity to the ground frame.
-    dp_velocity_t g = dp_vector_body_to_ground(&body_velocity, &frame);
+    dp_velocity_t g = dp_ground_vector_from_body(&body_velocity, &frame);
 
     // get the x,y,z components of the velocity.
     printf("x=%g, y=%g, z=%g\n", g.x, g.y, g.z);
@@ -18,7 +18,7 @@ int main() {
 
     // you can also use explicit initialization.
     // reverse the conversion to the body frame.
-    dp_velocity_t b = dp_vector_ground_to_body(
+    dp_velocity_t b = dp_body_vector_from_ground(
         &g, &(dp_euler_t){0, 0, M_PI/2}
     );
 

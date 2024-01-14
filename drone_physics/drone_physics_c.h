@@ -27,19 +27,19 @@ typedef dp_euler_t
     dp_angular_rate_t, dp_angular_acceleration_t;
 
 /* maths for frame transformations */
-dp_velocity_t dp_vector_body_to_ground(
+dp_velocity_t dp_ground_vector_from_body(
     const dp_velocity_t* body, /* non-null */
     const dp_euler_t* angle /* non-null */);
 
-dp_velocity_t dp_vector_ground_to_body(
+dp_velocity_t dp_body_vector_from_ground(
     const dp_velocity_t* ground /* non-null*/,
     const dp_euler_t* angle);
 
-dp_angular_rate_t dp_body_angular_velocity_to_euler_rate(
+dp_angular_rate_t dp_euler_rate_from_body_angular_velocity(
     const dp_vector_t* angular_rate_body_frame,
     const dp_euler_t* angle);
 
-dp_angular_rate_t dp_euler_rate_to_body_angular_velocity(
+dp_angular_rate_t dp_body_angular_velocity_from_euler_rate(
     const dp_vector_t* angular_rate_ground_frame,
     const dp_euler_t* angle);
 

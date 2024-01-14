@@ -85,18 +85,19 @@ std::ostream& operator << (std::ostream& os, const EulerType& v) {
 
 
 /* maths for frame transformations */
-    /* vector types works for angular vectors, and velocities, accelerations */
-VectorType vector_body_to_ground(
+/* vector types works for angular vectors, and velocities, accelerations */
+VectorType ground_vector_from_body(
     const VectorType& body,
     const EulerType& angle);
-VectorType vector_ground_to_body(
+VectorType body_vector_from_ground(
     const VectorType& ground,
     const EulerType& angle);
 
-EulerRateType body_angular_velocity_to_euler_rate(
+/* translations between anguler vector and euler rate */
+EulerRateType euler_rate_from_body_angular_velocity(
     const AngularVelocityType& angular_veleocy,
     const EulerType& euler);
-AngularVelocityType euler_rate_to_body_angular_velocity(
+AngularVelocityType body_angular_velocity_from_euler_rate(
     const EulerRateType& euler_rate,
     const EulerType& euler);
 
@@ -130,6 +131,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */);
 
+/* euler angle acceleration(dd phi, dd theta, dd psi) */
 EulerAccelerationType euler_acceleration_in_ground_frame(
     const EulerRateType& current_euler_rate,
     const EulerType& current_euler,

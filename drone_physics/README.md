@@ -41,7 +41,7 @@ int main() {
     VelocityType body_velocity = {100, 200, 300};
     
     // Convert the body velocity to the ground frame.
-    VelocityType ground_velocity = vector_body_to_ground(body_velocity, frame);
+    VelocityType ground_velocity = ground_vector_from_body(body_velocity, frame);
 
     // get the x,y,z components of the velocity.
     auto [u, v, w] = ground_velocity;
@@ -51,7 +51,7 @@ int main() {
 
     // you can also use explicit constructors.
     // reverse the conversion to the body frame.
-    VelocityType body_velocity2 = vector_ground_to_body(
+    VelocityType body_velocity2 = body_vector_from_ground(
         VelocityType{u, v, w},
         EulerType{0, 0, M_PI/2}
     );
@@ -76,7 +76,7 @@ int main() {
     dp_velocity_t body_velocity = {100, 200, 300};
     
     // Convert the body velocity to the ground frame.
-    dp_velocity_t g = dp_vector_body_to_ground(&body_velocity, &frame);
+    dp_velocity_t g = dp_ground_vector_from_body(&body_velocity, &frame);
 
     // get the x,y,z components of the velocity.
     printf("x=%g, y=%g, z=%g\n", g.x, g.y, g.z);
@@ -84,7 +84,7 @@ int main() {
 
     // you can also use explicit initialization.
     // reverse the conversion to the body frame.
-    dp_velocity_t b = dp_vector_ground_to_body(
+    dp_velocity_t b = dp_body_vector_from_ground(
         &g, &(dp_euler_t){0, 0, M_PI/2}
     );
 
@@ -125,10 +125,10 @@ Functions are implemented in the following categories, with the referece to the 
 ### Frame conversion:
 | Function | equation | note |
 |----------|-----------|------|
-|`vector_body_to_ground`  | (1.71), (1.124) | Body velocity to ground velocity |
-|`vector_ground_to_body`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
-|`body_angular_velocity_to_euler_rate` | (1.109) | Body angular rate to ground angular rate |
-|`euler_rate_to_body_angular_velocity` | (1.106) | Ground angular rate to body angular rate |
+|`ground_vector_from_body`  | (1.71), (1.124) | Body velocity to ground velocity |
+|`body_vector_from_ground`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
+|`euler_rate_from_body_angular_velocity` | (1.109) | Body angular rate to ground angular rate |
+|`body_angular_velocity_from_euler_rate` | (1.106) | Ground angular rate to body angular rate |
 
 ### Body dynamics(Acceleration):
 | Function | equations in the book | note |

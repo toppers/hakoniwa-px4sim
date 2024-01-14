@@ -124,12 +124,12 @@ public:
         return angularVelocity;
     }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
-        return drone_physics::vector_ground_to_body(velocity, angle);
+        return drone_physics::body_vector_from_ground(velocity, angle);
     }
     DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const override {
         // TODO: hiranabe 2021/10/13
         drone_physics::EulerRateType rate = {angularVelocity.data.x, angularVelocity.data.y, angularVelocity.data.z};
-        drone_physics::AngularVelocityType ret =  drone_physics::euler_rate_to_body_angular_velocity(rate, angle);
+        drone_physics::AngularVelocityType ret =  drone_physics::body_angular_velocity_from_euler_rate(rate, angle);
         return ret;
     }
 

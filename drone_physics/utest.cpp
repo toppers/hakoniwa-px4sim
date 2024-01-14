@@ -7,53 +7,53 @@ const double PI = M_PI;
 
 void test_frame_all_unit_vectors_with_angle0() {
     VelocityType v1{1, 0, 0}; // Update the constructor call to use curly braces instead of parentheses
-    VelocityType v2 = vector_body_to_ground(v1, EulerType{0, 0, 0});
+    VelocityType v2 = ground_vector_from_body(v1, EulerType{0, 0, 0});
     assert_almost_equal(v1, v2);
 
     v1 = {0, 1, 0};
-    v2 = vector_body_to_ground(v1, EulerType{0, 0, 0});
+    v2 = ground_vector_from_body(v1, EulerType{0, 0, 0});
     assert_almost_equal(v1, v2);
 
     v1 = {0, 0, 1};
-    v2 = vector_body_to_ground(v1, EulerType{0, 0, 0});
+    v2 = ground_vector_from_body(v1, EulerType{0, 0, 0});
     assert_almost_equal(v1, v2);
 }
 
 void test_frame_all_unit_vectors_with_some_angles() {
     const VelocityType v1{1, 0, 0};
-    VelocityType v2 = vector_body_to_ground(v1, EulerType{0, 0, 0});
+    VelocityType v2 = ground_vector_from_body(v1, EulerType{0, 0, 0});
     assert_almost_equal(v1, v2);
 
     for (int i = 0; i < 360; i++) {  // 0 to 360 degree x-axis
-        v2 = vector_body_to_ground(v1, EulerType{i * PI / 180, 0, 0});
+        v2 = ground_vector_from_body(v1, EulerType{i * PI / 180, 0, 0});
         assert_almost_equal(v1, v2);
     }
 
-    v2 = vector_body_to_ground(v1, EulerType{0, PI/6, 0}); // 30 degree head up
+    v2 = ground_vector_from_body(v1, EulerType{0, PI/6, 0}); // 30 degree head up
     assert_almost_equal((VelocityType{sqrt(3)/2, 0, -0.5}), v2);
 
-    v2 = vector_body_to_ground(v1, EulerType{0, PI/3, 0}); // 60 degree
+    v2 = ground_vector_from_body(v1, EulerType{0, PI/3, 0}); // 60 degree
     assert_almost_equal((VelocityType{0.5, 0, -sqrt(3)/2}), v2);
 
-    v2 = vector_body_to_ground(v1, EulerType{0, 0, PI/6}); // yaw 30 degree
+    v2 = ground_vector_from_body(v1, EulerType{0, 0, PI/6}); // yaw 30 degree
     assert_almost_equal((VelocityType{sqrt(3)/2, 0.5, 0}), v2);
 }
 
 void test_frame_matrix_is_unitary() {
     VelocityType v1{1, 0, 0};
     for (int i = -180; i < 180; i+=30) {
-        VelocityType v2 = vector_body_to_ground(v1, EulerType{i * (PI/180), 0, 0});
+        VelocityType v2 = ground_vector_from_body(v1, EulerType{i * (PI/180), 0, 0});
         double len = length_squared(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
     for (int i = 0; i < 90; i+=30) {
-        VelocityType v2 = vector_body_to_ground(v1, EulerType{0, i * (PI/180), 0});
+        VelocityType v2 = ground_vector_from_body(v1, EulerType{0, i * (PI/180), 0});
         double len = length_squared(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
   
     for (int i = -180; i < 360; i+=30) {
-        VelocityType v2 = vector_body_to_ground(v1, EulerType{0, 0, i * (PI/180)});
+        VelocityType v2 = ground_vector_from_body(v1, EulerType{0, 0, i * (PI/180)});
         double len = length_squared(v2);
         assert(fabs(len - 1.0) < 0.0001);
     }
@@ -64,16 +64,16 @@ void test_frame_matrix_is_unitary() {
     for (int i = -180; i < 180; i+=30) {
         for (int j = -90; j < 90; j+=30) {
             for (int k = -180; k < 180; k+=30) {
-                VelocityType V = vector_body_to_ground(v1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                VelocityType V = ground_vector_from_body(v1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 double len = length_squared(V);
                 assert(fabs(len - 1.0) < 0.0001);
 
                 // bug #89 indicated that need testing (0,1,0) and (0,0,1) vectors.
-                V = vector_body_to_ground(u1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                V = ground_vector_from_body(u1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 len = length_squared(V);
                 assert(fabs(len - 1.0) < 0.0001);
 
-                V = vector_body_to_ground(w1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                V = ground_vector_from_body(w1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 len = length_squared(V);
                 assert(fabs(len - 1.0) < 0.0001);
 
@@ -85,24 +85,24 @@ void test_frame_matrix_is_unitary() {
 void test_issue_89_yaw_angle_bug() {
     // this works ok.
     VelocityType v1{0, 1, 0};
-    VelocityType v2 = vector_body_to_ground(v1, EulerType{0, 0, PI/2});
+    VelocityType v2 = ground_vector_from_body(v1, EulerType{0, 0, PI/2});
     assert_almost_equal(v2, (VelocityType{-1, 0, 0}));
     // v2 = (-1, 0, 1)); bug #89 produced this result. now it is (-1,0,0)
 }
 
 void test_frame_roundtrip() {
     VelocityType v1{1, 0, 0};
-    VelocityType v2 = vector_body_to_ground(v1, EulerType{0, 0, 0});
+    VelocityType v2 = ground_vector_from_body(v1, EulerType{0, 0, 0});
     assert_almost_equal(v1, v2);
 
     for (int i = -180; i < 180; i+=30) {  // 0 to 360 degree x-axis
-        v2 = vector_body_to_ground(v1, EulerType{i * PI / 180, 0, 0});
-        VelocityType v3 = vector_ground_to_body(v2, EulerType{i * PI / 180, 0, 0});
+        v2 = ground_vector_from_body(v1, EulerType{i * PI / 180, 0, 0});
+        VelocityType v3 = body_vector_from_ground(v2, EulerType{i * PI / 180, 0, 0});
         assert_almost_equal(v1, v3);
     }
     for (int i = -90; i < 90; i+=30) {  // 0 to 360 degree x-axis
-        v2 = vector_body_to_ground(v1, EulerType{0, i * PI / 180, 0});
-        VelocityType v3 = vector_ground_to_body(v2, EulerType{0, i * PI / 180, 0});
+        v2 = ground_vector_from_body(v1, EulerType{0, i * PI / 180, 0});
+        VelocityType v3 = body_vector_from_ground(v2, EulerType{0, i * PI / 180, 0});
         assert_almost_equal(v1, v3);
     }
     // conbinations
@@ -112,17 +112,17 @@ void test_frame_roundtrip() {
     for (int i = -180; i < 180; i+=30) {
         for (int j = -90; j < 90; j+=30) {
             for (int k = -180; k < 180; k+=30) {
-                v2 = vector_body_to_ground(v1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
-                VelocityType v3 = vector_ground_to_body(v2, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                v2 = ground_vector_from_body(v1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                VelocityType v3 = body_vector_from_ground(v2, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 assert_almost_equal(v1, v3);
 
                 // bug #89 indicated that need testing (0,1,0) and (0,0,1) vectors.
-                v2 = vector_body_to_ground(u1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
-                v3 = vector_ground_to_body(v2, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                v2 = ground_vector_from_body(u1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                v3 = body_vector_from_ground(v2, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 assert_almost_equal(u1, v3);
 
-                v2 = vector_body_to_ground(w1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
-                v3 = vector_ground_to_body(v2, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                v2 = ground_vector_from_body(w1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
+                v3 = body_vector_from_ground(v2, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 assert_almost_equal(w1, v3);
             }
         }
@@ -131,22 +131,22 @@ void test_frame_roundtrip() {
 
 void test_angular_frame_roundtrip() {
     AngularVelocityType v1{1, 0, 0};
-    EulerRateType v2 = body_angular_velocity_to_euler_rate(v1, EulerType{0, 0, 0});
+    EulerRateType v2 = euler_rate_from_body_angular_velocity(v1, EulerType{0, 0, 0});
     assert_almost_equal((EulerRateType{1,0,0}), v2);
 
     for (int i = -180; i < 180; i+=30) {  // 0 to 360 degree x-axis
-        v2 = body_angular_velocity_to_euler_rate(v1, EulerType{i * PI / 180, 0, 0});
-        AngularVelocityType v3 = euler_rate_to_body_angular_velocity(v2, EulerType{i * PI / 180, 0, 0});
+        v2 = euler_rate_from_body_angular_velocity(v1, EulerType{i * PI / 180, 0, 0});
+        AngularVelocityType v3 = body_angular_velocity_from_euler_rate(v2, EulerType{i * PI / 180, 0, 0});
         assert_almost_equal(v1, v3);
     }
     for (int i = -90; i < 90; i+=30) {  // y-axis
-        v2 = body_angular_velocity_to_euler_rate(v1, EulerType{0, i * PI / 180, 0});
-        AngularVelocityType v3 = euler_rate_to_body_angular_velocity(v2, EulerType{0, i * PI / 180, 0});
+        v2 = euler_rate_from_body_angular_velocity(v1, EulerType{0, i * PI / 180, 0});
+        AngularVelocityType v3 = body_angular_velocity_from_euler_rate(v2, EulerType{0, i * PI / 180, 0});
         assert_almost_equal(v1, v3);
     }
     for (int i = -180; i < 180; i+=30) {  // z-axis
-        v2 = body_angular_velocity_to_euler_rate(v1, EulerType{0, 0, i * PI / 180});
-        AngularVelocityType v3 = euler_rate_to_body_angular_velocity(v2, EulerType{0, 0, i * PI / 180});
+        v2 = euler_rate_from_body_angular_velocity(v1, EulerType{0, 0, i * PI / 180});
+        AngularVelocityType v3 = body_angular_velocity_from_euler_rate(v2, EulerType{0, 0, i * PI / 180});
         assert_almost_equal(v1, v3);
     }
     // conbinations
@@ -160,16 +160,16 @@ void test_angular_frame_roundtrip() {
             for (int k = -180; k < 180; k+=30) {
                 EulerType rot_angle{i * (PI/180), j * (PI/180), k * (PI/180)};
 
-                v2 = body_angular_velocity_to_euler_rate(v1, rot_angle);
-                ans = euler_rate_to_body_angular_velocity(v2, rot_angle);
+                v2 = euler_rate_from_body_angular_velocity(v1, rot_angle);
+                ans = body_angular_velocity_from_euler_rate(v2, rot_angle);
                 assert_almost_equal(v1, ans);
 
-                v2 = body_angular_velocity_to_euler_rate(u1, rot_angle);
-                ans= euler_rate_to_body_angular_velocity(v2, rot_angle);
+                v2 = euler_rate_from_body_angular_velocity(u1, rot_angle);
+                ans= body_angular_velocity_from_euler_rate(v2, rot_angle);
                 assert_almost_equal(u1, ans);
 
-                v2 = body_angular_velocity_to_euler_rate(w1, rot_angle);
-                ans = euler_rate_to_body_angular_velocity(v2, rot_angle);
+                v2 = euler_rate_from_body_angular_velocity(w1, rot_angle);
+                ans = body_angular_velocity_from_euler_rate(v2, rot_angle);
                 assert_almost_equal(w1, ans);
             }
          }
@@ -240,23 +240,23 @@ void test_ground_acceleration() {
     v = {0, 0, 0};
     a_g = acceleration_in_ground_frame({0,0,0}, angle, trust, mass, gravity, drag);
     a_b = acceleration_in_body_frame({0,0,0}, angle, {0, 0, 0}, trust, mass, gravity, drag);
-    a_g2 = vector_body_to_ground(a_b, angle);
+    a_g2 = ground_vector_from_body(a_b, angle);
     assert_almost_equal(a_g, a_g2);
 
-    a_b2 = vector_ground_to_body(a_g, angle);
+    a_b2 = body_vector_from_ground(a_g, angle);
     assert_almost_equal(a_b, a_b2);
-    a_g3 = vector_body_to_ground(a_b2, angle);
+    a_g3 = ground_vector_from_body(a_b2, angle);
     assert_almost_equal(a_g, a_g3);
 
     v = {1, 2, 3};
     a_g = acceleration_in_ground_frame(v, angle, trust, mass, gravity, drag);
     a_b = acceleration_in_body_frame(v, angle, {0, 0, 0}, trust, mass, gravity, drag);
-    a_g2 = vector_body_to_ground(a_b, angle);
+    a_g2 = ground_vector_from_body(a_b, angle);
     assert_almost_equal(a_g, a_g2);
 
-    a_b2 = vector_ground_to_body(a_g, angle);
+    a_b2 = body_vector_from_ground(a_g, angle);
     assert_almost_equal(a_b, a_b2);
-    a_g3 = vector_body_to_ground(a_b2, angle);
+    a_g3 = ground_vector_from_body(a_b2, angle);
     assert_almost_equal(a_g, a_g3);
 }
 

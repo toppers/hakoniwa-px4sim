@@ -81,7 +81,7 @@ VectorType operator / (const VectorType& v, double s)
  * For generic vectors. all vector types can be available including
  * velocity, acceleration, angular ones, but NOT for angles/angular rates(EULERS).
  */
-VectorType vector_body_to_ground(
+VectorType ground_vector_from_body(
     const VectorType& body,
     const EulerType& angle)
 {
@@ -117,7 +117,7 @@ VectorType vector_body_to_ground(
 }
 
 /* for generic vectors. use the meaningful aliases below  */
-VectorType vector_ground_to_body(
+VectorType body_vector_from_ground(
     const VectorType& ground,
     const EulerType& angle)
 {
@@ -153,7 +153,7 @@ VectorType vector_ground_to_body(
 }
 
 /* Tranlsform angular rate in body frame to ground frame eq.(1.109)*/
-EulerRateType body_angular_velocity_to_euler_rate(
+EulerRateType euler_rate_from_body_angular_velocity(
     const AngularVelocityType& body,
     const EulerType& angle)
 {
@@ -179,7 +179,7 @@ EulerRateType body_angular_velocity_to_euler_rate(
 }
 
 /* Tranlsform angular rate in ground frame to body frame (eq.106)*/
-AngularVelocityType euler_rate_to_body_angular_velocity(
+AngularVelocityType body_angular_velocity_from_euler_rate(
     const EulerRateType& euler_rate,
     const EulerType& euler)
 {
@@ -379,7 +379,7 @@ EulerAccelerationType euler_acceleration_in_ground_frame(
     const auto [dot_phi, dot_theta, dot_psi] = current_euler_rate;
 
     /* transform euler angle velocity to BODY frame anglular velocity */
-    const auto [p, q, r] = euler_rate_to_body_angular_velocity(current_euler_rate, current_euler);
+    const auto [p, q, r] = body_angular_velocity_from_euler_rate(current_euler_rate, current_euler);
     const auto [dot_p, dot_q, dot_r] = angular_acceleration_in_body_frame(
         {p, q, r},
         torque_x, torque_y, torque_z,

@@ -38,13 +38,13 @@ private:
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
-        return drone_physics::vector_body_to_ground(src, angle);
+        return drone_physics::ground_vector_from_body(src, angle);
     }
 
     DroneEulerRateType convert(const DroneAngularVelocityBodyFrameType& src)
     {
         // TODO hiranabe 2020/12/10
-        return drone_physics::body_angular_velocity_to_euler_rate(src, angle);
+        return drone_physics::euler_rate_from_body_angular_velocity(src, angle);
     }
     void integral(const DroneVelocityType& src)
     {
