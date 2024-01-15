@@ -49,11 +49,10 @@ int main() {
     std::cout << "u = " << u << ", v = " << v << ", w = " << w << std::endl;
     // output: u = 200, v = -100, w = 300
 
-    // you can also use explicit constructors.
     // reverse the conversion to the body frame.
     VelocityType body_velocity2 = body_vector_from_ground(
-        VelocityType{u, v, w},
-        EulerType{0, 0, M_PI/2}
+        {u, v, w},
+        {0, 0, M_PI/2}
     );
 
     auto [u2, v2, w2] = body_velocity2;
@@ -91,8 +90,6 @@ int main() {
     // get the x,y,z components of the velocity.
     printf("x=%g, y=%g, z=%g\n", b.x, b.y, b.z);
     // output: x = 100, y = 200, z = 300, back again.
-
-    return 0;
 }
 ```
 
@@ -112,22 +109,45 @@ $ make
 
 I your programs,
 
-- In C++, include `drone_physics.hpp` into your C++ code and link with libdrone_physics.a.
-- In C, include `drone_physics_c.h` into your C code and link with libdrone_physics_c.a.
+- In C++, include `drone_physics.hpp` into your C++ code and link with `libdrone_physics.a`.
+- In C, include `drone_physics_c.h` into your C code and link with `libdrone_physics_c.a`.
 
 See `examples.cpp`, `utest.cpp` for more examples in C++,
 and `cexamples.c`, `ctest.c` for more examples in C.
 
+## Type list
+
+### Vectors
+`VectorType` is a 3-dimensional vector, used in both the ground frame and the body frame. The following subtypes are available.
+
+- `VelocityType` - Velocity
+- `AccelerationType` - Acceleration
+- `ForceType` - Force
+- `TorqueType` - Torque
+
+### Angular velocities
+- `AngularVelocityType` - Angular velocity
+- `AngularAccelerationType` - Angular acceleration
+
+### Euler angles
+
+`EulerType` is a 3-dimensional vector, used in transformation between the ground frame and the body frame. The following subtypes are available.
+Note that the euleer angles are not vectors, and cannot be added, scaled, or multiplied by matrices. The following subtypes are available.
+
+- `EulerType` - Euler angles
+- `EulerRateType` - Change rate of the Euler angles
+- `EulerAccelerationType` - Acceleration of the Euler angles(2nd order differential)
+
 ## List of functions
 
-Functions are implemented in the following categories, with the referece to the book.
+Functions(C++) are implemented in the following categories, with the referece to the book.
 
 ### Frame conversion:
 | Function | equation | note |
 |----------|-----------|------|
 |`ground_vector_from_body`  | (1.71), (1.124) | Body velocity to ground velocity |
 |`body_vector_from_ground`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
-|`euler_rate_from_body_angular_velocity` | (1.109) | Body angular velocity to euler change rate |
+|`euler_rate_from_body_angular_velocity` | (1.109) | Body angular velocity to euler rate |
 |`body_angular_velocity_from_euler_rate` | (1.106) | Euler rate to body angular velocity |
 
 ### Body dynamics(Acceleration):
@@ -136,15 +156,15 @@ Functions are implemented in the following categories, with the referece to the 
 |`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame by force |
 |`angular_acceleration_in_body_frame` | (1.137),(2.31) | Angular acceleration in body frame by force |
 |`acceleration_in_ground_frame` | (2.46), (2.47) | Acceleration in ground frame by torque |
-|`euler_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | Euler acceleration by torque |
+|`euler_acceleration_in_ground_frame` | differential of (1.109) | Euler acceleration by torque |
 
 
 ### Rotor dynamics(for one rotor, rotation speed and thrust):
 | Function | equations in the book | note |
 |----------|-----------|------|
 |`rotor_omega_acceleration` | (2.48) | Rotor angular rate acceleration from dury rate |
-|`rotor_thrust` | (2.50) | Rotor thrust from rotor angular rate |
-|`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust. this makes z-axis rotation. |
+|`rotor_thrust` | (2.50) | Rotor thrust from rotor angular rate($-z$ direction) |
+|`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust($z$ -axis rotation) |
 
 ### Body dynamics(n rotors, thrust and torque to the body):
 | Function | equations in the book | note |
@@ -166,8 +186,6 @@ The rotation order from ground to body is $z$-axis($\psi$), $y$-axis($\theta$) a
 Note $\phi, \theta, \psi$ are the bridge across the two frames and the same values are used in both frames.
 In other words, the angles are the same in the equations of the ground frame and the body frame(not converted from/to one another).
 
-### Body dynamics
-
 The basic dynamics equations in the body frame are as follows eq.(2.31).
 
 $$
@@ -188,44 +206,79 @@ where;
 
 The body frame dynamics above are expanded based on the body angles $\phi, \theta, \psi$ as follows.
 
+### Body frame dynamics
+
+Here is the body frame dynamics equations used in this library.
+All the variables $(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ can be calculated by using this equation and the frame transformations below.
+
+And the velocity transformed to the ground frame $(u_e, v_e, w_e)$ and
+the change rate of the Euler angles $(\dot{\phi}, \dot{\theta}, \dot{\psi})$ can be time-integrated to get the position $(x, y, z)$
+and the attitude $(\phi, \theta, \psi)$ of the drone.
+
+####　Velocity and Acceleration(linear translation)
+
 $$
 \begin{array}{l}
 \dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
 \dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
-\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w \\
+\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu) -\frac{d}{m}w
+\end{array}
+$$
+
+The function name: `acceleration_in_body_frame`.
+
+#### Angular velocity and Angular Acceleration(rotation)
+
+$$
+\begin{array}{l}
 \dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
 \dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
-\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \\
+\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} 
+\end{array}
+$$
+
+The function name: `angular_acceleration_in_body_frame`.
+
+
+#### Euler angles and Euler rates
+
+$$
+\begin{array}{l}
 \dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
 \dot{\theta} = q \cos{\phi} - r \sin{\phi} \\
 \dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta}
 \end{array}
 $$
 
+The function name: `euler_rate_from_body_angular_velocity`.
+
 where;
 
-- $g$ is the acceleration due to gravity.
-- $\phi, \theta, \psi$ are the roll($x$-axis), pitch($y$-axis) and yaw($z$-axis) angles, respectively.
-- $d$ is the air friction coefficient called "drag", affecting the velocity terms.
-- $I_{xx}​,I_{yy}, I_{zz}$ are inertia moments around the body-frame axes $x, y, z$ respectively($x, y, z$ should be aligned with the drone's principal axes, from the gravity-center(other slant inertia $I_{xy}, I_{yz}, I_{zx}$ are assumed to be zero).
+- $m$ - mass of the drone($m>0$).
+- $g$ - acceleration due to gravity($g>0$).
+- $(u, v, w)^T$ - velocity of the drone in the body frame.
+- $(p, q, r)^T$ - angular velocity of the drone in the body frame.
+- $d$ - air friction coefficient "drag", affecting the velocity terms(d>0).
+- $(\phi, \theta, \psi)^T$ - roll($x$-axis), pitch($y$-axis) and yaw($z$-axis) euler angles.
+- $I_{xx}​,I_{yy}, I_{zz}$ are inertia moments around the body-frame axes $x, y, z$ respectively. ($x, y, z$) should be aligned with the drone's principal axes, from the gravity-center(other slant inertia $I_{xy}, I_{yz}, I_{zx}$ are assumed to be zero).
 
-The ground frame dynamics (converted from body) are as follows. 
+## Ground frame dynamics
+
+The ground frame dynamics of the translational motion is as follows.
+The rotational motion in the ground frame are not calculated in this library
+because time-varying inertia is too complex(to me) in the ground frame.
 
 $$
 \begin{array}{l}
 \dot{u_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) - \frac{d}{m}u_e \\
 \dot{v_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) -\frac{d}{m}v_e \\
-\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e \\
-\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \ldots (\text{in the body frame}) \\
-\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \ldots (\text{in the body frame}) \\
-\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \ldots (\text{in the body frame}) \\
-\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \ldots (\text{in the ground frame}) \\
-\dot{\theta} = q \cos{\phi} - r \sin{\phi} \ldots (\text{in the ground frame}) \\
-\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta} \ldots (\text{in the ground frame})
+\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e 
 \end{array}
 $$
 
-The transformation from/to the body frame and the ground frame is as follows.
+The function name is `acceleration_in_ground_frame`.
+
+The transformations from/to the body frame and the ground frame are as follows.
 
 ### Frame transformation
 
@@ -233,7 +286,7 @@ The dynamics above are calculated using the transformations between the ground f
 
 #### Velocity, Acceleration
 
-The body velocity $v = (u, v, w)$ is transformed to ground $v_e = (u_e, v_e, w_e)$ by the following matrix. The acceleration is transformed in the same way.
+The body velocity $v = (u, v, w)^T$ is transformed to ground $v_e = (u_e, v_e, w_e)^T$ by the following matrix. The acceleration is transformed in the same way.
 
 $$
 \left[
@@ -255,7 +308,7 @@ $$
 $$
 
 
-#### angular rate, Angular Acceleration
+#### Angular velocity
 
 The body angular rate $\omega = (p, q, r)$ 
 is transformed to ground($\omega_e = (p_e, q_e, r_e$).
@@ -279,7 +332,7 @@ $$
 \end{bmatrix}
 $$
 
-### Rotor dynamics
+### One Rotor dynamics
 
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
@@ -293,11 +346,12 @@ $\dot{\Omega}(t) = K_r ( d(t) - \frac{\Omega(t)}{ T_r})$
 
 where;
 
-- $K_r$ is the rotor gain constant.
-- $T_r$ is the rotor time constant.
-- $d(t)$ is the duty rate of the rotor. ($0.0 - 1.0$)
+- $K_r$ - rotor gain constant.
+- $T_r$ - rotor time constant.
+- $d(t)$ - duty rate of the rotor. ($0.0 \le d(t) \le 1.0$)
 
-The thrust $T$ of the rotor is proportional to the square of the rotor angular rate $\Omega$ eq.(2.50). $A$ is a parameter related to the rotor size and the air density.
+The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity
+$\Omega$ eq.(2.50). $A$ is a parameter related to the rotor size and the air density.
 
 $T = A \Omega^2 $
 
@@ -306,6 +360,9 @@ The anti-torque $\tau_i$ of the rotor (2.56).
 $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
 where $B$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
+
+## Overview of variables and functions
+![archi](physics-architecture.png)
 
 ## Experiments
 
@@ -321,7 +378,8 @@ Mission:
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/afa89bfd-e873-4cee-b4f1-606c6fed409e)
 
-<img width="1072" alt="image" src="https://github.com/toppers/hakoniwa-px4sim/assets/1093925/ef02a826-4ba8-4dbb-86d2-090b9de1919e">
+
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/ef02a826-4ba8-4dbb-86d2-090b9de1919e)
 
 
 ## Tests

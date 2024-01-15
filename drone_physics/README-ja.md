@@ -10,8 +10,7 @@
 
 地上と機体座標系間の変換や，ロータの推力と重力からドローンの速度，加速度などが計算できます．
 
-当初この箱庭 PX4 ドローンシミュレーションプロジェクト用に開発されましたが，その中から汎用的に利用できる部分を切り出し，
-さらに，インターフェイスをより使いやすくし，以下の参考文献との対応をとって公開することにしました．
+当初この箱庭 PX4 ドローンシミュレーションプロジェクト用に開発されましたが，その中から汎用的に利用できる部分を切り出し，さらに，インターフェイスをより使いやすくし，以下の参考文献との対応をとって公開することにしました．
 すべての関数は，以下の書籍の式の C++ 実装であり，ソースコードコメントに式番号が記載されています．
 本のすべての式を実装しているわけではありませんが，箱庭プロジェクトのドローンはこのライブラリを使って実際に飛行しています．
 
@@ -52,11 +51,10 @@ int main() {
     std::cout << "u = " << u << ", v = " << v << ", w = " << w << std::endl;
     // output: u = 200, v = -100, w = 300
 
-    // このように，明示的にコンストラクタを使うこともできる
     // 逆変換して戻す
     VelocityType body_velocity2 = body_vector_from_ground(
-        VelocityType{u, v, w},
-        EulerType{0, 0, M_PI/2}
+        {u, v, w},
+        {0, 0, M_PI/2}
     );
 
     auto [u2, v2, w2] = body_velocity2;
@@ -114,8 +112,8 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 
 あなたのプログラム中で，このライブラリを使うには，
 
-- C++言語では，あなたのプログラムに，`drone_physics.hpp` をインクルードし，libdrone_physics.a をリンクしてください．
-- C言語では，あなたのプログラムに，`drone_physics_c.h`をインクルードし，libdrone_physics_c.a をリンクしてください．
+- C++言語では，あなたのプログラムに，`drone_physics.hpp` をインクルードし，`libdrone_physics.a` をリンクしてください．
+- C言語では，あなたのプログラムに，`drone_physics_c.h`をインクルードし，`libdrone_physics_c.a` をリンクしてください．
 
 `examples.cpp` と `utest.cpp` にC++言語での呼び出し例があります．
 `cexamples.c` と `ctest.c` にC言語での呼び出し例があります．
@@ -126,10 +124,12 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 `VectorType` は，3次元のベクトル(座標値)です．機体座標系と地上座標系の両方で使用されます．以下のサブタイプがあります．
 - `VelocityType` - 速度
 - `AccelerationType` - 加速度
-- `AngularVelocityType` - 角速度
-- `AngularAccelerationType` - 角加速度
 - `ForceType` - 力
 - `TorqueType` - トルク
+
+### 角速度ベクトル
+- `AngularVelocityType` - 角速度
+- `AngularAccelerationType` - 角加速度
 
 ### オイラー角
 
@@ -154,18 +154,18 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 ### 機体の力学(力と加速度)
 | 関数 | 数式 | 意味 |
 |----------|-----------|------|
-|`acceleration_in_body_frame` | (1.136),(2.31) | 機体座標系での加速度計算 |
-|`angular_acceleration_in_body_frame` | (1.137),(2.31) | 機体座標系での角加速度計算 |
-|`acceleration_in_ground_frame` | (2.46), (2.47) | 地上座標系での加速度計算 |
-|`euler_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | 地上座標系でのオイラー角2次変化率計算 |
+|`acceleration_in_body_frame` | (1.136),(2.31) | 力による機体座標系での加速度計算 |
+|`angular_acceleration_in_body_frame` | (1.137),(2.31) | 力による機体座標系での角加速度計算 |
+|`acceleration_in_ground_frame` | (2.46), (2.47) | 力による地上座標系での加速度計算 |
+|`euler_acceleration_in_ground_frame` | differential of (1.109) | トルクによる地上座標系でのオイラー角2次変化率計算 |
 
 
 ### 1ロータの力学（回転数と推力）
 | 関数 | 数式 | 意味 |
 |----------|-----------|------|
 |`rotor_omega_acceleration` | (2.48) | ローター角速度の加速度計算 |
-|`rotor_thrust` | (2.50) | ローター推力計算 |
-|`rotor_anti_torque` | (2.56) | ローターの反トルク計算．これにより機体は z 軸周りに回転する． |
+|`rotor_thrust` | (2.50) | ローター推力計算（機体 $z$ 軸のマイナス方向） |
+|`rotor_anti_torque` | (2.56) | ローターの反トルク計算（機体 $z$ 軸周り回転 |
 
 ### $n$ 個のローターによる機体力学（機体の推力とトルク）
 | 関数 | 数式 | 意味 |
@@ -209,8 +209,7 @@ $$
 
 機体座標系の動力学方程式です．このライブラリでは基本的にこの方程式を，後述の座標変換と合わせて使用することで，全変数 $(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ が計算できす．
 
-さらに，地上に変換された速度と，オイラー角の変化率 $(\dot{x}, \dot{y}, \dot{z}, dot{\phi}, \dot{\theta}, \dot{\psi})$
-を時間積分することで，機体の位置と姿勢が計算できます．
+さらに，地上に変換された速度  $(u_e, v_e, w_e)$ と，オイラー角の変化率 $(\dot{x}, \dot{y}, \dot{z}, \dot{\phi}, \dot{\theta}, \dot{\psi})$ を時間積分することで，機体の位置 $(x, y, z)$ と姿勢 $(\phi, \theta, \psi)$ が計算できます．
 
 #### 速度，加速度(並進)
 
@@ -303,7 +302,7 @@ $$
 
 関数名は，`ground_vector_from_body` ．
 
-#### 角速度，角加速度（回転）の変換
+#### 角速度（回転）の変換
 
 機体座標系の角速度 $(p, q, r)^T$ からオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ への変換行列は以下のようになります．
 
@@ -342,7 +341,7 @@ $\dot{\Omega}(t) = K_r ( d(t) - \frac{\Omega(t)}{ T_r})$
 
 - $K_r$ - ローターのゲイン定数
 - $T_r$ - ローターの時定数
-- $d(t)$ - ローターのデューティー比 ($0.0 < d(t) < 1.0$)
+- $d(t)$ - ローターのデューティー比 ($0.0 \le d(t) \le 1.0$)
 
 1つのロータ推力 $T$ は，ローターの角速度 $\Omega$ の2乗に比例します eq.(2.50)．
 $A$ はローターのサイズと空気密度に関連するパラメータです．
@@ -372,7 +371,7 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/afa89bfd-e873-4cee-b4f1-606c6fed409e)
 
-<img width="1072" alt="image" src="https://github.com/toppers/hakoniwa-px4sim/assets/1093925/ef02a826-4ba8-4dbb-86d2-090b9de1919e">
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/ef02a826-4ba8-4dbb-86d2-090b9de1919e)
 
 ## ユニットテスト
 
