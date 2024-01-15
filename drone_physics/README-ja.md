@@ -55,8 +55,8 @@ int main() {
     // このように，明示的にコンストラクタを使うこともできる
     // 逆変換して戻す
     VelocityType body_velocity2 = body_vector_from_ground(
-        VelocityType(u, v, w),
-        EulerType(0, 0, M_PI/2)
+        VelocityType{u, v, w},
+        EulerType{0, 0, M_PI/2}
     );
 
     auto [u2, v2, w2] = body_velocity2;
@@ -120,6 +120,24 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 `examples.cpp` と `utest.cpp` にC++言語での呼び出し例があります．
 `cexamples.c` と `ctest.c` にC言語での呼び出し例があります．
 
+## 型リスト
+
+### ベクトル
+`VectorType` は，3次元のベクトル(座標値)です．機体座標系と地上座標系の両方で使用されます．以下のサブタイプがあります．
+- `VelocityType` - 速度
+- `AccelerationType` - 加速度
+- `AngularVelocityType` - 角速度
+- `AngularAccelerationType` - 角加速度
+- `ForceType` - 力
+- `TorqueType` - トルク
+
+### オイラー角
+
+`EulerType` は，3次元のオイラー角です．地上座標系から機体座標系への変換として使用されます．オイラー角はベクトルではありません．ベクトルのように加算・スカラー倍・行列演算することはできません．以下のサブタイプがあります．
+
+- `EulerType` - オイラー角
+- `EulerRateType` - オイラー角の変化率
+- `EulerAccelerationType` - オイラー角の2次変化率
 
 ## 関数リスト
 
@@ -128,10 +146,10 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 ### 座標変換
 | 関数 | 数式 | 意味 |
 |----------|-----------|------|
-|`ground_vector_from_body`  | (1.71), (1.124) | 機体座標の速度を地上座標に変換 |
-|`body_vector_from_ground`  | (1.69), (1.124)の逆変換 | 地上座標の速度を機体座標に変換 |
-|`euler_rate_from_body_angular_velocity` | (1.109) | 機体角速度を地上座標に変換 |
-|`body_angular_velocity_from_euler_rate` | (1.106) | 地上角速度を機体座標に変換 |
+|`ground_vector_from_body`  | (1.71), (1.124) | 機体座標のベクトルを地上座標に変換 |
+|`body_vector_from_ground`  | (1.69), (1.124)の逆変換 | 地上座標のベクトルを機体座標に変換 |
+|`euler_rate_from_body_angular_velocity` | (1.109) | 機体角速度をオイラー角の変化率に変換 |
+|`body_angular_velocity_from_euler_rate` | (1.106) | オイラー角の変化率を機体各速度に変換 |
 
 ### 機体の力学(力と加速度)
 | 関数 | 数式 | 意味 |
@@ -139,7 +157,7 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 |`acceleration_in_body_frame` | (1.136),(2.31) | 機体座標系での加速度計算 |
 |`angular_acceleration_in_body_frame` | (1.137),(2.31) | 機体座標系での角加速度計算 |
 |`acceleration_in_ground_frame` | (2.46), (2.47) | 地上座標系での加速度計算 |
-|`angular_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | 地上座標系での角加速度計算 |
+|`euler_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | 地上座標系でのオイラー角2次変化率計算 |
 
 
 ### 1ロータの力学（回転数と推力）
@@ -167,7 +185,6 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 
 $\phi, \theta, \psi$ は，2つの座標系の橋渡しとなるものであり，両方の座標系で同じ値が使用されます．別の言い方をすると，角度は地上座標系と機体座標系の方程式で同じです（一方から他方に変換されるものではありません）．
 
-
 基本的な力学方程式は，機体座標系で以下のようになります eq.(2.31)．
 
 $$
@@ -181,59 +198,87 @@ $$
 
 - $m$ - 機体の質量
 - $I$ - 機体の慣性行列
-- $v$ - 機体の速度 $v=(u, v, w)$
-- $\omega$ - 機体の角速度 $\omega = (p, q, r)$
-- $F$ - 機体に働く力のベクトル．重力($mg$)，空気抵抗($-dv)$，推力($T$)からなる．
+- $v$ - 機体の速度 $v=(u, v, w)^T$
+- $\omega$ - 機体の角速度 $\omega = (p, q, r)^T$
+- $F$ - 機体に働く力のベクトル．重力($mg$)，空気抵抗($-dv$)，推力($T$)からなる．
 - $\tau$ - 機体に働くトルクのベクトル．ローターの推力によるものと，反トルクの合力．
+
+これらを，ドローンの力学に適用すると，以下のようになりまる．
 
 ### 機体座標系の動力学方程式
 
-機体座標系の動力学方程式は，オイラー角 $\phi, \theta, \psi$ に基づいて計算されます．
+機体座標系の動力学方程式は，オイラー角 $\phi, \theta, \psi$ に基づいて計算されます．このライブラリでは基本的にこの方程式を使用します．
+
+#### 速度，加速度(並進)
 
 $$
 \begin{array}{l}
 \dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
 \dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
-\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu)-\frac{d}{m}w \\
-\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
-\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
-\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \\
+\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu) -\frac{d}{m}w
 \end{array}
 $$
 
+関数名は，`acceleration_in_body_frame` ．
+
+#### 角速度，角加速度(回転)
+
+$$
+\begin{array}{l}
+\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
+\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
+\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} 
+\end{array}
+$$
+
+関数名は，`angular_acceleration_in_body_frame` ．
+
+
+#### オイラー角変化率
+
+$$
+\begin{array}{l}
+\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
+\dot{\theta} = q \cos{\phi} - r \sin{\phi} \\
+\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta}
+\end{array}
+$$
+
+関数名は，`euler_rate_from_body_angular_velocity` ．
+
 ここで，
 
-- $g$ は重力加速度
+- $m$ - 機体の質量($m>0$)
+- $g$ - 重力加速度($g>0$)
+- $(u, v, w)^T$ - 機体の速度(機体座標)
+- $(p, q, r)^T$ - 機体の角速度(機体座標)
+- $d$ - 空気抵抗(drag $d>0$)
+- $(\tau_\phi, \tau_\theta,\tau_psi)^T$ - 機体に働くトルクのベクトル．ローターの推力の号力($\tau_\phi, \tau_\theta$)と，反トルク($\tau_psi$)の合力．
+- $d$ は空気抵抗係数．速度項に影響する空気抵抗係数である「抗力」（drag）．
 - $\phi, \theta, \psi$ は機体座標系のオイラー角．ロール($x$-軸)，ピッチ($y$-軸)，ヨー($z$-軸)角．
-- $d$ は空気抵抗係数．速度項に影響する空気抵抗係数である「抗力」（drag）を表す．
-- $I_{xx}​,I_{yy}, I_{zz}$ は機体座標系の慣性モーメント． $x, y, z$ 軸は機体の主軸に沿っているものとする．他の斜めの慣性モーメント $I_{xy}, I_{yz}, I_{zx}$ はゼロとする．
+- $I_{xx}​,I_{yy}, I_{zz}$ は機体座標系の慣性モーメント（ $x, y, z$ 軸は機体の主軸に沿っており，他の慣性モーメント $I_{xy}, I_{yz}, I_{zx}$ はゼロとする）．
 
 ### 地上座標系の動力学方程式
+
+並進については地上座標系のみでも以下のように計算できる．
 
 $$
 \begin{array}{l}
 \dot{u_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) - \frac{d}{m}u_e \\
 \dot{v_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) -\frac{d}{m}v_e \\
-\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e \\
-\dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \ldots (\text{in the body frame}) \\
-\dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \ldots (\text{in the body frame}) \\
-\dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \ldots (\text{in the body frame}) \\
-\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \ldots (\text{in the ground frame}) \\
-\dot{\theta} = q \cos{\phi} - r \sin{\phi} \ldots (\text{in the ground frame}) \\
-\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta} \ldots (\text{in the ground frame})
+\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e 
 \end{array}
 $$
 
-
-機体座標系と地上座標系の変換は以下のようになります．
+関数名は，`acceleration_in_ground_frame` ．
 
 ### 座標変換
 
-上記の動力学方程式は，以下の座標変換によって計算されています．
+機体座標系と地上座標系の変換は以下のようになります．
 
-#### 速度，加速度の変換
+#### 速度，加速度（並進）の変換
 
-機体座標系 $v = (u, v, w)$ から地上座標系 $v_e = (u_e, v_e, w_e)$ への変換行列は以下のようになります．加速度も同様です．
+機体座標系 $v = (u, v, w)^T$ から地上座標系 $v_e = (u_e, v_e, w_e)^T$ への変換行列は以下のようになります．加速度も同様です．
 
 $$
 \left[
@@ -254,7 +299,7 @@ $$
 \right]
 $$
 
-#### 角速度，角加速度の変換
+#### 角速度，角加速度（回転）の変換
 
 機体座標系の角速度 $\omega = (p, q, r)$ から地上座標系 $\omega_e = (p_e, q_e, r_e)$ への変換行列は以下のようになります．角加速度も同様です．
 
@@ -276,7 +321,7 @@ $$
 \end{bmatrix}
 $$
 
-#### 1つのローターの力学
+### 1つのローターの力学
 
 1つ1つのモーターの角速度は， $\Omega(t)$ は，デューティー比 $d(t)$ によって1次遅れ系としてモデル化できます．
 書籍の式 (2.48) の伝達関数 $G(s)$ によって記述され，
@@ -289,9 +334,9 @@ $\dot{\Omega}(t) = K_r ( d(t) - \frac{\Omega(t)}{ T_r})$
 
 ここで，
 
-- $K_r$ はローターのゲイン定数です．
-- $T_r$ はローターの時定数です．
-- $d(t)$ はローターのデューティー比です． ($0.0 - 1.0$)
+- $K_r$ - ローターのゲイン定数
+- $T_r$ - ローターの時定数
+- $d(t)$ - ローターのデューティー比 ($0.0 < d(t) < 1.0$)
 
 1つのロータ推力 $T$ は，ローターの角速度 $\Omega$ の2乗に比例します eq.(2.50)．
 $A$ はローターのサイズと空気密度に関連するパラメータです．

@@ -127,16 +127,16 @@ Functions are implemented in the following categories, with the referece to the 
 |----------|-----------|------|
 |`ground_vector_from_body`  | (1.71), (1.124) | Body velocity to ground velocity |
 |`body_vector_from_ground`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
-|`euler_rate_from_body_angular_velocity` | (1.109) | Body angular rate to ground angular rate |
-|`body_angular_velocity_from_euler_rate` | (1.106) | Ground angular rate to body angular rate |
+|`euler_rate_from_body_angular_velocity` | (1.109) | Body angular velocity to euler change rate |
+|`body_angular_velocity_from_euler_rate` | (1.106) | Euler rate to body angular velocity |
 
 ### Body dynamics(Acceleration):
 | Function | equations in the book | note |
 |----------|-----------|------|
-|`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame |
-|`angular_acceleration_in_body_frame` | (1.137),(2.31) | Angular acceleration in body frame |
-|`acceleration_in_ground_frame` | (2.46), (2.47) | Acceleration in ground frame |
-|`angular_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | Angular acceleration in ground frame |
+|`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame by force |
+|`angular_acceleration_in_body_frame` | (1.137),(2.31) | Angular acceleration in body frame by force |
+|`acceleration_in_ground_frame` | (2.46), (2.47) | Acceleration in ground frame by torque |
+|`euler_acceleration_in_ground_frame` | (2.31)(1.137)(1.109) | Euler acceleration by torque |
 
 
 ### Rotor dynamics(for one rotor, rotation speed and thrust):
@@ -196,6 +196,9 @@ $$
 \dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
 \dot{q} = (\tau_{\theta}-rp(I_{xx}-I_{zz}))/I_{yy} \\
 \dot{r} = (\tau_{\psi}-pq(I_{yy}-I_{xx}))/I_{zz} \\
+\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
+\dot{\theta} = q \cos{\phi} - r \sin{\phi} \\
+\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta}
 \end{array}
 $$
 
