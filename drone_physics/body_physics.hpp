@@ -26,22 +26,25 @@ typedef AngularVectorType AngularVelocityType;
 typedef AngularVectorType AngularAccelerationType;
 
 /*
- * These Angle or Angular types are used for "Euler Angles" in this library,
- * including rotation, angular rate, angular acceleration, etc.
- * Note that the order of rotation is phi, theta, psi, and cannot be added or substracted
- * like vectors, and different from Angullar Velocity(which is a vector).
- * Angular rate/acceleration is derived from Euler angles and expressed in EulerType.
- *
+ * The Euler types below are used for "Euler Angles" in this library,
+ * including rotation, rotation rate, rotation acceleration, etc.
+ * Note that they CANNOT be added or substracted like vectors, 
+ * and different from Angullar Velocity above (which is a vector).
+ * 
  * - phi(x-rotation or roll),      -PI <= phi   < PI
  * - theta(y-rotation or pitch), -PI/2 <= theta < PI/2
  * - psi(z-rotation or yaw),       -PI <= psi   < PI,
  * 
- * but for psi, all range are possible(exceeding PI even 2PI) when traveling around circles,
+ * but for psi, all range are possible(exceeding PI even 2PI) when
+ * traveling around circles,
  * 
  * From ground to body, Vectors are transformed in the order 
  * of psi, theta, phi. The coordinate system is right-handed, and
  * the rotation matrix is calculated as follows,
- * where v_e = (x_e, y_e, z_e)^t, v_b = (x_b, y_b, z_b)^t.
+ * where
+ * 
+ * - v_e = (x_e, y_e, z_e)^t  .. ground coordinate values
+ * - v_b = (x_b, y_b, z_b)^t  .. body coordinate values
  * 
  *     v_e = R_z(psi)R_y(theta)R_x(phi) v_b
  * 
@@ -49,7 +52,7 @@ typedef AngularVectorType AngularAccelerationType;
  * https://mtkbirdman.com/flight-dynamics-body-axes-system
 */
 
-/* Euler Angles (NOT A VECTOR)*/
+/* Euler Angles (NOT A VECTOR) */
 struct EulerType {
     double phi;   // rotation round x-axis
     double theta; // rotation round y-axis
