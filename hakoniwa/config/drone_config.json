@@ -45,7 +45,7 @@
         },
         "rotor": {
           "vendor": "None",
-          "Tr": 0.1,
+          "Tr": 0.12,
           "Kr": 6000,
           "rpmMax": 8000
         },
@@ -58,8 +58,8 @@
             {"position": [ -0.05,  0.05, 0 ], "rotationDirection": -1.0 }
             ],
           "HoveringRpm": 4000,
-          "parameterB":  30.0e-10,
-          "parameterJr": 3000.0e-10
+          "parameterB":  1.3e-10,
+          "parameterJr": 1.0e-10
         },
         "sensors": {
           "acc": {
