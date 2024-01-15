@@ -357,7 +357,7 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 これによって，機体は $z$ 軸周りに回転します．
 
 ## 数式と関数の全体像
-![archi](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/d66a04e4-f12e-4acb-a7e1-b349b298fd5c)
+![archi](physics-architecture.png)
 
 ## 実験
 
