@@ -305,7 +305,7 @@ $$
 
 #### 角速度，角加速度（回転）の変換
 
-機体座標系の角速度 $(p, q, r)^T$ からオイラー角変化率 $ (\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ への変換行列は以下のようになります．
+機体座標系の角速度 $(p, q, r)^T$ からオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ への変換行列は以下のようになります．
 
 $$
 \begin{bmatrix}
@@ -355,6 +355,9 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
 ここで， $B$ と $Jr$ はローターの特性に関連するパラメータです．
 これによって，機体は $z$ 軸周りに回転します．
+
+## 数式と関数の全体像
+![archi](https://github.com/toppers/hakoniwa-px4sim/assets/1093925/d66a04e4-f12e-4acb-a7e1-b349b298fd5c)
 
 ## 実験
 
