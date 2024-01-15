@@ -243,9 +243,9 @@ AccelerationType acceleration_in_body_frame(
 
      */
     /*****************************************************************/  
-    double dot_u =       - g * s_theta            - (q*w - r*v) - (c/m) * u * u;
-    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - (c/m) * v * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - (c/m) * w * w;
+    double dot_u =       - g * s_theta            - (q*w - r*v) - c/m * u;
+    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - c/m * v;
+    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - c/m * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
