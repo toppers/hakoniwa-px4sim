@@ -329,7 +329,7 @@ AccelerationType acceleration_in_ground_frame(
 
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularVelocityType& angular_velocity_in_body_frame,
+    const AngularVelocityType& body_angular_velocity,
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
@@ -340,7 +340,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     assert(!is_zero(I_xx)); assert(!is_zero(I_yy)); assert(!is_zero(I_zz));
 
     // current angular velocities in body frame
-    const auto [p, q, r] = angular_velocity_in_body_frame;
+    const auto [p, q, r] = body_angular_velocity;
  
     /*
      * See also Nonami's book eq.(2.31)(1.137)(1.109), where L=tau_x, M=tau_y, N=tau_z.

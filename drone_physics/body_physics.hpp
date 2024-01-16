@@ -131,7 +131,7 @@ AccelerationType acceleration_in_body_frame(
 
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
-    const AngularVelocityType& angular_velocity_in_body_frame,
+    const AngularVelocityType& body_angular_velocity,
     double torque_x, /* in body frame */
     double torque_y, /* in body frame */
     double torque_z, /* in body frame */
