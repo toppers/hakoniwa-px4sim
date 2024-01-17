@@ -30,9 +30,9 @@ typedef struct mi_drone_acceleration_in_t {
 
     /* other constants */
     double mass;
-    double I_xx;
-    double I_yy;
-    double I_zz;
+    double Ixx;
+    double Iyy;
+    double Izz;
     double gravity;
     double drag;
 } mi_drone_acceleration_in_t;
@@ -42,9 +42,9 @@ typedef struct mi_drone_acceleration_out_t {
     double ddy; /* dotdot y = y - acceleration */
     double ddz; /* dotdot z = z - acceleration */
 
-    double d_p; /* dot p  = x coordinate of angular vector acceleration */
-    double d_q; /* dot q  = y coordinate of angular vector acceleration */
-    double d_r; /* dot r  = z coordinate of angular vector acceleration */
+    double dp; /* dot p  = x coordinate of angular vector acceleration */
+    double dq; /* dot q  = y coordinate of angular vector acceleration */
+    double dr; /* dot r  = z coordinate of angular vector acceleration */
 } mi_drone_acceleration_out_t;
 
 mi_drone_acceleration_out_t mi_drone_acceleration(

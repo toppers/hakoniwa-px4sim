@@ -21,9 +21,9 @@ int main() {
     in.torque_z = 0.0;
 
     in.mass = 1.0;
-    in.I_xx = 1.0;
-    in.I_yy = 1.0;
-    in.I_zz = 1.0;
+    in.Ixx = 1.0;
+    in.Iyy = 1.0;
+    in.Izz = 1.0;
     in.gravity = 9.81;
     in.drag = 0.0;
 
