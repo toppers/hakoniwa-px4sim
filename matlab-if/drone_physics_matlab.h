@@ -9,7 +9,7 @@
  * 
  * mi .. prefix for matlab interface
  */
-struct mi_drone_acceleration_in_t {
+typedef struct mi_drone_acceleration_in_t {
     double phi;   /* euler angle x */
     double theta; /* euler angle y */
     double psi;   /* euler angle z */
@@ -35,9 +35,9 @@ struct mi_drone_acceleration_in_t {
     double I_zz;
     double gravity;
     double drag;
-};
+} mi_drone_acceleration_in_t;
 
-struct mi_drone_acceleration_out_t {
+typedef struct mi_drone_acceleration_out_t {
     double ddx; /* dotdot x = x - acceleration */
     double ddy; /* dotdot y = y - acceleration */
     double ddz; /* dotdot z = z - acceleration */
@@ -45,7 +45,7 @@ struct mi_drone_acceleration_out_t {
     double d_p; /* dot p  = x coordinate of angular vector acceleration */
     double d_q; /* dot q  = y coordinate of angular vector acceleration */
     double d_r; /* dot r  = z coordinate of angular vector acceleration */
-};
+} mi_drone_acceleration_out_t;
 
 mi_drone_acceleration_out_t mi_drone_acceleration(
     const mi_drone_acceleration_in_t* in);
