@@ -1,8 +1,12 @@
 /* unit test for acceleration in matlab */
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
 
 #include "drone_physics_matlab.h"
+
+#define assert_almost_equal(a, b) \
+    assert(fabs(a - b) < 0.0001 || (fprintf(stderr, "%s=%g,%s=%g\n", #a, a, #b, b), 0))
 
 int main() {
     mi_drone_acceleration_in_t in;
@@ -28,7 +32,7 @@ int main() {
     in.drag = 0.0;
 
     mi_drone_acceleration_out_t out = mi_drone_acceleration(&in);
-    assert(out.ddx == 0.0);
+    assert_almost_equal(out.du, 0.0);
     
     return 0;
 }

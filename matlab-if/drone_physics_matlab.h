@@ -18,9 +18,9 @@ typedef struct mi_drone_acceleration_in_t {
     double v; /* velocity y */
     double w; /* velocity z */
 
-    double p; /* anglular velocity -x */
-    double q; /* anglular velocity -y */
-    double r; /* anglular velocity -z */
+    double p; /* anglular velocity x */
+    double q; /* anglular velocity y */
+    double r; /* anglular velocity z */
 
     /* force and torque */
     double thrust;
@@ -53,23 +53,23 @@ mi_drone_acceleration_out_t mi_drone_acceleration(
 /***
 The Original function signatures are:
 
-/* acceleration in ground frame based on m a = F + m g ...eq.(1.136)
+// acceleration in ground frame based on m a = F + m g ...eq.(1.136)
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const EulerType& angle,
-    const AngularVelocityType& body_angular_velocity, /* for Coriolis
-    double thrust, double mass, /* 0 is not allowed
+    const AngularVelocityType& body_angular_velocity, // for Coriolis
+    double thrust, double mass, // 0 is not allowed
     double gravity, double drag);
 
-/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) 
+// angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) 
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity,
-    double torque_x, /* in body frame 
-    double torque_y, /* in body frame 
-    double torque_z, /* in body frame 
-    double I_xx, /* in body frame, 0 is not allowed 
-    double I_yy, /* in body frame, 0 is not allowed 
-    double I_zz /* in body frame, 0 is not allowed );
+    double torque_x, // in body frame 
+    double torque_y, // in body frame 
+    double torque_z, // in body frame 
+    double I_xx, // in body frame, 0 is not allowed 
+    double I_yy, // in body frame, 0 is not allowed 
+    double I_zz // in body frame, 0 is not allowed );
 */
 
 #endif /* _DRONE_PHYSICS_MATLAB_H_ */
