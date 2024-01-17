@@ -38,9 +38,9 @@ typedef struct mi_drone_acceleration_in_t {
 } mi_drone_acceleration_in_t;
 
 typedef struct mi_drone_acceleration_out_t {
-    double ddx; /* dotdot x = x - acceleration */
-    double ddy; /* dotdot y = y - acceleration */
-    double ddz; /* dotdot z = z - acceleration */
+    double du; /* dot u = dotdot x = x - acceleration */
+    double dv; /* dot v = dotdot y = y - acceleration */
+    double dw; /* dot w = dotdot z = z - acceleration */
 
     double dp; /* dot p  = x coordinate of angular vector acceleration */
     double dq; /* dot q  = y coordinate of angular vector acceleration */
@@ -50,26 +50,26 @@ typedef struct mi_drone_acceleration_out_t {
 mi_drone_acceleration_out_t mi_drone_acceleration(
     const mi_drone_acceleration_in_t* in);
 
-#if 0
+/***
 The Original function signatures are:
 
-/* acceleration in ground frame based on m a = F + m g ...eq.(1.136) */
+/* acceleration in ground frame based on m a = F + m g ...eq.(1.136)
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const EulerType& angle,
-    const AngularVelocityType& body_angular_velocity, /* for Coriolis */
-    double thrust, double mass, /* 0 is not allowed */
+    const AngularVelocityType& body_angular_velocity, /* for Coriolis
+    double thrust, double mass, /* 0 is not allowed
     double gravity, double drag);
 
-/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
+/* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) 
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
-    double I_xx, /* in body frame, 0 is not allowed */
-    double I_yy, /* in body frame, 0 is not allowed */
-    double I_zz /* in body frame, 0 is not allowed */);
-#endif
+    double torque_x, /* in body frame 
+    double torque_y, /* in body frame 
+    double torque_z, /* in body frame 
+    double I_xx, /* in body frame, 0 is not allowed 
+    double I_yy, /* in body frame, 0 is not allowed 
+    double I_zz /* in body frame, 0 is not allowed );
+*/
 
 #endif /* _DRONE_PHYSICS_MATLAB_H_ */
