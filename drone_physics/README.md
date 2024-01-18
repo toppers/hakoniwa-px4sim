@@ -203,11 +203,16 @@ The body frame dynamics above are expanded based on the body angles $\phi, \thet
 
 ### Body frame dynamics
 Here is the body frame dynamics equations used in this library.
-All the variables $(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ can be calculated by using this equation and the frame transformations below.
+All the state variables and its time-derivatives from force and torque
+$(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ can be calculated
+by using these equations and the frame transformations below.
 
-And the velocity transformed to the ground frame $(u_e, v_e, w_e)$ and
-the change rate of the Euler angles $(\dot{\phi}, \dot{\theta}, \dot{\psi})$ can be time-integrated to get the position $(x, y, z)$
-and the attitude $(\phi, \theta, \psi)$ of the drone.
+Finally the body velocity $(u, v, w)^T$ transformed to the ground frame $(u_e, v_e, w_e)^T$
+is time-integrated to get the body position $(x, y, z)^T$.
+
+And the body angular velocity $(p,q,r)^T$ transformed to the euler
+rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ is time-integrated to get
+the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude.
 
 ####　Velocity and Acceleration(linear translation)
 $$
@@ -231,7 +236,9 @@ $$
 
 The function name: `angular_acceleration_in_body_frame`.
 
-#### Euler angles and Euler rates
+#### Body angular velocity and Euler rate
+The body angular velocity $(p, q, r)^T$ is transformed to the euler rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ by the following matrix.
+
 $$
 \begin{array}{l}
 \dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
