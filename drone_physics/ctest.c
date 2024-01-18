@@ -39,14 +39,47 @@ void static test_frame_roundtrip() {
     assert_almost_equal(v1, v3);
 }
 
+void static test_body_acceleration()
+{
+    // some of the test cases from utest.cpp, skip others.
+    dp_velocity_t v1 = {1, 2, 3};
+    dp_euler_t e1 = {0, 0, 0};
+    dp_angular_velocity_t a1 = {0, 0, 0};
+    double trust = 1, mass = 1, gravity = 1, drag = 0;
+    dp_acceleration_t acc =  dp_acceleration_in_body_frame(&v1, &e1, &a1, trust, mass, gravity, drag);
+    assert_almost_equal(acc, ((dp_velocity_t){0, 0, 0}));
+
+    /* add drag */
+    dp_euler_t e2 = {0, PI/6, 0}; dp_angular_velocity_t a2 = {0, 0, 0};
+    trust = 10, mass = 2, gravity = 1, drag = 0.1;
+    acc = dp_acceleration_in_body_frame(&v1, &e2, &a2, trust, mass, gravity, drag);
+    assert_almost_equal((acc), ((dp_acceleration_t){
+        -gravity*sin(PI/6)-drag/mass*1,
+        -drag/mass*2,
+        -trust/mass+gravity*cos(PI/6)- drag/mass*3}
+        ));
+}
+
+static void test_body_angular_acceleration()
+{
+    const dp_angular_velocity_t  v = {1, 2, 3};
+    double I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 0, torque_y = 0, torque_z = 0;
+    I_xx = 2, I_yy = 5, I_zz = 8, torque_x = 1, torque_y = 2, torque_z = 3;
+
+    dp_angular_acceleration_t a = dp_angular_acceleration_in_body_frame(&v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    dp_angular_acceleration_t expected = {
+        (torque_x - 2*3*(I_zz - I_yy))/I_xx,
+        (torque_y - 1*3*(I_xx - I_zz))/I_yy,
+        (torque_z - 1*2*(I_yy - I_xx))/I_zz
+    };
+    assert_almost_equal(a, expected);
+}
+
 
 int main() {
-//    T(test_frame_all_unit_vectors_with_angle0);
     T(test_frame_all_unit_vectors_with_some_angles);
     T(test_frame_roundtrip);
-    dp_velocity_t v = {1, 2, 3};
-    dp_euler_t a = {0, 0, 0};
-    dp_velocity_t v2 = dp_ground_vector_from_body(&v, &a);
-    print_vec(v2);
+    T(test_body_acceleration);
+    T(test_body_angular_acceleration);
     return 0;
 }

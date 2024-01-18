@@ -59,18 +59,18 @@ static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
 /** Extract some tests from utest.cpp, via C interface */
 
 #define assert_almost_equal(a, b) \
-    assert(diff(&a, &b) < 0.0001 || (fprintf(stderr, "%s=%g,%s=%g\n", #a, a.x, #b, b.x), 0))
+    assert(diff(&a, &b) < 0.0001 || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
 
-#define assert_almost_equal_angle(a, b) \
-    assert(diff_a(&a, &b) < 0.0001 || (fprintf(stderr, "%s=%g,%s=%g\n", #a, a.x, #b, b.x), 0))
+#define assert_almost_equal_euler(a, b) \
+    assert(diff_e(&a, &b) < 0.0001 || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
 
 #define print_vec(v) \
-    fprintf(stderr, "%s=(%g,%g,%g)\n", #v, v.x, v.y, v.z)
+    fprintf(stderr, "%s=(%g,%g,%g)", #v, v.x, v.y, v.z)
 
 #define print_ang(a) \
-    fprintf(stderr, "%s=(%g r,%g r,%g r)\n", #a, a.phi, a.theta, a.psi)
+    fprintf(stderr, "%s=(%g r,%g r,%g r)", #a, a.phi, a.theta, a.psi)
 
-#define T(f) do {fprintf(stderr, #f); f(); fprintf(stderr, "... PASS\n");} while(0)
+#define T(f) do {fprintf(stderr, #f " "); f(); fprintf(stderr, "... PASS\n");} while(0)
 
 
 #endif /* __cplusplus */

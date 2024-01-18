@@ -4,7 +4,6 @@
 # VSCode directories
 .vscode/
 
-*.png
 *.zip
 */cmake-build/*
 __pycache__
@@ -24,3 +23,15 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+libdrone_physics_c.a
+.gitignore
+libdrone_physics.a
+examples
+cexamples
+mag_test.cpp
+mag_test
+utest
+ctest
+Makefile.org
+
+
