@@ -3,7 +3,6 @@ English ｜ [日本語](README-ja.md)
 # Hakoniwa Drone Physics Library(math, physics and dynamics)
 
 ## What is this ?
-
 This is a math, physics, and dynamics library for the drone plant model in the Hakoniwa project(Open Source Runtime Environment for Simulating Cyber-Physical Systems).
 
 You can transform vectors between the ground and the body frame coordinate system, and also calculate the drone's speed, acceleration from the rotors' thrust and gravity.
@@ -25,7 +24,6 @@ I hope this can be a reference implmentation for the basic drone dynamics.
 ## Hello World
 
 ### In C++
-
 ```cpp
 #include <iostream>
 
@@ -60,9 +58,7 @@ int main() {
     // output: u2 = 100, v2 = 200, w2 = 300, back again.
 }
 ```
-
 ### In C
-
 ```C
 #include <stdio.h>
 
@@ -94,7 +90,6 @@ int main() {
 ```
 
 ## Installation
-
 Copy this whole directory to your project.
 There is `CMkakeLists.txt`, use CMake to build.
 
@@ -130,7 +125,6 @@ and `cexamples.c`, `ctest.c` for more examples in C.
 - `AngularAccelerationType` - Angular acceleration
 
 ### Euler angles
-
 `EulerType` is a 3-dimensional vector, used in transformation between the ground frame and the body frame. The following subtypes are available.
 Note that the euleer angles are not vectors, and cannot be added, scaled, or multiplied by matrices. The following subtypes are available.
 
@@ -139,7 +133,6 @@ Note that the euleer angles are not vectors, and cannot be added, scaled, or mul
 - `EulerAccelerationType` - Acceleration of the Euler angles(2nd order differential)
 
 ## List of functions
-
 Functions(C++) are implemented in the following categories, with the referece to the book.
 
 ### Frame conversion:
@@ -172,8 +165,9 @@ Functions(C++) are implemented in the following categories, with the referece to
 |`body_thrust` | (2.61) | Sum of the $n$ trust from the rotors |
 |`body_torque` | (2.60)-(2.62) | Sum of the torques from the $n$ rotors based on the positionings of them |
 
-## Equations
+There are C language interfaces for all the functions above, with the prefix `dp_` for "drone physics".
 
+## Equations
 The ground frame coordinate system fixed to the ground is defined by right hand rule,
 in which $z$-axis is downward.
 
@@ -181,10 +175,11 @@ The body frame coordinate system is defined by right hand rule, in which $x$-axi
 
 The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
 
-The rotation order from ground to body is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$). 
+The rotation order from ground to body is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$),
+so that the ground frame axies are rotated to be aligned with the body frame.
 
 Note $\phi, \theta, \psi$ are the bridge across the two frames and the same values are used in both frames.
-In other words, the angles are the same in the equations of the ground frame and the body frame(not converted from/to one another).
+In other words, the angles are the same values in the equations of the ground frame and the body frame(not to be converted between one another).
 
 The basic dynamics equations in the body frame are as follows eq.(2.31).
 
@@ -207,7 +202,6 @@ where;
 The body frame dynamics above are expanded based on the body angles $\phi, \theta, \psi$ as follows.
 
 ### Body frame dynamics
-
 Here is the body frame dynamics equations used in this library.
 All the variables $(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ can be calculated by using this equation and the frame transformations below.
 
@@ -216,7 +210,6 @@ the change rate of the Euler angles $(\dot{\phi}, \dot{\theta}, \dot{\psi})$ can
 and the attitude $(\phi, \theta, \psi)$ of the drone.
 
 ####　Velocity and Acceleration(linear translation)
-
 $$
 \begin{array}{l}
 \dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
@@ -228,7 +221,6 @@ $$
 The function name: `acceleration_in_body_frame`.
 
 #### Angular velocity and Angular Acceleration(rotation)
-
 $$
 \begin{array}{l}
 \dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
@@ -239,9 +231,7 @@ $$
 
 The function name: `angular_acceleration_in_body_frame`.
 
-
 #### Euler angles and Euler rates
-
 $$
 \begin{array}{l}
 \dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
@@ -263,7 +253,6 @@ where;
 - $I_{xx}​,I_{yy}, I_{zz}$ are inertia moments around the body-frame axes $x, y, z$ respectively. ($x, y, z$) should be aligned with the drone's principal axes, from the gravity-center(other slant inertia $I_{xy}, I_{yz}, I_{zx}$ are assumed to be zero).
 
 ## Ground frame dynamics
-
 The ground frame dynamics of the translational motion is as follows.
 The rotational motion in the ground frame are not calculated in this library
 because time-varying inertia is too complex(to me) in the ground frame.
@@ -281,11 +270,9 @@ The function name is `acceleration_in_ground_frame`.
 The transformations from/to the body frame and the ground frame are as follows.
 
 ### Frame transformation
-
 The dynamics above are calculated using the transformations between the ground frame and the body frame.
 
 #### Velocity, Acceleration
-
 The body velocity $v = (u, v, w)^T$ is transformed to ground $v_e = (u_e, v_e, w_e)^T$ by the following matrix. The acceleration is transformed in the same way.
 
 $$
@@ -309,7 +296,6 @@ $$
 
 
 #### Angular velocity
-
 The body angular rate $\omega = (p, q, r)$ 
 is transformed to ground($\omega_e = (p_e, q_e, r_e$).
 From the body to the ground, the transformation matrix is;
@@ -333,7 +319,6 @@ $$
 $$
 
 ### One Rotor dynamics
-
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
@@ -361,11 +346,13 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
 where $B$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
 
-## Overview of variables and functions
+## Overview of variables and functionson
+The body location $(x, y, z)^T$ and the euler angles $(\phi, \theta, \psi)^T$ are placed in the
+ground frame in the figure so to understand easily(which are the bridge between the two frames).
+
 ![archi](physics-architecture.png)
 
 ## Experiments
-
 We connected Hakoniwa to PX4 SITL simulator and tested the library with the following experiments.
 The architecture of the simulation is described here.
 
@@ -383,7 +370,6 @@ Mission:
 
 
 ## Tests
-
 `utest.cpp` has unit tests for all the functions. It is not easy to read, but you can use it as a reference.
 `ctest.c` has C interface tests.
 
@@ -393,7 +379,6 @@ Mission:
 - Implemented as functions, not classes. Meaning stateless.
 
 ## Acknowledgement
-
 I thank Dr. Nonami for writing the detailed description of the math around the drone development.
 And also I thank （[@tmori](https://github.com/tmori)）for connecting Hakoniwa to
 PX4, QGroundControl, and Unity, and spending a long time testing the drone flight virtually, and also 
