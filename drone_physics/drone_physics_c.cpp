@@ -19,10 +19,11 @@ static dp_vector_t to_dp_vector(const hako::drone_physics::VectorType& v)
     return dp_vector_t{v.x, v.y, v.z};
 }
 
+/* not used for now
 static dp_euler_t to_dp_euler(const hako::drone_physics::EulerType& e)
 {
     return dp_euler_t{e.phi, e.theta, e.psi};
-}
+}*/
 
 extern "C" {
 
