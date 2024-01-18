@@ -207,12 +207,12 @@ $$
 ### 機体座標系の動力学方程式
 
 機体座標系の動力学方程式です．このライブラリでは基本的にこの方程式を後述の座標変換と合わせて使用することで，
-全状態変数と力とトルクによるその時間微分
+全状態変数と力とトルクによる時間微分
 $(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ が計算できます．
 
 最終的に，機体速度 $(u,v,w)^T$ を地上に変換して求めた $(u_e, v_e, w_e)^T$ を時間積分することで，
 機体の位置 $(x,y,z)^T$ が求まります．また，
-機体角加速度 $(p,q,r)^T$ から求まるオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$
+機体角加速度 $(p,q,r)^T$ から後述の変換で求まるオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$
 を時間積分することで，機体の姿勢 $(\phi, \theta, \psi)^T$ が求まります．
 
 #### 速度，加速度(並進)
@@ -238,19 +238,6 @@ $$
 $$
 
 関数名は，`angular_acceleration_in_body_frame` ．
-
-
-#### オイラー角変化率
-
-$$
-\begin{array}{l}
-\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
-\dot{\theta} = q \cos{\phi} - r \sin{\phi} \\
-\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta}
-\end{array}
-$$
-
-関数名は，`euler_rate_from_body_angular_velocity` ．
 
 ここで，
 
@@ -282,7 +269,7 @@ $$
 
 機体座標系と地上座標系の変換は以下のようになります．
 
-#### 速度，加速度（並進）の変換
+#### 速度，加速度の変換
 
 機体座標系 $v = (u, v, w)^T$ から地上座標系 $v_e = (u_e, v_e, w_e)^T$ への変換行列は以下のようになります．加速度も同様です．
 
@@ -305,7 +292,7 @@ $$
 \right]
 $$
 
-関数名は，`ground_vector_from_body` ．
+関数名は，`ground_vector_from_body` ．逆変換は，`body_vector_from_ground` ．
 
 #### 角速度（回転）とオイラー角変化率の変換
 機体座標系の角速度 $(p, q, r)^T$ からオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ への変換行列は以下のようになります．
@@ -328,7 +315,7 @@ $$
 \end{bmatrix}
 $$
 
-関数名は，`euler_rate_from_body_angular_velocity` ．
+関数名は，`euler_rate_from_body_angular_velocity` ．逆変換は，`body_angular_velocity_from_euler_rate` ．
 
 ### 1つのローターの力学
 1つ1つのモーターの角速度は， $\Omega(t)$ は，デューティー比 $d(t)$ によって1次遅れ系としてモデル化できます．

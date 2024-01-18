@@ -208,11 +208,12 @@ $(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ can be calculate
 by using these equations and the frame transformations below.
 
 Finally the body velocity $(u, v, w)^T$ transformed to the ground frame $(u_e, v_e, w_e)^T$
-is time-integrated to get the body position $(x, y, z)^T$.
+is time-integrated to get the body position $(x, y, z)^T$ which is described in the transformation section.
 
 And the body angular velocity $(p,q,r)^T$ transformed to the euler
 rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ is time-integrated to get
-the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude.
+the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude, also
+described in the transformation section.
 
 ####　Velocity and Acceleration(linear translation)
 $$
@@ -235,19 +236,6 @@ $$
 $$
 
 The function name: `angular_acceleration_in_body_frame`.
-
-#### Body angular velocity and Euler rate
-The body angular velocity $(p, q, r)^T$ is transformed to the euler rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ by the following matrix.
-
-$$
-\begin{array}{l}
-\dot{\phi} = p + q \sin{\phi} \tan{\theta} + r \cos{\phi} \tan{\theta} \\
-\dot{\theta} = q \cos{\phi} - r \sin{\phi} \\
-\dot{\psi} = q \sin{\phi} \sec{\theta} + r \cos{\phi} \sec{\theta}
-\end{array}
-$$
-
-The function name: `euler_rate_from_body_angular_velocity`.
 
 where;
 
@@ -301,17 +289,18 @@ $$
 \right]
 $$
 
+The function name is `ground_vector_from_body`,
+and the inverse transformation is `body_vector_from_ground`.
 
-#### Angular velocity
+#### Body angular velocity and Euler angles
 The body angular rate $\omega = (p, q, r)$ 
-is transformed to ground($\omega_e = (p_e, q_e, r_e$).
-From the body to the ground, the transformation matrix is;
+is transformed to the euler angle rate $\dot{\omega} = (\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ by the following matrix.
 
 $$
 \begin{bmatrix}
-   p_e \\ 
-   q_e \\ 
-   r_e
+   \dot{\phi} \\ 
+    \dot{\theta} \\
+    \dot{\psi}
 \end{bmatrix} =
   \begin{bmatrix}
 1 & \sin \phi \tan \theta & \cos \phi \tan \theta \\ 
@@ -324,6 +313,10 @@ $$
     r
 \end{bmatrix}
 $$
+
+The function name is `euler_rate_from_body_angular_velocity` ,
+and the inverse transformation is `body_angular_velocity_from_euler_rate`.
+
 
 ### One Rotor dynamics
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
