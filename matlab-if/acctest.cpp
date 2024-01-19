@@ -4,11 +4,34 @@
 #include <math.h>
 
 #include "drone_physics_matlab.h"
+#include "../drone_physics/drone_physics_c.h"
 
 #define assert_almost_equal(a, b) \
-    assert(fabs((a) - (b)) < 0.0001 || (fprintf(stderr, "%s=%g,%s=%g\n", #a, (a), #b, (b)), 0))
+    assert(fabs((a) - (b)) < 0.0001 || (fprintf(stderr, "%s=%g <-?-> %s=%g\n", #a, (a), #b, (b)), 0))
+#define T(f) do {fprintf(stderr, #f " "); f(); fprintf(stderr, "... PASS\n");} while(0)
 
-int main() {
+
+static mi_drone_acceleration_out_t drone_acceleration_by_physics(const mi_drone_acceleration_in_t* in) {
+    dp_velocity_t vel = {in->u, in->v, in->w};
+    dp_euler_t euler = {in->phi, in->theta, in->psi};
+    dp_angular_velocity_t ang_vel = {in->p, in->q, in->r};
+
+    dp_acceleration_t acc = dp_acceleration_in_body_frame(
+        &vel, &euler, &ang_vel,
+        in->thrust, in->mass, in->gravity, in->drag);
+
+    dp_angular_acceleration_t ang_acc = dp_angular_acceleration_in_body_frame(
+        &ang_vel,
+        in->torque_x, in->torque_y, in->torque_z,
+        in->Ixx, in->Iyy, in->Izz);
+
+    mi_drone_acceleration_out_t out = {
+        acc.x, acc.y, acc.z,
+        ang_acc.x, ang_acc.y, ang_acc.z
+    };
+    return out;
+}
+static void test_first_simple_case() {
     mi_drone_acceleration_in_t in;
     in.phi = 0.0;
     in.theta = 0.0;
@@ -31,22 +54,26 @@ int main() {
     in.gravity = 9.81;
     in.drag = 0.0;
 
-    mi_drone_acceleration_out_t out = mi_drone_acceleration(&in);
+    mi_drone_acceleration_out_t out = drone_acceleration_by_physics(&in);
     assert_almost_equal(out.du, 0.0);
 
     in.u = 1.0; in.v = 2.0; in.w = 3.0;
     in.Ixx = 2.0; in.Iyy = 5.0; in.Izz = 8.0;
     in.torque_x = 1.0; in.torque_y = 2.0; in.torque_z = 3.0;
 
-    out = mi_drone_acceleration(&in);
+    out = drone_acceleration_by_physics(&in);
     mi_drone_acceleration_out_t expected = {
         0, 0, 0,
         (in.torque_x - 2*3*(in.Izz - in.Iyy))/in.Ixx,
         (in.torque_y - 1*3*(in.Ixx - in.Izz))/in.Iyy,
         (in.torque_z - 1*2*(in.Iyy - in.Ixx))/in.Izz
     };
-    assert_almost_equal(out.du, expected.du);
+    /* remove +1 from the line below to pass the test */
+    assert_almost_equal(out.du, expected.du+1);
+}
 
-    
+int main() {
+    T(test_first_simple_case);
     return 0;
 }
+

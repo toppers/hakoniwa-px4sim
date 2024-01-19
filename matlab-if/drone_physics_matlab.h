@@ -47,6 +47,7 @@ typedef struct mi_drone_acceleration_out_t {
     double dr; /* dot r  = z coordinate of angular vector acceleration */
 } mi_drone_acceleration_out_t;
 
+/* Matlab function entry point */
 mi_drone_acceleration_out_t mi_drone_acceleration(
     const mi_drone_acceleration_in_t* in);
 

@@ -1,0 +1,28 @@
+# Matlab と Hakoniwa Drone の連携
+
+## これは何？
+
+Matlab で定義された制御アルゴリズムを Hakoniwa Drone に組み込むための最初の一歩です。
+初回として，drone_physics 関数を Matlab でモデリングし，Hakoniwa Drone とリンクして
+動作させることを目標とします．
+
+## インターフェイス
+
+このディレクトリにある，drone_physics_matlab.h がインターフェイスです．
+そこに，in/out の構造体の定義，および作ってほしい関数宣言があります．
+
+- mi_drone_acceleration_in_t が入力構造体
+- mi_drone_acceleration_out_t が出力構造体
+- mi_drone_acceleration() が matlab で作る関数です（もしくはここから呼び出す）
+
+最初のテストプログラムを，acctest.cpp に書きました．
+
+## ディレクトリ
+
+* matlab-if/
+  * README.md - このファイル
+  * drone_physics_matlab.h - インターフェイスヘッダー
+  * drone_physics_matlab.c - インターフェイス実装（ここが Matlab，もしくは Matlab を呼び出す）
+  * acctest.cpp - インターフェイスのテストプログラム
+
+将来的には Matlab のいろんな実装をサブディレクトリを切って配置していく予定です．また，Matlab 実装との成果物連携をやりやすくするために，ごそっとディレクトリを切って（matlab-if/drone_physics），その中に Matlab の実装を手をかけずにそのまま入れるようにしたいです．
