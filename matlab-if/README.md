@@ -11,11 +11,17 @@ Matlab で定義された制御アルゴリズムを Hakoniwa Drone に組み込
 このディレクトリにある，drone_physics_matlab.h がインターフェイスです．
 そこに，in/out の構造体の定義，および作ってほしい関数宣言があります．
 
-- mi_drone_acceleration_in_t が入力構造体
-- mi_drone_acceleration_out_t が出力構造体
-- mi_drone_acceleration() が matlab で作る関数です（もしくはここから呼び出す）
+- `mi_drone_acceleration_in_t` が入力構造体
+- `mi_drone_acceleration_out_t` が出力構造体
+- `mi_drone_acceleration()` が matlab で作る関数です（もしくはここから呼び出す）
 
-最初のテストプログラムを，acctest.cpp に書きました．
+最初のテストプログラムを，acctest.cpp に書きました．matlab で検索して，コメントアウトしてある
+部分が通るようにつなぎます．acctest.cpp には，drone_physics 側の元関数を呼び出して実装した，
+同じインターフェイスのものが定義されています．それとの答え合わせをしていきたいと思います．
+
+- `drone_acceleration_by_physics()` が元関数を使った同じインターフェイスの関数
+
+これと答えします．
 
 ## ディレクトリ
 

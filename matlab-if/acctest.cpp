@@ -11,6 +11,10 @@
 #define T(f) do {fprintf(stderr, #f " "); f(); fprintf(stderr, "... PASS\n");} while(0)
 
 
+/*
+ * drone_physics による同様の仕様の関数
+ * 最初に，これと答え合わせをする．
+ */
 static mi_drone_acceleration_out_t drone_acceleration_by_physics(const mi_drone_acceleration_in_t* in) {
     dp_velocity_t vel = {in->u, in->v, in->w};
     dp_euler_t euler = {in->phi, in->theta, in->psi};
@@ -31,7 +35,7 @@ static mi_drone_acceleration_out_t drone_acceleration_by_physics(const mi_drone_
     };
     return out;
 }
-static void test_first_simple_case() {
+static void test_first_case() {
     mi_drone_acceleration_in_t in;
     in.phi = 0.0;
     in.theta = 0.0;
@@ -54,14 +58,26 @@ static void test_first_simple_case() {
     in.gravity = 9.81;
     in.drag = 0.0;
 
-    mi_drone_acceleration_out_t out = drone_acceleration_by_physics(&in);
-    assert_almost_equal(out.du, 0.0);
+    /* これが現在の仕様となる関数 */
+    mi_drone_acceleration_out_t out_p = drone_acceleration_by_physics(&in);
+
+    /* matlab のものも呼び出す
+    mi_drone_acceleration_out_t out_m = mi_drone_acceleration(&in);
+    */
+
+    assert_almost_equal(out_p.du, 0.0);
+    /*  assert_almost_equal(out_m.du, 0.0); */
 
     in.u = 1.0; in.v = 2.0; in.w = 3.0;
     in.Ixx = 2.0; in.Iyy = 5.0; in.Izz = 8.0;
     in.torque_x = 1.0; in.torque_y = 2.0; in.torque_z = 3.0;
 
-    out = drone_acceleration_by_physics(&in);
+    out_p = drone_acceleration_by_physics(&in);
+
+    /* matlab のものも呼び出す
+    out_m = mi_drone_acceleration(&in);
+    */
+
     mi_drone_acceleration_out_t expected = {
         0, 0, 0,
         (in.torque_x - 2*3*(in.Izz - in.Iyy))/in.Ixx,
@@ -69,11 +85,12 @@ static void test_first_simple_case() {
         (in.torque_z - 1*2*(in.Iyy - in.Ixx))/in.Izz
     };
     /* remove +1 from the line below to pass the test */
-    assert_almost_equal(out.du, expected.du+1);
+    assert_almost_equal(out_p.du, expected.du);
+    /* assert_almost_equal(out_m.dv, expected.dv); */
 }
 
 int main() {
-    T(test_first_simple_case);
+    T(test_first_case);
     return 0;
 }
 
