@@ -381,5 +381,18 @@ Mission:
 ## Acknowledgement
 I thank Dr. Nonami for writing the detailed description of the math around the drone development.
 And also I thank （[@tmori](https://github.com/tmori)）for connecting Hakoniwa to
-PX4, QGroundControl, and Unity, and spending a long time testing the drone flight virtually, and also 
-for leading this whole Hakoniwa project.
+PX4, QGroundControl, and Unity, and spending a long time testing the drone flight virtually, and also for leading this whole Hakoniwa project.
+
+## References
+A lot of good references are available on the web. I list some of them here.
+- ["Introduction to Drone Engineering" by Dr. Kenzo Nonami(Japanese)](https://www.coronasha.co.jp/np/isbn/9784339032307/)
+- [Model Based Control of UAV by Nonami(Japanese)](https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf)
+- [Drone control Lecture by Seongheon Lee](https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf)
+- [Euler's Equations of Motion(Japanese) by Sky Engineering Laboratory Inc](https://www.sky-engin.jp/blog/eulers-equations-of-motion/)
+- [Euler's Angles(Japanese) by Sky Engineering Laboratory Inc](https://www.sky-engin.jp/blog/eulerian-angles/)
+- [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
+- [Basics of Multi-Copter(Japanese) by @Kouhei_Ito](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
+
+We have learned a lot from them and also the links are embedded in the source code comments. Thank you all !!
+
+

@@ -375,3 +375,16 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 難しい数学と力学について，非常に丁寧な解説書を書いていただいた，野波先生に感謝します．
 また，箱庭プロジェクトをリードし，実際に PX4, QGroundControl と接続し，長い時間を掛けて Unity でビジュアル表示しながら
 仮想的にドローンの飛行テストを行ってくれた，箱庭ラボの森さん（[@tmori](https://github.com/tmori)）に感謝します！
+
+## 参考文献
+特によく参照した文献は以下の通りです．コードの中にもリンクを埋め込んでいます．
+
+- [ドローン工学入門（野波健蔵博士）](https://www.coronasha.co.jp/np/isbn/9784339032307/)
+- [小型無人航空機の厳密・簡易なモデリングとモデルベース制御（野波健蔵博士）](https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf)
+- [Drone control Lecture(Seongheon Lee)](https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf)
+- [剛体の回転運動を支配するオイラーの運動方程式（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulers-equations-of-motion/)
+- [オイラー角とは？定義と性質、回転行列・角速度ベクトルとの関係（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulerian-angles/)
+- [飛行力学における機体座標系の定義(@mtk_birdman)](https://mtkbirdman.com/flight-dynamics-body-axes-system)
+- [「マルチコプタの運動と制御」基礎のきそ（伊藤恒平）](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
+
+多くの書籍やWebコンテンツで勉強し，触発されています．ありがとうございます！
