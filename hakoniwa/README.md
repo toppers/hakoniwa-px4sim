@@ -18,12 +18,13 @@ sudo apt  install docker.io
 sudo apt install net-tools
 ```
 
+インストールが終わったら、docker を起動します。
+
 ```
 sudo service docker start
 ```
 
-
-以下のコマンドで docker イメージを pull してください。
+そして、以下のコマンドで docker イメージを pull してください。
 
 ```
 bash docker/pull-image.bash 
