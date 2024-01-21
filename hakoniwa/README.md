@@ -8,10 +8,31 @@ cd hakoniwa-px4sim/hakoniwa
 
 Windowsの場合は、docker コンテナ内での作業になります。
 
+事前に以下のインストールをしてください。
+
+```
+sudo apt  install docker.io
+```
+
+```
+sudo apt install net-tools
+```
+
+```
+sudo service docker start
+```
+
+
 以下のコマンドで docker イメージを pull してください。
 
 ```
 bash docker/pull-image.bash 
+```
+
+なお、以下のエラーが出た場合は、`/var/run/docker.sock` に所有権を与えてください。
+
+```
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/images/create?fromImage=toppersjp%2Fhakoniwa-px4sim&tag=v1.0.1": dial unix /var/run/docker.sock: connect: permission denied
 ```
 
 成功した場合は、以下のように`toppersjp/hakoniwa-px4sim`が作成されます。
