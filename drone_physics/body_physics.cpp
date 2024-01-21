@@ -217,7 +217,10 @@ AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
     const EulerType& angle,
     const AngularVelocityType& body_angular_velocity,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
+    double thrust, double mass /* 0 is not allowed */,
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 /* air friction of 2-nd order(-d2*v*v) counter to velocity */)
 {
     assert(!is_zero(mass));
     using std::sin; using std::cos;
@@ -227,10 +230,11 @@ AccelerationType acceleration_in_body_frame(
         c_theta = cos(angle.theta), s_theta = sin(angle.theta);
     const auto [u, v, w] = body_velocity;
     const auto [p, q, r] = body_angular_velocity;
-    const auto g = gravity;
-    const auto m = mass;
-    const auto c = drag;
     const auto T = thrust;
+    const auto m = mass;
+    const auto g = gravity;
+    const auto d1 = drag1;
+    const auto d2 = drag2;
 
     /*
      * See nonami's book eq.(1.136).(2.31)
@@ -243,9 +247,9 @@ AccelerationType acceleration_in_body_frame(
 
      */
     /*****************************************************************/  
-    double dot_u =       - g * s_theta            - (q*w - r*v) - c/m * u;
-    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - c/m * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - c/m * w;
+    double dot_u =       - g * s_theta            - (q*w - r*v) - d1/m * u - d2/m * u * u;
+    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1/m * v - d2/m * v * v;
+    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1/m * w - d2/m * w * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
@@ -287,7 +291,10 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const EulerType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
+    double thrust, double mass /* 0 is not allowed */,
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 /* air friction of 2-nd order(-d2*v*v) counter to velocity */)
 {
     using std::sin; using std::cos;
 
@@ -297,10 +304,11 @@ AccelerationType acceleration_in_ground_frame(
         c_psi   = cos(angle.psi),   s_psi   = sin(angle.psi);
 
     const auto [u, v, w] = ground;
-    const auto g = gravity;
-    const auto m = mass;
-    const auto d = drag;
     const auto T = thrust;
+    const auto m = mass;
+    const auto g = gravity;
+    const auto d1 = drag1;
+    const auto d2 = drag2;
 
     /**
      * See eq.(2.46), (2.47) in Nonami's book.
@@ -318,9 +326,9 @@ AccelerationType acceleration_in_ground_frame(
      * https://github.com/SKYnSPACE/AE450/blob/master/Lec10/AE450_Lec10_Quadcopter_Dynamics_and_Control.pdf
      */
     /*****************************************************************/  
-    double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - d/m * u;
-    double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - d/m * v;
-    double dot_w =  -T/m * (c_phi * c_theta)                   + g   - d/m * w;
+    double dot_u =  -T/m * (c_phi * s_theta * c_psi + s_phi * s_psi) - d1/m * u - d2/m * u * u;
+    double dot_v =  -T/m * (c_phi * s_theta * s_psi - s_phi * c_psi) - d1/m * v - d2/m * v * v;
+    double dot_w =  -T/m * (c_phi * c_theta)                   + g   - d1/m * w - d2/m * w * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};

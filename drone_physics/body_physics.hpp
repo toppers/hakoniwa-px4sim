@@ -112,7 +112,11 @@ AngularVelocityType body_angular_velocity_from_euler_rate(
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
     const EulerType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag);
+    double thrust, double mass /* 0 is not allowed */,
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,   /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 = 0.0 /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
+
 
 /* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
 AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
@@ -127,7 +131,9 @@ AccelerationType acceleration_in_body_frame(
     const EulerType& angle,
     const AngularVelocityType& body_angular_velocity, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
-    double gravity, double drag);
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,   /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 = 0.0 /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
 
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
