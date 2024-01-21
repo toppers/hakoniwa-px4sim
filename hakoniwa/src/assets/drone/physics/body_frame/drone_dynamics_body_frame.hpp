@@ -15,7 +15,8 @@ private:
      * parameters
      */
     double param_mass;
-    double param_drag;
+    double param_drag1;
+    double param_drag2;
     double param_cx;
     double param_cy;
     double param_cz;
@@ -67,7 +68,8 @@ public:
         this->total_time_sec = 0;
         this->delta_time_sec = dt;
         this->param_mass = 1;
-        this->param_drag = 0;
+        this->param_drag1 = 0;
+        this->param_drag2 = 0;
         this->param_cx = 1;
         this->param_cy = 1;
         this->param_cz = 1;
@@ -97,9 +99,10 @@ public:
     {
         return this->param_mass;
     }
-    void set_drag(double drag) override
+    void set_drag(double drag1, double drag2) override
     {
-        this->param_drag = drag;
+        this->param_drag1 = drag1;
+        this->param_drag2 = drag2;
     }
     // Setters
     void set_pos(const DronePositionType &pos) override {
@@ -156,7 +159,7 @@ public:
         DroneAccelerationBodyFrame acc = drone_physics::acceleration_in_body_frame(
                                                             this->velocityBodyFrame, this->angle, 
                                                             this->angularVelocityBodyFrame,
-                                                            thrust.data, this->param_mass, GRAVITY, this->param_drag);
+                                                            thrust.data, this->param_mass, GRAVITY, this->param_drag1, this->param_drag2);
         DroneAngularAccelerationBodyFrame acc_angular = drone_physics::angular_acceleration_in_body_frame(
                                                             this->angularVelocityBodyFrame,
                                                             torque.data.x, torque.data.y, torque.data.z,

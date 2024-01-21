@@ -31,7 +31,6 @@ using hako::assets::drone::ThrustDynamicsNonLinear;
 using hako::assets::drone::SensorNoise;
 
 #define DELTA_TIME_SEC              drone_config.getSimTimeStep()
-#define HAKO_PHYS_DRAG              drone_config.getCompDroneDynamicsAirFrictionCoefficient()
 #define REFERENCE_LATITUDE          drone_config.getSimLatitude()
 #define REFERENCE_LONGTITUDE        drone_config.getSimLongitude()
 #define REFERENCE_ALTITUDE          drone_config.getSimAltitude()
@@ -76,7 +75,8 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     }
     //auto drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
     HAKO_ASSERT(drone_dynamics != nullptr);
-    drone_dynamics->set_drag(HAKO_PHYS_DRAG);
+    auto drags = drone_config.getCompDroneDynamicsAirFrictionCoefficient();
+    drone_dynamics->set_drag(drags[0], drags[1]);
     drone_dynamics->set_mass(drone_config.getCompDroneDynamicsMass());
     drone_dynamics->set_collision_detection(drone_config.getCompDroneDynamicsCollisionDetection());
     auto body_size = drone_config.getCompDroneDynamicsBodySize();

@@ -115,8 +115,12 @@ public:
         return configJson["components"]["droneDynamics"]["physicsEquation"].get<std::string>();
     }
 
-    double getCompDroneDynamicsAirFrictionCoefficient() const {
-        return configJson["components"]["droneDynamics"]["airFrictionCoefficient"].get<double>();
+    std::vector<double> getCompDroneDynamicsAirFrictionCoefficient() const {
+        std::vector<double> frictions;
+        for (const auto& item : configJson["components"]["droneDynamics"]["airFrictionCoefficient"]) {
+            frictions.push_back(item);
+        }
+        return frictions;
     }
     bool getCompDroneDynamicsCollisionDetection() const {
         return configJson["components"]["droneDynamics"]["collision_detection"].get<bool>();

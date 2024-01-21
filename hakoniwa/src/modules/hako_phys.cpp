@@ -59,7 +59,7 @@ static void my_setup()
     drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     //drone_dynamics = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics->set_drag(HAKO_PHYS_DRAG);
+    drone_dynamics->set_drag(HAKO_PHYS_DRAG, 0);
     drone_pid_control_init();
     std::cout << "INFO: setup done" << std::endl;
     return;
