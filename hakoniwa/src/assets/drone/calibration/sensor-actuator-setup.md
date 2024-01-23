@@ -26,10 +26,10 @@
 |対象 |(英語) | 関連定数 | 手法|補足|
 |-----|----- |--------------|---------|----|
 |[機体](https://docs.px4.io/main/assets/img/airframe_px4.3c810c47.jpg)  | Airframe | - | パネルUI ||
-|[センサー全体](https://docs.px4.io/main/assets/img/yaw_rotation.c0ff8b97.png) Sensor Orientation | - | パネルUI |センサーボード全体|
-|[コンパス](https://docs.px4.io/main/assets/img/sensor_compass_calibrate_px4.a111cc6c.jpg) | Compass | mag | 機体を各方向に回す |地上と機体姿勢の関係認識 |
-|[ジャイロ](https://docs.px4.io/main/assets/img/gyroscope_calibrate_progress_px4.67d944fd.jpg) | Gyroscope | 各機体角速度($p,q,r$) | 正姿勢静止させる |各速度 $0$ の認識か?|
-|[加速度計](https://docs.px4.io/main/assets/img/accelerometer_positions_px4.94b81dab.jpg) | Accelerometer | g方向($\phi,\theta,\psi$) | 各方向に向かせて静止 |重力加速度方向の機体での方向認識|
+|[センサー全体](https://docs.px4.io/main/assets/img/yaw_rotation.c0ff8b97.png) | Sensor Orientation | - | パネルUI |センサーボード全体の向き|
+|[コンパス](https://docs.px4.io/main/assets/img/sensor_compass_calibrate_px4.a111cc6c.jpg) | Compass | mag | 機体を各方向に回す |磁気の強さ，地上と機体姿勢の関係認識 |
+|[ジャイロ](https://docs.px4.io/main/assets/img/gyroscope_calibrate_progress_px4.67d944fd.jpg) | Gyroscope | 各機体角速度($p,q,r$) | 正姿勢静止させる |角速度 $0$ の認識か?|
+|[加速度計](https://docs.px4.io/main/assets/img/accelerometer_positions_px4.94b81dab.jpg) | Accelerometer | g方向($\phi,\theta,\psi$) | 各方向に向かせて静止 |重力の強さと機体での重力方向認識|
 |[アクチュエータ](https://docs.px4.io/main/assets/img/qgc_actuators_mc_aux.d310bb18.png) | Actuators | ロータ位置など| パネル設定 | |
 |[モーター](https://docs.px4.io/main/assets/img/identify_motors_in_progress.5ba3f3bb.png) | Motor Configuration | モーター電圧と回転 | パネル設定と実際に回転させる | $Kr, Tr$ ? |
 
