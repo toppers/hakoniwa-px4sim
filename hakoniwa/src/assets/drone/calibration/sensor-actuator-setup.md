@@ -4,6 +4,8 @@
 
 ここに，QGCを使った「機体」「センサー」「アクチュエータ」の「セットアップ」について書かれている．セットアップには，「ファームウェア」，「ジョイスティック」，「バッテリー」なども含まれるが，センサーとアクチュエーターについて抜き出す．
 
+## セットアップ画面
+
 - セットアップ
     - 形状(Airframe)
        ![形状](https://docs.px4.io/main/assets/img/airframe_px4.3c810c47.jpg)
@@ -21,7 +23,7 @@
     - モータの出力(Motor Configuration)
         ![モーター](https://docs.px4.io/main/assets/img/identify_motors_in_progress.5ba3f3bb.png)
     
-
+## まとめ
 
 |対象 |(英語) | 関連定数 | 手法|補足|
 |-----|----- |--------------|---------|----|
@@ -34,6 +36,7 @@
 |[モーター](https://docs.px4.io/main/assets/img/identify_motors_in_progress.5ba3f3bb.png) | Motor Configuration | モーター電圧と回転 | パネル設定と実際に回転させる | $Kr, Tr$ ? |
 
 
+## オートチューン
 なお，[オートチューン](https://docs.px4.io/main/en/config/autotune.html)には，「実際にある程度安定飛行できる状態であれば」オートチューニングがフライト中に行われると書かれている（auto-tune enable/disable スイッチがある）．
 
 また，オートチューン手順は，
