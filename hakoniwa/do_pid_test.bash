@@ -14,10 +14,10 @@ fi
 RUN_TIME_SEC=${1}
 DURATION=${2}
 
-export DRONE_CONFIG_PATH=./config/drone_config.json
+export DRONE_CONFIG_PATH=./config/drone_config_pid.json
 export HAKO_CUSTOM_JSON_PATH=./config/custom_c++.json
 
- ./cmake-build/src/hako-px4sim 127.0.01 4560 phys &
+./cmake-build/src/hako-px4sim 127.0.01 4560 phys &
 HAKO_PID=$!
 
 

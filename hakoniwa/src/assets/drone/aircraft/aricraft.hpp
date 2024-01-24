@@ -17,14 +17,16 @@ public:
     void run(DroneDynamicsInputType& input) override
     {
         //actuators
-        DroneRotorSpeedType rotor_speed[ROTOR_NUM];
-        for (int i = 0; i < ROTOR_NUM; i++) {
-            rotor_dynamics[i]->run(input.controls[i]);
-            rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
+        if (input.no_use_actuator == false) {
+            DroneRotorSpeedType rotor_speed[ROTOR_NUM];
+            for (int i = 0; i < ROTOR_NUM; i++) {
+                rotor_dynamics[i]->run(input.controls[i]);
+                rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
+            }
+            thrust_dynamis->run(rotor_speed);
+            input.thrust = thrust_dynamis->get_thrust();
+            input.torque = thrust_dynamis->get_torque();
         }
-        thrust_dynamis->run(rotor_speed);
-        input.thrust = thrust_dynamis->get_thrust();
-        input.torque = thrust_dynamis->get_torque();
         drone_dynamics->run(input);
 
         //sensors

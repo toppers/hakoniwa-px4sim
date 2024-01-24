@@ -1,39 +1,32 @@
 #include "hako_phys.hpp"
 #include "hako_capi.h"
-#include "../utils/hako_params.hpp"
+#include "assets/drone/aircraft/aircraft_factory.hpp"
+#include "assets/drone/controller/drone_pid_control.hpp"
 #include "hako_asset_runner.h"
-#include "../hako/pdu/hako_pdu_data.hpp"
-#include "../hako/runner/hako_px4_master.hpp"
-#include "../assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
-#include "../assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
-#include "../assets/drone/controller/drone_pid_control.hpp"
+#include "hako/pdu/hako_pdu_data.hpp"
+#include "hako/runner/hako_px4_master.hpp"
+#include "config/drone_config.hpp"
+#include "utils/hako_params.hpp"
+#include "utils/csv_logger.hpp"
+
 #include <unistd.h>
 #include <memory.h>
 #include <iostream>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
-#define HAKO_RUNNER_MASTER_DELTA_USEC           1000 /* usec*/
-#define HAKO_RUNNER_DELTA_TIME_SEC              0.001
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
 #define HAKO_AVATOR_CHANNLE_ID_POS      1
 #define HAKO_AVATOR_CHANNLE_ID_CTRL     2
-#define HAKO_PHYS_DRAG          0.05
 
 #define HAKO_ROBO_NAME "px4sim"
 
 static void asset_runner();
-using hako::assets::drone::DroneDynamicsBodyFrame;
-using hako::assets::drone::DroneDynamicsGroundFrame;
-using hako::assets::drone::IDroneDynamics;
-using hako::assets::drone::DronePositionType;
-using hako::assets::drone::DroneEulerType;
-using hako::assets::drone::DroneVelocityType;
-using hako::assets::drone::DroneEulerRateType;
-using hako::assets::drone::DroneTorqueType;
-using hako::assets::drone::DroneThrustType;
+
+static IAirCraft *drone;
 
 void hako_phys_main()
 {
+    CsvLogger::enable();
     if (!hako_master_init()) {
         std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
         return;
@@ -41,7 +34,7 @@ void hako_phys_main()
     else {
         std::cout << "INFO: hako_master_init() success" << std::endl;
     }
-    hako_master_set_config_simtime(HAKO_RUNNER_MASTER_MAX_DELAY_USEC, HAKO_RUNNER_MASTER_DELTA_USEC);
+    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
     pthread_t thread;
     if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
         std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
@@ -52,15 +45,12 @@ void hako_phys_main()
     return;
 }
 
-static IDroneDynamics *drone_dynamics = nullptr;
-
 static void my_setup()
 {
-    drone_dynamics = new DroneDynamicsBodyFrame(HAKO_RUNNER_DELTA_TIME_SEC);
-    //drone_dynamics = new DroneDynamicsGroundFrame(HAKO_RUNNER_DELTA_TIME_SEC);
     std::cout << "INFO: setup start" << std::endl;
-    drone_dynamics->set_drag(HAKO_PHYS_DRAG, 0);
+    drone = hako::assets::drone::create_aircraft("default");
     drone_pid_control_init();
+
     std::cout << "INFO: setup done" << std::endl;
     return;
 }
@@ -69,8 +59,8 @@ static void do_io_write()
 {
     Hako_Twist pos;
 
-    DronePositionType dpos = drone_dynamics->get_pos();
-    DroneEulerType dangle = drone_dynamics->get_angle();
+    DronePositionType dpos = drone->get_drone_dynamics().get_pos();
+    DroneEulerType dangle = drone->get_drone_dynamics().get_angle();
     pos.linear.x = dpos.data.x;
     pos.linear.y = dpos.data.y;
     pos.linear.z = dpos.data.z;
@@ -99,9 +89,10 @@ static void my_task()
         torque.data.z = control.angular.z;
     }
     hako::assets::drone::DroneDynamicsInputType input;
+    input.no_use_actuator = true;
     input.thrust = thrust;
     input.torque = torque;
-    drone_dynamics->run(input);
+    drone->run(input);
     drone_pid_control_run();
     do_io_write();
     return;
@@ -122,9 +113,10 @@ static hako_asset_runner_callback_t my_callbacks = {
 static hako_time_t hako_asset_time = 0;
 static void asset_runner()
 {
+    Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
     hako_asset_runner_register_callback(&my_callbacks);
     const char* config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);
-    if (hako_asset_runner_init(HAKO_ROBO_NAME, config_path, HAKO_RUNNER_MASTER_DELTA_USEC) == false) {
+    if (hako_asset_runner_init(HAKO_ROBO_NAME, config_path, delta_time_usec) == false) {
         std::cerr << "ERROR: " << "hako_asset_runner_init() error" << std::endl;
         return;
     }
@@ -137,7 +129,8 @@ static void asset_runner()
                 break;
             }
             else {
-                hako_asset_time += HAKO_RUNNER_MASTER_DELTA_USEC;
+                hako_asset_time += delta_time_usec;
+                CsvLogger::set_time_usec(hako_asset_time);
             }
         }
     }

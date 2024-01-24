@@ -153,6 +153,7 @@ static hako::assets::drone::MavlinkIO mavlink_io;
 static void my_task()
 {
     hako::assets::drone::DroneDynamicsInputType drone_input;
+    drone_input.no_use_actuator = false;
     if (drone->get_drone_dynamics().has_collision_detection()) {
         do_io_read(drone_input.collision);
     }

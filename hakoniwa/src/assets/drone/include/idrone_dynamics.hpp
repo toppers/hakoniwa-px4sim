@@ -18,6 +18,7 @@ typedef struct {
 } DroneDynamicsCollisionType;
 
 typedef struct {
+    bool no_use_actuator;
     double controls[MAX_ROTOR_NUM];
     DroneDynamicsCollisionType collision;
     DroneThrustType thrust;

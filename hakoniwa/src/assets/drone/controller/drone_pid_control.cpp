@@ -1,8 +1,10 @@
 #include "drone_pid_control.hpp"
+#include "utils/hako_utils.hpp"
 #include "hako_capi.h"
 #include "drone_primitive_types.hpp"
-#include "../../../hako/pdu/hako_pdu_data.hpp"
+#include "hako/pdu/hako_pdu_data.hpp"
 #include "hako_asset_runner.h"
+#include "config/drone_config.hpp"
 
 using hako::assets::drone::DronePositionType;
 using hako::assets::drone::DroneEulerType;
@@ -13,26 +15,32 @@ static DronePidControl *pid_height;
 static DronePidControl *pid_phi;
 static DronePidControl *pid_theta;
 static DronePidControl *pid_psi;
-#define DELTA_TIME  0.001
+static double pid_control_delta_time;
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
 #define HAKO_AVATOR_CHANNLE_ID_POS      1
 #define HAKO_AVATOR_CHANNLE_ID_CTRL     2
 #define HAKO_ROBO_NAME "px4sim"
 
+static double hovering_thrust;
+static double hovering_thrust_range;
+
 void drone_pid_control_init() 
 {
+    pid_control_delta_time = drone_config.getSimTimeStep();
+    double mass = drone_config.getCompDroneDynamicsMass();
+    hovering_thrust = mass * 9.81;
+    hovering_thrust_range = hovering_thrust / 2;
     // PIDコントローラのパラメータ設定
-    // ここでは例として固定値を使用していますが、実際には設定ファイルやコマンドライン引数から読み込むことを推奨します。
-    double Kp_height = 1.0, Ki_height = 0.01, Kd_height = 0.01;
+    double Kp_height = 1.0e+0, Ki_height = 1.0e-1, Kd_height = 0.5e+2;
     double setpoint_height = 10.0;  // 目標高さ
 
-    double Kp_phi = 0.5, Ki_phi = 0.01, Kd_phi = 100;
+    double Kp_phi = 1.0e-2, Ki_phi = 1.0e-6, Kd_phi = 0.1;
     double setpoint_phi = 0.2;  // 目標ロール角
 
-    double Kp_theta = 0.5, Ki_theta = 0.01, Kd_theta = 0.01;
+    double Kp_theta = 0.0, Ki_theta = 0.0, Kd_theta = 0.0;
     double setpoint_theta = 0.0;  // 目標ピッチ角
 
-    double Kp_psi = 0.5, Ki_psi = 0.01, Kd_psi = 0.01;
+    double Kp_psi = 0.0, Ki_psi = 0.0, Kd_psi = 0.0;
     double setpoint_psi = 0.0;  // 目標ヨー角
 
     // PIDコントローラのインスタンス化
@@ -82,7 +90,7 @@ void drone_pid_control_run()
     double psi_input = dangle.data.z;    // ヨー角の入力値
 
     double height_output = pid_height->calculate(height_input);
-    height_output = get_limit_value(height_output, 9.81, -2, 2);
+    height_output = get_limit_value(height_output, hovering_thrust, -hovering_thrust_range, hovering_thrust_range);
     double phi_output = pid_phi->calculate(phi_input);
     double theta_output = pid_theta->calculate(theta_input);
     double psi_output = pid_psi->calculate(psi_input);
@@ -96,7 +104,7 @@ void drone_pid_control_run()
     pid_theta->write_to_csv({std::to_string(current_time), std::to_string(theta_input)});
     pid_psi->write_to_csv({std::to_string(current_time), std::to_string(psi_input)});
 
-    current_time += DELTA_TIME;
+    current_time += pid_control_delta_time;
     if ((current_time - last_time) > 1) {
         std::cout << "T: " << current_time <<  "U: " << height_output << " H: " << height_input << std::endl;
         std::cout << "T: " << current_time <<  "Tx: " << phi_output << " Phi: " << phi_input << std::endl;
