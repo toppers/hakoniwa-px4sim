@@ -23,7 +23,7 @@ https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/src/assets/drone/c
 cd hakoniwa
 ```
 
-**プログラム実行:***
+**プログラム実行:**
 
 以下のスクリプトを実行すると、３秒間のプログラムを実行し、シミュレーション時間で50秒間の結果がグラフ表示されます。
 
