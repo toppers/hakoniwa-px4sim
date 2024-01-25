@@ -97,16 +97,21 @@ bash build.bash
 ## コンポーネント設定
 - **droneDynamics**: ドローンの動力学モデル。
   - **physicsEquation**: 運動方程式のタイプ(BodyFrameのみ対応しています)。
-  - **airFrictionCoefficient**: 空気抵抗係数。
+  - **collision_detection**: 障害物との衝突を検出して物理式にフィードバックする場合は`true`。非検出とする場合は、`false`。
+  - **manual_control**:　センサキャリブレーションで機体を手動で操作した場合に利用します。`true`にすると、外部操作が可能になります。通常は`false`として下さい。
+  - **airFrictionCoefficient**: 空気抵抗係数。空気抵抗の１次項と２次項を配列で指定します。
   - **inertia**: 慣性モーメントのリスト。単位はキログラム・メートル二乗(`kg*m^2`)。
   - **mass_kg**: ドローンの質量。単位はキログラム(`kg`)。
+  - **body_size**: 機体のサイズ（x, y, z）を配列で指定します。単位はメートル(`m`)。
   - **position_meter**: 機体の初期位置。単位はメートル(`m`)。
   - **angle_degree**: 機体の初期角度。単位は度(`deg`)。
 - **rotor**: ローターの設定。
+  - **vendor**: ベンダ名を指定します。現状は`None`を設定して下さい。
   - **Tr**: ローターの応答時間。単位は秒(`s`)。
   - **Kr**: ローターの力定数。
   - **rpmMax**: ローターの最大回転数。単位は回転/分(`rpm`)。
 - **thruster**: スラスターの設定。
+  - **vendor**: ベンダ名を指定します。現状は`None`を設定して下さい。
   - **rotorPositions**: ローターの位置と回転方向。単位はメートル(`m`)。rotationDirectionはローターの回転方向(CW:-1.0, CCW: 1.0)
   - **HoveringRpm**: ホバリング時の回転数。単位は回転/分(`rpm`)。
   - **parameterB**: スラスターのパラメータB。
