@@ -109,10 +109,10 @@
       },
       "angle": {
         "phi": {
-          "setpoint": 18,
-          "Kp": 1.0e-2,
-          "Ki": 1.0e-6,
-          "Kd": 0.1e+0
+          "setpoint": 0,
+          "Kp": 0,
+          "Ki": 0,
+          "Kd": 0
         },
         "theta": {
           "setpoint": 0,
