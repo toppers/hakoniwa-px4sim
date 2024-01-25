@@ -39,12 +39,6 @@ static int my_on_manual_timing_control(hako_asset_context_t*)
     return 0;
 }
 
-static hako_asset_callbacks_t my_callback = {
-    .on_initialize = my_on_initialize,
-    .on_manual_timing_control = my_on_manual_timing_control,
-    .on_simulation_step = NULL,
-    .on_reset = my_on_reset
-};
 
 // 角度を管理する構造体
 struct Angles {
@@ -90,7 +84,7 @@ static void help()
 }
 
 // キーボード入力を処理する関数
-static void keyboardInputHandler(std::atomic<bool>& running) {
+static void keyboardInputHandler(std::atomic<bool>& running, double deg) {
     Angles angles;
     std::string input;
     std::string lastInput;  // 前回の入力を保存する変数
@@ -117,22 +111,22 @@ static void keyboardInputHandler(std::atomic<bool>& running) {
         }
         // 角度の増減の場合
         else if (input == "p") {
-            angles.adjust('p', 10.0);
+            angles.adjust('p', deg);
         }
         else if (input == "P") {
-            angles.adjust('p', -10.0);
+            angles.adjust('p', -deg);
         }
         else if (input == "r") {
-            angles.adjust('r', 10.0);
+            angles.adjust('r', deg);
         }
         else if (input == "R") {
-            angles.adjust('r', -10.0);
+            angles.adjust('r', -deg);
         }
         else if (input == "y") {
-            angles.adjust('y', 10.0);
+            angles.adjust('y', deg);
         }
         else if (input == "Y") {
-            angles.adjust('y', -10.0);
+            angles.adjust('y', -deg);
         }
         else if (input == "c") {
             angles.reset();
@@ -153,8 +147,15 @@ static void keyboardInputHandler(std::atomic<bool>& running) {
     }
 }
 
+static hako_asset_callbacks_t my_callback;
+
 int main(int argc, const char* argv[])
 {
+    my_callback.on_initialize = my_on_initialize;
+    my_callback.on_manual_timing_control = my_on_manual_timing_control;
+    my_callback.on_simulation_step = NULL;
+    my_callback.on_reset = my_on_reset;
+
     std::atomic<bool> running(true);
     if (argc != 2) {
         printf("Usage: %s <config_path>\n", argv[0]);
@@ -165,7 +166,7 @@ int main(int argc, const char* argv[])
     hako_time_t delta_time_usec = 3000000;//3msec
 
     // キーボード入力用のスレッドを作成
-    std::thread inputThread(keyboardInputHandler, std::ref(running));
+    std::thread inputThread(keyboardInputHandler, std::ref(running), 10.0);
 
     int ret = hako_asset_register(asset_name, config_path, &my_callback, delta_time_usec, HAKO_ASSET_MODEL_CONTROLLER);
     if (ret != 0) {
