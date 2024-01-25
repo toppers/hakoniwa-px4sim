@@ -8,7 +8,7 @@
 #include <atomic>
 
 #define PDU_CHANNEL_ID    3
-
+#define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
 static int my_on_initialize(hako_asset_context_t*)
 {
     return 0;
@@ -18,24 +18,15 @@ static int my_on_reset(hako_asset_context_t*)
     return 0;
 }
 
-static std::atomic<Hako_ManualPosAttControl> manual;
-
 static int my_on_manual_timing_control(hako_asset_context_t*)
 {
-    printf("INFO: on_manual_timing_control enter\n");
     int result = 0;
     while (result == 0) {
-        Hako_ManualPosAttControl buffer = manual;
-        int ret = hako_asset_pdu_write("Robot", PDU_CHANNEL_ID, (const char*)(&buffer), sizeof(buffer));
-        if (ret != 0) {
-            printf("ERROR: hako_asset_pdu_write erro: %d\n", ret);
-        }
-        result = hako_asset_usleep(1000);
+        result = hako_asset_usleep(3000);
         if (result != 0) {
             break;
         }
     }
-    printf("INFO: on_manual_timing_control exit\n");
     return 0;
 }
 
@@ -137,11 +128,15 @@ static void keyboardInputHandler(std::atomic<bool>& running, double deg) {
         lastInput = input;
 
         Hako_ManualPosAttControl tmp;
-        tmp.posatt.angular.x = angles.roll;
-        tmp.posatt.angular.y = angles.pitch;
-        tmp.posatt.angular.z = angles.yaw;
+        tmp.posatt.angular.x = DEGREE2RADIAN(angles.roll);
+        tmp.posatt.angular.y = DEGREE2RADIAN(angles.pitch);
+        tmp.posatt.angular.z = DEGREE2RADIAN(angles.yaw);
         tmp.do_operation = true;
-        manual = tmp;
+        int ret = hako_asset_pdu_write("Robot", PDU_CHANNEL_ID, (const char*)(&tmp), sizeof(tmp));
+        if (ret != 0) {
+            printf("ERROR: hako_asset_pdu_write erro: %d\n", ret);
+        }
+        printf("manual set\n");
         angles.print();
 
     }
@@ -166,7 +161,7 @@ int main(int argc, const char* argv[])
     hako_time_t delta_time_usec = 3000000;//3msec
 
     // キーボード入力用のスレッドを作成
-    std::thread inputThread(keyboardInputHandler, std::ref(running), 10.0);
+    std::thread inputThread(keyboardInputHandler, std::ref(running), 5.0);
 
     int ret = hako_asset_register(asset_name, config_path, &my_callback, delta_time_usec, HAKO_ASSET_MODEL_CONTROLLER);
     if (ret != 0) {

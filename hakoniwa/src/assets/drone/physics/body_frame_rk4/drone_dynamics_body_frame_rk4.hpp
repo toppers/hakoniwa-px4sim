@@ -23,6 +23,7 @@ private:
     double param_size_y;
     double param_size_z;
     bool param_collision_detection;
+    bool param_manual_control;
     /*
      * internal state
      */
@@ -140,6 +141,7 @@ public:
         this->param_size_y = 1;
         this->param_size_z = 0.1;
         this->param_collision_detection = false;
+        this->param_manual_control = false;
     }
     virtual ~DroneDynamicsBodyFrameRK4() {}
     void set_collision_detection(bool enable) override {
@@ -147,6 +149,12 @@ public:
     }
     bool has_collision_detection() override {
         return this->param_collision_detection;
+    }
+    void set_manual_control(bool enable) override {
+        this->param_manual_control = enable;
+    }
+    bool has_manual_control() override {
+        return this->param_manual_control;
     }
 
     void set_torque_constants(double cx, double cy, double cz) override

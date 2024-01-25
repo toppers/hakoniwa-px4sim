@@ -127,6 +127,9 @@ public:
     bool getCompDroneDynamicsCollisionDetection() const {
         return configJson["components"]["droneDynamics"]["collision_detection"].get<bool>();
     }
+    bool getCompDroneDynamicsManualControl() const {
+        return configJson["components"]["droneDynamics"]["manual_control"].get<bool>();
+    }
     std::vector<double> getCompDroneDynamicsBodySize() const {
         std::vector<double> body_size;
         for (const auto& item : configJson["components"]["droneDynamics"]["body_size"]) {

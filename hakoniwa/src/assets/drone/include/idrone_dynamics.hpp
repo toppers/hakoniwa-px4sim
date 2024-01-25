@@ -17,9 +17,17 @@ typedef struct {
     double restitution_coefficient;
 } DroneDynamicsCollisionType;
 
+
+typedef struct {
+    bool control;
+    DronePositionType pos;
+    DroneEulerType angle;
+} DroneDynamicsManualControlType;
+
 typedef struct {
     bool no_use_actuator;
     double controls[MAX_ROTOR_NUM];
+    DroneDynamicsManualControlType manual;
     DroneDynamicsCollisionType collision;
     DroneThrustType thrust;
     DroneTorqueType torque;
@@ -34,6 +42,7 @@ public:
 
     virtual void set_drag(double drag1, double drag2) = 0;
     virtual void set_collision_detection(bool enable) = 0;
+    virtual void set_manual_control(bool enable) = 0;
     virtual void set_body_size(double x, double y, double z) = 0;
     virtual void set_torque_constants(double cx, double cy, double cz) = 0;
     virtual void set_pos(const DronePositionType &pos) = 0;
@@ -51,6 +60,7 @@ public:
     virtual double get_mass() const = 0;
     virtual void set_mass(double mass) = 0;
     virtual bool has_collision_detection() = 0;
+    virtual bool has_manual_control() = 0;
 
     virtual void run(const DroneDynamicsInputType &input) = 0;
 };

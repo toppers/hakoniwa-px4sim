@@ -18,6 +18,7 @@
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR        0
 #define HAKO_AVATOR_CHANNLE_ID_POS          1
 #define HAKO_AVATOR_CHANNLE_ID_COLLISION    2
+#define HAKO_AVATOR_CHANNLE_ID_MANUAL       3
 
 #define HAKO_ROBO_NAME "px4sim"
 
@@ -90,7 +91,7 @@ static void debug_print(hako::assets::drone::DroneDynamicsCollisionType& drone_c
     std::cout << "Restitution Coefficient: " << drone_collision.restitution_coefficient << std::endl;
 }
 
-static void do_io_read(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
+static void do_io_read_collision(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
 {
     Hako_Collision hako_collision;
     memset(&drone_collision, 0, sizeof(drone_collision));
@@ -118,6 +119,28 @@ static void do_io_read(hako::assets::drone::DroneDynamicsCollisionType& drone_co
         hako_collision.collision = false;
         if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_COLLISION, (const char*)&hako_collision, sizeof(hako_collision))) {
             std::cerr << "ERROR: can not write pdu data: Hako_Collision" << std::endl;
+        }
+    }
+}
+static void do_io_read_manual(hako::assets::drone::DroneDynamicsManualControlType& drone_manual)
+{
+    Hako_ManualPosAttControl hako_manual;
+    memset(&hako_manual, 0, sizeof(hako_manual));
+    if (!hako_asset_runner_pdu_read(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_MANUAL, (char*)&hako_manual, sizeof(hako_manual))) {
+        std::cerr << "ERROR: can not read pdu data: Hako_ManualPosAttControl" << std::endl;
+    }
+    drone_manual.control = hako_manual.do_operation;
+    if (drone_manual.control) {
+        std::cout << "manual set angle( " << hako_manual.posatt.angular.x << ", " << hako_manual.posatt.angular.y << ", " << hako_manual.posatt.angular.z << " )" << std::endl;
+        hako_manual.do_operation = false;
+        drone_manual.angle.data.x = hako_manual.posatt.angular.x;
+        drone_manual.angle.data.y = hako_manual.posatt.angular.y;
+        drone_manual.angle.data.z = hako_manual.posatt.angular.z;
+        drone_manual.pos.data.x = hako_manual.posatt.linear.x;
+        drone_manual.pos.data.y = hako_manual.posatt.linear.y;
+        drone_manual.pos.data.z = hako_manual.posatt.linear.z;
+        if (!hako_asset_runner_pdu_write(HAKO_ROBO_NAME, HAKO_AVATOR_CHANNLE_ID_MANUAL, (const char*)&hako_manual, sizeof(hako_manual))) {
+            std::cerr << "ERROR: can not write pdu data: Hako_ManualPosAttControl" << std::endl;
         }
     }
 }
@@ -154,8 +177,12 @@ static void my_task()
 {
     hako::assets::drone::DroneDynamicsInputType drone_input;
     drone_input.no_use_actuator = false;
+    drone_input.manual.control = false;
     if (drone->get_drone_dynamics().has_collision_detection()) {
-        do_io_read(drone_input.collision);
+        do_io_read_collision(drone_input.collision);
+    }
+    if (drone->get_drone_dynamics().has_manual_control()) {
+        do_io_read_manual(drone_input.manual);
     }
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
         drone_input.controls[i] = controls[i];

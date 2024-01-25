@@ -28,6 +28,9 @@ public:
             input.torque = thrust_dynamis->get_torque();
         }
         drone_dynamics->run(input);
+        if (input.manual.control) {
+            drone_dynamics->set_angle(input.manual.angle);
+        }
 
         //sensors
         acc->run(drone_dynamics->get_vel_body_frame());
