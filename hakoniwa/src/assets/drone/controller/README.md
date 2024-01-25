@@ -6,6 +6,7 @@
 
 https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/src/assets/drone/controller/drone_pid_control.cpp
 
+本コードでは、機体の高さとφの角度をPID制御しています。
 
 ## インストール手順
 
@@ -29,6 +30,9 @@ cd hakoniwa
 ```
 bash do_pid_test.bash 3 50
 ```
+
+<img width="936" alt="スクリーンショット 2024-01-25 10 40 54" src="https://github.com/toppers/hakoniwa-px4sim/assets/164193/aa0192b9-8ef4-4816-98f8-f4a04e31c9d8">
+
 
 本スクリプトの仕様は以下のとおりです。
 
