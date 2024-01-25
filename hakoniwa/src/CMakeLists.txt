@@ -77,7 +77,15 @@ target_include_directories(
     PRIVATE ${HAKONIWA_ASSET_DIR}
 )
 
-target_link_libraries(
-    px4sim_manual
-    assets
-)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(
+        px4sim_manual
+        assets
+    )
+else()
+    target_link_libraries(
+        px4sim_manual
+        assets
+        atomic
+    )
+endif()
