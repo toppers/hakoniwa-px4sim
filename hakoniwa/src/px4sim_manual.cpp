@@ -6,6 +6,7 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <math.h>
 
 #define PDU_CHANNEL_ID    3
 #define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
