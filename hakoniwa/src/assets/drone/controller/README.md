@@ -14,6 +14,12 @@ https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/src/assets/drone/c
 
 [箱庭コマンドおよびライブラリのインストール手順](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa#%E7%AE%B1%E5%BA%AD%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%8A%E3%82%88%E3%81%B3%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%89%8B%E9%A0%86)
 
+次に、以下のPythonライブラリをインストールします。
+
+```sh
+pip3 install pandas matplotlib
+```
+
 
 ## 実行手順
 
