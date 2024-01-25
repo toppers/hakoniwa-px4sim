@@ -34,8 +34,6 @@ using hako::assets::drone::SensorNoise;
 #define REFERENCE_LATITUDE          drone_config.getSimLatitude()
 #define REFERENCE_LONGTITUDE        drone_config.getSimLongitude()
 #define REFERENCE_ALTITUDE          drone_config.getSimAltitude()
-#define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
-#define RADIAN2DEGREE(v)    ( (180.0 * (v)) / M_PI )
 #define PARAMS_MAG_F   drone_config.getSimMagneticField().intensity_nT
 #define PARAMS_MAG_D    DEGREE2RADIAN(drone_config.getSimMagneticField().declination_deg)
 #define PARAMS_MAG_I    DEGREE2RADIAN(drone_config.getSimMagneticField().inclination_deg)

@@ -14,6 +14,8 @@ struct RotorPosition {
     std::vector<double> position;
     double rotationDirection;
 };
+#define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
+#define RADIAN2DEGREE(v)    ( (180.0 * (v)) / M_PI )
 
 class DroneConfig {
 private:
@@ -214,7 +216,10 @@ public:
     double getCompSensorNoise(const std::string& sensor_name) const {
         return configJson["components"]["sensors"][sensor_name]["noise"].get<double>();
     }
-
+    double getControllerPid(const std::string& param1, const std::string& param2, const std::string& param3)
+    {
+        return configJson["controller"]["pid"][param1][param2][param3].get<double>();
+    }
 };
 
 extern class DroneConfig drone_config;

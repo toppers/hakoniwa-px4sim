@@ -31,17 +31,42 @@ void drone_pid_control_init()
     hovering_thrust = mass * 9.81;
     hovering_thrust_range = hovering_thrust / 2;
     // PIDコントローラのパラメータ設定
-    double Kp_height = 1.0e+0, Ki_height = 1.0e-1, Kd_height = 0.5e+2;
-    double setpoint_height = 10.0;  // 目標高さ
+    double Kp_height = drone_config.getControllerPid("position", "z", "Kp");
+    double Ki_height = drone_config.getControllerPid("position", "z", "Ki");
+    double Kd_height = drone_config.getControllerPid("position", "z", "Kd");
+    double setpoint_height = -drone_config.getControllerPid("position", "z", "setpoint");
+    std::cout << "setpoint_height: " << setpoint_height << std::endl;
+    std::cout << "Kp_height: " << Kp_height << std::endl;
+    std::cout << "Ki_height: " << Ki_height << std::endl;
+    std::cout << "Kd_height: " << Kd_height << std::endl;
 
-    double Kp_phi = 1.0e-2, Ki_phi = 1.0e-6, Kd_phi = 0.1;
-    double setpoint_phi = 0.2;  // 目標ロール角
+    double Kp_phi = drone_config.getControllerPid("angle", "phi", "Kp");
+    double Ki_phi = drone_config.getControllerPid("angle", "phi", "Ki");
+    double Kd_phi = drone_config.getControllerPid("angle", "phi", "Kd");
+    double setpoint_phi = DEGREE2RADIAN(drone_config.getControllerPid("angle", "phi", "setpoint"));
+    std::cout << "setpoint_phi: " << setpoint_height << std::endl;
+    std::cout << "Kp_phi: " << Kp_phi << std::endl;
+    std::cout << "Ki_phi: " << Ki_phi << std::endl;
+    std::cout << "Kd_phi: " << Kd_phi << std::endl;
 
-    double Kp_theta = 0.0, Ki_theta = 0.0, Kd_theta = 0.0;
-    double setpoint_theta = 0.0;  // 目標ピッチ角
 
-    double Kp_psi = 0.0, Ki_psi = 0.0, Kd_psi = 0.0;
-    double setpoint_psi = 0.0;  // 目標ヨー角
+    double Kp_theta = drone_config.getControllerPid("angle", "theta", "Kp");
+    double Ki_theta = drone_config.getControllerPid("angle", "theta", "Ki");
+    double Kd_theta = drone_config.getControllerPid("angle", "theta", "Kd");
+    double setpoint_theta = DEGREE2RADIAN(drone_config.getControllerPid("angle", "theta", "setpoint"));
+    std::cout << "setpoint_theta: " << setpoint_theta << std::endl;
+    std::cout << "Kp_theta: " << Kp_theta << std::endl;
+    std::cout << "Ki_theta: " << Ki_theta << std::endl;
+    std::cout << "Kd_theta: " << Kd_theta << std::endl;
+
+    double Kp_psi = drone_config.getControllerPid("angle", "psi", "Kp");
+    double Ki_psi = drone_config.getControllerPid("angle", "psi", "Ki");
+    double Kd_psi = drone_config.getControllerPid("angle", "psi", "Kd");
+    double setpoint_psi = DEGREE2RADIAN(drone_config.getControllerPid("angle", "psi", "setpoint"));
+    std::cout << "setpoint_psi: " << setpoint_psi << std::endl;
+    std::cout << "Kp_psi: " << Kp_psi << std::endl;
+    std::cout << "Ki_psi: " << Ki_psi << std::endl;
+
 
     // PIDコントローラのインスタンス化
     pid_height = new DronePidControl(Kp_height, Ki_height, Kd_height, setpoint_height,
