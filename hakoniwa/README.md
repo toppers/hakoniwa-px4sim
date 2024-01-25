@@ -114,3 +114,66 @@ bash build.bash
 - **sensors**: 各種センサーの設定。
   - **sampleCount**: サンプル数
   - **noise**:ノイズレベル(標準偏差)。ノイズ未設定の場合は0。
+
+
+# 箱庭コマンドおよびライブラリのインストール手順
+
+箱庭にはコマンド(`hako-cmd`) と共有ライブラリ(`libshakoc.[so|dylib]`)があります。Unityを使用せずにシミュレーションを実行する場合に利用します。
+
+以下、インストール手順を示します。
+
+**ディレクトリ移動:**
+
+```
+cd hakoniwa/third-party/hakoniwa-core-cpp-client
+```
+
+**ビルド：**
+
+```
+bash build.bash
+```
+
+**インストール：**
+
+```
+bash install.bash
+```
+
+インストール時に、/usr/local/lib/hakoniwa と /usr/local/bin/hakoniwa へのアクセス許可が必要になることがあります。この許可を与えると、箱庭のライブラリやコマンドがこれらのディレクトリに配置されます。
+
+
+**環境変数の設定:**
+
+インストールが成功した後、これらのパスを環境変数に設定してください。
+
+Ubuntuの場合:
+
+~/.bashrc ファイルに以下の行を追加してください。
+
+```sh
+export LD_LIBRARY_PATH=/usr/local/lib/hakoniwa:$LD_LIBRARY_PATH
+export PATH=/usr/local/bin/hakoniwa:$PATH
+```
+
+変更を反映させるために、次のコマンドを実行します。
+
+```sh
+source ~/.bashrc
+```
+
+macOSの場合：
+
+使用しているシェルに応じて ~/.bash_profile または ~/.zshrc に以下の行を追加します。
+
+```sh
+export DYLD_LIBRARY_PATH=/usr/local/lib/hakoniwa:$DYLD_LIBRARY_PATH
+export PATH=/usr/local/bin/hakoniwa:$PATH
+```
+
+変更を反映させるために、次のコマンドを実行します。
+
+```sh
+source ~/.bash_profile  # Bashの場合
+source ~/.zshrc         # Zshの場合
+```
