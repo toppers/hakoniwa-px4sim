@@ -62,3 +62,22 @@ target_include_directories(
 )
 
 target_link_libraries(hako-px4sim hakoarun)
+
+
+add_executable(
+    px4sim_manual
+    px4sim_manual.cpp
+)
+
+target_include_directories(
+    px4sim_manual
+    PRIVATE src/include
+    PRIVATE /usr/local/include
+    PRIVATE ${HAKONIWA_PDU_SOURCE_DIR}
+    PRIVATE ${HAKONIWA_ASSET_DIR}
+)
+
+target_link_libraries(
+    px4sim_manual
+    assets
+)
