@@ -188,14 +188,15 @@ ERROR [simulator_mavlink] poll timeout 0, 111
 
 この状態で、Unityのシミュレーションを開始してください。
 
-![スクリーンショット 2023-11-11 14 40 27](https://github.com/toppers/hakoniwa-px4sim/assets/164193/d5d18be8-63bb-42e5-a134-a02121e329b1)
+![スクリーンショット 2024-01-26 9 34 16](https://github.com/toppers/hakoniwa-px4sim/assets/164193/1f6c417d-cb58-4c21-9dd0-7b59964eeadf)
+
 
 そして、`START` ボタンを押下すると、シミュレーションが動き出します。
 
 
-## 端末B
+## 端末A
 
-この時、端末Bでは以下のように、準備状態になります。
+この時、端末Aでは以下のように、準備状態になります。
 
 ```
 INFO  [lockstep_scheduler] setting initial absolute time to 1699681315573127 us
@@ -217,7 +218,7 @@ INFO  [tone_alarm] notify negative
 INFO  [commander] Ready for takeoff!
 ```
 
-ここで、端末Bで以下のコマンドを実行してください。
+ここで、端末Aで以下のコマンドを実行してください。
 
 ```
 commander takeoff
@@ -225,7 +226,8 @@ commander takeoff
 
 成功すると、Unity上のドローンがホバリングしてくれます。
 
-![スクリーンショット 2023-11-11 14 46 36](https://github.com/toppers/hakoniwa-px4sim/assets/164193/59a5bf25-8256-4a14-b901-4144e3fbcac8)
+![スクリーンショット 2024-01-26 9 36 02](https://github.com/toppers/hakoniwa-px4sim/assets/164193/eba3b933-6789-4a2e-b742-de27a1ae1bce)
+
 
 ## シミュレーション停止方法
 
