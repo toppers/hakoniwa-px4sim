@@ -83,7 +83,7 @@ private:
     {
         return drone_physics::angular_acceleration_in_body_frame(
                         v_rate,
-                        torque.data.x, torque.data.y, torque.data.z,
+                        torque,
                         this->param_cx, this->param_cy, this->param_cz);
     }
     glm::dvec3 rungeKutta4_sum(const glm::dvec3& v, const glm::dvec3& k1, const glm::dvec3& k2, const glm::dvec3& k3, const glm::dvec3& k4)

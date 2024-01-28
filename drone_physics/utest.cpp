@@ -263,47 +263,49 @@ void test_ground_acceleration() {
 
 void test_body_angular_acceleration() {
     const AngularVelocityType v{1, 2, 3};
-    double I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 0, torque_y = 0, torque_z = 0;
-    AngularAccelerationType a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    double I_xx = 1, I_yy = 1, I_zz = 1;
+    TorqueType torque = {0, 0, 0};
+    AngularAccelerationType a = angular_acceleration_in_body_frame(v, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a, (AngularAccelerationType{0, 0, 0}));
 
-    I_xx = 1, I_yy = 1, I_zz = 1, torque_x = 1, torque_y = 2, torque_z = 3;
-    a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    I_xx = 1, I_yy = 1, I_zz = 1, torque = {1, 2, 3};
+    a = angular_acceleration_in_body_frame(v, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a, (AngularAccelerationType{1, 2, 3}));
 
-    I_xx = 2, I_yy = 5, I_zz = 8, torque_x = 1, torque_y = 2, torque_z = 3;
+    I_xx = 2, I_yy = 5, I_zz = 8, torque = {1, 2, 3};
     // remember v = (p, q, r) = {1, 2, 3}
-    a = angular_acceleration_in_body_frame(v, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    a = angular_acceleration_in_body_frame(v, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a, (AngularAccelerationType{
-        (torque_x - 2*3*(I_zz - I_yy))/I_xx,
-        (torque_y - 1*3*(I_xx - I_zz))/I_yy,
-        (torque_z - 1*2*(I_yy - I_xx))/I_zz}));
+        (torque.x - 2*3*(I_zz - I_yy))/I_xx,
+        (torque.y - 1*3*(I_xx - I_zz))/I_yy,
+        (torque.z - 1*2*(I_yy - I_xx))/I_zz}));
 }
 
 void test_ground_angular_acceleration()
 {
     EulerRateType e_rate{0, 0, 0};
     EulerType euler{0, 0, 0};
+    TorqueType torque{0, 0, 0};
     EulerAccelerationType a_g;
-    double I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 0, torque_z = 0; /** all in BODY */
+    double I_xx = 1, I_yy = 2, I_zz = 3;
     
     /* ZERO euler/rate, no Torque */
-    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a_g, (EulerAccelerationType{0, 0, 0}));
 
     /* X torque */
-    I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 100, torque_y = 0, torque_z = 0;
-    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    I_xx = 1, I_yy = 2, I_zz = 3, torque = {100, 0, 0};
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a_g, (EulerAccelerationType{100, 0, 0}));
 
     /* Y torque */
-    I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 100, torque_z = 0;
-    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    I_xx = 1, I_yy = 2, I_zz = 3, torque = {0, 100, 0};
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a_g, (EulerAccelerationType{0, 50, 0}));
 
     /* Z torque */
-    I_xx = 1, I_yy = 2, I_zz = 3, torque_x = 0, torque_y = 0, torque_z = 150;
-    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque_x, torque_y, torque_z, I_xx, I_yy, I_zz);
+    I_xx = 1, I_yy = 2, I_zz = 3, torque = {0, 0, 150};
+    a_g = euler_acceleration_in_ground_frame(e_rate, euler, torque, I_xx, I_yy, I_zz);
     assert_almost_equal(a_g, (EulerAccelerationType{0, 0, 50}));
 }
 

@@ -138,9 +138,7 @@ AccelerationType acceleration_in_body_frame(
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
+    const TorqueType& torque, /* in body frame */
     double I_xx, /* in body frame, 0 is not allowed */
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */);
@@ -149,7 +147,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
 EulerAccelerationType euler_acceleration_in_ground_frame(
     const EulerRateType& current_euler_rate,
     const EulerType& current_euler,
-    double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
+    const TorqueType& torque, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
 
 /**

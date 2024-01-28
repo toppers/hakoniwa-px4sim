@@ -338,9 +338,7 @@ AccelerationType acceleration_in_ground_frame(
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
+    const TorqueType& torque, /* in body frame */
     double I_xx, /* in body frame, 0 is not allowed */
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */)
@@ -349,6 +347,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
 
     // current angular velocities in body frame
     const auto [p, q, r] = body_angular_velocity;
+    const auto [torque_x, torque_y, torque_z] = torque;
  
     /*
      * See also Nonami's book eq.(2.31)(1.137)(1.109), where L=tau_x, M=tau_y, N=tau_z.
@@ -373,7 +372,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
 EulerAccelerationType euler_acceleration_in_ground_frame(
     const EulerRateType& current_euler_rate,
     const EulerType& current_euler,
-    double torque_x, double torque_y, double torque_z, /* in BODY FRAME!! */
+    const TorqueType& torque, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */)
 {
     /* You need to 
@@ -389,9 +388,7 @@ EulerAccelerationType euler_acceleration_in_ground_frame(
     /* transform euler angle velocity to BODY frame anglular velocity */
     const auto [p, q, r] = body_angular_velocity_from_euler_rate(current_euler_rate, current_euler);
     const auto [dot_p, dot_q, dot_r] = angular_acceleration_in_body_frame(
-        {p, q, r},
-        torque_x, torque_y, torque_z,
-        I_xx, I_yy, I_zz);
+        {p, q, r}, torque, I_xx, I_yy, I_zz);
 
     const double c_phi = cos(phi), s_phi = sin(phi);
     const double c_theta = cos(theta), s_theta = sin(theta);

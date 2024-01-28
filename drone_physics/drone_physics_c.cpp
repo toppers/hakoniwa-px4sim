@@ -80,20 +80,18 @@ dp_acceleration_t dp_acceleration_in_body_frame(
 
 dp_angular_acceleration_t dp_angular_acceleration_in_body_frame(
     const dp_angular_velocity_t* body_angular_velocity,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
+    const dp_torque_t* torque, /* in body frame */
     double I_xx, /* in body frame, 0 is not allowed */
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */)
 {
     assert(body_angular_velocity);
+    assert(torque);
 
     return to_dp_vector(
         hako::drone_physics::angular_acceleration_in_body_frame(
             to_Vector(body_angular_velocity),
-            torque_x, torque_y, torque_z,
-            I_xx, I_yy, I_zz
+            to_Vector(torque), I_xx, I_yy, I_zz
             )
         );
 }

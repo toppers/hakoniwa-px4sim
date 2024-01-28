@@ -26,6 +26,9 @@ typedef dp_vector_t
     dp_velocity_t, dp_acceleration_t; // translation (movement) and its time derivative
 typedef dp_vector_t
     dp_angular_velocity_t, dp_angular_acceleration_t; // rotation and its time derivative
+typedef dp_vector_t
+    dp_force_t, dp_torque_t; // force and torque
+
 typedef dp_euler_t
     dp_euler_rate_t; // time derivative of Euler Angles
 
@@ -56,9 +59,7 @@ dp_acceleration_t dp_acceleration_in_body_frame(
 
 dp_angular_acceleration_t dp_angular_acceleration_in_body_frame(
     const dp_angular_velocity_t* body_angular_velocity,
-    double torque_x, /* in body frame */
-    double torque_y, /* in body frame */
-    double torque_z, /* in body frame */
+    const dp_torque_t* torque, /* in body frame */
     double I_xx, /* in body frame, 0 is not allowed */
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */);

@@ -155,7 +155,7 @@ public:
                                                             thrust.data, this->param_mass, GRAVITY, this->param_drag1, this->param_drag2);
         drone_physics::EulerAccelerationType acc_angular_body = drone_physics::euler_acceleration_in_ground_frame(
                                                             this->angularVelocity, this->angle,
-                                                            torque.data.x, torque.data.y, torque.data.z,
+                                                            torque,
                                                             this->param_cx, this->param_cy, this->param_cz);
 
         //integral to velocity on ground frame
