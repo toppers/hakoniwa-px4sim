@@ -34,6 +34,7 @@ add_executable(
 
     ${PHYSICS_SOURCE_DIR}/body_physics.cpp
     ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/drone_physics_c.cpp
     
     assets/drone/controller/drone_pid_control.cpp
     assets/drone/aircraft/aircraft_factory.cpp
@@ -59,9 +60,14 @@ target_include_directories(
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
     PRIVATE ${PHYSICS_SOURCE_DIR}
     PRIVATE ${nlohmann_json_SOURCE_DIR}/single_include
+    PRIVATE ${MATLAB_SOURCE_DIR}
 )
 
-target_link_libraries(hako-px4sim hakoarun)
+target_link_libraries(
+    hako-px4sim 
+    hakoarun
+    drone_physics_matlab
+)
 
 
 add_executable(

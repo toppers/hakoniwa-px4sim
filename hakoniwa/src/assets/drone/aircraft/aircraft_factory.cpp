@@ -1,5 +1,6 @@
 #include "aircraft_factory.hpp"
 #include "utils/hako_utils.hpp"
+#include "assets/drone/physics/body_frame_matlab/drone_dynamics_body_frame_matlab.hpp"
 #include "assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
 #include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
 #include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
@@ -18,6 +19,7 @@
 #include <math.h>
 
 using hako::assets::drone::AirCraft;
+using hako::assets::drone::DroneDynamicsBodyFrameMatlab;
 using hako::assets::drone::DroneDynamicsBodyFrame;
 using hako::assets::drone::DroneDynamicsGroundFrame;
 using hako::assets::drone::SensorAcceleration;
@@ -63,12 +65,19 @@ IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
     //drone dynamics
     IDroneDynamics *drone_dynamics = nullptr;
     if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrame") {
+        std::cout << "DroneDynamicType: BodyFrame" << std::endl;
         drone_dynamics = new DroneDynamicsBodyFrame(DELTA_TIME_SEC);
     }
+    else if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrameMatlab") {
+        std::cout << "DroneDynamicType: BodyFrameMatlab" << std::endl;
+        drone_dynamics = new DroneDynamicsBodyFrameMatlab(DELTA_TIME_SEC);
+    }
     else if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrameRK4") {
+        std::cout << "DroneDynamicType: BodyFrameRK4" << std::endl;
         drone_dynamics = new DroneDynamicsBodyFrameRK4(DELTA_TIME_SEC);
     }
     else {
+        std::cout << "DroneDynamicType: GroundFrame" << std::endl;
         drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
     }
     //auto drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);

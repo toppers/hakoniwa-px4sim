@@ -19,6 +19,7 @@ static mi_drone_acceleration_out_t drone_acceleration_by_physics(const mi_drone_
     dp_velocity_t vel = {in->u, in->v, in->w};
     dp_euler_t euler = {in->phi, in->theta, in->psi};
     dp_angular_velocity_t ang_vel = {in->p, in->q, in->r};
+    dp_torque_t torque = {in->torque_x, in->torque_y, in->torque_z};
 
     dp_acceleration_t acc = dp_acceleration_in_body_frame(
         &vel, &euler, &ang_vel,
@@ -26,7 +27,7 @@ static mi_drone_acceleration_out_t drone_acceleration_by_physics(const mi_drone_
 
     dp_angular_acceleration_t ang_acc = dp_angular_acceleration_in_body_frame(
         &ang_vel,
-        in->torque_x, in->torque_y, in->torque_z,
+        &torque,
         in->Ixx, in->Iyy, in->Izz);
 
     mi_drone_acceleration_out_t out = {

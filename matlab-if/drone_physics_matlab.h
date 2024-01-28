@@ -1,6 +1,10 @@
 #ifndef _DRONE_PHYSICS_MATLAB_H_
 #define _DRONE_PHYSICS_MATLAB_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * These types are used for matlab interface of drone_phiysics.
  * currently, only acceleration and anguler acceleration are supported.
@@ -50,6 +54,7 @@ typedef struct mi_drone_acceleration_out_t {
 /* Matlab function entry point */
 mi_drone_acceleration_out_t mi_drone_acceleration(
     const mi_drone_acceleration_in_t* in);
+void mi_drone_acceleration_initialize(void);
 
 /***
 The Original function signatures are:
@@ -72,5 +77,9 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_yy, // in body frame, 0 is not allowed 
     double I_zz // in body frame, 0 is not allowed );
 */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _DRONE_PHYSICS_MATLAB_H_ */
