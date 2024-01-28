@@ -319,15 +319,17 @@ and the inverse transformation is `body_angular_velocity_from_euler_rate`.
 
 
 ### One Rotor dynamics
+
+#### One rotor rotation speed
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
 $\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
 
-$G(s)/D(s) = K_r/(T_r s + 1)$
+$\Omega(s)/D(s) = G(s) = K_r/(T_r s + 1)$
 
 and the time domain differential equation is as follows.
 
-$\dot{\Omega}(t) = K_r ( d(t) - \frac{\Omega(t)}{ T_r})$
+$\dot{\Omega}(t) = (K_r d(t) - \Omega(t))/T_r$
 
 where;
 
@@ -335,6 +337,10 @@ where;
 - $T_r$ - rotor time constant.
 - $d(t)$ - duty rate of the rotor. ($0.0 \le d(t) \le 1.0$)
 
+The function name is `rotor_omega_acceleration`.
+Note that the $\Omega$ is measured in RMP(Rotations Per Minute) in the function.
+
+#### One rotor thrust and anti-torque
 The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity
 $\Omega$ eq.(2.50). $A$ is a parameter related to the rotor size and the air density.
 
@@ -345,6 +351,8 @@ The anti-torque $\tau_i$ of the rotor (2.56).
 $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
 where $B$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
+
+The function name is `rotor_thrust` and `rotor_anti_torque`.
 
 ## Overview of variables and functionson
 The body location $(x, y, z)^T$ and the euler angles $(\phi, \theta, \psi)^T$ are placed in the
