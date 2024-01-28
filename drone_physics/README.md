@@ -338,7 +338,6 @@ where;
 - $d(t)$ - duty rate of the rotor. ($0.0 \le d(t) \le 1.0$)
 
 The function name is `rotor_omega_acceleration`.
-Note that the $\Omega$ is measured in RMP(Rotations Per Minute) in the function.
 
 #### One rotor thrust and anti-torque
 The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity
