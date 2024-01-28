@@ -7,18 +7,20 @@ project(drone_physics
     LANGUAGES C CXX
 )
 
+MESSAGE(STATUS "HAKONIWA_MATLAB_BUILD=" ${HAKONIWA_MATLAB_BUILD})
 if (DEFINED HAKONIWA_MATLAB_BUILD)
-#    add_library(
-#        drone_physics_matlab STATIC
-#        drone_system/drone_sample/drone_system_ert_rtw/drone_system.c
-#        drone_system/drone_sample/slprj/ert/drone_impl/drone_impl.c
-#    )
-#    target_include_directories(
-#        drone_physics_matlab
-#        PRIVATE .
-#        PRIVATE drone_system/drone_sample/slprj/ert/_sharedutils
-#        PRIVATE drone_system/drone_sample/slprj/ert/drone_impl
-#    )
+    add_library(
+        drone_physics_matlab STATIC
+        drone_system/drone_sample/drone_system_ert_rtw/drone_system.c
+        drone_system/drone_sample/slprj/ert/drone_impl/drone_impl.c
+    )
+    target_include_directories(
+        drone_physics_matlab
+        PRIVATE .
+        PRIVATE drone_system/drone_sample/slprj/ert/_sharedutils
+    PRIVATE drone_system/drone_sample/slprj/ert/drone_impl
+    )
+else()
     add_library(
         drone_physics_matlab STATIC
         drone_physics_matlab_sample.c
@@ -27,7 +29,9 @@ if (DEFINED HAKONIWA_MATLAB_BUILD)
         drone_physics_matlab
         PRIVATE .
     )
-else()
+endif()
+
+if (NOT DEFINED HAKONIWA_BUILD)
     if (DEFINED HAKO_CLIENT_OPTION_FILEPATH)
         include(${HAKO_CLIENT_OPTION_FILEPATH})
     else()
@@ -36,7 +40,7 @@ else()
 
     add_executable(acctest acctest.cpp)
     target_include_directories(acctest PUBLIC ../drone_physics)
-    target_link_libraries(acctest PRIVATE drone_physics_c)
+    target_link_libraries(acctest PRIVATE drone_physics_c drone_physics_matlab)
     add_library(drone_physics_c STATIC IMPORTED)
     set_property(TARGET drone_physics_c PROPERTY IMPORTED_LOCATION "../drone_physics/libdrone_physics_c.a")
     enable_testing()

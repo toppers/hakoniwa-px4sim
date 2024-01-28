@@ -13,8 +13,6 @@ else()
     include(../cmake-options/default-cmake-options.cmake)
 endif()
 
-set(HAKONIWA_MATLAB_BUILD true)
-
 set(GLM_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/glm")
 set(PHYSICS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../drone_physics")
 set(MATLAB_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../matlab-if")

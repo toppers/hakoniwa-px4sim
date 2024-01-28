@@ -62,12 +62,12 @@ static void test_first_case() {
     /* これが現在の仕様となる関数 */
     mi_drone_acceleration_out_t out_p = drone_acceleration_by_physics(&in);
 
-    /* matlab のものも呼び出す
+    // matlab のものも呼び出す
     mi_drone_acceleration_out_t out_m = mi_drone_acceleration(&in);
-    */
+    
 
     assert_almost_equal(out_p.du, 0.0);
-    /*  assert_almost_equal(out_m.du, 0.0); */
+    assert_almost_equal(out_m.du, 0.0);
 
     in.u = 1.0; in.v = 2.0; in.w = 3.0;
     in.Ixx = 2.0; in.Iyy = 5.0; in.Izz = 8.0;
@@ -75,9 +75,9 @@ static void test_first_case() {
 
     out_p = drone_acceleration_by_physics(&in);
 
-    /* matlab のものも呼び出す
+    // matlab のものも呼び出す
     out_m = mi_drone_acceleration(&in);
-    */
+    
 
     mi_drone_acceleration_out_t expected = {
         0, 0, 0,
@@ -87,7 +87,7 @@ static void test_first_case() {
     };
     /* remove +1 from the line below to pass the test */
     assert_almost_equal(out_p.du, expected.du);
-    /* assert_almost_equal(out_m.dv, expected.dv); */
+    assert_almost_equal(out_m.dv, expected.dv);
 }
 
 int main() {
