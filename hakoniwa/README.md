@@ -52,20 +52,25 @@ toppersjp/hakoniwa-px4sim         v1.0.1    c34c696b8007   About an hour ago   3
 bash docker/run.bash 
 ```
 
-箱庭環境をビルドします。
-
-```
-bash build.bash
-```
-
-成功すると、` cmake-build/src/hako-px4sim` というファイルが作成されます。
-
 ## Mac の場合
 
-箱庭環境をビルドします。
+Macの場合は、特別な対応は不要です。
+
+# 箱庭のビルド手順
+
+箱庭環境をビルドします。ビルド方法としては、２パターンあります。
+
+
+## MATLAB生成コードを利用しない場合
 
 ```
 bash build.bash
+```
+
+## MATLAB生成コードを利用する場合
+
+```
+bash build.bash HAKONIWA_MATLAB_BUILD=true
 ```
 
 成功すると、` cmake-build/src/hako-px4sim` というファイルが作成されます。
@@ -96,7 +101,9 @@ bash build.bash
 
 ## コンポーネント設定
 - **droneDynamics**: ドローンの動力学モデル。
-  - **physicsEquation**: 運動方程式のタイプ(BodyFrameのみ対応しています)。
+  - **physicsEquation**: 運動方程式のタイプを指定します。
+    - BodyFrame: 箱庭のデフォルト物理モデルを利用する場合は、この値を設定してください。
+    - BodyFrameMatlab: MATLABで生成した物理モデルのコードを利用する場合は、この値を設定してください。
   - **collision_detection**: 障害物との衝突を検出して物理式にフィードバックする場合は`true`。非検出とする場合は、`false`。
   - **manual_control**:　センサキャリブレーションで機体を手動で操作した場合に利用します。`true`にすると、外部操作が可能になります。通常は`false`として下さい。
   - **airFrictionCoefficient**: 空気抵抗係数。空気抵抗の１次項と２次項を配列で指定します。
