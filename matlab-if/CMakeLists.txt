@@ -11,14 +11,14 @@ MESSAGE(STATUS "HAKONIWA_MATLAB_BUILD=" ${HAKONIWA_MATLAB_BUILD})
 if (DEFINED HAKONIWA_MATLAB_BUILD)
     add_library(
         drone_physics_matlab STATIC
-        drone_system/drone_sample/drone_system_ert_rtw/drone_system.c
-        drone_system/drone_sample/slprj/ert/drone_impl/drone_impl.c
+        drone_system/23a/drone_system_ert_rtw/drone_system.c
+        drone_system/23a/slprj/ert/drone_impl/drone_impl.c
     )
     target_include_directories(
         drone_physics_matlab
         PRIVATE .
-        PRIVATE drone_system/drone_sample/slprj/ert/_sharedutils
-    PRIVATE drone_system/drone_sample/slprj/ert/drone_impl
+        PRIVATE drone_system/23a/slprj/ert/_sharedutils
+        PRIVATE drone_system/23a/slprj/ert/drone_impl
     )
 else()
     add_library(
