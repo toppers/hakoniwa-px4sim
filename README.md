@@ -10,6 +10,7 @@
 - [hakoniwa-px4sim のインストール手順](#hakoniwa-px4sim-のインストール手順)
 - [箱庭のインストール手順](#箱庭のインストール手順)
 - [シミュレーション実行手順](#シミュレーション実行手順)
+- [MATLAB連携](#MATLAB連携)
 - [環境からの作用](#環境からの作用)
 - [ヘッドレス・シミュレーション](#ヘッドレスシミュレーション)
 - [コミュニティとサポート](#コミュニティとサポート)
@@ -24,7 +25,7 @@
 
 3. **エンジンの柔軟性:** 現時点ではUnityエンジンを[サポート](https://github.com/toppers/hakoniwa-unity-drone-model)していますが、アーキテクチャは他のゲームエンジンとの連携も可能に設計されています。Unreal Engine との連携可能なプラグインは[こちら](https://github.com/toppers/hakoniwa-unreal-simasset-plugin/tree/main)(`v1.1.0`)。
 
-4. **MATLAB/Simulinkとの互換性:** 物理式モデルは、MATLAB/Simulinkで作成したモデルとも連携できるようになっています。
+4. **MATLAB/Simulinkとの互換性:** 物理式モデルは、MATLAB/Simulinkで作成したモデルとも連携できるようになっています。詳細は[こちら](#MATLAB連携)
 
 5. **センサモデルの整備:** センサモデルはアーキテクチャ内で整理され、明確な仕様に基づいています。これにより、ユーザーはセンサモデルを仕様に合わせて交換することが可能です。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs)を参照ください。
 
@@ -298,6 +299,36 @@ https://github.com/toppers/hakoniwa-px4sim/assets/164193/88934527-58dd-46f7-abc1
 1. 離陸
 2. 東へ移動
 3. 北へ移動
+
+# MATLAB連携
+
+v2.0.0以降のバージョンでは、MATLAB/Simulinkで作成したモデルをコード生成することで、そのモデルを箱庭上でシミュレーションすることができます。
+
+現時点のサポート状況は以下のとおりです。
+
+- [X] ドローン物理モデル
+- [ ] センサモデル
+- [ ] アクチュエータモデル 
+
+## 全体的な開発フロー
+
+全体的な開発フローは下図のとおりです。
+
+![スクリーンショット 2024-01-31 7 08 43](https://github.com/toppers/hakoniwa-px4sim/assets/164193/b0a15d5f-bd08-4fe7-a0d1-e21ce4c71962)
+
+* MATLAB/Simulink Hakoniwa Templates
+  * MATLAB/Simulink のモデル向けに箱庭側でインタフェースを定義しています。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/matlab-if/README.md)。
+  * MATLAB/Simulink のモデルを箱庭と接続するために、箱庭接続用のテンプレートを用意しています。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/matlab-if/model_template)。
+* MATLAB/Simulink Process
+  * テンプレートに箱庭の入出力インタフェースが定義されていますので、入力データから出力データに変換する処理をモデルとして作成します。
+  * 作成したモデルをMATLAB上でシミュレーションし、チェックします。
+  * MATLABシミュレーションチェック完了後、Cコード生成します。
+* Hakoniwa Simulatin Process
+  * 生成したCコードを箱庭(hakoniwa-px4sim)の `matlab-if` 直下に配置します。
+  * `matlab-if` 直下の `CMakeLists.txt` を編集し、ビルド対象に含めます(`HAKONIWA_MATLAB_BUILD`ブロック内)。
+  * 箱庭のビルドプロセスに従ってコンパイルします。
+  * コンパイル成功したら、箱庭のシミュレーション実行プロセスに従って、シミュレーションを行います。
+
 
 # 環境からの作用
 
