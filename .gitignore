@@ -34,4 +34,9 @@ utest
 ctest
 Makefile.org
 
+matlab-if/drone_system
+matlab-if/acctest
+matlab-if/libdrone_physics_matlab.a
 
+hakoniwa/python/results
+px4/auto-test/test_resource/eval
