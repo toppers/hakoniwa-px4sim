@@ -28,7 +28,6 @@ Matlab で定義された制御アルゴリズムを Hakoniwa Drone に組み込
 * matlab-if/
   * README.md - このファイル
   * drone_physics_matlab.h - インターフェイスヘッダー
-  * drone_physics_matlab.c - インターフェイス実装（ここが Matlab，もしくは Matlab を呼び出す）
   * acctest.cpp - インターフェイスのテストプログラム
 
 将来的には Matlab のいろんな実装をサブディレクトリを切って配置していく予定です．また，Matlab 実装との成果物連携をやりやすくするために，ごそっとディレクトリを切って（matlab-if/drone_physics），その中に Matlab の実装やインターフェイス仕様書(html)を手をかけずにそのまま入れるようにしたいです．
