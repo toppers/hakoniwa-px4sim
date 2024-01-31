@@ -1,29 +1,33 @@
 # Matlab と Hakoniwa Drone の連携
 
 ## これは何？
-
 Matlab で定義された制御アルゴリズムを Hakoniwa Drone に組み込むための最初の一歩です．
-初回として，機体の動力学を記述する drone_physics ディレクトリの関数を Matlab でモデリングし，Hakoniwa Drone とリンクして動作させています．
+初回として，機体の動力学を記述する drone_physics ディレクトリの関数を matlab でモデリングし，Hakoniwa Drone とリンクして動作させています．
 
 ## インターフェイス
+このディレクトリにある，`drone_physics_matlab.h` がインターフェイスです．
+そこに，drone の加速（並進および回転）を推力とトルクから求める力学の数式につかう，
+in/out の「構造体の定義」，および「計算関数」があります．この計算関数を Matlab で実装します．
 
-このディレクトリにある，drone_physics_matlab.h がインターフェイスです．
-そこに，in/out の構造体の定義，および実際に Matlab で作る関数宣言があります．
-
-- `mi_drone_acceleration_in_t` が入力構造体
-- `mi_drone_acceleration_out_t` が出力構造体
-- `mi_drone_acceleration()` が matlab を呼び出すエントリポイント関数
+### `drone_physics_matlab.h`
+- `mi_drone_acceleration_in_t` - 入力構造体
+- `mi_drone_acceleration_out_t` - 出力構造体
+- `mi_drone_acceleration()` - matlab を呼び出すエントリポイント関数
 
 このインターフェイスを使って，Hakoniwa Drone と連携します．
-既存のC言語での実装との整合テストを行うために，`acctest.cpp` を用意し，実際にテストしました．
-acctest.cpp には，drone_physics 側の既存関数を呼び出して実装した，同じインターフェイスのものが定義されており，
-それとの答え合わせするコードが書かれています．
 
-- `drone_acceleration_by_physics()` が元関数を使った同じインターフェイスの関数
+### `acctest.cpp`
+既存のC言語での実装との突合テストを行うために，`acctest.cpp` を用意し，実際にテストしました．
+`acctest.cpp` には，drone_physics 側の既存関数を呼び出して実装した，
+同じインターフェイスのものが定義されており，それとの答え合わせするテストコードが書かれています．
 
-そして，実際に単体レベルでテストが行われて通過しています．また，Hakoniwa Drone とリンクして動作させてもいます．
+- `drone_acceleration_by_physics()` - 元関数を使った同じインターフェイスの関数
+- `main()` - テストコード
+
+実際に単体レベルでテストが行われて通過しています．また，Hakoniwa Drone とリンクして動作させてもいます．
 
 ## ディレクトリ
+このディレクトリの構成は以下の通りです．
 
 * matlab-if/
   * README.md - このファイル
@@ -37,7 +41,7 @@ acctest.cpp には，drone_physics 側の既存関数を呼び出して実装し
      * data.sldd - モデル内で使用するデータ定義ファイル
   * drone_system/ - matlab の実際の実装です（非公開）
 
-matlab 側について，詳しくは，[drone_system/README.md](model_template/README.md) を参照してください．
+matlab 側について，詳しくは，[drone_template/README.md](model_template/README.md) を参照してください．
 
 ## 今後
 将来的には Matlab のいろんな実装をサブディレクトリを切って配置していく予定です．
