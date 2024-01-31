@@ -1,7 +1,7 @@
 #ifndef _DRONE_PHYSICS_DEBUG_H_
 /* Only for test files in this directory. User of this library do not use this. */
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 #include <iostream>
 #include <cassert>
 #include <cmath>
@@ -33,7 +33,7 @@ inline double diff(const hako::drone_physics::EulerType& a, const hako::drone_ph
 #include <assert.h>
 #include <math.h>
 
-inline double diff(const dp_vector_t* v, const dp_vector_t* w) {
+static inline double diff(const dp_vector_t* v, const dp_vector_t* w) {
     double x = v->x;
     double y = v->y;
     double z = v->z;
