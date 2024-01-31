@@ -16,6 +16,12 @@ in/out の「構造体の定義」，および「計算関数」があります�
 
 このインターフェイスを使って，Hakoniwa Drone と連携します．
 
+### `drone_physics_matlab_sample.cpp`
+matlab と同じプロトタイプ宣言をもつ関数の仮実装です．
+- `ml_drone_acceleration()` - 旧実装呼び出しの仮実装（matlab 実装に置き換える）
+- `ml_drone_acceleration_initialize()` - 何もしない関数として仮実装
+このファイルはサンプルであり，リンクされません．
+
 ### `acctest.cpp`
 既存のC言語での実装との突合テストを行うために，`acctest.cpp` を用意し，実際にテストしました．
 `acctest.cpp` には，drone_physics 側の既存関数を呼び出して実装した，
@@ -32,6 +38,7 @@ in/out の「構造体の定義」，および「計算関数」があります�
 * matlab-if/
   * README.md - このファイル
   * drone_physics_matlab.h - インターフェイスヘッダー
+  * drone_physics_matlab_sample.cpp - 実装例（旧コードを呼び出す仮実装：matlab実装で置き換える）
   * acctest.cpp - インターフェイスのテストプログラム
   * drone_sample/ -  今後，他の matlab モデル作るためのサンプルが配置されています．
   * model_template/ - モデルテンプレートです．
