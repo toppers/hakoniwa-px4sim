@@ -1,7 +1,7 @@
 #ifndef _DRONE_PHYSICS_MATLAB_H_
 #define _DRONE_PHYSICS_MATLAB_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -78,7 +78,7 @@ AngularAccelerationType angular_acceleration_in_body_frame(
     double I_zz // in body frame, 0 is not allowed );
 */
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 
