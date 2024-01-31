@@ -314,6 +314,9 @@ https://github.com/toppers/hakoniwa-px4sim/assets/164193/88934527-58dd-46f7-abc1
 
 全体的な開発フローは下図のとおりです。MATLAB/Simulinkから箱庭シミュレーション環境へのモデル移行プロセスを説明しています。
 
+現時点では、決められた箱庭のCインタフェースに対するドローン物理モデルを構築していくフローになっています。
+今後のアップデートでは、インタフェース定義およびセンサ/アクチュエータ含めた開発フローを整備していく予定です。
+
 ![スクリーンショット 2024-01-31 13 49 04](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be7e404f-c6b4-4b2a-8545-aec4239f7043)
 
 * MATLAB/Simulink Hakoniwa Templates
