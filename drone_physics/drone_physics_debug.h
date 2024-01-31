@@ -1,7 +1,7 @@
 #ifndef _DRONE_PHYSICS_DEBUG_H_
 /* Only for test files in this directory. User of this library do not use this. */
 
-#if defined (__cplusplus) && !defined(__linux__)
+#if defined (__cplusplus)
 #include <iostream>
 #include <cassert>
 #include <cmath>
