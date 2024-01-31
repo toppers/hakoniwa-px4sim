@@ -27,5 +27,7 @@ if (DO_TEST)
 endif()
 
 add_subdirectory(third-party/hakoniwa-core-cpp-client)
-add_subdirectory(${MATLAB_SOURCE_DIR} matlab-if)
+if (HAKONIWA_BUILD)
+    add_subdirectory(${MATLAB_SOURCE_DIR} matlab-if)
+endif()
 add_subdirectory(src)

@@ -13,4 +13,5 @@ else()
 endif()
 
 add_subdirectory(drone_physics)
+add_subdirectory(matlab-if)
 add_subdirectory(hakoniwa)
