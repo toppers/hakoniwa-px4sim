@@ -7,7 +7,7 @@
  * See body_physics.hpp for the C++ counter-part.
 */
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -64,7 +64,7 @@ dp_angular_acceleration_t dp_angular_acceleration_in_body_frame(
     double I_yy, /* in body frame, 0 is not allowed */
     double I_zz /* in body frame, 0 is not allowed */);
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 
