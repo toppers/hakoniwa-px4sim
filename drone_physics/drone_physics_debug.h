@@ -17,13 +17,17 @@ inline double diff(const hako::drone_physics::EulerType& a, const hako::drone_ph
     return (phi-phi2)*(phi-phi2) + (theta-theta2)*(theta-theta2) + (psi-psi2)*(psi-psi2);
 }
 
+static int AssertCount = 0;
+
 #define assert_almost_equal(a, b) \
-    assert(diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << ", " #b "=" << (b) << " ----> see next line Assert "<< std::endl, 0))
+    assert(++AssertCount && diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << "<-?->" #b "=" << (b) << " ----> see next line Assert "<< std::endl, 0))
 
 #define print_vec(v) std::cerr << #v "=" << v << std::endl
 
 /* for testing. use like T(test_func_name). */
 #define T(f) do {std::cerr<< #f ; f(); std::cerr << "... PASS" << std::endl;} while(false)
+
+#define END_TEST() do {std::cerr << "All(" << AssertCount << ")asserts passed." << std::endl;} while(false)
 
 #else /* __cplusplus */
 
@@ -58,11 +62,13 @@ static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
 
 /** Extract some tests from utest.cpp, via C interface */
 
+static int AssertCount = 0;
+
 #define assert_almost_equal(a, b) \
-    assert(diff(&(a), &(b)) < 0.0001 || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
+    assert(++AssertCount && diff(&(a), &(b)) < 0.0001 || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
 
 #define assert_almost_equal_euler(a, b) \
-    assert(diff_e(&(a), &(b)) < 0.0001 || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
+    assert(++AssertCount && diff_e(&(a), &(b)) < 0.0001 || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
 
 #define print_vec(v) \
     fprintf(stderr, "%s=(%g,%g,%g)", #v, v.x, v.y, v.z)
@@ -71,6 +77,8 @@ static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
     fprintf(stderr, "%s=(%g r,%g r,%g r)", #a, a.phi, a.theta, a.psi)
 
 #define T(f) do {fprintf(stderr, #f " "); f(); fprintf(stderr, "... PASS\n");} while(0)
+
+#define END_TEST() do {fprintf(stderr, "All(%d))asserts passed.\n", AssertCount);} while(0)
 
 
 #endif /* __cplusplus */

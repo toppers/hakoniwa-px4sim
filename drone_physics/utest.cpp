@@ -484,5 +484,6 @@ int main() {
     std::cerr << "-------all standard test PASSSED!!----\n";
     T(test_issue_89_yaw_angle_bug);
     std::cerr << "-------all bug issue test PASSSED!!----\n";
+    END_TEST();
     return 0;
 }

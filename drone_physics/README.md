@@ -173,13 +173,30 @@ in which $z$-axis is downward.
 
 The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone.
 
-The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone.
+The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone. But in the equations below, the origin of the ground frame is assumed to be the same as the origin of the body frame. This is reasonable because the equations do not contain the position variables, and the position is obtained in the last step
+by integrating the velocity in the ground frame.
 
-The rotation order from ground to body is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$),
+The rotation order from the ground frame to the body frame
+is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$),
 so that the ground frame axies are rotated to be aligned with the body frame.
 
 Note $\phi, \theta, \psi$ are the bridge across the two frames and the same values are used in both frames.
 In other words, the angles are the same values in the equations of the ground frame and the body frame(not to be converted between one another).
+
+The most basic Newtonian(translation) and Euler(rotational) equations of motion
+in the ground frame are as follows,
+where the subscript $e$ denotes the ground(earth) frame.
+
+最も基本的なニュートン（並進）とオイラー（回転）の運動方程式は，地上座標系で以下のようになります
+（添字 $e$ は地上座標系を示します）．
+
+$$
+\begin{array}{l}
+m \dot{v_e} + F_e \\
+I \dot{\omega_e}  = \tau_e
+\end{array}
+$$
+
 
 The basic dynamics equations in the body frame are as follows eq.(2.31).
 
@@ -199,13 +216,29 @@ where;
 - $F$ - force vector including gravity($mg$), drag($-dv)$, and thrust $(T)$
 - $\tau$ - torque vector from the rotors
 
+In the first equation, the second term is the inertial force(Coriolis force), wihch is the force due to the angular velocity of the body frame. The centrifugal force does not occur because the body frame is fixed to the center of gravity.
+
+In the second equation, the second term is the inertial torque(gyro effect), which is the torque due to the angular velocity of the body frame.
+
 The body frame dynamics above are expanded based on the body angles $\phi, \theta, \psi$ as follows.
 
 ### Body frame dynamics
 Here is the body frame dynamics equations used in this library.
-All the state variables and its time-derivatives from force and torque
-$(u,v,w,\dot{u},\dot{v},\dot{w},p,q,r,\dot{p},\dot{q},\dot{r})$ can be calculated
-by using these equations and the frame transformations below.
+All the state variables $(u,v,w,p,q,r)^T$ and their time-derivatives by the force and torque $(\dot{u},\dot{v},\dot{w},\dot{p},\dot{q},\dot{r})^T$ are calculated by using these equations and the frame transformations below.
+
+Letting $x$ be the state vector of the drone, the equation as a contrrol system is as follows(unfortunately, this is not a linear system).
+
+$$
+x = \left[
+  \begin{array}{c}u \\ v \\ w \\ p \\ q \\ r  \end{array}
+\right]
+$$
+
+$$
+\dot{x} = f(x, F, \tau, \phi, \theta, \psi)
+$$
+
+
 
 Finally the body velocity $(u, v, w)^T$ transformed to the ground frame $(u_e, v_e, w_e)^T$
 is time-integrated to get the body position $(x, y, z)^T$ which is described in the transformation section.

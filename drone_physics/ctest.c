@@ -81,5 +81,6 @@ int main() {
     T(test_frame_roundtrip);
     T(test_body_acceleration);
     T(test_body_angular_acceleration);
+    END_TEST();
     return 0;
 }
