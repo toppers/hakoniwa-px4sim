@@ -38,6 +38,7 @@ else
         -v ${HOST_WORKDIR}:${DOCKER_DIR} \
         -v ${HOST_WORKDIR}/../cmake-options:/root/cmake-options \
         -v ${HOST_WORKDIR}/../drone_physics:/root/drone_physics \
+        -v ${HOST_WORKDIR}/../matlab-if:/root/matlab-if \
         -it --rm \
 		-e CORE_IPADDR=${CORE_IPADDR} \
 		-e DELTA_MSEC=${DELTA_MSEC} \
