@@ -189,8 +189,8 @@ where the subscript $e$ denotes the ground(earth) frame.
 
 $$
 \begin{array}{l}
-m \dot{v_e} = F_e \\
-I \dot{\omega_e}  = \tau_e
+m \dot{v_e} &= F_e \\
+I \dot{\omega_e}  &= \tau_e
 \end{array}
 $$
 
@@ -199,8 +199,8 @@ The basic dynamics equations in the body frame are as follows eq.(2.31).
 
 $$
 \begin{array}{l}
-m \dot{v} + \omega \times m v = F \\
-I \dot{\omega} + \omega \times I \omega = \tau
+m \dot{v} &+ \omega \times m v &= F \\
+I \dot{\omega} &+ \omega \times I \omega &= \tau
 \end{array}
 $$
 
@@ -248,18 +248,20 @@ rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ is time-integrated to get
 the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude, also
 described in the transformation section.
 
-####　Velocity and Acceleration(linear translation)
+#### Velocity and Acceleration(linear translation)
+
 $$
 \begin{array}{l}
-\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
-\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
-\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu) -\frac{d}{m}w
+\dot{u} = & &-g \sin{\theta} &-(qw -rv) &-\frac{d}{m}u \\
+\dot{v} = & &+g \cos{\theta}\sin{\phi} &-(ru -pw) &-\frac{d}{m}v \\
+\dot{w} = &-\frac{T}{m} &+ g \cos{\theta}cos{\phi} &-(pv-qu) &-\frac{d}{m}w
 \end{array}
 $$
 
 The function name: `acceleration_in_body_frame`.
 
 #### Angular velocity and Angular Acceleration(rotation)
+
 $$
 \begin{array}{l}
 \dot{p} = (\tau_{\phi} -qr(I_{zz}-I_{yy}))/I_{xx} \\
