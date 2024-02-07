@@ -251,7 +251,7 @@ described in the transformation section.
 #### Velocity and Acceleration(linear translation)
 
 $$
-\begin{array}{l}
+\begin{array}{llll}
 \dot{u} = & &-g \sin{\theta} &-(qw -rv) &-\frac{d}{m}u \\
 \dot{v} = & &+g \cos{\theta}\sin{\phi} &-(ru -pw) &-\frac{d}{m}v \\
 \dot{w} = &-\frac{T}{m} &+ g \cos{\theta}cos{\phi} &-(pv-qu) &-\frac{d}{m}w
@@ -288,10 +288,10 @@ The rotational motion in the ground frame are not calculated in this library
 because time-varying inertia is too complex(to me) in the ground frame.
 
 $$
-\begin{array}{l}
-\dot{u_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) - \frac{d}{m}u_e \\
-\dot{v_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) -\frac{d}{m}v_e \\
-\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e 
+\begin{array}{llll}
+\dot{u_e} = &-\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) & &- \frac{d}{m}u_e \\
+\dot{v_e} = &-\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) & &-\frac{d}{m}v_e \\
+\dot{w_e} = &-\frac{T}{m}(\sin{\phi}\cos{\theta})                  &+g              &-\frac{d}{m}w_e 
 \end{array}
 $$
 

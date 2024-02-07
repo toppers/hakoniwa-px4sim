@@ -192,8 +192,8 @@ $\phi, \theta, \psi$ は，2つの座標系の橋渡しとなるものであり�
 
 $$
 \begin{array}{l}
-m \dot{v_e} = F_e \\
-I_e \dot{\omega_e}  = \tau_e
+m \dot{v_e} &= F_e \\
+I \dot{\omega_e}  &= \tau_e
 \end{array}
 $$
 
@@ -203,11 +203,10 @@ $$
 
 $$
 \begin{array}{l}
-m \dot{v} + \omega \times m v = F \\
-I \dot{\omega} + \omega \times I \omega = \tau
+m \dot{v} &+ \omega \times m v &= F \\
+I \dot{\omega} &+ \omega \times I \omega &= \tau
 \end{array}
 $$
-
 
 各文字は，以下の意味です．
 
@@ -255,10 +254,10 @@ $$
 #### 速度，加速度(並進)
 
 $$
-\begin{array}{l}
-\dot{u} = -g \sin{\theta} -(qw -rv) -\frac{d}{m}u \\
-\dot{v} = g \cos{\theta}\sin{\phi} -(ru -pw) -\frac{d}{m}v \\
-\dot{w} = -\frac{T}{m} + g \cos{\theta}cos{\phi} -(pv-qu) -\frac{d}{m}w
+\begin{array}{llll}
+\dot{u} = & &-g \sin{\theta} &-(qw -rv) &-\frac{d}{m}u \\
+\dot{v} = & &+g \cos{\theta}\sin{\phi} &-(ru -pw) &-\frac{d}{m}v \\
+\dot{w} = &-\frac{T}{m} &+ g \cos{\theta}cos{\phi} &-(pv-qu) &-\frac{d}{m}w
 \end{array}
 $$
 
@@ -293,10 +292,10 @@ $$
 （すべて地上座標系を使った回転はイナーシャの時間変化等のため複雑になるので，等ライブラリでは扱わない）．
 
 $$
-\begin{array}{l}
-\dot{u_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) - \frac{d}{m}u_e \\
-\dot{v_e} = -\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) -\frac{d}{m}v_e \\
-\dot{w_e} = -\frac{T}{m}(\sin{\phi}\cos{\theta})                  +g              -\frac{d}{m}w_e 
+\begin{array}{llll}
+\dot{u_e} = &-\frac{T}{m}(\cos{\phi}\sin{\theta}\cos{\psi} + \sin{\psi}\sin{\phi}) & &-\frac{d}{m}u_e \\
+\dot{v_e} = &-\frac{T}{m}(\cos{\phi}\sin{\theta}\sin{\phi} - \sin{\phi}\cos{\psi}) & &-\frac{d}{m}v_e \\
+\dot{w_e} = &-\frac{T}{m}(\sin{\phi}\cos{\theta})    &+g &-\frac{d}{m}w_e 
 \end{array}
 $$
 
