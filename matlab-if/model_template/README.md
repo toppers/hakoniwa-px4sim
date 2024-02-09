@@ -10,7 +10,13 @@ drone_systemは、箱庭側のInterfaceと合わせる設定がされていま�
 (drone_implは、drone_systemからモデル参照の形で呼び出されています)
 
 * drone_system.slx - 最上位モデル（編集不可）
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/19739774/281cd314-d9dd-4848-8dfe-d33265d5e3dc)
+
 * drone_impl.slx - Droneの処理を実装したモデル（編集可）
+
+**drone_sampleモデルの例**
+![image](https://github.com/toppers/hakoniwa-px4sim/assets/19739774/c05d6687-5b6f-46f2-81cc-67acc3126dbc)
+
 * data.sldd - モデル内で使用するデータ定義ファイル
 
 ## 動作確認バージョンと、必要なライセンス
