@@ -1,67 +1,68 @@
+English ｜ [日本語](README-ja.md)
+
 [![Build](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml)
 
-このリポジトリは、PX4と連携可能なドローンのプラントモデル用シミュレーション環境です。このシミュレーション環境は、ドローンの動作を物理式ベースで正確にモデル化し、C言語で実装しています。
+This repository is a simulation environment for drone plant models that can be integrated with PX4. This simulation environment accurately models drone behavior based on physical equations and is implemented in C language.
 
-# 目次
 
-- [特徴](#特徴)
-- [環境](#環境)
-- [事前準備](#事前準備)
-- [hakoniwa-px4sim のインストール手順](#hakoniwa-px4sim-のインストール手順)
-- [箱庭のインストール手順](#箱庭のインストール手順)
-- [シミュレーション実行手順](#シミュレーション実行手順)
-- [MATLAB連携](#MATLAB連携)
-- [環境からの作用](#環境からの作用)
-- [ヘッドレス・シミュレーション](#ヘッドレスシミュレーション)
-- [コミュニティとサポート](#コミュニティとサポート)
-- [本リポジトリの内容とライセンスについて](#本リポジトリの内容とライセンスについて)
-- [貢献ガイドライン](#貢献ガイドライン)
+# Table of Contents
 
-# 特徴
+- [Features](#features)
+- [Environment](#environment)
+- [Preliminary Preparations](#preliminary-preparations)
+- [Installation Instructions for hakoniwa-px4sim](#installation-instructions-for-hakoniwa-px4sim)
+- [Installation Instructions for Hakoniwa](#installation-instructions-for-hakoniwa)
+- [Simulation Execution Instructions](#simulation-execution-instructions)
+- [Integration with MATLAB](#integration-with-matlab)
+- [Effects from the Environment](#effects-from-the-environment)
+- [Headless Simulation](#headless-simulation)
+- [Community and Support](#community-and-support)
+- [About This Repository and License](#about-this-repository-and-license)
+- [Contribution Guidelines](#contribution-guidelines)
 
-1. **物理式ベースのプラントモデル:** ドローンの動作は、物理学に基づいた高精度なモデルで表現されています。これはC言語で開発されており、PX4とシームレスに連携します。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_physics)を参照ください。障害物との衝突時の物理的反応をリアルタイムにシミュレートできます(`v1.1.0`)。詳細は[こちら](#障害物との衝突)。
+# Features
 
-2. **ゲームエンジンによるビジュアライズ:** ドローンのビジュアル表現は、ゲームエンジンを使用して実現しています。このビジュアライズは、物理シミュレーションの補助として機能し、主に可視化を目的としています。障害物との衝突時のビジュアル表現も可能です(`v1.1.0`)。詳細は[こちら](#障害物との衝突)
+1. **Physics-based Plant Model:** Drone behavior is represented by high-precision models based on physics. Developed in C language, it seamlessly integrates with PX4. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_physics). It is capable of simulating physical reactions in real-time during collisions with obstacles (`v1.1.0`). For more details, see [here](#collision-with-obstacles).
 
-3. **エンジンの柔軟性:** 現時点ではUnityエンジンを[サポート](https://github.com/toppers/hakoniwa-unity-drone-model)していますが、アーキテクチャは他のゲームエンジンとの連携も可能に設計されています。Unreal Engine との連携可能なプラグインは[こちら](https://github.com/toppers/hakoniwa-unreal-simasset-plugin/tree/main)(`v1.1.0`)。
+2. **Visualization via Game Engines:** The visual representation of drones is realized using game engines. This visualization serves as an aid to physical simulations, primarily aimed at visualization purposes. Visual representation of collisions with obstacles is also possible (`v1.1.0`). For more details, see [here](#collision-with-obstacles).
 
-4. **MATLAB/Simulinkとの互換性:** 物理式モデルは、MATLAB/Simulinkで作成したモデルとも連携できるようになっています。詳細は[こちら](#MATLAB連携)
+3. **Engine Flexibility:** Currently supports the Unity engine, but the architecture is designed to enable integration with other game engines as well. A plugin for integration with Unreal Engine is available [here](https://github.com/toppers/hakoniwa-unreal-simasset-plugin/tree/main) (`v1.1.0`).
 
-5. **センサモデルの整備:** センサモデルはアーキテクチャ内で整理され、明確な仕様に基づいています。これにより、ユーザーはセンサモデルを仕様に合わせて交換することが可能です。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs)を参照ください。
+4. **Compatibility with MATLAB/Simulink:** The physics model can be integrated with models created in MATLAB/Simulink. For more details, see [here](#integration-with-matlab).
 
-6. **ヘッドレス対応:** Unityなしでのシミュレーションが可能です。これにより、グラフィカルなインターフェースを必要としない環境でも、シミュレーションの実行が可能になります。詳細は[こちら](#ヘッドレスシミュレーション)(`v1.1.0`)。
+5. **Sensor Model Organization:** Sensor models are organized within the architecture based on clear specifications. This allows users to exchange sensor models according to the specifications. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs).
 
-7. **自動テストのサポート:** テストシナリオベースでの自動テストが可能です。これにより、繰り返しのテストや連続したテストの自動化が実現可能になり、開発プロセスの効率化が図れます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/px4/auto-test)を参照ください。
+6. **Headless Support:** Simulation can be run without Unity. This enables simulation execution in environments that do not require a graphical interface (`v1.1.0`). For more details, see [here](#headless-simulation).
 
-8. **機体特性の外部パラメータ化:** ドローンの機体特性は外部からの[パラメータ化](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa#機体のパラメータ説明)が可能です。これにより、さまざまな機体の特性に合わせたシミュレーションが実現でき、より幅広いテストシナリオへの対応が可能になります。パラメータ設定例は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json)。
+7. **Support for Automated Testing:** Enables test scenario-based automated testing. This makes it possible to automate repeated and consecutive tests, thereby streamlining the development process. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/px4/auto-test).
+
+8. **External Parameterization of Aircraft Characteristics:** The characteristics of the drone can be parameterized externally. This allows for simulations tailored to various aircraft characteristics, enabling support for a wider range of test scenarios. For an example of parameter settings, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json).
 
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
+# Environment
 
-
-# 環境
-
-* サポートOS
-  * Arm系Mac (M1Mac, M2Mac)
+* Supported OS:
+  * Arm-based Macs (M1 Mac, M2 Mac)
   * Windows 10/11
-* 利用する環境
-  * Arm系Macの場合
+* Required Environment:
+  * For Arm-based Macs:
     * Python 3.10
-      * pyenvでインストールされたものを推奨
+      * Recommended to install via pyenv
       * Jinja2 (`pip install -U jinja2`)
-  * Windowsの場合
-    * [Windowsの場合の箱庭構成例](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md)と同じです。
-* 利用するドローン
+  * For Windows:
+    * Follow the same setup as the [Hakoniwa configuration example for Windows](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md).
+* Drones to Use:
   * https://github.com/toppers/hakoniwa-unity-drone-model/tree/main
-  * 下記のディレクトリ構成のように、本リポジトリと同じ階層でクローンしてください。
+  * Please clone in the same directory structure as this repository:
     ```
     hakoniwa-unity-drone-model/
     hakoniwa-px4sim/
     ```
 
-# 事前準備
+# Preliminary Preparations
 
-２つのリポジトリをクローンします。
+Clone two repositories:
 
 ```
 git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
@@ -71,45 +72,46 @@ git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
 git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
 ```
 
-hakoniwa-unity-drone-model のインストール手順は、以下を参照ください。
+For the installation instructions of hakoniwa-unity-drone-model, please refer to the following:
 
 https://github.com/toppers/hakoniwa-unity-drone-model
 
+# Installation Instructions for hakoniwa-px4sim
 
-# hakoniwa-px4sim のインストール手順
-
-以下の手順に従って、PX4 のインストールを実施します。
+Follow the steps below to install PX4:
 
 https://github.com/toppers/hakoniwa-px4sim/tree/main/px4
 
 
-# 箱庭のインストール手順
+# Installation Instructions for Hakoniwa
 
-以下の手順に従って、箱庭のインストールを実施します。
+Follow the steps below to install Hakoniwa:
 
 https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa
 
-# シミュレーション実行手順
 
-端末を２つ用意してください。
+# Simulation Execution Instructions
 
-* 端末A：PX4のシミュレータ実行用
-* 端末B：箱庭実行用
+Prepare two terminals:
 
-## 端末A
+* Terminal A: For running the PX4 simulator
+* Terminal B: For running Hakoniwa
+
+## Terminal A
+
+Navigate to the PX4-Autopilot directory:
 
 ```
 cd hakoniwa-px4sim/px4/PX4-Autopilot
 ```
 
-PX4 on SITL をを起動します。
+Launch PX4 on SITL:
 
 ```
 bash ../sim/simstart.bash
 ```
 
-成功すると、以下のように、TCPポートのコネクション待ちになります。
-
+Upon successful execution, it will wait for a connection on a TCP port as follows.
 
 ```
 % bash ../sim/simstart.bash
@@ -135,31 +137,29 @@ INFO  [init] PX4_SIM_HOSTNAME: localhost
 INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port 4560
 ```
 
+Continuing from the previous step, we now switch to Terminal B.
 
+## Terminal B
 
-ここから先は、端末Bです。
-
-## 端末B
+Navigate to the Hakoniwa directory:
 
 ```
 cd hakoniwa-px4sim/hakoniwa
 ```
 
-Windowsの場合は、以下のコマンドで docker コンテナに入ってください。
+If you are using Windows, enter the Docker container with the following command:
 
 ```
 bash docker/run.bash
 ```
 
-箱庭を起動するためのスクリプトを実行します。
-
+Execute the script to launch Hakoniwa:
 
 ```
 bash run.bash 
 ```
 
-
-成功すると、こうなります。
+Upon successful execution, it will proceed as follows.
 
 ```
 % bash run.bash 
@@ -181,7 +181,7 @@ INFO: px4 reciver start
 INFO: COMMAND_LONG ack sended
 ```
 
-この際、端末A側で、以下のように poll timeout のメッセージが出ますが、特に問題ないです。
+At this point, on Terminal A, you may see messages regarding poll timeouts like the following, but this is not a cause for concern.
 
 ```
 ERROR [simulator_mavlink] poll timeout 0, 111
@@ -191,17 +191,16 @@ ERROR [simulator_mavlink] poll timeout 0, 111
 
 ## Unity
 
-この状態で、Unityのシミュレーションを開始してください。
+In this state, please start the Unity simulation.
 
-![スクリーンショット 2024-01-26 9 34 16](https://github.com/toppers/hakoniwa-px4sim/assets/164193/1f6c417d-cb58-4c21-9dd0-7b59964eeadf)
+![Screenshot 2024-01-26 9 34 16](https://github.com/toppers/hakoniwa-px4sim/assets/164193/1f6c417d-cb58-4c21-9dd0-7b59964eeadf)
+
+Then, by pressing the `START` button, the simulation will begin.
 
 
-そして、`START` ボタンを押下すると、シミュレーションが動き出します。
+## Terminal A
 
-
-## 端末A
-
-この時、端末Aでは以下のように、準備状態になります。
+At this time, Terminal A will enter a ready state as follows.
 
 ```
 INFO  [lockstep_scheduler] setting initial absolute time to 1699681315573127 us
@@ -223,54 +222,52 @@ INFO  [tone_alarm] notify negative
 INFO  [commander] Ready for takeoff!
 ```
 
-ここで、端末Aで以下のコマンドを実行してください。
+At this point, please execute the following command in Terminal A:
 
 ```
 commander takeoff
 ```
 
-成功すると、Unity上のドローンがホバリングしてくれます。
+Upon success, the drone in Unity will start hovering.
 
-![スクリーンショット 2024-01-26 9 36 02](https://github.com/toppers/hakoniwa-px4sim/assets/164193/eba3b933-6789-4a2e-b742-de27a1ae1bce)
+![Screenshot 2024-01-26 9 36 02](https://github.com/toppers/hakoniwa-px4sim/assets/164193/eba3b933-6789-4a2e-b742-de27a1ae1bce)
 
+## How to Stop the Simulation
 
-## シミュレーション停止方法
+To stop the simulation, please follow these steps in order:
 
-シミュレーションを停止するには、以下の順番で停止してください。
+1. Stop the Unity simulation.
+2. Stop the PX4 simulation with CTRL+C.
+3. Stop the Hakoniwa simulation with CTRL+C.
 
-1. Unityのシミュレーションを止める
-2. PX4のシミュレーションを　CTRL＋Cで止める
-3. 箱庭のシミュレーションを CTRL+C で止める
+## How to Integrate with QGroundControl
 
+By installing [QGroundControl](http://qgroundcontrol.com/), you can control the aircraft from QGC.
 
-## QGroundControlとの連携方法
+After launching QGC, you need to set up the connection with PX4.
 
-[QGroundControl](http://qgroundcontrol.com/)をインストールすることで、QGC側から機体を操作できます。
-
-QGCを起動した後に、PX4との接続設定が必要となります。
-
-画面右上のロゴをクリックすると、下図のように「アプリケーション設定」ができますので、クリックします。
+Click on the logo at the top right of the screen to access the "Application Settings," as shown in the image below.
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/b17cd3a1-23c3-4b0b-b46c-d4c98d375102)
 
-次に、「通信リンク」をクリックし、「追加」ボタンを押下します。
+Next, click on "Comm Links" and then press the "Add" button.
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/60389069-46a5-4801-aba5-af06f7582a53)
 
-必要な設定をします。
+Make the necessary settings.
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/6d916332-7be6-4f33-855d-cc657919076b)
 
-以下を設定しましょう。
+Set the following:
 
-* 名前：`hakoniwa` (お好きな名前を指定できます)
-* タイプ：`UDP`
-* ポート：`18570`
-* サーバーアドレス：OSによって設定が違います
-  * Windowsの場合：WSL2上で、eth0 のIPアドレスを調べて設定してください。
-  * Windows以外の場合：お使いのethernetのIPアドレスを調べて設定してください。
+* Name: `hakoniwa` (you can specify any name you like)
+* Type: `UDP`
+* Port: `18570`
+* Server Address: The setting differs depending on the OS
+  * For Windows: On WSL2, check and set the IP address of eth0.
+  * For non-Windows: Check and set the IP address of your ethernet.
 
-IPアドレスの調べ方（例）
+Example of how to check the IP address:
 
 ```
 $ ifconfig eth0
@@ -284,74 +281,72 @@ eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 ```
 
-設定後、「サーバー追加」ボタンをおして、「OK」ボタンをクリックします。
+After setting up, press the "Add Server" button and then click the "OK" button.
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/1da37afa-886d-4122-b115-b7f12808fb75)
 
-最後に、「接続」ボタンをクリックすれば設定完了です。
+Finally, clicking the "Connect" button will complete the setup.
 
 ![image](https://github.com/toppers/hakoniwa-px4sim/assets/164193/cb40933f-329c-4f86-bac8-782be71f7de2)
 
-以下は、QGCの操作例です。
+Below is an example of operating QGC:
 
 https://github.com/toppers/hakoniwa-px4sim/assets/164193/88934527-58dd-46f7-abc1-0e2d49c44935
 
-1. 離陸
-2. 東へ移動
-3. 北へ移動
+1. Takeoff
+2. Move east
+3. Move north
 
-# MATLAB連携
+# Integration with MATLAB
 
-バージョンv2.0.0以降、MATLAB/Simulinkで作成したモデルをコード生成し、箱庭（Hakoniwa）上でシミュレーションする機能がサポートされています。
+From version v2.0.0 onwards, the feature to generate code from models created in MATLAB/Simulink and simulate them on Hakoniwa has been supported.
 
-現在サポートされている機能は以下の通りです。
+Currently, the supported features are as follows:
 
-- [X] ドローン物理モデル
-- [ ] センサモデル
-- [ ] アクチュエータモデル 
+- [X] Drone Physics Model
+- [ ] Sensor Model
+- [ ] Actuator Model
 
-## 開発フローの概要
+## Overview of the Development Flow
 
-MATLAB/Simulinkから箱庭シミュレーション環境へのモデル移行プロセスは下図のとおりです。
+The process of migrating models from MATLAB/Simulink to the Hakoniwa simulation environment is as illustrated below.
 
-現時点では、決められた箱庭のCインタフェースに対するドローン物理モデルを構築していくフローになっています。
-今後のアップデートでは、インタフェース定義およびセンサ/アクチュエータ含めた開発フローを整備していく予定です。
+Currently, the flow involves constructing drone physics models for a predefined C interface in Hakoniwa. Future updates are planned to develop the workflow further, including interface definitions and incorporating sensors/actuators.
 
-![スクリーンショット 2024-01-31 13 49 04](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be7e404f-c6b4-4b2a-8545-aec4239f7043)
+![Screenshot 2024-01-31 13 49 04](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be7e404f-c6b4-4b2a-8545-aec4239f7043)
 
 * MATLAB/Simulink Hakoniwa Templates
-  * MATLAB/Simulink のモデル向けに箱庭側でインタフェースを定義しています。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/matlab-if/README.md)。
-  * MATLAB/Simulink のモデルを箱庭と接続するために、箱庭接続用のテンプレートを用意しています。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/matlab-if/model_template)。
+  * Interfaces for MATLAB/Simulink models are defined on the Hakoniwa side. For more details, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/matlab-if/README.md).
+  * Templates for connecting MATLAB/Simulink models to Hakoniwa are provided. For more details, see [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/matlab-if/model_template).
 * MATLAB/Simulink Process
-  * テンプレートに箱庭の入出力インタフェースが定義されていますので、入力データから出力データに変換する処理をモデルとして作成します。
-  * 作成したモデルをMATLAB上でシミュレーションし、チェックします。
-  * MATLABシミュレーションチェック完了後、Cコード生成します。
-* Hakoniwa Simulatin Process
-  * 生成したCコードを箱庭(hakoniwa-px4sim)の `matlab-if` 直下に配置します。
-  * `matlab-if` 直下の `CMakeLists.txt` を編集し、ビルド対象に含めます(`HAKONIWA_MATLAB_BUILD`ブロック内)。
-  * 箱庭のビルドプロセスに従ってコンパイルします。
-  * コンパイル成功したら、箱庭のシミュレーション実行プロセスに従って、シミュレーションを行います。
+  * With the Hakoniwa input/output interfaces defined in the template, create a model that converts input data to output data.
+  * Simulate and check the created model in MATLAB.
+  * After verifying the simulation in MATLAB, generate C code.
+* Hakoniwa Simulation Process
+  * Place the generated C code under `matlab-if` in hakoniwa-px4sim.
+  * Edit the `CMakeLists.txt` under `matlab-if` to include it in the build targets (inside the `HAKONIWA_MATLAB_BUILD` block).
+  * Compile according to the Hakoniwa build process.
+  * Once compilation is successful, proceed with the simulation according to the Hakoniwa simulation execution process.
 
+# Effects from the Environment
 
-# 環境からの作用
+From version v1.1.0 onwards, it is possible for the drone in the simulation environment to be affected by external environmental factors.
 
-v1.1.0以降のバージョンでは、シミュレーション環境において、ドローンは外部環からの作用が可能です。
+For instance, using a game engine, it is possible to simulate in real-time the physical impact of a drone colliding with an obstacle.
 
-例えば、ゲームエンジンを利用してドローンが障害物に衝突した際の物理的な影響をリアルタイムにシミュレートすることができます。
+The current support situation is as follows:
 
-現時点のサポート状況は以下の通りです。
+- [X] Collision with obstacles
+- [ ] Impact of wind
+- [ ] Effects of direct sunlight
 
- - [X] 障害物との衝突
- - [ ] 風の影響
- - [ ] 直射日光による影響
+## Collision with Obstacles
 
-## 障害物との衝突
+By placing obstacles within the game engine, information about the aircraft's interaction with these obstacles can be fed back to the physical model.
 
-ゲームエンジン上に障害物を配置することで、機体が障害物と干渉した情報を物理モデル側にフィードバックできます。
+To use this feature, set the `collision_detection` parameter in `droneDynamics` to `true`.
 
-本機能を利用する場合は、機体パラメータ`droneDynamics` の`collision_detection` を `true` にします。
-
-設定例：
+Example of settings:
 
 ```json
       "droneDynamics": {
@@ -367,57 +362,50 @@ v1.1.0以降のバージョンでは、シミュレーション環境におい�
         },
 ```
 
-実行例：
-
-
+Example of execution:
 
 https://github.com/toppers/hakoniwa-px4sim/assets/164193/c1305966-d782-42f4-bd5b-13c57b1ff726
 
 
+# Headless Simulation
 
-
-# ヘッドレス・シミュレーション
-
-箱庭内のドローンは、UnityおよびPX4を利用せずに、PID 制御を試すことができます（ヘッドレス・シミュレーション）。
-
-作成したドローンのダイナミクスを動作チェックしたい場合に便利です。
+In Hakoniwa, drones can be tested for PID control without the use of Unity and PX4 (headless simulation). This is convenient for checking the operation of the drone dynamics you have created.
 
 https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller
 
-# コミュニティとサポート
+# Community and Support
 
-このプロジェクトに関する質問やディスカッションは、[箱庭コミュニティフォーラム](https://github.com/toppers/hakoniwa/discussions)で行われています。ここでは、プロジェクトに関する疑問の解消、アイデアの共有、フィードバックの提供ができます。また、プロジェクトの最新情報やアップデートについても、ここで情報共有されます。
+Questions and discussions about this project take place on the [Hakoniwa Community Forum](https://github.com/toppers/hakoniwa/discussions). Here, you can resolve doubts about the project, share ideas, and provide feedback. Information on the latest news and updates about the project is also shared here.
 
-プロジェクトに関する質問や提案がある場合、または同じ問題に直面している他のユーザーと意見交換をしたい場合は、遠慮なく[こちら](https://github.com/toppers/hakoniwa/discussions)に投稿してください。
+If you have questions or suggestions about the project, or if you want to exchange opinions with other users facing the same issues, please feel free to post [here](https://github.com/toppers/hakoniwa/discussions).
 
+# About This Repository and License
 
-# 本リポジトリの内容とライセンスについて
+The content of this repository is open under the license specified in each file. For content that is not specifically licensed, it is published under the [TOPPERS License](https://www.toppers.jp/license.html).
 
-本リポジトリのコンテンツに関しては、各ファイルにライセンスが明記されている場合、そのライセンスに従います。特に明記されていないコンテンツについては、[TOPPERSライセンス](https://www.toppers.jp/license.html) に基づいて公開されています。
+The TOPPERS License is a license for open-source projects, setting conditions for the use, modification, and distribution of software. For details about the license, please refer to the link above.
 
-TOPPERSライセンスは、オープンソースプロジェクトのためのライセンスであり、ソフトウェアの使用、変更、配布に関する条件を定めています。ライセンスの詳細については、上記リンクを参照してください。
+# Contribution Guidelines
 
-# 貢献ガイドライン
+Thank you for your interest in contributing to this project. Contributions of various forms are welcomed. Below are guidelines for contributing to the project.
 
-本プロジェクトへの貢献に興味を持っていただき、ありがとうございます。様々な形での貢献を歓迎しています。以下に、プロジェクトへの貢献方法についてのガイドラインを示します。
+## Reporting Issues
 
-## イシューの報告
+- Please use GitHub Issues to report bugs or suggest new features.
+- Before creating an issue, check if there is already an existing issue on the same topic.
+- When creating an issue, provide as much information as possible, including steps to reproduce, expected behavior, actual behavior, and your environment.
 
-- バグの報告や新機能の提案などは、GitHubのIssuesを通じて行ってください。
-- issue を作成する前に、同様の issue が既に存在しないかを確認してください。
-- issue を作成する際は、できるだけ多くの情報を提供してください。再現手順、期待される挙動、実際の挙動、使用している環境などが含まれます。
+## Pull Requests
 
-## プルリクエスト
+- Contributions related to code, such as adding new features or fixing bugs, should be made through pull requests.
+- For adding new features or making significant changes, it is recommended to discuss it in a related issue beforehand.
+- Please follow the existing code style and coding standards to maintain consistency.
 
-- 機能追加やバグ修正など、コードに関する貢献はプルリクエストを通じて行ってください。
-- 新機能の追加や大きな変更の場合は、事前に関連する issue  で議論を行うことを推奨します。
-- コードのスタイルやコーディング規約に一貫性を持たせるため、既存のコードスタイルに従ってください。
+## Communication
 
-## コミュニケーション
+- Use [Discussions](https://github.com/toppers/hakoniwa/discussions) for project-related discussions and questions.
+- Communicate with other contributors with respect.
 
-- プロジェクトに関するディスカッションや質問は、[Discussions](https://github.com/toppers/hakoniwa/discussions)で行ってください。
-- 他の貢献者とのコミュニケーションは、敬意を持って行ってください。
+## Other Contributions
 
-## その他の貢献
-
-- ドキュメントの改善や翻訳など、コード以外の貢献も歓迎します。
+- Improvements to documentation and translations, among other non-code contributions, are also welcome.
