@@ -240,7 +240,7 @@ $$
 Unfortunately the function $f$ is not linear, but we can draw the trajectory of 
 $x$ using numerical computation.
 
-Finally the body velocity $(u, v, w)^T$ transformed to the ground frame $(u_e, v_e, w_e)^T$
+In the program, finally the body velocity $(u, v, w)^T$ transformed to the ground frame $(u_e, v_e, w_e)^T$
 is time-integrated to get the body position $(x, y, z)^T$ which is described in the transformation section.
 
 And the body angular velocity $(p,q,r)^T$ transformed to the euler
