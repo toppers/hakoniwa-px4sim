@@ -175,17 +175,22 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 C言語インターフェイスが，`drone_physics_c.h` に用意されています．`dp_` は drone_physics の接頭です．
 
 ## 数式
-地上座標系は，右手系で定義されており， $z$ 軸は下向きです．
-機体座標系は，右手系で定義されており， $x$ 軸は機体の前方向， $y$ 軸は機体の右方向， $z$ 軸は機体の下方向です．
+地上座標系(Ground Frame)は，右手系で定義されており， $x$ は北方向， $y$ は東方向， $z$ は下方向です（NED : North, East, Down）．機体座標系(Body Frame)は，右手系で定義されており， $x$ 軸は機体の前方向， $y$ 軸は機体の右方向， $z$ 軸は機体の下方向です（FRD: Front, Right, Down）．
 
-機体座標系の原点は機体の重心です．機体座標系は機体に固定されており，機体座標系は機体とともに移動します．ただし，
-以下の式では，地上座標系の原点 $O$ は機体座標系の原点 $O'$ と一致しているとして立式します．これは，
-式の中に速度と各速度，その時間微分が含まれていはいますが，位置についての変数が含まれていないからです．
-言い換えると，並進加速度による慣性力を考えずに立式できます．位置は最終的に地上座標系での速度を積分して求めます．
+![body_ground_frame](body_ground_frame.png)
+
+機体座標系の原点は機体の重心です．機体座標系は機体に固定されており，機体座標系は機体とともに移動します．
+また，地上座標系の原点を機体座標系の原点に一致していると仮定します．これを特に "Vehicle Carried NED" 
+（機体に固定されたNED座標系）と呼びます．
+すなわち，以下の式では，地上座標系の原点 $O$ は機体座標系の原点 $O'$ と一致しているとして立式します．
+
+これが成立するのは，
+運動の方程式の中に速度と各速度，その時間微分が含まれていはいますが，位置についての変数が含まれていないからです．
+言い換えると，並進加速度による慣性力を考えずに立式できます（位置は，最終的に地上座標系での速度を積分して求めます）．
 
 オイラー角は，地上座標系の座標軸を機体座標へと， $z$ -軸($\psi$)， $y$ -軸($\theta$)， $x$ -軸($\phi$)の順に回転することで重ねられるように表現するとします．
 
-$\phi, \theta, \psi$ は，2つの座標系の橋渡しとなるものであり，両方の座標系で同じ値が使用されます．別の言い方をすると，オイラー角は地上座標系と機体座標系の方程式で同じです（一方から他方に変換されるものではありません）．
+$\phi, \theta, \psi$ は，2つの座標系の橋渡しとなるものであり，両方の座標系で同じ値が使用されます．別の言い方をすると，オイラー角は地上座標系と機体座標系の方程式で同じです（一方のオイラー角が他方のオイラー角に変換されるものではありません）．
 
 最も基本的なニュートンの運動方程式（並進）とオイラーの運動方程式（回転）は，地上座標系で以下のようになります
 （添字 $e$ は地上座標系 - earth - を示します）．
@@ -227,8 +232,6 @@ $$
 機体座標系の動力学方程式です．このライブラリでは基本的にこの方程式を後述の座標変換と合わせて使用することで，
 速度と各速度からなる全状態変数 $(u,v,w,p,q,r,\phi,\theta,\psi)$ と力とトルクが加わることによる変化（時間微分） $(\dot{u},\dot{v},\dot{w},\dot{p},\dot{q},\dot{r},\dot{\phi},\dot{\theta},\dot{\psi})$ を計算します．
 
-状態変化から，次の状態変数の値を求めることができます（残念ながら線形ではありません，また，これらに）．
-
 制御理論の式としては，状態変数のベクトルを $x$ を，
 
 $$
@@ -249,6 +252,9 @@ $$
 さらに時間積分することで，機体の位置 $(x,y,z)^T$ が求まります．また，
 機体角加速度 $(p,q,r)^T$ から後述の変換で
 オイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ を求め，それを時間積分することで，機体の姿勢 $(\phi, \theta, \psi)^T$ が求まります．
+
+![plant-model](plant-model.png)
+
 
 #### 速度，加速度(並進)
 
@@ -306,7 +312,9 @@ $$
 
 #### 速度，加速度の変換
 
-機体座標系 $v = (u, v, w)^T$ から地上座標系 $v_e = (u_e, v_e, w_e)^T$ への変換行列は以下のようになります．加速度も同様です．
+機体座標系 $v = (u, v, w)^T$ から地上座標系 $v_e = (u_e, v_e, w_e)^T$ への速度変換行列は以下のようになります．
+加速度，角速度，角加速度，力，トルクも同様で，
+すべてのベクトルについてはこの行列を掛けることで変換できます（ただしオイラー角はベクトルではありません）．
 
 $$
 \left[
@@ -326,6 +334,14 @@ $$
   w \end{array}
 \right]
 $$
+
+この行列は，方向余弦行列（DCM: Direction Cosine Matrix）と呼ばれ，
+3つの回転行列の積 $R(\psi)R(\theta)R(\phi)$ となります． DCM は常に直交行列であり，固有値として '1' を1つ持ちます．
+'1' の固有ベクトルの方向が回転軸の方向（クォータニオンの虚数部）です．
+
+- [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- [オイラー角とは？定義と性質、回転行列・角速度ベクトルとの関係（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulerian-angles/)
+- [飛行力学における機体座標系の定義(@mtk_birdman)](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 
 関数名は，`ground_vector_from_body` ．逆変換は，`body_vector_from_ground` ．
 
@@ -429,5 +445,9 @@ $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 - [オイラー角とは？定義と性質、回転行列・角速度ベクトルとの関係（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulerian-angles/)
 - [飛行力学における機体座標系の定義(@mtk_birdman)](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 - [「マルチコプタの運動と制御」基礎のきそ（伊藤恒平）](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
+- [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- [Quaternion による3D回転変換 by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
+- [線形代数の可視化 by @kenjihiranabe](https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra/blob/main/The-Art-of-Linear-Algebra.pdf)
+
 
 多くの書籍やWebコンテンツで勉強し，触発されています．ありがとうございます！

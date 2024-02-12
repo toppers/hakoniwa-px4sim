@@ -169,12 +169,19 @@ There are C language interfaces for all the functions above, with the prefix `dp
 
 ## Equations
 The ground frame coordinate system fixed to the ground is defined by right hand rule,
-in which $z$-axis is downward.
+in which $x$-axis is north, $y$-axis is east, and $z$-axis is down(NED: North-East-Down).
+The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone(FRB: Front-Right-Botton).
 
-The body frame coordinate system is defined by right hand rule, in which $x$-axis is the front of the drone, $y$-axis is the right side of the drone, and $z$-axis is the bottom of the drone.
+![body_ground_frame](body_ground_frame.png)
 
-The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone. But in the equations below, the origin of the ground frame is assumed to be the same as the origin of the body frame. This is reasonable because the equations do not contain the position variables, and the position is obtained in the last step
-by integrating the velocity in the ground frame.
+The origin of the body frame is the center of gravity of the drone. The body frame is attached to the drone, and the body frame moves with the drone. And the origin of the ground frame is assumed to be the same as the origin of the body frame.
+This ground frame is paticularly called the "Vehicle Carried NED".
+
+In the equations below, we use the ground frame(Vehicle Carried NED) and
+the body frame in calculating the drone dynamics.
+
+This is reasonable because the equations do not contain the position variables,
+and the position is obtained in the last step by integrating the velocity in the ground frame.
 
 The rotation order from the ground frame to the body frame
 is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$),
@@ -248,6 +255,8 @@ rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ is time-integrated to get
 the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude, also
 described in the transformation section.
 
+![plant-model](plant-model.png)
+
 #### Velocity and Acceleration(linear translation)
 
 $$
@@ -303,7 +312,8 @@ The transformations from/to the body frame and the ground frame are as follows.
 The dynamics above are calculated using the transformations between the ground frame and the body frame.
 
 #### Velocity, Acceleration
-The body velocity $v = (u, v, w)^T$ is transformed to ground $v_e = (u_e, v_e, w_e)^T$ by the following matrix. The acceleration is transformed in the same way.
+The body velocity $v = (u, v, w)^T$ is transformed to ground $v_e = (u_e, v_e, w_e)^T$ by the following matrix. The acceleration is transformed in the same way. Any vectors in the body frame can be transformed to the ground frame by this matrix, including acceleration, angular velocity,
+angular acceleration, force, and torque(not including the euler angle which is NOT a vector).
 
 $$
 \left[
@@ -323,6 +333,16 @@ $$
   w \end{array}
 \right]
 $$
+
+This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices,
+$R(\phi)R(\theta)R(\psi)$. DCM is always orthogonal and has a '1' as its eigenvalues.
+The direction of the eigenvectors to '1' is the direction of the rotation(the quaternion's
+imaginary part).
+
+- [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
+- [Euler's Angles(Japanese) by Sky Engineering Laboratory Inc](https://www.sky-engin.jp/blog/eulerian-angles/)
+- [3D rotation in Quaterinon by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
 
 The function name is `ground_vector_from_body`,
 and the inverse transformation is `body_vector_from_ground`.
@@ -434,6 +454,9 @@ A lot of good references are available on the web. I list some of them here.
 - [Euler's Angles(Japanese) by Sky Engineering Laboratory Inc](https://www.sky-engin.jp/blog/eulerian-angles/)
 - [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 - [Basics of Multi-Copter(Japanese) by @Kouhei_Ito](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
+- [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- [3D rotation in Quaterinon by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
+- [The art of Linear Algebra by @kenjihiranabe](https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra/blob/main/The-Art-of-Linear-Algebra.pdf)
 
 We have learned a lot from them and also the links are embedded in the source code comments. Thank you all !!
 
