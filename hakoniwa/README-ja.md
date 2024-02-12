@@ -56,7 +56,38 @@ bash docker/run.bash
 
 ## Mac の場合
 
-Macの場合は、特別な対応は不要です。
+箱庭コア機能をインストールします。
+
+```
+bash install.bash
+```
+
+インストールが成功している場合は、以下のコマンドでチェックできます。
+
+```
+bash third-party/hakoniwa-core-cpp-client/hako-setup-check.bash
+```
+
+成功している場合は、以下のログが出力されます。
+```
+OK Directory exists: /usr/local/bin
+OK Directory exists: /usr/local/bin/hakoniwa
+OK Directory exists: /usr/local/lib
+OK Directory exists: /usr/local/lib/hakoniwa
+OK Directory exists: /etc/hakoniwa
+OK Directory exists: /var/lib/hakoniwa
+OK Directory exists: /var/lib/hakoniwa/mmap
+OK File exists: /etc/hakoniwa/cpp_core_config.json
+OK File exists: /usr/local/bin/hakoniwa/hako-cmd
+OK File exists: /usr/local/lib/hakoniwa/libhakoarun.a
+OK File exists: /usr/local/lib/hakoniwa/libshakoc.dylib
+OK File exists: /usr/local/lib/hakoniwa/hakoc.so
+OK File exists: /usr/local/lib/hakoniwa/libassets.dylib
+OK File exists: /usr/local/lib/hakoniwa/libconductor.dylib
+OK File exists: /usr/local/lib/hakoniwa/py
+OK File exists: /usr/local/bin/hakoniwa/hako-proxy
+Check complete.
+```
 
 # 箱庭のビルド手順
 

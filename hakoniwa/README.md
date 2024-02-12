@@ -50,7 +50,39 @@ bash docker/run.bash
 
 ## For Mac
 
-No special actions are required for Mac.
+Please install the hakonwia core functions:
+
+```
+bash install.bash
+```
+
+If the installation is successful, you can check with the following command:
+
+```
+bash third-party/hakoniwa-core-cpp-client/hako-setup-check.bash
+```
+
+If successful, the following log will be output:
+
+```
+OK Directory exists: /usr/local/bin
+OK Directory exists: /usr/local/bin/hakoniwa
+OK Directory exists: /usr/local/lib
+OK Directory exists: /usr/local/lib/hakoniwa
+OK Directory exists: /etc/hakoniwa
+OK Directory exists: /var/lib/hakoniwa
+OK Directory exists: /var/lib/hakoniwa/mmap
+OK File exists: /etc/hakoniwa/cpp_core_config.json
+OK File exists: /usr/local/bin/hakoniwa/hako-cmd
+OK File exists: /usr/local/lib/hakoniwa/libhakoarun.a
+OK File exists: /usr/local/lib/hakoniwa/libshakoc.dylib
+OK File exists: /usr/local/lib/hakoniwa/hakoc.so
+OK File exists: /usr/local/lib/hakoniwa/libassets.dylib
+OK File exists: /usr/local/lib/hakoniwa/libconductor.dylib
+OK File exists: /usr/local/lib/hakoniwa/py
+OK File exists: /usr/local/bin/hakoniwa/hako-proxy
+Check complete.
+```
 
 # Hakoniwa Build Instructions
 
