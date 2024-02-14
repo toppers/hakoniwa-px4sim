@@ -336,8 +336,26 @@ $$
 $$
 
 この行列は，方向余弦行列（DCM: Direction Cosine Matrix）と呼ばれ，
-3つの回転行列の積 $R(\psi)R(\theta)R(\phi)$ となります． DCM は常に直交行列であり，固有値として '1' を1つ持ちます．
+3つの回転行列のこの順の積 $R_z(\psi)R_y(\theta)R_x(\phi)$ となります． DCM は常に直交行列であり，固有値として '1' を1つ持ちます．
 '1' の固有ベクトルの方向が回転軸の方向（クォータニオンの虚数部）です．
+
+$$
+R_x(\phi) = \begin{bmatrix}
+    1 & 0 & 0 \\
+    0 & \cos\phi & -\sin\phi \\
+    0 & \sin\phi & \cos\phi
+  \end{bmatrix}, \quad
+R_y(\theta) = \begin{bmatrix}
+    \cos\theta & 0 & \sin\theta \\
+    0 & 1 & 0 \\
+    -\sin\theta & 0 & \cos\theta
+  \end{bmatrix}, \quad
+R_z(\psi) = \begin{bmatrix}
+    \cos\psi & -\sin\psi & 0 \\
+    \sin\psi & \cos\psi & 0 \\
+    0 & 0 & 1
+  \end{bmatrix}
+$$
 
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
 - [オイラー角とは？定義と性質、回転行列・角速度ベクトルとの関係（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulerian-angles/)

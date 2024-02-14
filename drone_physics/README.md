@@ -334,10 +334,27 @@ $$
 \right]
 $$
 
-This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices,
-$R(\phi)R(\theta)R(\psi)$. DCM is always orthogonal and has a '1' as its eigenvalues.
+This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices in the order $R_z(\psi)R_y(\theta)R_x(\phi)$. DCM is always orthogonal and has a '1' as its eigenvalues.
 The direction of the eigenvectors to '1' is the direction of the rotation(the quaternion's
 imaginary part).
+
+$$
+R_x(\phi) = \begin{bmatrix}
+    1 & 0 & 0 \\
+    0 & \cos\phi & -\sin\phi \\
+    0 & \sin\phi & \cos\phi
+  \end{bmatrix}, \quad
+R_y(\theta) = \begin{bmatrix}
+    \cos\theta & 0 & \sin\theta \\
+    0 & 1 & 0 \\
+    -\sin\theta & 0 & \cos\theta
+  \end{bmatrix}, \quad
+R_z(\psi) = \begin{bmatrix}
+    \cos\psi & -\sin\psi & 0 \\
+    \sin\psi & \cos\psi & 0 \\
+    0 & 0 & 1
+  \end{bmatrix}
+$$
 
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
 - [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
