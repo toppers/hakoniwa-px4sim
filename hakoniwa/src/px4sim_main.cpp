@@ -7,7 +7,7 @@
 #include "utils/hako_params.hpp"
 #include "config/drone_config.hpp"
 
-class DroneConfig drone_config;
+class DroneConfigManager drone_config_manager;
 
 int main(int argc, char* argv[]) 
 {
@@ -19,10 +19,10 @@ int main(int argc, char* argv[])
     int serverPort = std::atoi(argv[2]);
     const char* arg_mode = argv[3];
     hako_param_env_init();
-    std::string drone_config_path = hako_param_env_get_string(DRONE_CONFIG_PATH);
-    if (drone_config.init(drone_config_path) == false)
+    std::string drone_config_directory = hako_param_env_get_string(DRONE_CONFIG_PATH);
+    if (drone_config_manager.loadConfigsFromDirectory(drone_config_directory) == 0)
     {
-        std::cerr << "ERROR: can not find ../config/drone_config.json" << std::endl;
+        std::cerr << "ERROR: can not find drone confing file on " << drone_config_directory << std::endl;
         return -1;
     }
     hako::px4::comm::IcommEndpointType serverEndpoint = { serverIp, serverPort };

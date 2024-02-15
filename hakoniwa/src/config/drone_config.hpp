@@ -292,6 +292,7 @@ public:
             std::cerr << "ERROR: can not find drone config path: " << drone_config_path << std::endl;
             return false;
         }
+        std::cout << "INFO: LOADED drone config file: " << drone_config_path << std::endl;
         configs.push_back(drone_config);
         return true;
     }
@@ -306,6 +307,6 @@ public:
     }
 };
 
-extern class DroneConfig drone_config;
+extern class DroneConfigManager drone_config_manager;
 
 #endif /* _DRONE_CONFIG_HPP_ */

@@ -10,10 +10,11 @@
 #include "isensor_mag.hpp"
 #include "irotor_dynamics.hpp"
 #include "ithrust_dynamics.hpp"
+#include "config/drone_config.hpp"
 
 namespace hako::assets::drone {
 
-extern IAirCraft* create_aircraft(const char* drone_type);
+extern IAirCraft* create_aircraft(const DroneConfig& drone_config);
 
 }
 

@@ -26,6 +26,12 @@ static MavlinkLogHilGps log_hil_gps;
 
 void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
 {
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
     px4_comm_io = comm_io;
     logger_hil_sensor.add_entry(log_hil_sensor, drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
     logger_hil_gps.add_entry(log_hil_gps, drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));

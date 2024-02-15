@@ -54,6 +54,12 @@ static void hako_mavlink_write_data(MavlinkDecodedMessage &message)
 void *px4sim_thread_receiver(void *arg)
 {
     std::cout << "INFO: px4 reciver start" << std::endl;
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return nullptr;
+    }
     logger_recv.add_entry(log_hil_actuator_controls, drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
     hako::px4::comm::ICommIO *clientConnector = static_cast<hako::px4::comm::ICommIO *>(arg);
     while (true) {

@@ -30,6 +30,11 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
 {
     hako::px4::comm::TcpServer server;
     pthread_t thread;
+    DroneConfig drone_config;
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
     if (master) {
         if (!hako_master_init()) {
             std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
@@ -66,7 +71,14 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
 static void my_setup()
 {
     std::cout << "INFO: setup start" << std::endl;
-    drone = hako::assets::drone::create_aircraft("default");
+    std::cout << "INFO: setup start" << std::endl;
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
+    drone = hako::assets::drone::create_aircraft(drone_config);
 
     std::cout << "INFO: setup done" << std::endl;
     return;
@@ -210,6 +222,13 @@ uint64_t CsvLogger::time_usec = 0;
 static hako_time_t hako_sim_asset_time = 0;
 static void* asset_runner(void*)
 {
+    std::cout << "INFO: setup start" << std::endl;
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return nullptr;
+    }
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
