@@ -107,6 +107,7 @@ Aircraft parameters can be set in [drone_config.json](https://github.com/toppers
 The settings for each item are as follows:
 
 ## Simulation Settings
+- **name**: The name of drone.
 - **lockstep**: The lockstep mode of the simulation. Set to `true` for synchronous mode.
 - **timeStep**: The time step interval of the simulation, in seconds (`s`). Example: `0.003`.
 - **logOutputDirectory**: The path to the output directory for log files. Example: `"./"`.
