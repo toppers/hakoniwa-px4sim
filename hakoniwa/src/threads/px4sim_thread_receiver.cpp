@@ -13,17 +13,36 @@
 #include "mavlink/log/mavlink_log_hil_actuator_controls.hpp"
 
 using hako::assets::drone::mavlink::log::MavlinkLogHilActuatorControls;
-static CsvLogger logger_recv;
-static MavlinkLogHilActuatorControls log_hil_actuator_controls;
+static std::vector<CsvLogger> logger_recvs;
+static std::vector<MavlinkLogHilActuatorControls> log_hil_actuator_controlss;
 
 hako_time_t hako_px4_asset_time = 0;
 static uint64_t px4_boot_time = 0;
+bool px4sim_receiver_init(DroneConfigManager& mgr)
+{
+    for (int i = 0; i < mgr.getConfigCount(); i++)
+    {
+        DroneConfig drone_config;
+        if (mgr.getConfig(i, drone_config) == false) {
+            std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+            return false;
+        }
+        CsvLogger logger_recv;
+        logger_recvs.push_back(logger_recv);
+        MavlinkLogHilActuatorControls log_hil_actuator_controls;
+        log_hil_actuator_controlss.push_back(log_hil_actuator_controls);
+
+        logger_recvs[i].add_entry(log_hil_actuator_controlss[i], drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
+    }
+    return true;
+}
+
 static void hako_mavlink_write_data(int index, MavlinkDecodedMessage &message)
 {
     switch (message.type) {
         case MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS:
-            log_hil_actuator_controls.set_data(message.data.hil_actuator_controls);
-            logger_recv.run();
+            log_hil_actuator_controlss[index].set_data(message.data.hil_actuator_controls);
+            logger_recvs[index].run();
             hako_mavlink_write_hil_actuator_controls(index, message.data.hil_actuator_controls);
             if (px4_boot_time == 0) {
                 px4_boot_time = message.data.hil_actuator_controls.time_usec;
@@ -50,7 +69,6 @@ static void hako_mavlink_write_data(int index, MavlinkDecodedMessage &message)
             break;
     }    
 }
-
 void *px4sim_thread_receiver(void *arg)
 {
     Px4simRcvArgType *rcv_argp = static_cast<Px4simRcvArgType*>(arg);
@@ -60,7 +78,7 @@ void *px4sim_thread_receiver(void *arg)
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return nullptr;
     }
-    logger_recv.add_entry(log_hil_actuator_controls, drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
+
     hako::px4::comm::ICommIO *clientConnector = static_cast<hako::px4::comm::ICommIO *>(rcv_argp->comm_io);
     while (true) {
         char recvBuffer[1024];

@@ -2,10 +2,12 @@
 #define _PX4SIM_THREAD_RECEIVER_HPP_
 
 #include "hako_capi.h"
+#include "config/drone_config.hpp"
 
 extern hako_time_t hako_px4_asset_time;
 extern hako_time_t hako_asset_time;
 
+extern bool px4sim_receiver_init(DroneConfigManager& mgr);
 typedef struct {
     int index;
     void* comm_io;

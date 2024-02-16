@@ -19,27 +19,41 @@ static std::vector<std::unique_ptr<hako::px4::comm::ICommIO>> px4_comm_ios_uniqu
 
 using hako::assets::drone::mavlink::log::MavlinkLogHilSensor;
 using hako::assets::drone::mavlink::log::MavlinkLogHilGps;
-static CsvLogger logger_hil_sensor;
-static MavlinkLogHilSensor log_hil_sensor;
-static CsvLogger logger_hil_gps;
-static MavlinkLogHilGps log_hil_gps;
+static std::vector<CsvLogger> logger_hil_sensors;
+static std::vector<CsvLogger> logger_hil_gpss;
+static std::vector<MavlinkLogHilSensor> log_hil_sensors;
+static std::vector<MavlinkLogHilGps> log_hil_gpss;
 
 void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
 {
     DroneConfig drone_config;
-    //TODO multi: インスタンスIDを引数でもらう
-    if (drone_config_manager.getConfig(0, drone_config) == false) {
+    int index = px4_comm_ios_unique.size();
+    if (drone_config_manager.getConfig(index, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return;
     }
     px4_comm_ios_unique.push_back(std::unique_ptr<hako::px4::comm::ICommIO>(comm_io));
-    logger_hil_sensor.add_entry(log_hil_sensor, drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
-    logger_hil_gps.add_entry(log_hil_gps, drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));
+    MavlinkLogHilSensor log_hil_sensor;
+    MavlinkLogHilGps log_hil_gps;
+    log_hil_sensors.push_back(log_hil_sensor);
+    log_hil_gpss.push_back(log_hil_gps);
+    CsvLogger logger_hil_sensor;
+    CsvLogger logger_hil_gps;
+    logger_hil_sensors.push_back(logger_hil_sensor);
+    logger_hil_gpss.push_back(logger_hil_gps);
+
+    logger_hil_sensors[index].add_entry(log_hil_sensors[index], drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
+    logger_hil_gpss[index].add_entry(log_hil_gpss[index], drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));
+    std::cout << "INFO: px4sim_sender_init(): register comm_io: " << index << std::endl;
     return;
 }
 
 void px4sim_send_sensor_data(int index, Hako_uint64 time_usec, Hako_uint64 boot_time_usec)
 {
+    if (index < 0 || index >= (int)px4_comm_ios_unique.size()) {
+        //std::cerr << "ERROR: Index out of range: " << index << std::endl;
+        return;
+    }    
     static int count = 0;
     (void)boot_time_usec;
     auto* px4_comm_io = px4_comm_ios_unique[index].get();
@@ -149,8 +163,8 @@ static void px4sim_send_hil_gps(int index, hako::px4::comm::ICommIO &clientConne
     }
     if (is_initialized) {
         message.data.hil_gps.time_usec = time_usec;
-        log_hil_gps.set_data(message.data.hil_gps);
-        logger_hil_gps.run();
+        log_hil_gpss[index].set_data(message.data.hil_gps);
+        logger_hil_gpss[index].run();
         px4sim_send_message(clientConnector, message);
     }
 }
@@ -166,8 +180,8 @@ static void px4sim_send_sensor(int index, hako::px4::comm::ICommIO &clientConnec
     }
     if (is_initialized) {
         message.data.sensor.time_usec = time_usec;
-        log_hil_sensor.set_data(message.data.sensor);
-        logger_hil_sensor.run();
+        log_hil_sensors[index].set_data(message.data.sensor);
+        logger_hil_sensors[index].run();
         px4sim_send_message(clientConnector, message);
     }
 }

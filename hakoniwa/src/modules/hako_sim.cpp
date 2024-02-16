@@ -368,6 +368,7 @@ static void* asset_runner(void*)
     auto duration = now.time_since_epoch();
     auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
+    px4sim_receiver_init(drone_config_manager);
     hako_pdu_data_init(drone_config_manager);
     task_manager.init(microseconds, delta_time_usec);
     bool lockstep = drone_config.getSimLockStep();
