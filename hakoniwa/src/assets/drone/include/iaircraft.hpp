@@ -23,11 +23,29 @@ protected:
     ISensorGps *gps;
     ISensorGyro *gyro;
     ISensorMag *mag;
+    std::string robo_name;
+    int index = 0;
 public:
     virtual ~IAirCraft() {}
     virtual void run(DroneDynamicsInputType& input) = 0;
 
-     void set_drone_dynamics(IDroneDynamics *src)
+    void set_name(const std::string& name)
+    {
+        this->robo_name = name;
+    }
+    std::string get_name() const
+    {
+        return this->robo_name;
+    }
+    void set_index(int index)
+    {
+        this->index = index;
+    }
+    int get_index()
+    {
+        return this->index;
+    }
+    void set_drone_dynamics(IDroneDynamics *src)
     {
         this->drone_dynamics = src;
     }

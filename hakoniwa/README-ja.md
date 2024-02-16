@@ -116,6 +116,7 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
 各項目の設定内容は以下のとおりです。
 
 ## シミュレーション設定
+- **name**: 機体名
 - **lockstep**: シミュレーションのロックステップモード。`true` で同期モードに設定されます。
 - **timeStep**: シミュレーションのタイムステップ間隔。単位は秒(`s`)。例: `0.003`。
 - **logOutputDirectory**: ログファイルの出力ディレクトリへのパス。例: `"./"`。

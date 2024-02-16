@@ -26,6 +26,12 @@ static double hovering_thrust_range;
 
 void drone_pid_control_init() 
 {
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
     pid_control_delta_time = drone_config.getSimTimeStep();
     double mass = drone_config.getCompDroneDynamicsMass();
     hovering_thrust = mass * 9.81;

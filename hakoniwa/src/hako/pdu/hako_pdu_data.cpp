@@ -1,4 +1,5 @@
 #include "hako_pdu_data.hpp"
+#include <vector>
 #include <atomic>
 #include <unistd.h>
 
@@ -18,8 +19,37 @@ typedef struct {
     Hako_HakoHilActuatorControls hil_actuator_controls;
 } HakoPduActuatorDataType;
 
-static HakoPduSensorDataType hako_pdu_sensor_data;
-static HakoPduActuatorDataType hako_pdu_actuator_data;
+class HakoPduBuffer {
+public:
+    std::vector<std::unique_ptr<HakoPduSensorDataType>> sensor_buffers;
+    std::vector<std::unique_ptr<HakoPduActuatorDataType>> actuator_buffers;
+};
+
+static HakoPduBuffer hako_pdu_buffer;
+
+bool hako_pdu_data_init(DroneConfigManager& mgr) {
+    size_t configCount = mgr.getConfigCount();
+    for (size_t i = 0; i < configCount; ++i) {
+        auto* sensorBuffer = new HakoPduSensorDataType();
+        if (sensorBuffer == nullptr) {
+            return false;
+        }
+        sensorBuffer->is_busy = false;
+        sensorBuffer->hil_sensor_is_dirty = false;
+        sensorBuffer->hil_gps_is_dirty = false;
+        sensorBuffer->hil_state_quaternion_is_dirty = false;
+        hako_pdu_buffer.sensor_buffers.push_back(std::unique_ptr<HakoPduSensorDataType>(sensorBuffer));
+
+        auto* actuatorBuffer = new HakoPduActuatorDataType();
+        if (actuatorBuffer == nullptr) {
+            return false;
+        }
+        actuatorBuffer->is_busy = false;
+        actuatorBuffer->hil_actuator_controls_is_dirty = false;
+        hako_pdu_buffer.actuator_buffers.push_back(std::unique_ptr<HakoPduActuatorDataType>(actuatorBuffer));
+    }
+    return true;
+}
 
 
 static void set_busy(std::atomic<bool> &busy_flag) {
@@ -50,21 +80,24 @@ void hako_write_data(std::atomic<bool> &is_busy, std::atomic<bool> &is_dirty, T 
     is_dirty.store(true);
     unset_busy(is_busy);
 }
-bool hako_read_hil_sensor(Hako_HakoHilSensor &hil_sensor) {
+bool hako_read_hil_sensor(int index, Hako_HakoHilSensor &hil_sensor) {
+    auto& hako_pdu_sensor_data = *hako_pdu_buffer.sensor_buffers[index];
     return hako_read_data(
         hako_pdu_sensor_data.is_busy, 
         hako_pdu_sensor_data.hil_sensor_is_dirty, 
         hako_pdu_sensor_data.hil_sensor, hil_sensor);
 }
 
-void hako_write_hil_sensor(const Hako_HakoHilSensor &hil_sensor) {
+void hako_write_hil_sensor(int index, const Hako_HakoHilSensor &hil_sensor) {
+    auto& hako_pdu_sensor_data = *hako_pdu_buffer.sensor_buffers[index];
     hako_write_data(
         hako_pdu_sensor_data.is_busy, 
         hako_pdu_sensor_data.hil_sensor_is_dirty, 
         hako_pdu_sensor_data.hil_sensor, 
         hil_sensor);
 }
-bool hako_read_hil_gps(Hako_HakoHilGps &hil_gps) {
+bool hako_read_hil_gps(int index, Hako_HakoHilGps &hil_gps) {
+    auto& hako_pdu_sensor_data = *hako_pdu_buffer.sensor_buffers[index];
     return hako_read_data(
         hako_pdu_sensor_data.is_busy, 
         hako_pdu_sensor_data.hil_gps_is_dirty, 
@@ -72,7 +105,8 @@ bool hako_read_hil_gps(Hako_HakoHilGps &hil_gps) {
         hil_gps);
 }
 
-void hako_write_hil_gps(const Hako_HakoHilGps &hil_gps) {
+void hako_write_hil_gps(int index, const Hako_HakoHilGps &hil_gps) {
+    auto& hako_pdu_sensor_data = *hako_pdu_buffer.sensor_buffers[index];
     hako_write_data(
         hako_pdu_sensor_data.is_busy, 
         hako_pdu_sensor_data.hil_gps_is_dirty, 
@@ -80,7 +114,8 @@ void hako_write_hil_gps(const Hako_HakoHilGps &hil_gps) {
         hil_gps);
 }
 
-bool hako_read_hil_state_quaternion(Hako_HakoHilStateQuaternion &hil_state_quaternion) {
+bool hako_read_hil_state_quaternion(int index, Hako_HakoHilStateQuaternion &hil_state_quaternion) {
+    auto& hako_pdu_sensor_data = *hako_pdu_buffer.sensor_buffers[index];
     return hako_read_data(
         hako_pdu_sensor_data.is_busy, 
         hako_pdu_sensor_data.hil_state_quaternion_is_dirty, 
@@ -88,7 +123,8 @@ bool hako_read_hil_state_quaternion(Hako_HakoHilStateQuaternion &hil_state_quate
         hil_state_quaternion);
 }
 
-void hako_write_hil_state_quaternion(const Hako_HakoHilStateQuaternion &hil_state_quaternion) {
+void hako_write_hil_state_quaternion(int index, const Hako_HakoHilStateQuaternion &hil_state_quaternion) {
+    auto& hako_pdu_sensor_data = *hako_pdu_buffer.sensor_buffers[index];
     hako_write_data(
         hako_pdu_sensor_data.is_busy, 
         hako_pdu_sensor_data.hil_state_quaternion_is_dirty, 
@@ -96,7 +132,8 @@ void hako_write_hil_state_quaternion(const Hako_HakoHilStateQuaternion &hil_stat
         hil_state_quaternion);
 }
 
-bool hako_read_hil_actuator_controls(Hako_HakoHilActuatorControls &hil_actuator_controls) {
+bool hako_read_hil_actuator_controls(int index, Hako_HakoHilActuatorControls &hil_actuator_controls) {
+    auto& hako_pdu_actuator_data = *hako_pdu_buffer.actuator_buffers[index];
     return hako_read_data(
         hako_pdu_actuator_data.is_busy, 
         hako_pdu_actuator_data.hil_actuator_controls_is_dirty, 
@@ -104,7 +141,8 @@ bool hako_read_hil_actuator_controls(Hako_HakoHilActuatorControls &hil_actuator_
         hil_actuator_controls);
 }
 
-void hako_write_hil_actuator_controls(const Hako_HakoHilActuatorControls &hil_actuator_controls) {
+void hako_write_hil_actuator_controls(int index, const Hako_HakoHilActuatorControls &hil_actuator_controls) {
+    auto& hako_pdu_actuator_data = *hako_pdu_buffer.actuator_buffers[index];
     hako_write_data(
         hako_pdu_actuator_data.is_busy, 
         hako_pdu_actuator_data.hil_actuator_controls_is_dirty, 

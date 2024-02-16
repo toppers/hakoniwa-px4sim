@@ -55,13 +55,13 @@ using hako::assets::drone::SensorNoise;
 
 #define LOGPATH(name)               drone_config.getSimLogFullPath(name)
 
-IAirCraft* hako::assets::drone::create_aircraft(const char* drone_type)
+IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
 {
-    (void)drone_type;
 
     auto drone = new AirCraft();
     HAKO_ASSERT(drone != nullptr);
-
+    drone->set_name(drone_config.getRoboName());
+    
     //drone dynamics
     IDroneDynamics *drone_dynamics = nullptr;
     if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrame") {

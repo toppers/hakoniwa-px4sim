@@ -63,10 +63,10 @@ private:
 public:
     virtual ~MavlinkIO() {}
 
-    bool read_actuator_data(double controls[hako::assets::drone::ROTOR_NUM], Hako_uint64& time_usec)
+    bool read_actuator_data(IAirCraft& drone, double controls[hako::assets::drone::ROTOR_NUM], Hako_uint64& time_usec)
     {
         Hako_HakoHilActuatorControls hil_actuator_controls;
-        if (hako_read_hil_actuator_controls(hil_actuator_controls)) {
+        if (hako_read_hil_actuator_controls(drone.get_index(), hil_actuator_controls)) {
             for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
                 controls[i] = hil_actuator_controls.controls[i];
             }
@@ -84,8 +84,8 @@ public:
         build_hil_sensor(drone, hil_sensor);
         build_hil_gps(drone, hil_gps);
 
-        hako_write_hil_sensor(hil_sensor);
-        hako_write_hil_gps(hil_gps);
+        hako_write_hil_sensor(drone.get_index(), hil_sensor);
+        hako_write_hil_gps(drone.get_index(), hil_gps);
     }
 };
 }

@@ -27,6 +27,11 @@ static IAirCraft *drone;
 void hako_phys_main()
 {
     CsvLogger::enable();
+    DroneConfig drone_config;
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
     if (!hako_master_init()) {
         std::cerr << "ERROR: " << "hako_master_init() error" << std::endl;
         return;
@@ -48,7 +53,13 @@ void hako_phys_main()
 static void my_setup()
 {
     std::cout << "INFO: setup start" << std::endl;
-    drone = hako::assets::drone::create_aircraft("default");
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
+    drone = hako::assets::drone::create_aircraft(drone_config);
     drone_pid_control_init();
 
     std::cout << "INFO: setup done" << std::endl;
@@ -113,6 +124,13 @@ static hako_asset_runner_callback_t my_callbacks = {
 static hako_time_t hako_asset_time = 0;
 static void asset_runner()
 {
+    std::cout << "INFO: setup start" << std::endl;
+    DroneConfig drone_config;
+    //TODO multi: インスタンスIDを引数でもらう
+    if (drone_config_manager.getConfig(0, drone_config) == false) {
+        std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
+        return;
+    }
     Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
     hako_asset_runner_register_callback(&my_callbacks);
     const char* config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);

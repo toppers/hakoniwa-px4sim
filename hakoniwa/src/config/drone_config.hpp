@@ -57,6 +57,10 @@ public:
         }
         return directory;
     }
+    std::string getRoboName() const
+    {
+        return configJson["name"].get<std::string>();
+    }
     std::string getSimLogFullPath(const std::string& filename) const
     {
         std::string logDirectory = getSimLogOutputDirectory();
@@ -225,6 +229,91 @@ public:
     }
 };
 
-extern class DroneConfig drone_config;
+#include <filesystem>
+#include <regex>
+#include <iostream>
+#include <algorithm> 
+
+class DroneConfigManager {
+private:
+    std::vector<DroneConfig> configs;
+
+public:
+    DroneConfigManager() {}
+
+    int loadConfigsFromDirectory(const std::string& directoryPath) {
+        namespace fs = std::filesystem;
+        std::regex pattern("drone_config_(\\d+)\\.json");
+
+        // 検出したファイルとそのインデックスを保持するベクトル
+        std::vector<std::pair<int, std::string>> filesWithIndex;
+
+        // ディレクトリを走査してファイルをリストに追加
+        try {
+            for (const auto& entry : fs::directory_iterator(directoryPath)) {
+                if (entry.is_regular_file()) {
+                    std::smatch matches;
+                    std::string filename = entry.path().filename().string();
+
+                    if (std::regex_match(filename, matches, pattern) && matches.size() == 2) {
+                        // ファイル名からインデックスを抽出し、リストに追加
+                        int index = std::stoi(matches[1].str());
+                        filesWithIndex.emplace_back(index, entry.path().string());
+                    }
+                }
+            }
+        } catch (const fs::filesystem_error& e) {
+            std::cerr << "Filesystem error: " << e.what() << std::endl;
+            return 0;
+        } catch (const std::exception& e) {
+            std::cerr << "Standard exception: " << e.what() << std::endl;
+            return 0;
+        } catch (...) {
+            std::cerr << "Unknown error occurred during directory traversal." << std::endl;
+            return 0;
+        }
+
+        // インデックスに基づいてファイルをソート
+        std::sort(filesWithIndex.begin(), filesWithIndex.end(), [](const auto& a, const auto& b) {
+            return a.first < b.first;
+        });
+
+        // ソートされた順に設定を読み込む
+        int loadedCount = 0;
+        for (const auto& [index, filePath] : filesWithIndex) {
+            if (loadConfigFromFile(filePath)) {
+                loadedCount++;
+            } else {
+                std::cerr << "Failed to load config from: " << filePath << std::endl;
+            }
+        }
+
+        return loadedCount;
+    }
+    bool loadConfigFromFile(const std::string& drone_config_path) {
+        DroneConfig drone_config;
+        if (!drone_config.init(drone_config_path)) {
+            std::cerr << "ERROR: can not find drone config path: " << drone_config_path << std::endl;
+            return false;
+        }
+        std::cout << "INFO: LOADED drone config file: " << drone_config_path << std::endl;
+        configs.push_back(drone_config);
+        return true;
+    }
+
+
+    bool getConfig(size_t index, DroneConfig& config) {
+        if (index >= configs.size()) {
+            return false;
+        }
+        config = configs[index];
+        return true;
+    }
+    int getConfigCount() {
+        return configs.size();
+    }
+};
+
+extern class DroneConfigManager drone_config_manager;
 
 #endif /* _DRONE_CONFIG_HPP_ */

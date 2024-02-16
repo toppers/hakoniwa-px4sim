@@ -29,7 +29,7 @@ static HakoParamStringType hako_param_string[HAKO_PARAM_STRING_NUM] = {
     },
     {
         DRONE_CONFIG_PATH,
-        "../config/drone_config.json"
+        "../config"
     },
 };
 #define HAKO_PARAM_INTEGER_NUM 1
