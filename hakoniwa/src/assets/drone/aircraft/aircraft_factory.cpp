@@ -60,7 +60,8 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
 
     auto drone = new AirCraft();
     HAKO_ASSERT(drone != nullptr);
-
+    drone->set_name(drone_config.getRoboName());
+    
     //drone dynamics
     IDroneDynamics *drone_dynamics = nullptr;
     if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrame") {

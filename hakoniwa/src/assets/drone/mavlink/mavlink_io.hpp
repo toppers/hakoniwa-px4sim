@@ -63,7 +63,7 @@ private:
 public:
     virtual ~MavlinkIO() {}
 
-    bool read_actuator_data(double controls[hako::assets::drone::ROTOR_NUM], Hako_uint64& time_usec)
+    bool read_actuator_data(IAirCraft& drone, double controls[hako::assets::drone::ROTOR_NUM], Hako_uint64& time_usec)
     {
         Hako_HakoHilActuatorControls hil_actuator_controls;
         if (hako_read_hil_actuator_controls(hil_actuator_controls)) {

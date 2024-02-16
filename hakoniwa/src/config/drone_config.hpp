@@ -57,6 +57,10 @@ public:
         }
         return directory;
     }
+    std::string getRoboName() const
+    {
+        return configJson["name"].get<std::string>();
+    }
     std::string getSimLogFullPath(const std::string& filename) const
     {
         std::string logDirectory = getSimLogOutputDirectory();
@@ -304,6 +308,9 @@ public:
         }
         config = configs[index];
         return true;
+    }
+    int getConfigCount() {
+        return configs.size();
     }
 };
 
