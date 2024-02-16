@@ -54,15 +54,29 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         std::cerr << "Failed to create asset_runner thread!" << std::endl;
         return;
     }
-    //TODO multi instance
-    auto comm_io = server.server_open(&serverEndpoint);
-    if (comm_io == nullptr) 
-    {
-        std::cerr << "Failed to open TCP server" << std::endl;
-        return;
+    size_t configCount = drone_config_manager.getConfigCount();
+    std::vector<pthread_t> threads(configCount);
+    for (size_t i = 0; i < configCount; ++i) {
+        hako::px4::comm::IcommEndpointType ep = serverEndpoint;
+        ep.portno = serverEndpoint.portno + i;
+        auto comm_io = server.server_open(&ep);
+        if (comm_io == nullptr) 
+        {
+            std::cerr << "Failed to open TCP server" << std::endl;
+            return;
+        }
+        px4sim_sender_init(comm_io);
+        if (pthread_create(&threads[i], NULL, px4sim_thread_receiver, comm_io) != 0) {
+            std::cerr << "Failed to create asset_runner thread!" << std::endl;
+            return;
+        }
     }
-    px4sim_sender_init(comm_io);
-    px4sim_thread_receiver(comm_io);
+    for (size_t i = 0; i < configCount; ++i) {
+        if (pthread_join(threads[i], nullptr) != 0) {
+            std::cerr << "Failed to join thread " << i << std::endl;
+        }
+    }
+
     //not reached
     return;
 }
@@ -207,8 +221,8 @@ private:
     {
         for (auto& container : aircraft_container) {
             container.mavlink_io.write_sensor_data(*container.drone);
+            px4sim_send_sensor_data(container.drone->get_index(), hako_asset_time_usec, microseconds);
         }
-        px4sim_send_sensor_data(hako_asset_time_usec, microseconds);
     }
     bool recv_actuator_controls()
     {
@@ -351,6 +365,7 @@ static void* asset_runner(void*)
     auto duration = now.time_since_epoch();
     auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
+    hako_pdu_data_init(drone_config_manager);
     task_manager.init(microseconds, delta_time_usec);
     bool lockstep = drone_config.getSimLockStep();
     hako_asset_runner_register_callback(&my_callbacks);

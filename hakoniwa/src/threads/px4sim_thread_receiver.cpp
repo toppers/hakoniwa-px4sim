@@ -18,13 +18,13 @@ static MavlinkLogHilActuatorControls log_hil_actuator_controls;
 
 hako_time_t hako_px4_asset_time = 0;
 static uint64_t px4_boot_time = 0;
-static void hako_mavlink_write_data(MavlinkDecodedMessage &message)
+static void hako_mavlink_write_data(int index, MavlinkDecodedMessage &message)
 {
     switch (message.type) {
         case MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS:
             log_hil_actuator_controls.set_data(message.data.hil_actuator_controls);
             logger_recv.run();
-            hako_mavlink_write_hil_actuator_controls(message.data.hil_actuator_controls);
+            hako_mavlink_write_hil_actuator_controls(index, message.data.hil_actuator_controls);
             if (px4_boot_time == 0) {
                 px4_boot_time = message.data.hil_actuator_controls.time_usec;
             }
@@ -56,7 +56,8 @@ void *px4sim_thread_receiver(void *arg)
     std::cout << "INFO: px4 reciver start" << std::endl;
     DroneConfig drone_config;
     //TODO multi: インスタンスIDを引数でもらう
-    if (drone_config_manager.getConfig(0, drone_config) == false) {
+    int index = 0;
+    if (drone_config_manager.getConfig(index, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return nullptr;
     }
@@ -69,7 +70,7 @@ void *px4sim_thread_receiver(void *arg)
         {
             //std::cout << "Received data with length: " << recvDataLen << std::endl;
             mavlink_message_t msg;
-            bool ret = mavlink_decode(MAVLINK_CONFIG_CHAN_0, recvBuffer, recvDataLen, &msg);
+            bool ret = mavlink_decode(index, recvBuffer, recvDataLen, &msg);
             if (ret)
             {
                 MavlinkDecodedMessage message;
@@ -82,7 +83,7 @@ void *px4sim_thread_receiver(void *arg)
                     if (message.type == MAVLINK_MSG_TYPE_LONG) {
                         px4sim_send_dummy_command_long_ack(*clientConnector);
                     }
-                    hako_mavlink_write_data(message);
+                    hako_mavlink_write_data(index, message);
                 }
             }
         } else {
