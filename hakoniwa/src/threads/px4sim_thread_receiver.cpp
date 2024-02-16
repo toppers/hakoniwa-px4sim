@@ -53,16 +53,15 @@ static void hako_mavlink_write_data(int index, MavlinkDecodedMessage &message)
 
 void *px4sim_thread_receiver(void *arg)
 {
-    std::cout << "INFO: px4 reciver start" << std::endl;
+    Px4simRcvArgType *rcv_argp = static_cast<Px4simRcvArgType*>(arg);
+    std::cout << "INFO: px4 reciver[" << rcv_argp->index << "] start" << std::endl;
     DroneConfig drone_config;
-    //TODO multi: インスタンスIDを引数でもらう
-    int index = 0;
-    if (drone_config_manager.getConfig(index, drone_config) == false) {
+    if (drone_config_manager.getConfig(rcv_argp->index, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return nullptr;
     }
     logger_recv.add_entry(log_hil_actuator_controls, drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
-    hako::px4::comm::ICommIO *clientConnector = static_cast<hako::px4::comm::ICommIO *>(arg);
+    hako::px4::comm::ICommIO *clientConnector = static_cast<hako::px4::comm::ICommIO *>(rcv_argp->comm_io);
     while (true) {
         char recvBuffer[1024];
         int recvDataLen;
@@ -70,7 +69,7 @@ void *px4sim_thread_receiver(void *arg)
         {
             //std::cout << "Received data with length: " << recvDataLen << std::endl;
             mavlink_message_t msg;
-            bool ret = mavlink_decode(index, recvBuffer, recvDataLen, &msg);
+            bool ret = mavlink_decode(rcv_argp->index, recvBuffer, recvDataLen, &msg);
             if (ret)
             {
                 MavlinkDecodedMessage message;
@@ -83,7 +82,7 @@ void *px4sim_thread_receiver(void *arg)
                     if (message.type == MAVLINK_MSG_TYPE_LONG) {
                         px4sim_send_dummy_command_long_ack(*clientConnector);
                     }
-                    hako_mavlink_write_data(index, message);
+                    hako_mavlink_write_data(rcv_argp->index, message);
                 }
             }
         } else {

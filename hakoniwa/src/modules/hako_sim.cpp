@@ -56,6 +56,7 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
     }
     size_t configCount = drone_config_manager.getConfigCount();
     std::vector<pthread_t> threads(configCount);
+    std::vector<Px4simRcvArgType> rcv_arg(configCount);
     for (size_t i = 0; i < configCount; ++i) {
         hako::px4::comm::IcommEndpointType ep = serverEndpoint;
         ep.portno = serverEndpoint.portno + i;
@@ -66,7 +67,9 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
             return;
         }
         px4sim_sender_init(comm_io);
-        if (pthread_create(&threads[i], NULL, px4sim_thread_receiver, comm_io) != 0) {
+        rcv_arg[i].index = i;
+        rcv_arg[i].comm_io = comm_io;
+        if (pthread_create(&threads[i], NULL, px4sim_thread_receiver, &rcv_arg[i]) != 0) {
             std::cerr << "Failed to create asset_runner thread!" << std::endl;
             return;
         }
