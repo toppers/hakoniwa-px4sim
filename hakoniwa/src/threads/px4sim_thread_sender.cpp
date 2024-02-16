@@ -19,10 +19,18 @@ static std::vector<std::unique_ptr<hako::px4::comm::ICommIO>> px4_comm_ios_uniqu
 
 using hako::assets::drone::mavlink::log::MavlinkLogHilSensor;
 using hako::assets::drone::mavlink::log::MavlinkLogHilGps;
-static std::vector<CsvLogger> logger_hil_sensors;
-static std::vector<CsvLogger> logger_hil_gpss;
-static std::vector<MavlinkLogHilSensor> log_hil_sensors;
-static std::vector<MavlinkLogHilGps> log_hil_gpss;
+
+class HakoSenderInfo {
+public:
+    int count = 0;
+    bool sensor_is_initialized = false;
+    bool gps_is_initialized = false;
+    CsvLogger logger_hil_sensor;
+    CsvLogger logger_hil_gps;
+    MavlinkLogHilSensor log_hil_sensor;
+    MavlinkLogHilGps log_hil_gps;
+};
+static std::vector<std::unique_ptr<HakoSenderInfo>> hako_sender_info;
 
 void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
 {
@@ -33,17 +41,15 @@ void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
         return;
     }
     px4_comm_ios_unique.push_back(std::unique_ptr<hako::px4::comm::ICommIO>(comm_io));
-    MavlinkLogHilSensor log_hil_sensor;
-    MavlinkLogHilGps log_hil_gps;
-    log_hil_sensors.push_back(log_hil_sensor);
-    log_hil_gpss.push_back(log_hil_gps);
-    CsvLogger logger_hil_sensor;
-    CsvLogger logger_hil_gps;
-    logger_hil_sensors.push_back(logger_hil_sensor);
-    logger_hil_gpss.push_back(logger_hil_gps);
+    HakoSenderInfo* info = new HakoSenderInfo();
+    if (info == nullptr) {
+        std::cerr << "ERROR: " << "cannot allocate memory on sender_init" << std::endl;
+        return;
+    }
+    hako_sender_info.push_back(std::unique_ptr<HakoSenderInfo>(info));
 
-    logger_hil_sensors[index].add_entry(log_hil_sensors[index], drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
-    logger_hil_gpss[index].add_entry(log_hil_gpss[index], drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));
+    info->logger_hil_sensor.add_entry(info->log_hil_sensor, drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
+    info->logger_hil_gps.add_entry(info->log_hil_gps, drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));
     std::cout << "INFO: px4sim_sender_init(): register comm_io: " << index << std::endl;
     return;
 }
@@ -54,17 +60,16 @@ void px4sim_send_sensor_data(int index, Hako_uint64 time_usec, Hako_uint64 boot_
         //std::cerr << "ERROR: Index out of range: " << index << std::endl;
         return;
     }    
-    static int count = 0;
     (void)boot_time_usec;
     auto* px4_comm_io = px4_comm_ios_unique[index].get();
     if (px4_comm_io == nullptr) {
         return;
     }
     px4sim_send_sensor(index, *px4_comm_io, time_usec);
-    if ((count % 10) == 0) {
+    if ((hako_sender_info[index]->count % 10) == 0) {
         px4sim_send_hil_gps(index, *px4_comm_io, time_usec);
     }
-    count++;
+    hako_sender_info[index]->count++;
     return;
 }
 
@@ -154,34 +159,32 @@ void px4sim_send_dummy_heartbeat(hako::px4::comm::ICommIO &clientConnector)
 
 static void px4sim_send_hil_gps(int index, hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec)
 {
-    static bool is_initialized = false;
     MavlinkDecodedMessage message;
     message.type = MAVLINK_MSG_TYPE_HIL_GPS;
 
     if (hako_mavlink_read_hil_gps(index, message.data.hil_gps)) {
-        is_initialized = true;
+        hako_sender_info[index]->gps_is_initialized = true;
     }
-    if (is_initialized) {
+    if (hako_sender_info[index]->gps_is_initialized) {
         message.data.hil_gps.time_usec = time_usec;
-        log_hil_gpss[index].set_data(message.data.hil_gps);
-        logger_hil_gpss[index].run();
+        hako_sender_info[index]->log_hil_gps.set_data(message.data.hil_gps);
+        hako_sender_info[index]->logger_hil_gps.run();
         px4sim_send_message(clientConnector, message);
     }
 }
 
 static void px4sim_send_sensor(int index, hako::px4::comm::ICommIO &clientConnector, uint64_t time_usec)
 {
-    static bool is_initialized = false;
     MavlinkDecodedMessage message;
     message.type = MAVLINK_MSG_TYPE_HIL_SENSOR;
 
     if (hako_mavlink_read_hil_sensor(index, message.data.sensor)) {
-        is_initialized = true;
+        hako_sender_info[index]->sensor_is_initialized = true;
     }
-    if (is_initialized) {
+    if (hako_sender_info[index]->sensor_is_initialized) {
         message.data.sensor.time_usec = time_usec;
-        log_hil_sensors[index].set_data(message.data.sensor);
-        logger_hil_sensors[index].run();
+        hako_sender_info[index]->log_hil_sensor.set_data(message.data.sensor);
+        hako_sender_info[index]->logger_hil_sensor.run();
         px4sim_send_message(clientConnector, message);
     }
 }

@@ -13,8 +13,14 @@
 #include "mavlink/log/mavlink_log_hil_actuator_controls.hpp"
 
 using hako::assets::drone::mavlink::log::MavlinkLogHilActuatorControls;
-static std::vector<CsvLogger> logger_recvs;
-static std::vector<MavlinkLogHilActuatorControls> log_hil_actuator_controlss;
+
+class HakoRecvInfo {
+public:
+    CsvLogger logger_recv;
+    MavlinkLogHilActuatorControls log_hil_actuator_controls;
+};
+static std::vector<std::unique_ptr<HakoRecvInfo>> hako_recv_info;
+
 
 hako_time_t hako_px4_asset_time = 0;
 static uint64_t px4_boot_time = 0;
@@ -27,12 +33,16 @@ bool px4sim_receiver_init(DroneConfigManager& mgr)
             std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
             return false;
         }
-        CsvLogger logger_recv;
-        logger_recvs.push_back(logger_recv);
-        MavlinkLogHilActuatorControls log_hil_actuator_controls;
-        log_hil_actuator_controlss.push_back(log_hil_actuator_controls);
+        HakoRecvInfo* info = new HakoRecvInfo();
+        if (info == nullptr) {
+            std::cerr << "ERROR: " << "cannot allocate memory on px4sim_receiver_init" << std::endl;
+            return false;
+        }
+        hako_recv_info.push_back(std::unique_ptr<HakoRecvInfo>(info));
 
-        logger_recvs[i].add_entry(log_hil_actuator_controlss[i], drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
+
+        hako_recv_info[i]->logger_recv.add_entry(hako_recv_info[i]->log_hil_actuator_controls, drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
+        std::cout << "INFO: px4sim_receiver_init() i = " << i << std::endl;
     }
     return true;
 }
@@ -41,8 +51,8 @@ static void hako_mavlink_write_data(int index, MavlinkDecodedMessage &message)
 {
     switch (message.type) {
         case MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS:
-            log_hil_actuator_controlss[index].set_data(message.data.hil_actuator_controls);
-            logger_recvs[index].run();
+            hako_recv_info[index]->log_hil_actuator_controls.set_data(message.data.hil_actuator_controls);
+            hako_recv_info[index]->logger_recv.run();
             hako_mavlink_write_hil_actuator_controls(index, message.data.hil_actuator_controls);
             if (px4_boot_time == 0) {
                 px4_boot_time = message.data.hil_actuator_controls.time_usec;
