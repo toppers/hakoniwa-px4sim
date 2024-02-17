@@ -26,6 +26,12 @@ static IAirCraft *drone;
 
 void hako_phys_main()
 {
+    std::string drone_config_path = hako_param_env_get_string(DRONE_CONFIG_PATH);
+    if (drone_config_manager.loadConfigFromFile(drone_config_path) == 0)
+    {
+        std::cerr << "ERROR: can not find drone config file on " << drone_config_path << std::endl;
+        return;
+    }
     CsvLogger::enable();
     DroneConfig drone_config;
     if (drone_config_manager.getConfig(0, drone_config) == false) {

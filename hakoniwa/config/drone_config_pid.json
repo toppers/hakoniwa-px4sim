@@ -1,4 +1,5 @@
 {
+  "name": "DroneAvator",
   "simulation": {
     "lockstep": true,
     "timeStep": 0.003,

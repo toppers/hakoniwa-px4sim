@@ -28,6 +28,12 @@ static hako::assets::drone::AirCraftManager drone_manager;
 
 void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoint)
 {
+    std::string drone_config_directory = hako_param_env_get_string(DRONE_CONFIG_PATH);
+    if (drone_config_manager.loadConfigsFromDirectory(drone_config_directory) == 0)
+    {
+        std::cerr << "ERROR: can not find drone config file on " << drone_config_directory << std::endl;
+        return;
+    }
     hako::px4::comm::TcpServer server;
     pthread_t thread;
     DroneConfig drone_config;

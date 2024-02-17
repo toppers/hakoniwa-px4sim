@@ -10,6 +10,7 @@
 #include "mavlink/log/mavlink_log_hil_gps.hpp"
 #include "mavlink/log/mavlink_log_hil_actuator_controls.hpp"
 #include "mavlink/mavlink_decoder.hpp"
+#include "config/drone_config.hpp"
 
 using hako::assets::drone::mavlink::log::MavlinkLogHilSensor;
 using hako::assets::drone::mavlink::log::MavlinkLogHilGps;
@@ -104,6 +105,12 @@ static void *hako_bypass_thread(void *argp)
 
 void hako_bypass_main(const char* sever_ipaddr, int server_portno)
 {
+    std::string drone_config_directory = hako_param_env_get_string(DRONE_CONFIG_PATH);
+    if (drone_config_manager.loadConfigsFromDirectory(drone_config_directory) == 0)
+    {
+        std::cerr << "ERROR: can not find drone config file on " << drone_config_directory << std::endl;
+        return;
+    }
     hako::px4::comm::ICommIO *phys_comm  = nullptr;
     hako::px4::comm::ICommIO *ctrl_comm  = nullptr;
     MavlinkCaptureControllerType capture;
