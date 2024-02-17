@@ -4,21 +4,17 @@
 #include "assets/drone/aircraft/aircraft_factory.hpp"
 #include "utils/hako_params.hpp"
 #include "hako_asset_runner.h"
-#include "hako/pdu/hako_pdu_data.hpp"
 #include "hako/runner/hako_px4_master.hpp"
 #include "threads/px4sim_thread_sender.hpp"
 #include "threads/px4sim_thread_receiver.hpp"
 #include "config/drone_config.hpp"
+#include "hako/pdu/hako_pdu_accessor.hpp"
 
 #include <unistd.h>
 #include <memory.h>
 #include <iostream>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
-#define HAKO_AVATOR_CHANNLE_ID_MOTOR        0
-#define HAKO_AVATOR_CHANNLE_ID_POS          1
-#define HAKO_AVATOR_CHANNLE_ID_COLLISION    2
-#define HAKO_AVATOR_CHANNLE_ID_MANUAL       3
 
 #define HAKO_ASSET_NAME "px4sim"
 
@@ -94,104 +90,6 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
 static void my_setup()
 {
     //nothing to do
-}
-static void debug_print(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
-{
-    std::cout << "Collision: " << (drone_collision.collision ? "Yes" : "No") << std::endl;
-    std::cout << "Contact Number: " << drone_collision.contact_num << std::endl;
-    std::cout << "Relative Velocity: (" 
-                    << drone_collision.relative_velocity.x << ", " 
-                    << drone_collision.relative_velocity.y << "," 
-                    << drone_collision.relative_velocity.z << ")"
-                    << std::endl;
-
-    for (int i = 0; i < drone_collision.contact_num; ++i) {
-        std::cout << "Contact Positions[" << i << "]: (" 
-                    << drone_collision.contact_position[i].x << ", " 
-                    << drone_collision.contact_position[i].y << "," 
-                    << drone_collision.contact_position[i].z << ")"
-                    << std::endl;
-    }
-    std::cout << "Restitution Coefficient: " << drone_collision.restitution_coefficient << std::endl;
-}
-
-static void do_io_read_collision(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
-{
-    Hako_Collision hako_collision;
-    memset(&drone_collision, 0, sizeof(drone_collision));
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, (char*)&hako_collision, sizeof(hako_collision))) {
-        std::cerr << "ERROR: can not read pdu data: Hako_Collision" << std::endl;
-    }
-    drone_collision.collision = hako_collision.collision;
-    if (drone_collision.collision) {
-        drone_collision.contact_num = hako_collision.contact_num;
-        //ROS座標系 ==> 航空座標系
-        drone_collision.relative_velocity.x = hako_collision.relative_velocity.x;
-        drone_collision.relative_velocity.y = -hako_collision.relative_velocity.y;
-        drone_collision.relative_velocity.z = -hako_collision.relative_velocity.z;
-        drone_collision.restitution_coefficient = hako_collision.restitution_coefficient;
-        for (int i = 0; i < drone_collision.contact_num; i++) {
-            drone_collision.contact_position[i].x = hako_collision.contact_position[i].x;
-            drone_collision.contact_position[i].y = -hako_collision.contact_position[i].y;
-            drone_collision.contact_position[i].z = -hako_collision.contact_position[i].z;
-        }
-        debug_print(drone_collision);
-        /*
-         * Unityのシミュレーションは20msec周期で動作する。
-         * 一方、こちらは 3msec周期で動作するので、衝突データを打ち消しておかないと、次のタイミングで拾ってしまう。
-         */
-        hako_collision.collision = false;
-        if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, (const char*)&hako_collision, sizeof(hako_collision))) {
-            std::cerr << "ERROR: can not write pdu data: Hako_Collision" << std::endl;
-        }
-    }
-}
-static void do_io_read_manual(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsManualControlType& drone_manual)
-{
-    Hako_ManualPosAttControl hako_manual;
-    memset(&hako_manual, 0, sizeof(hako_manual));
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MANUAL, (char*)&hako_manual, sizeof(hako_manual))) {
-        std::cerr << "ERROR: can not read pdu data: Hako_ManualPosAttControl" << std::endl;
-    }
-    drone_manual.control = hako_manual.do_operation;
-    if (drone_manual.control) {
-        std::cout << "manual set angle( " << hako_manual.posatt.angular.x << ", " << hako_manual.posatt.angular.y << ", " << hako_manual.posatt.angular.z << " )" << std::endl;
-        hako_manual.do_operation = false;
-        drone_manual.angle.data.x = hako_manual.posatt.angular.x;
-        drone_manual.angle.data.y = hako_manual.posatt.angular.y;
-        drone_manual.angle.data.z = hako_manual.posatt.angular.z;
-        drone_manual.pos.data.x = hako_manual.posatt.linear.x;
-        drone_manual.pos.data.y = hako_manual.posatt.linear.y;
-        drone_manual.pos.data.z = hako_manual.posatt.linear.z;
-        if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MANUAL, (const char*)&hako_manual, sizeof(hako_manual))) {
-            std::cerr << "ERROR: can not write pdu data: Hako_ManualPosAttControl" << std::endl;
-        }
-    }
-}
-static void do_io_write(hako::assets::drone::IAirCraft *drone, double controls[hako::assets::drone::ROTOR_NUM])
-{
-    Hako_HakoHilActuatorControls hil_actuator_controls;
-    Hako_Twist pos;
-
-    memset(&hil_actuator_controls, 0, sizeof(hil_actuator_controls));
-    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
-        hil_actuator_controls.controls[i] = controls[i];
-    }
-    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MOTOR, (const char*)&hil_actuator_controls, sizeof(hil_actuator_controls))) {
-        std::cerr << "ERROR: can not write pdu data: hil_actuator_controls" << std::endl;
-    }
-
-    DronePositionType dpos = drone->get_drone_dynamics().get_pos();
-    DroneEulerType dangle = drone->get_drone_dynamics().get_angle();
-    pos.linear.x = dpos.data.x;
-    pos.linear.y = -dpos.data.y;
-    pos.linear.z = -dpos.data.z;
-    pos.angular.x = dangle.data.x;
-    pos.angular.y = -dangle.data.y;
-    pos.angular.z = -dangle.data.z;
-    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_POS, (const char*)&pos, sizeof(pos))) {
-        std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
-    }
 }
 #include <chrono>
 #include "utils/csv_logger.hpp"
