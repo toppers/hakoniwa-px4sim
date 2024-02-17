@@ -25,7 +25,10 @@ private:
 public:
     AirCraftManager() {}
     virtual ~AirCraftManager() {}
-    void createAirCrafts (DroneConfigManager& configManager) {
+    /*
+     * create different aircrafts from config directory.
+     */
+    void createAirCrafts(DroneConfigManager& configManager) {
         size_t configCount = configManager.getConfigCount();
         for (size_t i = 0; i < configCount; ++i) {
             DroneConfig config;
@@ -41,6 +44,27 @@ public:
                 }
             }
         }
+    }
+    /*
+     * create same aircrafts from config 0.
+     */
+    bool createSameAirCrafts(DroneConfigManager& configManager, int create_num) {
+        DroneConfig config;
+        if (configManager.getConfig(0, config) == false) {
+            std::cerr << "ERROR: can not create get config: 0" << std::endl;
+            return false;
+        }
+        for (int i = 0; i < create_num; ++i) {
+            std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(config));
+            if (airCraft) {
+                airCraft->set_index(i);
+                airCrafts.push_back(std::move(airCraft));
+            }
+            else {
+                std::cerr << "ERROR: can not create airCraft: " << i << std::endl;
+            }
+        }
+        return true;
     }
     IAirCraft* getAirCraft(size_t index) {
         if (index < airCrafts.size()) {
