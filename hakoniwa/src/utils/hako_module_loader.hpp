@@ -1,7 +1,7 @@
 #ifndef _HAKO_MODULE_LOADER_HPP_
 #define _HAKO_MODULE_LOADER_HPP_
 
-#include "hako_module_header.hpp"
+#include "hako_module_header.h"
 
 /*
  * return value: loaded handle

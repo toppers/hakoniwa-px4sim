@@ -1,5 +1,5 @@
-#ifndef _HAKO_MODULE_HEADER_HPP_
-#define _HAKO_MODULE_HEADER_HPP_
+#ifndef _HAKO_MODULE_HEADER_H_
+#define _HAKO_MODULE_HEADER_H_
 
 #define HAKO_MODULE_MAGICNO         0xFEFE8528
 #define HAKO_MODULE_VERSION         0x00001000
@@ -17,4 +17,4 @@ typedef struct {
     const char* (*get_name) (void);
 } HakoModuleHeaderType;
 
-#endif /* _HAKO_MODULE_HEADER_HPP_ */
+#endif /* _HAKO_MODULE_HEADER_H_ */
