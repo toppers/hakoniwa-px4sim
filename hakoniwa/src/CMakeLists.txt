@@ -41,6 +41,7 @@ add_executable(
     assets/drone/aircraft/aircraft_factory.cpp
 
     utils/hako_params.cpp
+    utils/hako_module_loader.cpp
     modules/hako_bypass.cpp
     modules/hako_phys.cpp
     modules/hako_sim.cpp
