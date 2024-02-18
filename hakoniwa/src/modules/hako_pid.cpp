@@ -53,13 +53,38 @@ void hako_pid_main(bool master)
     //not reached
     return;
 }
+#include "utils/hako_module_loader.hpp"
+#include "hako_module_drone_controller.h"
+
+typedef struct {
+    void *handle;
+    HakoModuleHeaderType *header;
+    HakoModuleDroneControllerType *controller;
+} AircraftControlModuleType;
 
 class AircraftSystemContainer
 {
 public:
+    AircraftControlModuleType control_module;
     hako::assets::drone::IController *controller;
     IAirCraft *drone;
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
+
+    bool load_controller(const char* filepath) 
+    {
+        control_module.header = nullptr;
+        control_module.controller = nullptr;
+        control_module.handle = hako_module_handle(filepath, &control_module.header);
+        if (control_module.handle == nullptr) {
+            return false;
+        }
+        control_module.controller = (HakoModuleDroneControllerType*)hako_module_load_symbol(control_module.handle, HAKO_MODULE_DRONE_CONTROLLER_SYMBOLE_NAME);
+        if (control_module.controller == nullptr) {
+            return false;
+        }
+        return true;
+    }
+
 };
 
 class AircraftSystemTaskManager
@@ -128,8 +153,8 @@ static void my_task()
 {
     for (auto& container : task_manager.aircraft_system_container) {
         hako::assets::drone::DroneDynamicsInputType drone_input;
-        hako::assets::drone::mi_drone_control_in_t in;
-        hako::assets::drone::mi_drone_control_out_t out;
+        mi_drone_control_in_t in;
+        mi_drone_control_out_t out;
         DronePositionType pos = container.drone->get_drone_dynamics().get_pos();
         DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
         in.pos_x = pos.data.x;

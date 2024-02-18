@@ -6,7 +6,7 @@
 /*
  * return value: loaded handle
  */
-extern void *hako_module_handle(const char* filepath, HakoModuleHeaderType* header);
+extern void *hako_module_handle(const char* filepath, HakoModuleHeaderType** header);
 /*
  * return value: symbol
  */

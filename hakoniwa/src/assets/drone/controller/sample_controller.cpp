@@ -45,7 +45,7 @@ hako::assets::drone::SampleController::SampleController(int index)
         drone_config.getControllerPid("angle", "psi", "setpoint"));
 }
 
-hako::assets::drone::mi_drone_control_out_t hako::assets::drone::SampleController::run(hako::assets::drone::mi_drone_control_in_t &in) 
+mi_drone_control_out_t hako::assets::drone::SampleController::run(mi_drone_control_in_t &in) 
 {
     mi_drone_control_out_t out;
 
