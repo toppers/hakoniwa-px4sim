@@ -3,7 +3,7 @@
   "simulation": {
     "lockstep": true,
     "timeStep": 0.003,
-    "logOutputDirectory": "./log_00",
+    "logOutputDirectory": ".",
     "logOutput": {
       "sensors": {
           "acc": true,

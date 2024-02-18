@@ -53,7 +53,7 @@ using hako::assets::drone::SensorNoise;
 #define THRUST_PARAM_B              drone_config.getCompThrusterParameter("parameterB")
 #define THRUST_PARAM_JR             drone_config.getCompThrusterParameter("parameterJr")
 
-#define LOGPATH(name)               drone_config.getSimLogFullPath(name)
+#define LOGPATH(index, name)        drone_config.getSimLogFullPathFromIndex(index, name)
 
 IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
 {
@@ -100,7 +100,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
     rot.data = { DEGREE2RADIAN(angle[0]), DEGREE2RADIAN(angle[1]), DEGREE2RADIAN(angle[2]) };
     drone_dynamics->set_angle(rot);
     drone->set_drone_dynamics(drone_dynamics);
-    drone->get_logger().add_entry(*drone_dynamics, LOGPATH("drone_dynamics.csv"));
+    drone->get_logger().add_entry(*drone_dynamics, LOGPATH(drone->get_index(), "drone_dynamics.csv"));
 
     //rotor dynamics
     IRotorDynamics* rotors[hako::assets::drone::ROTOR_NUM];
@@ -113,13 +113,13 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
             rotor = new RotorDynamicsJmavsim(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
             static_cast<RotorDynamicsJmavsim*>(rotor)->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
-            drone->get_logger().add_entry(*static_cast<RotorDynamicsJmavsim*>(rotor), LOGPATH(logfilename));
+            drone->get_logger().add_entry(*static_cast<RotorDynamicsJmavsim*>(rotor), LOGPATH(drone->get_index(), logfilename));
         }
         else {
             rotor = new RotorDynamics(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
             static_cast<RotorDynamics*>(rotor)->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
-            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(logfilename));
+            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(drone->get_index(), logfilename));
         }
         rotors[i] = rotor;
     }
@@ -143,7 +143,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
         );
         std::cout << "param_A_linear: " << param_A << std::endl;
         std::cout << "param_B_linear: " << param_B << std::endl;
-        drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH("log_thrust.csv"));
+        drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH(drone->get_index(), "log_thrust.csv"));
     }
     else {
         thrust = new ThrustDynamicsNonLinear(DELTA_TIME_SEC);
@@ -161,7 +161,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
         std::cout << "param_B: " << THRUST_PARAM_B << std::endl;
         std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
         static_cast<ThrustDynamicsNonLinear*>(thrust)->set_params(param_A, THRUST_PARAM_B, THRUST_PARAM_JR);
-        drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), LOGPATH("log_thrust.csv"));
+        drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), LOGPATH(drone->get_index(), "log_thrust.csv"));
     }
     drone->set_thrus_dynamics(thrust);
 
@@ -187,7 +187,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
         acc->set_noise(noise);
     }
     drone->set_acc(acc);
-    drone->get_logger().add_entry(*acc, LOGPATH("log_acc.csv"));
+    drone->get_logger().add_entry(*acc, LOGPATH(drone->get_index(), "log_acc.csv"));
 
     //sensor gyro
     auto gyro = new SensorGyro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -199,7 +199,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
         gyro->set_noise(noise);
     }
     drone->set_gyro(gyro);
-    drone->get_logger().add_entry(*gyro, LOGPATH("log_gyro.csv"));
+    drone->get_logger().add_entry(*gyro, LOGPATH(drone->get_index(), "log_gyro.csv"));
 
     //sensor mag
     auto mag = new SensorMag(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -212,7 +212,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
     }
     mag->set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
     drone->set_mag(mag);
-    drone->get_logger().add_entry(*mag, LOGPATH("log_mag.csv"));
+    drone->get_logger().add_entry(*mag, LOGPATH(drone->get_index(), "log_mag.csv"));
 
     //sensor baro
     auto baro = new SensorBaro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -225,7 +225,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
         baro->set_noise(noise);
     }
     drone->set_baro(baro);
-    drone->get_logger().add_entry(*baro, LOGPATH("log_baro.csv"));
+    drone->get_logger().add_entry(*baro, LOGPATH(drone->get_index(), "log_baro.csv"));
 
     //sensor gps
     auto gps = new SensorGps(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -238,7 +238,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
     }
     gps->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     drone->set_gps(gps);
-    drone->get_logger().add_entry(*gps, LOGPATH("log_gps.csv"));
+    drone->get_logger().add_entry(*gps, LOGPATH(drone->get_index(), "log_gps.csv"));
 
     return drone;
 }

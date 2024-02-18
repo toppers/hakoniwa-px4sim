@@ -48,8 +48,8 @@ void px4sim_sender_init(hako::px4::comm::ICommIO *comm_io)
     }
     hako_sender_info.push_back(std::unique_ptr<HakoSenderInfo>(info));
 
-    info->logger_hil_sensor.add_entry(info->log_hil_sensor, drone_config.getSimLogFullPath("log_comm_hil_sensor.csv"));
-    info->logger_hil_gps.add_entry(info->log_hil_gps, drone_config.getSimLogFullPath("log_comm_hil_gps.csv"));
+    info->logger_hil_sensor.add_entry(info->log_hil_sensor, drone_config.getSimLogFullPathFromIndex(index, "log_comm_hil_sensor.csv"));
+    info->logger_hil_gps.add_entry(info->log_hil_gps, drone_config.getSimLogFullPathFromIndex(index, "log_comm_hil_gps.csv"));
     std::cout << "INFO: px4sim_sender_init(): register comm_io: " << index << std::endl;
     return;
 }

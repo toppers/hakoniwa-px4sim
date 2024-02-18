@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <filesystem>
 
 using json = nlohmann::json;
 //#define DRONE_PX4_RX_DEBUG_ENABLE
@@ -72,6 +73,36 @@ public:
 
         // 完全なログファイルパスを返す
         return logDirectory + filename;
+    }
+    void createDirectory(const std::string dirpath) const
+    {
+        if (!std::filesystem::exists(dirpath)) {
+            if (std::filesystem::create_directory(dirpath)) {
+                std::cout << "INFO: create directory " << dirpath << std::endl;
+            } else {
+                std::cout << "ERROR: can not create directory: " << dirpath << std::endl;
+            }
+        } else {
+            //std::cout << "INFO: directory is already exist: " << dirpath << std::endl;
+        }
+    }
+    std::string getSimLogFullPathFromIndex(int index, const std::string& name) const
+    {
+        std::string logDirectory = getSimLogDirectoryPathFromIndex(index);
+        if (logDirectory.back() != '/' && logDirectory.back() != '\\') {
+            logDirectory += "/";
+        }
+        return logDirectory + name;
+    }
+    std::string getSimLogDirectoryPathFromIndex(int index) const
+    {
+        std::string logDirectory = getSimLogOutputDirectory();
+        if (logDirectory.back() != '/' && logDirectory.back() != '\\') {
+            logDirectory += "/";
+        }
+        std::string path = logDirectory + "drone_log" + std::to_string(index);
+        createDirectory(path);
+        return path;
     }
 
     // Log Output for Sensors

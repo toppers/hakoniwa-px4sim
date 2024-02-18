@@ -41,7 +41,7 @@ bool px4sim_receiver_init(DroneConfigManager& mgr)
         hako_recv_info.push_back(std::unique_ptr<HakoRecvInfo>(info));
 
 
-        hako_recv_info[i]->logger_recv.add_entry(hako_recv_info[i]->log_hil_actuator_controls, drone_config.getSimLogFullPath("log_comm_hil_actuator_controls.csv"));
+        hako_recv_info[i]->logger_recv.add_entry(hako_recv_info[i]->log_hil_actuator_controls, drone_config.getSimLogFullPathFromIndex(i, "log_comm_hil_actuator_controls.csv"));
         std::cout << "INFO: px4sim_receiver_init() i = " << i << std::endl;
     }
     return true;
