@@ -82,7 +82,7 @@ public:
         if (control_module.controller == nullptr) {
             return false;
         }
-        return control_module.controller->init(nullptr);
+        return (control_module.controller->init(nullptr) == 0);
     }
 
 };
