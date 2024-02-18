@@ -87,47 +87,6 @@
         }
   },
   "controller": {
-    "pid": {
-      "position": {
-        "x": {
-          "setpoint": 0,
-          "Kp": 0,
-          "Ki": 0,
-          "Kd": 0
-        },
-        "y": {
-          "setpoint": 0,
-          "Kp": 0,
-          "Ki": 0,
-          "Kd": 0
-        },
-        "z": {
-          "setpoint": 10,
-          "Kp": 1.0e+0,
-          "Ki": 1.0e-1,
-          "Kd": 0.5e+2
-        }
-      },
-      "angle": {
-        "phi": {
-          "setpoint": 0,
-          "Kp": 0,
-          "Ki": 0,
-          "Kd": 0
-        },
-        "theta": {
-          "setpoint": 0,
-          "Kp": 0,
-          "Ki": 0,
-          "Kd": 0
-        },
-        "psi": {
-          "setpoint": 0,
-          "Kp": 0,
-          "Ki": 0,
-          "Kd": 0
-        }
-      }
-    }
+    "moduleDirectory": "../drone_control/cmake-build/workspace/DroneAvator"
   }
 }

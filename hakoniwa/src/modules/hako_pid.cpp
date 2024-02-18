@@ -82,6 +82,7 @@ public:
         if (control_module.controller == nullptr) {
             return false;
         }
+        std::cout << "INFO: Loaded module name: " << control_module.header->get_name() << std::endl;
         return (control_module.controller->init(nullptr) == 0);
     }
 

@@ -1,5 +1,5 @@
 # ローダブルモジュールのビルド設定
-project(SampleModule)
+project(DroneAvator)
 
 # ソースファイル
 set(SOURCE_FILES hako_module_drone_controller_impl.cpp)

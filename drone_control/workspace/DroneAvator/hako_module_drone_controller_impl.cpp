@@ -63,7 +63,7 @@ static SamplePID *pid_pos_z;
 
 const char* hako_module_drone_controller_impl_get_name(void)
 {
-    return "sample";
+    return "DroneAvator";
 }
 static double hovering_thrust;
 static double hovering_thrust_range;

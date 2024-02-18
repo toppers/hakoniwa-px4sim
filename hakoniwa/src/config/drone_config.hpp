@@ -9,7 +9,7 @@
 
 using json = nlohmann::json;
 #ifdef __APPLE__
-#define SHARED_LIB_EXT  ".dylib"
+#define SHARED_LIB_EXT  ".so"
 #elif __linux__
 #define SHARED_LIB_EXT  ".so"
 #else
@@ -273,7 +273,7 @@ public:
             if (moduleDirectory.back() != '/' && moduleDirectory.back() != '\\') {
                 moduleDirectory += "/";
             }
-            return moduleDirectory + getRoboName() + SHARED_LIB_EXT;
+            return moduleDirectory + "lib" + getRoboName() + SHARED_LIB_EXT;
         }
         else {
             return "";
