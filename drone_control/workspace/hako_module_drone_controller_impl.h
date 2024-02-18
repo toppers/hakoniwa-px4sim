@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define HAKO_MODULE_DRONE_MASS  0.1 /* kg */
 
 extern const char* hako_module_drone_controller_impl_get_name(void);
 extern int hako_module_drone_controller_impl_init(void* context);
