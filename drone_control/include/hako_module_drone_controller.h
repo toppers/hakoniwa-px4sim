@@ -19,7 +19,7 @@ typedef struct {
 
 #define HAKO_MODULE_DRONE_CONTROLLER_SYMBOLE_NAME   "hako_module_drone_controller"
 typedef struct {
-    bool (*init) (void* context);
+    int (*init) (void* context);
     mi_drone_control_out_t (*run) (mi_drone_control_in_t *in);
 } HakoModuleDroneControllerType;
 
