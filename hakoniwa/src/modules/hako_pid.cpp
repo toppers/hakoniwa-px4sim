@@ -82,7 +82,7 @@ public:
         if (control_module.controller == nullptr) {
             return false;
         }
-        return true;
+        return control_module.controller->init(nullptr);
     }
 
 };
@@ -114,10 +114,19 @@ public:
             std::cout << "INFO: loading drone & controller: " << drone->get_index() << std::endl;
             AircraftSystemContainer arg;
             arg.drone = drone;
-            arg.controller = new hako::assets::drone::SampleController(drone->get_index());
-            if (arg.controller == nullptr) {
-                std::cerr << "ERROR: can not create Controller: " << drone->get_index() << std::endl;
-                return;
+            DroneConfig drone_config;
+            drone_config_manager.getConfig(drone->get_index(), drone_config);
+            arg.control_module.controller = nullptr;
+            std::string filepath = drone_config.getControllerModuleFilePath();
+            if (!filepath.empty()) {
+                arg.load_controller(filepath.c_str());
+            }
+            if (arg.control_module.controller == nullptr) {
+                arg.controller = new hako::assets::drone::SampleController(drone->get_index());
+                if (arg.controller == nullptr) {
+                    std::cerr << "ERROR: can not create Controller: " << drone->get_index() << std::endl;
+                    return;
+                }
             }
             aircraft_system_container.push_back(arg);
         }
@@ -163,7 +172,12 @@ static void my_task()
         in.euler_x = angle.data.x;
         in.euler_y = angle.data.y;
         in.euler_z = angle.data.z;
-        out = container.controller->run(in);
+        if (container.control_module.controller != nullptr) {
+            out = container.control_module.controller->run(&in);
+        }
+        else {
+            out = container.controller->run(in);
+        }
 
         DroneThrustType thrust;
         DroneTorqueType torque;

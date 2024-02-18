@@ -8,6 +8,14 @@
 #include <filesystem>
 
 using json = nlohmann::json;
+#ifdef __APPLE__
+#define SHARED_LIB_EXT  ".dylib"
+#elif __linux__
+#define SHARED_LIB_EXT  ".so"
+#else
+#define SHARED_LIB_EXT  ".dll"
+#endif
+
 //#define DRONE_PX4_RX_DEBUG_ENABLE
 //DRONE_PX4_TX_DEBUG_ENABLE
 //DRONE_PID_CONTROL_CPP
@@ -257,6 +265,19 @@ public:
     double getControllerPid(const std::string& param1, const std::string& param2, const std::string& param3)
     {
         return configJson["controller"]["pid"][param1][param2][param3].get<double>();
+    }
+    std::string getControllerModuleFilePath() const
+    {
+        if (configJson["controller"].contains("moduleDirectory")) {
+            std::string moduleDirectory = configJson["controller"]["moduleDirectory"].get<std::string>();
+            if (moduleDirectory.back() != '/' && moduleDirectory.back() != '\\') {
+                moduleDirectory += "/";
+            }
+            return moduleDirectory + getRoboName() + SHARED_LIB_EXT;
+        }
+        else {
+            return "";
+        }
     }
 };
 
