@@ -37,6 +37,7 @@ add_executable(
     ${PHYSICS_SOURCE_DIR}/drone_physics_c.cpp
     
     assets/drone/controller/drone_pid_control.cpp
+    assets/drone/controller/sample_controller.cpp
     assets/drone/aircraft/aircraft_factory.cpp
 
     utils/hako_params.cpp

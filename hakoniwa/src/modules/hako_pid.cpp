@@ -7,6 +7,7 @@
 #include "config/drone_config.hpp"
 #include "hako/pdu/hako_pdu_accessor.hpp"
 #include "utils/csv_logger.hpp"
+#include "assets/drone/controller/sample_controller.hpp"
 
 #include <unistd.h>
 #include <memory.h>
@@ -56,7 +57,7 @@ void hako_pid_main(bool master)
 class AircraftSystemContainer
 {
 public:
-    void *controller;//TODO
+    hako::assets::drone::IController *controller;
     IAirCraft *drone;
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 };
@@ -85,8 +86,14 @@ public:
         delta_time_usec = dt_usec;
         drone_manager.createAirCrafts(drone_config_manager);
         for (auto* drone : drone_manager.getAllAirCrafts()) {
+            std::cout << "INFO: loading drone & controller: " << drone->get_index() << std::endl;
             AircraftSystemContainer arg;
             arg.drone = drone;
+            arg.controller = new hako::assets::drone::SampleController(drone->get_index());
+            if (arg.controller == nullptr) {
+                std::cerr << "ERROR: can not create Controller: " << drone->get_index() << std::endl;
+                return;
+            }
             aircraft_system_container.push_back(arg);
         }
     }
@@ -121,12 +128,24 @@ static void my_task()
 {
     for (auto& container : task_manager.aircraft_system_container) {
         hako::assets::drone::DroneDynamicsInputType drone_input;
+        hako::assets::drone::mi_drone_control_in_t in;
+        hako::assets::drone::mi_drone_control_out_t out;
+        DronePositionType pos = container.drone->get_drone_dynamics().get_pos();
+        DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
+        in.pos_x = pos.data.x;
+        in.pos_y = pos.data.y;
+        in.pos_z = pos.data.z;
+        in.euler_x = angle.data.x;
+        in.euler_y = angle.data.y;
+        in.euler_z = angle.data.z;
+        out = container.controller->run(in);
 
         DroneThrustType thrust;
         DroneTorqueType torque;
-        //TODO do_pid_control()
-
-        do_io_read_control(container.drone, thrust, torque);
+        thrust.data = out.thrust;
+        torque.data.x = out.torque_x;
+        torque.data.y = out.torque_y;
+        torque.data.z = out.torque_z;
 
         drone_input.no_use_actuator = true;
         drone_input.manual.control = false;
@@ -159,7 +178,7 @@ static void* asset_runner(void*)
         return nullptr;
     }
     Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
-
+    task_manager.init(0, delta_time_usec);
     hako_asset_runner_register_callback(&my_callbacks);
     const char* config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);
     if (hako_asset_runner_init(HAKO_ASSET_NAME, config_path, delta_time_usec) == false) {
