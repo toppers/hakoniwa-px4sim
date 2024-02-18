@@ -6,6 +6,7 @@
 #define HAKO_AVATOR_CHANNLE_ID_POS          1
 #define HAKO_AVATOR_CHANNLE_ID_COLLISION    2
 #define HAKO_AVATOR_CHANNLE_ID_MANUAL       3
+#define HAKO_AVATOR_CHANNLE_ID_CTRL         4 /* for pid control program only */
 
 static inline void debug_print_drone_collision(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
 {
@@ -25,6 +26,20 @@ static inline void debug_print_drone_collision(hako::assets::drone::DroneDynamic
                     << std::endl;
     }
     std::cout << "Restitution Coefficient: " << drone_collision.restitution_coefficient << std::endl;
+}
+static inline void do_io_read_control(hako::assets::drone::IAirCraft *drone, DroneThrustType& thrust, DroneTorqueType& torque)
+{
+    Hako_Twist control;
+
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_CTRL, (char*)&control, sizeof(control))) {
+        std::cerr << "ERROR: can not read pdu data: control" << std::endl;
+        return;
+    }
+    thrust.data = control.linear.z;
+    torque.data.x = control.angular.x;
+    torque.data.y = control.angular.y;
+    torque.data.z = control.angular.z;
+    return;
 }
 
 static inline void do_io_read_collision(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsCollisionType& drone_collision)

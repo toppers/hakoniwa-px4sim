@@ -43,6 +43,7 @@ add_executable(
     modules/hako_bypass.cpp
     modules/hako_phys.cpp
     modules/hako_sim.cpp
+    modules/hako_pid.cpp
 
     px4sim_main.cpp
 )
