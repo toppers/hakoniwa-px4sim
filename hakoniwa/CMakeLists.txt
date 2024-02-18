@@ -15,6 +15,7 @@ endif()
 
 set(GLM_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/glm")
 set(PHYSICS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../drone_physics")
+set(CONTROL_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../drone_control")
 set(MATLAB_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../matlab-if")
 set(MAVLINK_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/c_library_v2")
 set(HAKONIWA_CORE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/third-party/hakoniwa-core-cpp-client/core/src")
