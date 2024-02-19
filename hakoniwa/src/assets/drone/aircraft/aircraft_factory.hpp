@@ -14,7 +14,7 @@
 
 namespace hako::assets::drone {
 
-extern IAirCraft* create_aircraft(const DroneConfig& drone_config);
+extern IAirCraft* create_aircraft(int index, const DroneConfig& drone_config);
 #include <vector>
 #include <memory>
 
@@ -34,9 +34,8 @@ public:
             DroneConfig config;
             if (configManager.getConfig(i, config)) {
                 // hako::assets::drone::create_aircraft関数を使用して航空機を生成
-                std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(config));
+                std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(i, config));
                 if (airCraft) {
-                    airCraft->set_index(i);
                     airCrafts.push_back(std::move(airCraft));
                 }
                 else {
@@ -55,9 +54,8 @@ public:
             return false;
         }
         for (int i = 0; i < create_num; ++i) {
-            std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(config));
+            std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(i, config));
             if (airCraft) {
-                airCraft->set_index(i);
                 airCrafts.push_back(std::move(airCraft));
             }
             else {

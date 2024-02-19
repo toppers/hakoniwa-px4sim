@@ -65,7 +65,7 @@ static void my_setup()
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return;
     }
-    drone = hako::assets::drone::create_aircraft(drone_config);
+    drone = hako::assets::drone::create_aircraft(0, drone_config);
     drone_pid_control_init();
 
     std::cout << "INFO: setup done" << std::endl;

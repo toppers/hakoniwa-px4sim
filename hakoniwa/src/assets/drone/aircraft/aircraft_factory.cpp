@@ -55,12 +55,13 @@ using hako::assets::drone::SensorNoise;
 
 #define LOGPATH(index, name)        drone_config.getSimLogFullPathFromIndex(index, name)
 
-IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
+IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& drone_config)
 {
 
     auto drone = new AirCraft();
     HAKO_ASSERT(drone != nullptr);
     drone->set_name(drone_config.getRoboName());
+    drone->set_index(index);
     
     //drone dynamics
     IDroneDynamics *drone_dynamics = nullptr;
@@ -100,6 +101,7 @@ IAirCraft* hako::assets::drone::create_aircraft(const DroneConfig& drone_config)
     rot.data = { DEGREE2RADIAN(angle[0]), DEGREE2RADIAN(angle[1]), DEGREE2RADIAN(angle[2]) };
     drone_dynamics->set_angle(rot);
     drone->set_drone_dynamics(drone_dynamics);
+    std::cout << "INFO: logpath: " << LOGPATH(drone->get_index(), "drone_dynamics.csv") << std::endl;
     drone->get_logger().add_entry(*drone_dynamics, LOGPATH(drone->get_index(), "drone_dynamics.csv"));
 
     //rotor dynamics
