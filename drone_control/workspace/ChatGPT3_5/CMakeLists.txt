@@ -1,5 +1,5 @@
 # ローダブルモジュールのビルド設定
-project(DroneAvator)
+project(ChatGPT3_5)
 
 # ソースファイル
 set(SOURCE_FILES hako_module_drone_controller_impl.cpp)
