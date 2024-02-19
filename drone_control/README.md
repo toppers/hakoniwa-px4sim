@@ -46,7 +46,7 @@ drone_control
 
 ### プログラム構成
 
-以下の２関数を実施してください。
+以下の２関数を実装してください。
 
 * hako_module_drone_controller_impl_init
   * プログラム起動時に１回だけ呼び出されます。制御に必要な初期化処理を実装します。
@@ -122,3 +122,158 @@ typedef struct {
   * torque_x: ロール方向のトルク
   * torque_y: ピッチ方向のトルク
   * torque_z: ヨー方向のトルク
+
+
+# 環境セットアップ
+
+
+作成したプログラムは、[drone_control/workspace](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control/workspace)配下に固有のディレクトリ名を設定して配置してください。
+
+配置例：
+```
+Gemini
+├── CMakeLists.txt
+└── hako_module_drone_controller_impl.cpp
+```
+
+`CMakeLists.txt` の `project` をディレクトリ名と一致していることを確認してください。
+
+例：ディレクトリ名が`Gemini`なので、project名は`Gemini`
+```
+# ローダブルモジュールのビルド設定
+project(Gemini)
+```
+
+# ビルド方法
+
+`cmake-build` に移動して、以下のコマンドを実行してください。
+
+```
+cmake ..
+make
+```
+
+成功すると、ローダブルモジュールが作成されます。
+
+例：lib<ディレクトリ名>.soが作成されます
+```
+cmake-build/workspace/Gemini/libGemini.so 
+```
+
+# シミュレーション実行するための準備
+
+作成したローダブルモジュールをシミュレーション上で実行するには以下の対応が必要となります。
+
+1. hakoniwa-px4sim の [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README-ja.md)のインストール
+2. [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model)のインストール
+3. 箱庭側の設定
+4. Unity側の設定
+
+## 箱庭側の設定
+
+箱庭ドローンシミュレータの機体パラメータを実行させたいローダーブルモジュール毎に用意する必要があります。
+
+例：
+```
+hakoniwa/config/sample_control
+├── drone_config_0.json
+├── drone_config_1.json
+└── drone_config_2.json
+```
+
+各機体のパラメータとしては、以下の項目のみを設定してください。
+
+* name
+  * ローダブルモジュールのディレクトリ名を指定してください。例：Gemini
+* components.droneDynamics.position_meter
+  * 機体の初期位置を設定してください。他の機体と重複しない場所を指定ください。
+* controller.moduleDirectory
+  * `hakoniwa`ディレクトリからの相対パスで、ローダブルモジュールが配置されているディレクトリ名を指定してください。
+  * 例：../drone_control/cmake-build/workspace/Gemini
+
+## Unity側の設定
+
+機体をローダブルモジュール数分だけ配置してください。
+
+機体の名前は、ローダブルモジュールのディレクトリ名と一致させてください。
+
+例：
+
+TODO
+
+
+配置完了後、`Generate` してください。
+
+# シミュレーション実行方法
+
+`hakoniwa`ディレクトリ直下で、以下のコマンドを実行してください。
+
+```
+bash drone-control.bash <hakoniwa-unity-drone-model location> <config directory>
+```
+
+例：
+```
+bash drone-control.bash ../../../hakoniwa-unity-drone-model config/sample_control
+```
+
+成功すると、以下のログが出力されますので、その後に、Unity側のシミュレーションを開始してください。
+
+```
+HAKO_CAPTURE_SAVE_FILEPATH : ./capture.bin
+HAKO_BYPASS_IPADDR : 127.0.0.1
+HAKO_CUSTOM_JSON_PATH : ../../../release/hakoniwa-unity-drone-model/custom.json
+DRONE_CONFIG_PATH : config/sample_control
+HAKO_BYPASS_PORTNO : 54001
+INFO: LOADED drone config file: config/sample_control/drone_config_0.json
+INFO: LOADED drone config file: config/sample_control/drone_config_1.json
+INFO: LOADED drone config file: config/sample_control/drone_config_2.json
+INFO: hako_master_init() success
+INFO: setup start
+DroneDynamicType: BodyFrame
+INFO: logpath: ./drone_log0/drone_dynamics.csv
+Rotor vendor: None
+Thruster vendor: None
+param_A: 1.53281e-08
+param_B: 1.3e-10
+param_Jr: 1e-10
+DroneDynamicType: BodyFrame
+INFO: logpath: ./drone_log1/drone_dynamics.csv
+Rotor vendor: None
+Thruster vendor: None
+param_A: 1.53281e-08
+param_B: 1.3e-10
+param_Jr: 1e-10
+DroneDynamicType: BodyFrame
+INFO: logpath: ./drone_log2/drone_dynamics.csv
+Rotor vendor: None
+Thruster vendor: None
+param_A: 1.53281e-08
+param_B: 1.3e-10
+param_Jr: 1e-10
+INFO: loading drone & controller: 0
+SUCCESS: Loaded module name: ChatGPT3_5
+INFO: loading drone & controller: 1
+SUCCESS: Loaded module name: ChatGPT4
+INFO: loading drone & controller: 2
+SUCCESS: Loaded module name: Gemini
+Robot: Gemini, PduWriter: Gemini_drone_motor
+channel_id: 0 pdu_size: 88
+INFO: Gemini create_lchannel: logical_id=0 real_id=0 size=88
+Robot: Gemini, PduWriter: Gemini_drone_pos
+channel_id: 1 pdu_size: 48
+INFO: Gemini create_lchannel: logical_id=1 real_id=1 size=48
+Robot: ChatGPT4, PduWriter: ChatGPT4_drone_motor
+channel_id: 0 pdu_size: 88
+INFO: ChatGPT4 create_lchannel: logical_id=0 real_id=2 size=88
+Robot: ChatGPT4, PduWriter: ChatGPT4_drone_pos
+channel_id: 1 pdu_size: 48
+INFO: ChatGPT4 create_lchannel: logical_id=1 real_id=3 size=48
+Robot: ChatGPT3_5, PduWriter: ChatGPT3_5_drone_motor
+channel_id: 0 pdu_size: 88
+INFO: ChatGPT3_5 create_lchannel: logical_id=0 real_id=4 size=88
+Robot: ChatGPT3_5, PduWriter: ChatGPT3_5_drone_pos
+channel_id: 1 pdu_size: 48
+INFO: ChatGPT3_5 create_lchannel: logical_id=1 real_id=5 size=48
+WAIT START
+```
