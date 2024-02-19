@@ -127,7 +127,7 @@ typedef struct {
 # 環境セットアップ
 
 
-作成したプログラムは、[drone_control/workspace](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control/workspace)配下に固有のディレクトリ名を設定して配置してください。
+作成したプログラムは、[drone_control/workspace](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control/workspace) 配下に固有のディレクトリ名を設定して配置してください。
 
 配置例：
 ```
@@ -155,7 +155,7 @@ make
 
 成功すると、ローダブルモジュールが作成されます。
 
-例：lib<ディレクトリ名>.soが作成されます
+例：lib<ディレクトリ名>.so が作成されます
 ```
 cmake-build/workspace/Gemini/libGemini.so 
 ```
@@ -164,8 +164,8 @@ cmake-build/workspace/Gemini/libGemini.so
 
 作成したローダブルモジュールをシミュレーション上で実行するには以下の対応が必要となります。
 
-1. hakoniwa-px4sim の [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README-ja.md)のインストール
-2. [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model)のインストール
+1. hakoniwa-px4sim の [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README-ja.md) のインストール
+2. [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model) のインストール
 3. 箱庭側の設定
 4. Unity側の設定
 
@@ -199,7 +199,8 @@ hakoniwa/config/sample_control
 
 例：
 
-TODO
+![スクリーンショット 2024-02-19 14 45 27](https://github.com/toppers/hakoniwa-px4sim/assets/164193/f556e5f7-327c-47dd-80a6-c41a0382f619)
+
 
 
 配置完了後、`Generate` してください。
