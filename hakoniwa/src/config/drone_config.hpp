@@ -262,6 +262,18 @@ public:
     double getCompSensorNoise(const std::string& sensor_name) const {
         return configJson["components"]["sensors"][sensor_name]["noise"].get<double>();
     }
+    bool isExistController(const std::string& param)
+    {
+        if (!configJson.contains("controller")) {
+            std::cerr << "WARING: can not find controller on drone_config" << std::endl;
+            return false;
+        }
+        if (!configJson["controller"].contains(param)) {
+            std::cerr << "WARING: can not find controller[ " << param << " ] on drone_config" << std::endl;
+            return false;
+        }
+        return true;
+    }
     double getControllerPid(const std::string& param1, const std::string& param2, const std::string& param3)
     {
         return configJson["controller"]["pid"][param1][param2][param3].get<double>();

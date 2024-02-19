@@ -8,6 +8,7 @@
 #include "hako/pdu/hako_pdu_accessor.hpp"
 #include "utils/csv_logger.hpp"
 #include "assets/drone/controller/sample_controller.hpp"
+#include "utils/hako_utils.hpp"
 
 #include <unistd.h>
 #include <memory.h>
@@ -82,7 +83,7 @@ public:
         if (control_module.controller == nullptr) {
             return false;
         }
-        std::cout << "INFO: Loaded module name: " << control_module.header->get_name() << std::endl;
+        std::cout << "SUCCESS: Loaded module name: " << control_module.header->get_name() << std::endl;
         return (control_module.controller->init(nullptr) == 0);
     }
 
@@ -122,10 +123,15 @@ public:
             if (!filepath.empty()) {
                 arg.load_controller(filepath.c_str());
             }
+            else {
+                std::cerr << "WARNING: can not find module for " << drone->get_name() << std::endl;
+            }
             if (arg.control_module.controller == nullptr) {
+                HAKO_ASSERT(drone_config.isExistController("pid"));
                 arg.controller = new hako::assets::drone::SampleController(drone->get_index());
                 if (arg.controller == nullptr) {
                     std::cerr << "ERROR: can not create Controller: " << drone->get_index() << std::endl;
+                    HAKO_ASSERT(arg.controller != nullptr);
                     return;
                 }
             }
