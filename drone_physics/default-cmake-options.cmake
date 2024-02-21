@@ -1,21 +1,36 @@
-set(CMAKE_C_FLAGS "-std=gnu99")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-prototypes")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wtrigraphs")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wimplicit-int")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+
+
+if (MSVC)
+add_compile_options(/wd4309 /wd4514 /wd4201 /wd4100 /wd4255 /wd5999 /wd4242 /wd26451)
+add_compile_options(/wd4464 /wd4866 /wd5026 /wd26495 /wd4800)
+add_compile_options(/wd4061 /wd4819)
+add_compile_options(/wd4477 /wd4244 /wd4245)
+add_compile_options(/wd4820 /wd4365)
+add_compile_options(/wd4267)
+add_compile_options(/wd4623 /wd4625 /wd4626 /wd5027 /wd5045 /wd26819 /wd26812) #nlohmann::json
+add_compile_options(/wd4668)
+add_compile_options(/wd4996)
+add_compile_options(/wd5039)
+else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+set(CMAKE_C_FLAGS "-std=gnu99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wunknown-pragmas")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-prototypes")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-long-long")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
-
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wtrigraphs")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wimplicit-int")
 add_compile_options(
     -Wno-gnu-anonymous-struct
     -Wno-nested-anon-types
 )
+endif()
+
 
 set(BUILD_TYPE "release")
 if (debug)
@@ -24,12 +39,14 @@ if (debug)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+elseif(WIN32)
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_compile_definitions(MACOSX TRUE)
+elseif(WIN32)
 else()
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)

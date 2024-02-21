@@ -1,4 +1,5 @@
 #include "drone_physics_debug.h"
+#include "drone_physics_osdep.h"
 
 const double PI = M_PI;
 

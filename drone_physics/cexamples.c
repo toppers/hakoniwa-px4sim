@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include "drone_physics_osdep.h"
 
 // include the library header
 #include "drone_physics_c.h"

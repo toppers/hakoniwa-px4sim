@@ -13,15 +13,11 @@ include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
 FetchContent_MakeAvailable(json)
 
-add_executable(
-    hako-px4sim
-    comm/udp_connector.cpp
+set(SOURCE_FILES
     comm/tcp_connector.cpp
     mavlink/mavlink_dump.cpp
     mavlink/mavlink_decoder.cpp
     mavlink/mavlink_encoder.cpp
-    mavlink/mavlink_capture.cpp
-    mavlink/mavlink_capture_replay.cpp
 
     hako/pdu/hako_pdu_data.cpp
     ${HAKONIWA_SOURCE_DIR}/hako_capi.cpp
@@ -29,8 +25,6 @@ add_executable(
 
     threads/px4sim_thread_receiver.cpp
     threads/px4sim_thread_sender.cpp
-    threads/px4sim_thread_replay.cpp
-    threads/px4sim_thread_capture.cpp
 
     ${PHYSICS_SOURCE_DIR}/body_physics.cpp
     ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
@@ -42,13 +36,23 @@ add_executable(
 
     utils/hako_params.cpp
     utils/hako_module_loader.cpp
-    modules/hako_bypass.cpp
     modules/hako_phys.cpp
     modules/hako_sim.cpp
     modules/hako_pid.cpp
-
     px4sim_main.cpp
 )
+if(WIN32)
+else()
+    list(APPEND SOURCE_FILES
+        comm/udp_connector.cpp
+        mavlink/mavlink_capture.cpp
+        mavlink/mavlink_capture_replay.cpp
+        threads/px4sim_thread_replay.cpp
+        threads/px4sim_thread_capture.cpp
+        modules/hako_bypass.cpp
+    )
+endif()
+add_executable(hako-px4sim ${SOURCE_FILES} "utils/hako_osdep.h")
 
 target_include_directories(
     hako-px4sim
@@ -85,9 +89,15 @@ target_include_directories(
     PRIVATE /usr/local/include
     PRIVATE ${HAKONIWA_PDU_SOURCE_DIR}
     PRIVATE ${HAKONIWA_ASSET_DIR}
+    PRIVATE ${PHYSICS_SOURCE_DIR}
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(
+        px4sim_manual
+        assets
+    )
+elseif(WIN32)
     target_link_libraries(
         px4sim_manual
         assets
