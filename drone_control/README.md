@@ -333,9 +333,13 @@ $Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_
 
 $u(t) = K_p ( z(t) + R  ) + m g + K_d ( \dot{z(t) + R} ) $
 
-**ラプラス変換:**
+Rは定数なので、こうなる。
 
 $u(t) = K_p ( z(t) + R  ) + m g + K_d  \dot{z(t)}  $
+
+**ラプラス変換:**
+
+$U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s} + K_d s Z(s) $
 
 ### プラント側のU(s) にPD制御の式をラプラス関数で代入
 
