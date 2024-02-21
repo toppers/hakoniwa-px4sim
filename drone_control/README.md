@@ -279,3 +279,82 @@ channel_id: 1 pdu_size: 48
 INFO: ChatGPT3_5 create_lchannel: logical_id=1 real_id=5 size=48
 WAIT START
 ```
+
+# プラント側の物理方程式
+z軸はNED座標系。
+
+**対象の運動方程式：**
+
+$\ddot{z} = -\frac{u(t)}{m} + g - \frac{d}{m} \dot{z}$
+
+**ラプラス変換:**
+
+$s^{2}Z(s) = -\frac{U(s)}{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
+
+# 制御側の式
+
+Rは正の値で指定する。
+
+## P制御
+
+**制御式:**
+
+$u(t) = K_p ( z(t) + R  ) + m g$
+
+**ラプラス変換:**
+
+$U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s}$
+
+### プラント側の U(s) に P 制御の式をラプラス関数で代入
+
+$s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s}  }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
+
+左辺に微分項、右辺を積分項にしてみる。
+
+$s^{2}Z(s) + \frac{d}{m} s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}$
+
+ここからZ(s)を求めるとこうなる。
+
+$Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + \frac{d}{m} s + \frac{K_p}{m})}$
+
+ここで、
+
+$\omega_n^{2} = \frac{K_p}{m}$
+
+$\zeta = \frac{d}{2\sqrt{mK_p}}$
+
+とおくと、こうなる。
+
+$Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}$
+
+## PD制御
+
+**制御式:**
+
+$u(t) = K_p ( z(t) + R  ) + m g + K_d ( \dot{z(t) + R} ) $
+
+**ラプラス変換:**
+
+$u(t) = K_p ( z(t) + R  ) + m g + K_d  \dot{z(t)}  $
+
+### プラント側のU(s) にPD制御の式をラプラス関数で代入
+
+$s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s} + K_d s Z(s) }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
+
+左辺に微分項、右辺を積分項にしてみる。
+
+$s^{2}Z(s) + \frac{d}{m} s Z(s) +  K_d s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}$
+
+ここからZ(s)を求めるとこうなる。
+
+$Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + (\frac{d}{m} + K_d ) s + \frac{K_p}{m})}$
+
+ここで、
+
+$\omega_n^{2} = \frac{K_p}{m}$
+
+$\zeta = \frac{d + m K_d}{2\sqrt{mK_p}}$
+
+とおくと、こうなる。
+
+$Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}$
