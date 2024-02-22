@@ -1,7 +1,7 @@
 #include "hako_pdu_data.hpp"
 #include <vector>
 #include <atomic>
-#include <unistd.h>
+#include "utils/hako_osdep.h"
 
 typedef struct {
     std::atomic<bool>  is_busy;
@@ -53,13 +53,13 @@ bool hako_pdu_data_init(DroneConfigManager& mgr) {
 
 
 static void set_busy(std::atomic<bool> &busy_flag) {
-    while(busy_flag.exchange(true)) {  // exchangeは指定された新しい値と現在の値をアトミックに交換します。
+    while(busy_flag.exchange(true)) {
         usleep(100); //100use
     }
 }
 
 static void unset_busy(std::atomic<bool> &busy_flag) {
-    busy_flag.store(false);  // ビジーフラグをリセットします。
+    busy_flag.store(false);
 }
 template<typename T>
 bool hako_read_data(std::atomic<bool> &is_busy, std::atomic<bool> &is_dirty, T &data, T &output) {
