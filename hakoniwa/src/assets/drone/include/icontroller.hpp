@@ -14,9 +14,9 @@ public:
     virtual ~IController() {}
     virtual mi_drone_control_out_t run(mi_drone_control_in_t &in) = 0;
 
-    void set_index(int index)
+    void set_index(int _index)
     {
-        this->index = index;
+        this->index = _index;
     }
     int get_index()
     {
