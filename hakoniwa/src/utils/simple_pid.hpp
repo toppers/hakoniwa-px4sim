@@ -6,29 +6,31 @@
 
 class PID {
 private:
-    double Kp; // 比例ゲイン
-    double Ki; // 積分ゲイン
-    double Kd; // 微分ゲイン
+    double Kp;
+    double Ki;
+    double Kd;
 
-    double setpoint; // 目標値
-    double integral; // 積分値
-    double prev_error; // 前回の誤差
-    bool first_time; // 初回フラグ
+    double setpoint;
+    double integral;
+    double prev_error;
+    bool first_time;
 
     int i_inx = 0;
     int i_num = 0;
     double i_values[SIMPLE_PID_INUM];
 public:
-    // コンストラクタ
     PID(double Kp, double Ki, double Kd, double setpoint)
-        : Kp(Kp), Ki(Ki), Kd(Kd), setpoint(setpoint), integral(0.0), prev_error(0.0), first_time(true) {}
+        : Kp(Kp), Ki(Ki), Kd(Kd), setpoint(setpoint), integral(0.0), prev_error(0.0), first_time(true) 
+    {
+        for (int i = 0; i < SIMPLE_PID_INUM; i++) {
+            i_values[i] = 0;
+        }
+    }
 
-    // 目標値を設定
     void set_setpoint(double sp) {
         setpoint = sp;
     }
 
-    // PID制御を行うメソッド
     double calculate(double input) {
         double error = setpoint - input;
         i_values[i_inx++] = error;
@@ -43,14 +45,13 @@ public:
         if (i_inx >= SIMPLE_PID_INUM) {
             i_inx = 0;
         }
-        double integral = 0;
+        double _integral = 0;
         for (int i = 0; i < i_num; i++) {
-            integral += i_values[i];
+            _integral += i_values[i];
         }
-        return Kp * error + Ki * integral + Kd * derivative;
+        return Kp * error + Ki * _integral + Kd * derivative;
     }
 
-    // インテグラル値のリセット
     void reset_integral() {
         integral = 0.0;
     }
