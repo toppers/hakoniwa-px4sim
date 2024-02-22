@@ -10,9 +10,10 @@
 #include "assets/drone/controller/sample_controller.hpp"
 #include "utils/hako_utils.hpp"
 
-#include <unistd.h>
+#include "utils/hako_osdep.h"
 #include <memory.h>
 #include <iostream>
+#include <thread>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
 #define HAKO_ASSET_NAME "px4sim"
@@ -29,7 +30,6 @@ void hako_pid_main(bool master)
     }
 
     CsvLogger::enable();
-    pthread_t thread;
     DroneConfig drone_config;
     if (drone_config_manager.getConfig(0, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
@@ -45,8 +45,13 @@ void hako_pid_main(bool master)
         }
         hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
         
-        if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
-            std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
+
+        try {
+            std::thread thread(hako_px4_master_thread_run, (void*)nullptr);
+            thread.detach();
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Failed to create hako_px4_master_thread_run thread: " << e.what() << std::endl;
             return;
         }
     }
