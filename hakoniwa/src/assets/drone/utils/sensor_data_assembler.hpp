@@ -19,21 +19,18 @@ public:
     virtual ~SensorDataAssembler() {}
     void add_data(double data) override
     {
-        // 新しいデータをベクターに追加
         data_vector.push_back(data);
-        // 必要に応じて、古いデータを削除
         if (data_vector.size() > (unsigned long)sample_num) {
             data_vector.erase(data_vector.begin());
         }
     }
     double get_calculated_value() override
     {
-        // 平均値を計算
         if (!data_vector.empty()) {
             double sum = std::accumulate(data_vector.begin(), data_vector.end(), 0.0);
-            return sum / data_vector.size();
+            return sum / (double)data_vector.size();
         } else {
-            return 0.0;  // データがない場合は0を返却
+            return 0.0;
         }
     }
     void reset() override
