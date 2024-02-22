@@ -37,9 +37,9 @@ public:
     {
         return this->robo_name;
     }
-    void set_index(int index)
+    void set_index(int _index)
     {
-        this->index = index;
+        this->index = _index;
     }
     int get_index()
     {
