@@ -70,7 +70,7 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         return;
     }
     size_t configCount = drone_config_manager.getConfigCount();
-    std::vector<std::thread> threads(configCount);
+    std::vector<std::thread> threads;
     std::vector<Px4simRcvArgType> rcv_arg(configCount);
     for (size_t i = 0; i < configCount; ++i) {
         hako::px4::comm::IcommEndpointType ep = serverEndpoint;
@@ -85,8 +85,7 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         rcv_arg[i].index = i;
         rcv_arg[i].comm_io = comm_io;
         try {
-            std::thread thread(px4sim_thread_receiver, (void*)&rcv_arg[i]);
-            thread.detach();
+            threads.emplace_back(px4sim_thread_receiver, (void*)&rcv_arg[i]);
         }
         catch (const std::exception& e) {
             std::cerr << "Failed to create px4sim_thread_receiver thread: " << e.what() << std::endl;
@@ -94,7 +93,9 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         }
     }
     for (auto& thread : threads) {
-        thread.join();
+        if (thread.joinable()) {
+            thread.join();
+        }
     }
 
     //not reached
