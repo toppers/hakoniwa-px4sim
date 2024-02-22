@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include "drone_physics_osdep.h"
 
 // include the library header
 #include "drone_physics.hpp"

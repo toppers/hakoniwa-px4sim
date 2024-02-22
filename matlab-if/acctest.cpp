@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
+#include "drone_physics_osdep.h"
 
 #include "drone_physics_matlab.h"
 #include "../drone_physics/drone_physics_c.h"
@@ -12,8 +13,8 @@
 
 
 /*
- * drone_physics による同様の仕様の関数
- * 最初に，これと答え合わせをする．
+ * A function of similar specification by drone_physics
+ * First, cross-check with this.
  */
 static mi_drone_acceleration_out_t drone_acceleration_by_physics(const mi_drone_acceleration_in_t* in) {
     dp_velocity_t vel = {in->u, in->v, in->w};
@@ -59,10 +60,10 @@ static void test_first_case() {
     in.gravity = 9.81;
     in.drag = 0.0;
 
-    /* これが現在の仕様となる関数 */
+    /* This function becomes the current specification */
     mi_drone_acceleration_out_t out_p = drone_acceleration_by_physics(&in);
 
-    // matlab のものも呼び出す
+    // calls the one from matlab
     mi_drone_acceleration_out_t out_m = mi_drone_acceleration(&in);
     
 
@@ -75,7 +76,7 @@ static void test_first_case() {
 
     out_p = drone_acceleration_by_physics(&in);
 
-    // matlab のものも呼び出す
+    // calls the one from matlab
     out_m = mi_drone_acceleration(&in);
     
 

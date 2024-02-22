@@ -7,7 +7,6 @@ int mavlink_get_packet(char* packet, int packet_len, const mavlink_message_t *ms
         return -1;
     }
 
-    // この関数は、エンコードされたMAVLinkメッセージのバイト数を返します。
     int len = mavlink_msg_to_send_buffer((uint8_t*)packet, msg);
 
     if (len <= packet_len) {

@@ -48,21 +48,21 @@ public:
         this->param_B = b;
     }
 
-    void set_rotor_config(const RotorConfigType rotor_config[ROTOR_NUM]) override
+    void set_rotor_config(const RotorConfigType rotor_config_[ROTOR_NUM]) override
     {
         for (int i = 0; i < ROTOR_NUM; i++) {
-            this->rotor_config[i] = rotor_config[i];
-            this->position[i] = {rotor_config[i].data.x, rotor_config[i].data.y, rotor_config[i].data.z};
-            this->ccw[i] = rotor_config[i].ccw;
+            this->rotor_config[i] = rotor_config_[i];
+            this->position[i] = { rotor_config_[i].data.x, rotor_config_[i].data.y, rotor_config_[i].data.z};
+            this->ccw[i] = rotor_config_[i].ccw;
         }
     }
-    void set_thrust(const DroneThrustType &thrust) override 
+    void set_thrust(const DroneThrustType &_thrust) override 
     {
-        this->thrust = thrust;
+        this->thrust = _thrust;
     }
-    void set_torque(const DroneTorqueType &torque) override
+    void set_torque(const DroneTorqueType &_torque) override
     {
-        this->torque = torque;
+        this->torque = _torque;
     }
 
     DroneThrustType get_thrust() const override
@@ -99,10 +99,10 @@ public:
     }
     const std::vector<std::string> log_data() override
     {
-        DroneThrustType thrust = get_thrust();
-        DroneTorqueType torque = get_torque();
+        DroneThrustType _thrust = get_thrust();
+        DroneTorqueType _torque = get_torque();
 
-        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(_thrust.data), std::to_string(_torque.data.x), std::to_string(_torque.data.y), std::to_string(_torque.data.z)};
     }
 
 };

@@ -108,7 +108,6 @@ typedef struct DroneAngle {
  * 
  * REF: https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs/data/physics#angularvelocity
  */
-// TODO : hiranabe 2021/10/13 AngularVelocity, AngularRate 使い分け 本来，AngularRate だろうか
 typedef struct DroneAngularRate {
     glm::dvec3 data;
     DroneAngularRate(){}

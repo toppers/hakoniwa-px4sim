@@ -1,19 +1,20 @@
 #include <iostream>
 #include "comm/tcp_connector.hpp"
 #include "hako_capi.h"
-#include "modules/hako_bypass.hpp"
 #include "modules/hako_phys.hpp"
 #include "modules/hako_sim.hpp"
 #include "modules/hako_pid.hpp"
 #include "utils/hako_params.hpp"
 #include "config/drone_config.hpp"
-
+#ifndef WIN32
+#include "modules/hako_bypass.hpp"
+#endif
 class DroneConfigManager drone_config_manager;
 
 int main(int argc, char* argv[]) 
 {
     if(argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid}> "  << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid}> " << std::endl;
         return -1;
     }
     const char* serverIp = argv[1];
@@ -23,12 +24,7 @@ int main(int argc, char* argv[])
     hako::px4::comm::IcommEndpointType serverEndpoint = { serverIp, serverPort };
 
     hako::px4::comm::ICommIO *comm_io  = nullptr;
-    if (strcmp("bypass", arg_mode) == 0) {
-        hako_bypass_main(serverIp, serverPort);
-        //not returned function.
-        //do not pass
-    }
-    else if (strcmp("pid", arg_mode) == 0) {
+    if (strcmp("pid", arg_mode) == 0) {
         hako_pid_main(true);
         //not returned function.
         //do not pass
@@ -47,6 +43,13 @@ int main(int argc, char* argv[])
         //not returned function.
         //do not pass
     }
+#ifndef WIN32
+    else if (strcmp("bypass", arg_mode) == 0) {
+        hako_bypass_main(serverIp, serverPort);
+        //not returned function.
+        //do not pass
+    }
+#endif
     else {
         std::cerr << "ERROR unknown mode = " << arg_mode << std::endl;
         return -1;

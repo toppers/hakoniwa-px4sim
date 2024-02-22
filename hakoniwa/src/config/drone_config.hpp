@@ -59,10 +59,9 @@ public:
     std::string getSimLogOutputDirectory() const 
     {
         std::string directory = configJson["simulation"]["logOutputDirectory"].get<std::string>();
-        // ディレクトリの存在を確認
         if (!std::filesystem::exists(directory)) {
             std::cerr << "Error: Log output directory '" << directory << "' does not exist." << std::endl;
-            return "./"; // または適切なデフォルト値を返すか、ディレクトリを作成する
+            return "./";
         }
         return directory;
     }
@@ -74,12 +73,10 @@ public:
     {
         std::string logDirectory = getSimLogOutputDirectory();
 
-        // パス区切り文字を確認して追加する（必要な場合のみ）
         if (logDirectory.back() != '/' && logDirectory.back() != '\\') {
             logDirectory += "/";
         }
 
-        // 完全なログファイルパスを返す
         return logDirectory + filename;
     }
     void createDirectory(const std::string dirpath) const
@@ -205,11 +202,9 @@ public:
         return configJson["components"]["droneDynamics"]["mass_kg"].get<double>();
     }
     std::string getCompRotorVendor() const {
-        // 指定されたパスにパラメータが存在するかチェック
         if (configJson["components"]["rotor"].contains("vendor")) {
             return configJson["components"]["rotor"]["vendor"].get<std::string>();
         } else {
-            // パラメータが存在しない場合は 0 を返す
             return "None";
         }
     }
@@ -239,20 +234,16 @@ public:
         return positions;
     }
     double getCompThrusterParameter(const std::string& param_name) const {
-        // 指定されたパスにパラメータが存在するかチェック
         if (configJson["components"]["thruster"].contains(param_name)) {
             return configJson["components"]["thruster"][param_name].get<double>();
         } else {
-            // パラメータが存在しない場合は 0 を返す
             return 0.0;
         }
     }
     std::string getCompThrusterVendor() const {
-        // 指定されたパスにパラメータが存在するかチェック
         if (configJson["components"]["thruster"].contains("vendor")) {
             return configJson["components"]["thruster"]["vendor"].get<std::string>();
         } else {
-            // パラメータが存在しない場合は 0 を返す
             return "None";
         }
     }
@@ -309,10 +300,8 @@ public:
         namespace fs = std::filesystem;
         std::regex pattern("drone_config_(\\d+)\\.json");
 
-        // 検出したファイルとそのインデックスを保持するベクトル
         std::vector<std::pair<int, std::string>> filesWithIndex;
 
-        // ディレクトリを走査してファイルをリストに追加
         try {
             for (const auto& entry : fs::directory_iterator(directoryPath)) {
                 if (entry.is_regular_file()) {
@@ -320,7 +309,6 @@ public:
                     std::string filename = entry.path().filename().string();
 
                     if (std::regex_match(filename, matches, pattern) && matches.size() == 2) {
-                        // ファイル名からインデックスを抽出し、リストに追加
                         int index = std::stoi(matches[1].str());
                         filesWithIndex.emplace_back(index, entry.path().string());
                     }
@@ -337,12 +325,10 @@ public:
             return 0;
         }
 
-        // インデックスに基づいてファイルをソート
         std::sort(filesWithIndex.begin(), filesWithIndex.end(), [](const auto& a, const auto& b) {
             return a.first < b.first;
         });
 
-        // ソートされた順に設定を読み込む
         int loadedCount = 0;
         for (const auto& [index, filePath] : filesWithIndex) {
             if (loadConfigFromFile(filePath)) {

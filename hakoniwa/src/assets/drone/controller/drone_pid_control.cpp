@@ -27,7 +27,6 @@ static double hovering_thrust_range;
 void drone_pid_control_init() 
 {
     DroneConfig drone_config;
-    //TODO multi: インスタンスIDを引数でもらう
     if (drone_config_manager.getConfig(0, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return;
@@ -36,7 +35,6 @@ void drone_pid_control_init()
     double mass = drone_config.getCompDroneDynamicsMass();
     hovering_thrust = mass * 9.81;
     hovering_thrust_range = hovering_thrust / 2;
-    // PIDコントローラのパラメータ設定
     double Kp_height = drone_config.getControllerPid("position", "z", "Kp");
     double Ki_height = drone_config.getControllerPid("position", "z", "Ki");
     double Kd_height = drone_config.getControllerPid("position", "z", "Kd");
@@ -72,9 +70,6 @@ void drone_pid_control_init()
     std::cout << "setpoint_psi: " << setpoint_psi << std::endl;
     std::cout << "Kp_psi: " << Kp_psi << std::endl;
     std::cout << "Ki_psi: " << Ki_psi << std::endl;
-
-
-    // PIDコントローラのインスタンス化
     pid_height = new DronePidControl(Kp_height, Ki_height, Kd_height, setpoint_height,
                                      "python/results/height_data.csv", {"timestamp", "Height"});
     pid_phi = new DronePidControl(Kp_phi, Ki_phi, Kd_phi, setpoint_phi,
@@ -111,14 +106,12 @@ void drone_pid_control_run()
     DronePositionType dpos;
     DroneEulerType dangle;
 
-    // PDUからデータを読み取る
     do_io_read(dpos, dangle);
 
-    // PIDコントローラを使用して制御計算を行う
-    double height_input = -dpos.data.z; // 高さの入力値
-    double phi_input = dangle.data.x;    // ロール角の入力値
-    double theta_input = dangle.data.y;  // ピッチ角の入力値
-    double psi_input = dangle.data.z;    // ヨー角の入力値
+    double height_input = -dpos.data.z;
+    double phi_input = dangle.data.x;
+    double theta_input = dangle.data.y;
+    double psi_input = dangle.data.z;
 
     double height_output = pid_height->calculate(height_input);
     height_output = get_limit_value(height_output, hovering_thrust, -hovering_thrust_range, hovering_thrust_range);
@@ -129,7 +122,6 @@ void drone_pid_control_run()
     theta_output = get_limit_value(theta_output, 0, -M_PI_4, M_PI_4);
     psi_output = get_limit_value(psi_output, 0, -M_PI_4, M_PI_4);
 
-    // CSVファイルに記録
     pid_height->write_to_csv({std::to_string(current_time), std::to_string(height_input)});
     pid_phi->write_to_csv({std::to_string(current_time), std::to_string(phi_input)});
     pid_theta->write_to_csv({std::to_string(current_time), std::to_string(theta_input)});

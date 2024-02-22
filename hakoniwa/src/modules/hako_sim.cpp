@@ -9,10 +9,11 @@
 #include "threads/px4sim_thread_receiver.hpp"
 #include "config/drone_config.hpp"
 #include "hako/pdu/hako_pdu_accessor.hpp"
-
-#include <unistd.h>
+#include "comm/tcp_connector.hpp"
+#include "utils/hako_osdep.h"
 #include <memory.h>
 #include <iostream>
+#include <thread>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
 
@@ -24,6 +25,10 @@ static hako::assets::drone::AirCraftManager drone_manager;
 
 void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoint)
 {
+    if (hako::px4::comm::comm_init() != 0) {
+        std::cerr << "ERROR: can not init tcp comm on " << std::endl;
+        return;
+    }
     std::string drone_config_directory = hako_param_env_get_string(DRONE_CONFIG_PATH);
     if (drone_config_manager.loadConfigsFromDirectory(drone_config_directory) == 0)
     {
@@ -31,7 +36,6 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         return;
     }
     hako::px4::comm::TcpServer server;
-    pthread_t thread;
     DroneConfig drone_config;
     if (drone_config_manager.getConfig(0, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
@@ -47,17 +51,26 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         }
         hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
         
-        if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
-            std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
+        try {
+            std::thread thread(hako_px4_master_thread_run, (void*)nullptr);
+            thread.detach();
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Failed to create hako_px4_master_thread_run thread: " << e.what() << std::endl;
             return;
         }
+
     }
-    if (pthread_create(&thread, NULL, asset_runner, nullptr) != 0) {
-        std::cerr << "Failed to create asset_runner thread!" << std::endl;
+    try {
+        std::thread thread(asset_runner, (void*)nullptr);
+        thread.detach();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to create asset_runner thread: " << e.what() << std::endl;
         return;
     }
     size_t configCount = drone_config_manager.getConfigCount();
-    std::vector<pthread_t> threads(configCount);
+    std::vector<std::thread> threads;
     std::vector<Px4simRcvArgType> rcv_arg(configCount);
     for (size_t i = 0; i < configCount; ++i) {
         hako::px4::comm::IcommEndpointType ep = serverEndpoint;
@@ -71,14 +84,17 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
         px4sim_sender_init(comm_io);
         rcv_arg[i].index = i;
         rcv_arg[i].comm_io = comm_io;
-        if (pthread_create(&threads[i], NULL, px4sim_thread_receiver, &rcv_arg[i]) != 0) {
-            std::cerr << "Failed to create asset_runner thread!" << std::endl;
+        try {
+            threads.emplace_back(px4sim_thread_receiver, (void*)&rcv_arg[i]);
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Failed to create px4sim_thread_receiver thread: " << e.what() << std::endl;
             return;
         }
     }
-    for (size_t i = 0; i < configCount; ++i) {
-        if (pthread_join(threads[i], nullptr) != 0) {
-            std::cerr << "Failed to join thread " << i << std::endl;
+    for (auto& thread : threads) {
+        if (thread.joinable()) {
+            thread.join();
         }
     }
 
@@ -124,11 +140,11 @@ private:
         }
         return true;
     }
-    void send_sensor_data(Hako_uint64 hako_asset_time_usec, Hako_uint64 microseconds)
+    void send_sensor_data(Hako_uint64 _hako_asset_time_usec, Hako_uint64 microseconds)
     {
         for (auto& container : aircraft_container) {
             container.mavlink_io.write_sensor_data(*container.drone);
-            px4sim_send_sensor_data(container.drone->get_index(), hako_asset_time_usec, microseconds);
+            px4sim_send_sensor_data(container.drone->get_index(), _hako_asset_time_usec, microseconds);
         }
     }
     bool recv_actuator_controls()
@@ -263,7 +279,6 @@ static void* asset_runner(void*)
 {
     std::cout << "INFO: setup start" << std::endl;
     DroneConfig drone_config;
-    //TODO multi: インスタンスIDを引数でもらう
     if (drone_config_manager.getConfig(0, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return nullptr;

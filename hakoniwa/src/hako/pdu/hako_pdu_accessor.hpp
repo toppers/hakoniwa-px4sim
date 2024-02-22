@@ -49,7 +49,7 @@ static inline void do_io_read_collision(hako::assets::drone::IAirCraft *drone, h
     if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, (char*)&hako_collision, sizeof(hako_collision))) {
         std::cerr << "ERROR: can not read pdu data: Hako_Collision" << std::endl;
     }
-    drone_collision.collision = hako_collision.collision;
+    drone_collision.collision = (bool)hako_collision.collision;
     if (drone_collision.collision) {
         drone_collision.contact_num = hako_collision.contact_num;
         //ROS座標系 ==> 航空座標系

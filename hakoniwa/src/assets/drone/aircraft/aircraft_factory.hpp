@@ -33,7 +33,6 @@ public:
         for (size_t i = 0; i < configCount; ++i) {
             DroneConfig config;
             if (configManager.getConfig(i, config)) {
-                // hako::assets::drone::create_aircraft関数を使用して航空機を生成
                 std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(i, config));
                 if (airCraft) {
                     airCrafts.push_back(std::move(airCraft));
@@ -68,7 +67,6 @@ public:
         if (index < airCrafts.size()) {
             return airCrafts[index].get();
         } else {
-            // インデックスが範囲外の場合はnullptrを返す
             return nullptr;
         }
     }
@@ -93,7 +91,6 @@ using hako::assets::drone::ISensorMag;
 using hako::assets::drone::ISensorGyro;
 using hako::assets::drone::IRotorDynamics;
 using hako::assets::drone::IThrustDynamics;
-
 
 using hako::assets::drone::DroneThrustType;
 using hako::assets::drone::DroneTorqueType;

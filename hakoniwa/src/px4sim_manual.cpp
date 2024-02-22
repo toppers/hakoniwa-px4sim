@@ -2,11 +2,11 @@
 #include "hako_msgs/pdu_ctype_ManualPosAttControl.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <string>
 #include <iostream>
 #include <thread>
 #include <atomic>
-#include <math.h>
+#include "utils/hako_osdep.h"
 
 #define PDU_CHANNEL_ID    3
 #define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
@@ -32,13 +32,11 @@ static int my_on_manual_timing_control(hako_asset_context_t*)
 }
 
 
-// 角度を管理する構造体
 struct Angles {
     float roll = 0.0;
     float pitch = 0.0;
     float yaw = 0.0;
 
-    // 角度の増減
     void adjust(const char axis, const float delta) {
         switch (axis) {
             case 'r': roll += delta; break;
@@ -53,9 +51,9 @@ struct Angles {
         pitch = 0.0;
         yaw = 0.0;
     }
-    // 角度の設定
     void set(const char axis, const float angle) {
-        switch (axis) {
+        switch (axis)
+        {
             case 'r': roll = angle; break;
             case 'p': pitch = angle; break;
             case 'y': yaw = angle; break;
@@ -63,7 +61,6 @@ struct Angles {
         }
     }
 
-    // 現在の角度を表示
     void print() {
         std::cout << "==> Roll: " << roll << ", Pitch: " << pitch << ", Yaw: " << yaw << std::endl;
     }
@@ -79,29 +76,24 @@ static void help()
 static void keyboardInputHandler(std::atomic<bool>& running, double deg) {
     Angles angles;
     std::string input;
-    std::string lastInput;  // 前回の入力を保存する変数
+    std::string lastInput;
 
     help();
     while (running) {
 
         std::getline(std::cin, input);
         if (input.empty()) {
-            // Enterキーのみが押された場合
             if (lastInput.empty()) {
-                // 前回の入力がない場合はreset
                 angles.reset();
             } else {
-                // 前回の入力を再利用
                 input = lastInput;
             }
         }
-        // 数値指定の場合 (例: r30)
         if (input.size() > 1 && isalpha(input[0]) && isdigit(input[1])) {
             char axis = input[0];
             float angle = std::stof(input.substr(1));
             angles.set(axis, angle);
         }
-        // 角度の増減の場合
         else if (input == "p") {
             angles.adjust('p', deg);
         }
@@ -161,7 +153,7 @@ int main(int argc, const char* argv[])
     const char* config_path = argv[1];
     hako_time_t delta_time_usec = 3000000;//3msec
 
-    // キーボード入力用のスレッドを作成
+
     std::thread inputThread(keyboardInputHandler, std::ref(running), 5.0);
 
     int ret = hako_asset_register(asset_name, config_path, &my_callback, delta_time_usec, HAKO_ASSET_MODEL_CONTROLLER);
