@@ -20,7 +20,7 @@ public:
     CsvLogger() : write_count(0) {}
 
     virtual ~CsvLogger() {
-        close(); // リソースの解放
+        close();
     }
 
     void add_entry(ICsvLog& log, const std::string& file_name) {
