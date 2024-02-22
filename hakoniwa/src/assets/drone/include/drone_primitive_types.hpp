@@ -21,7 +21,7 @@ const int HOVERING_ROTOR_RPM = 6000;
  */
 typedef struct DronePosition {
     glm::dvec3 data;
-    DronePosition(){}
+    DronePosition() { data.x = 0; data.y = 0; data.z = 0; }
     DronePosition(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DronePosition& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
@@ -43,7 +43,7 @@ typedef struct DronePosition {
  */
 typedef struct DroneVelocity {
     glm::dvec3 data;
-    DroneVelocity(){}
+    DroneVelocity(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneVelocity(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneVelocity& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
@@ -66,7 +66,7 @@ typedef struct DroneVelocity {
  */
 typedef struct DroneVelocityBodyFrame {
     glm::dvec3 data;
-    DroneVelocityBodyFrame(){}
+    DroneVelocityBodyFrame(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneVelocityBodyFrame(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneVelocityBodyFrame& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
@@ -88,7 +88,7 @@ typedef struct DroneVelocityBodyFrame {
  */
 typedef struct DroneAngle {
     glm::dvec3 data;
-    DroneAngle(){}
+    DroneAngle(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneAngle(const hako::drone_physics::EulerType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
     DroneAngle& operator=(const hako::drone_physics::EulerType& rhs) {
         this->data = {rhs.phi, rhs.theta, rhs.psi};
@@ -110,7 +110,7 @@ typedef struct DroneAngle {
  */
 typedef struct DroneAngularRate {
     glm::dvec3 data;
-    DroneAngularRate(){}
+    DroneAngularRate(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneAngularRate(const hako::drone_physics::EulerRateType& rhs) : data(rhs.phi, rhs.theta, rhs.psi) {} 
     DroneAngularRate& operator=(const hako::drone_physics::EulerRateType& rhs) {
         this->data = {rhs.phi, rhs.theta, rhs.psi};
@@ -133,7 +133,7 @@ typedef struct DroneAngularRate {
  */
 typedef struct DroneAngularVelocityBodyFrame {
     glm::dvec3 data;
-    DroneAngularVelocityBodyFrame(){}
+    DroneAngularVelocityBodyFrame(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneAngularVelocityBodyFrame(const hako::drone_physics::AngularVelocityType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneAngularVelocityBodyFrame& operator=(const hako::drone_physics::AngularVelocityType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
@@ -146,7 +146,7 @@ typedef struct DroneAngularVelocityBodyFrame {
 
 typedef struct DroneAngularAccelerationBodyFrame {
     glm::dvec3 data;
-    DroneAngularAccelerationBodyFrame(){}
+    DroneAngularAccelerationBodyFrame(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneAngularAccelerationBodyFrame(const hako::drone_physics::AngularAccelerationType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneAngularAccelerationBodyFrame& operator=(const hako::drone_physics::AngularAccelerationType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
@@ -187,7 +187,7 @@ typedef struct {
  */
 typedef struct DroneTorque {
     glm::dvec3 data;
-    DroneTorque(){}
+    DroneTorque(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneTorque(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneTorque& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
@@ -216,7 +216,7 @@ typedef struct {
  */
 typedef struct DroneAccelerationBodyFrame {
     glm::dvec3 data;
-    DroneAccelerationBodyFrame(){}
+    DroneAccelerationBodyFrame(){ data.x = 0; data.y = 0; data.z = 0; }
     DroneAccelerationBodyFrame(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
     DroneAccelerationBodyFrame& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
