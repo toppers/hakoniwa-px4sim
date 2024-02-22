@@ -28,10 +28,8 @@ private:
         return m;
     }
     glm::mat3 getRotationMatrix(const glm::dvec3& angles_rad) {
-        // オイラー角からクォータニオンを生成
         glm::quat quaternion = glm::quat(angles_rad);
 
-        // クォータニオンから回転行列を生成
         glm::mat3 rot = glm::mat3_cast(quaternion);
 
         return rot;
@@ -66,13 +64,11 @@ private:
     }
     void run_new(const DroneEulerType& angle)
     {
-        glm::dvec3 mag = get_mag_field(); // 磁場ベクトルを取得
-        glm::mat3 rot = getRotationMatrix(angle.data); // 回転行列を取得
+        glm::dvec3 mag = get_mag_field();
+        glm::mat3 rot = getRotationMatrix(angle.data);
 
-        // 行列の転置
         rot = glm::transpose(rot);
 
-        // ベクトルに行列を適用（キャストが必要）
         mag = glm::dvec3(rot * glm::vec3(mag));
         double x = mag.x * params_F;
         double y = mag.y * params_F;
