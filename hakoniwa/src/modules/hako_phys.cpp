@@ -9,9 +9,10 @@
 #include "utils/hako_params.hpp"
 #include "utils/csv_logger.hpp"
 
-#include <unistd.h>
+#include "utils/hako_osdep.h"
 #include <memory.h>
 #include <iostream>
+#include <thread>
 
 #define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
 #define HAKO_AVATOR_CHANNLE_ID_MOTOR    0
@@ -46,9 +47,12 @@ void hako_phys_main()
         std::cout << "INFO: hako_master_init() success" << std::endl;
     }
     hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
-    pthread_t thread;
-    if (pthread_create(&thread, NULL, hako_px4_master_thread_run, nullptr) != 0) {
-        std::cerr << "Failed to create hako_px4_master_thread_run thread!" << std::endl;
+    try {
+        std::thread thread(hako_px4_master_thread_run, (void*)nullptr);
+        thread.detach();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to create hako_px4_master_thread_run thread: " << e.what() << std::endl;
         return;
     }
     asset_runner();
@@ -60,7 +64,6 @@ static void my_setup()
 {
     std::cout << "INFO: setup start" << std::endl;
     DroneConfig drone_config;
-    //TODO multi: インスタンスIDを引数でもらう
     if (drone_config_manager.getConfig(0, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return;
@@ -132,7 +135,6 @@ static void asset_runner()
 {
     std::cout << "INFO: setup start" << std::endl;
     DroneConfig drone_config;
-    //TODO multi: インスタンスIDを引数でもらう
     if (drone_config_manager.getConfig(0, drone_config) == false) {
         std::cerr << "ERROR: " << "drone_config_manager.getConfig() error" << std::endl;
         return;
