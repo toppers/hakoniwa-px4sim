@@ -2,8 +2,6 @@
 #define _TCPCONNECTOR_HPP_
 
 #include "icomm_connector.hpp"
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 namespace hako::px4::comm {
 
@@ -39,6 +37,8 @@ public:
 
     ICommIO* server_open(IcommEndpointType *endpoint) override;
 };
+
+extern int comm_init();
 
 } // namespace hako::px4::comm
 

@@ -9,7 +9,7 @@
 #include "threads/px4sim_thread_receiver.hpp"
 #include "config/drone_config.hpp"
 #include "hako/pdu/hako_pdu_accessor.hpp"
-
+#include "comm/tcp_connector.hpp"
 #include "utils/hako_osdep.h"
 #include <memory.h>
 #include <iostream>
@@ -25,6 +25,10 @@ static hako::assets::drone::AirCraftManager drone_manager;
 
 void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoint)
 {
+    if (hako::px4::comm::comm_init() != 0) {
+        std::cerr << "ERROR: can not init tcp comm on " << std::endl;
+        return;
+    }
     std::string drone_config_directory = hako_param_env_get_string(DRONE_CONFIG_PATH);
     if (drone_config_manager.loadConfigsFromDirectory(drone_config_directory) == 0)
     {
