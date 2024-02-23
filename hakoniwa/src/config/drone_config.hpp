@@ -276,7 +276,11 @@ public:
             if (moduleDirectory.back() != '/' && moduleDirectory.back() != '\\') {
                 moduleDirectory += "/";
             }
+#if WIN32
+            return moduleDirectory + getRoboName() + SHARED_LIB_EXT;
+#else
             return moduleDirectory + "lib" + getRoboName() + SHARED_LIB_EXT;
+#endif
         }
         else {
             return "";
