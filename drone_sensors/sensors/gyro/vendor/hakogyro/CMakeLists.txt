@@ -1,5 +1,5 @@
 # ローダブルモジュールのビルド設定
-project(HakoniwaSensorGyro)
+project(hakogyro)
 
 # ソースファイル
 set(SOURCE_FILES hako_module_drone_sensor_gyro_impl.cpp)
