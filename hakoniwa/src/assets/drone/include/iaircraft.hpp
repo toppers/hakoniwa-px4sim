@@ -14,6 +14,7 @@ namespace hako::assets::drone {
 
 class IAirCraft {
 protected:
+    bool            enable_disturbance = false;
     IDroneDynamics *drone_dynamics;
     IRotorDynamics *rotor_dynamics[ROTOR_NUM];
     IThrustDynamics *thrust_dynamis;
@@ -28,7 +29,14 @@ protected:
 public:
     virtual ~IAirCraft() {}
     virtual void run(DroneDynamicsInputType& input) = 0;
-
+    void enable_disturb()
+    {
+        this->enable_disturbance = true;
+    }
+    bool is_enabled_disturbance()
+    {
+        return this->enable_disturbance;
+    }
     void set_name(const std::string& name)
     {
         this->robo_name = name;

@@ -6,7 +6,8 @@
 #define HAKO_AVATOR_CHANNLE_ID_POS          1
 #define HAKO_AVATOR_CHANNLE_ID_COLLISION    2
 #define HAKO_AVATOR_CHANNLE_ID_MANUAL       3
-#define HAKO_AVATOR_CHANNLE_ID_CTRL         4 /* for pid control program only */
+#define HAKO_AVATOR_CHANNEL_ID_DISTURB      4
+#define HAKO_AVATOR_CHANNLE_ID_CTRL         5 /* for pid control program only */
 
 static inline void debug_print_drone_collision(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
 {
@@ -94,6 +95,17 @@ static inline void do_io_read_manual(hako::assets::drone::IAirCraft *drone, hako
             std::cerr << "ERROR: can not write pdu data: Hako_ManualPosAttControl" << std::endl;
         }
     }
+}
+
+static inline void do_io_read_disturb(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsDisturbanceType& drone_disturb)
+{
+    Hako_Disturbance hako_disturb;
+    memset(&hako_disturb, 0, sizeof(hako_disturb));
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNEL_ID_DISTURB, (char*)&hako_disturb, sizeof(hako_disturb))) {
+        std::cerr << "ERROR: can not read pdu data: Hako_Disturbance" << std::endl;
+    }
+    //temperature
+    drone_disturb.values.d_temp.value = hako_disturb.d_temp.value;
 }
 static inline void do_io_write(hako::assets::drone::IAirCraft *drone, double controls[hako::assets::drone::ROTOR_NUM])
 {

@@ -254,6 +254,9 @@ static void my_task()
         if (container.drone->get_drone_dynamics().has_manual_control()) {
             do_io_read_manual(container.drone, drone_input.manual);
         }
+        if (container.drone->is_enabled_disturbance()) {
+            do_io_read_disturb(container.drone, drone_input.disturbance);
+        }
         for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
             drone_input.controls[i] = container.controls[i];
         }
