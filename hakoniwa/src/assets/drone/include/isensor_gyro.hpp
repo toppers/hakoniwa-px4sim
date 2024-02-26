@@ -7,10 +7,10 @@
 namespace hako::assets::drone {
 
 class ISensorGyro : public hako::assets::drone::ISensor {
-protected:
 public:
     virtual ~ISensorGyro() {}
     virtual void run(const DroneAngularVelocityBodyFrameType& data) = 0;
+    virtual void run(const DroneAngularVelocityBodyFrameType& data, DroneDynamicsDisturbanceType& disturbance) = 0;
     virtual DroneAngularVelocityBodyFrameType sensor_value() = 0;
 };
 

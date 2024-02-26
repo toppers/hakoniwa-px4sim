@@ -173,7 +173,7 @@ static void calculate_simple_controls(AircraftSystemContainer& container, const 
 static void my_task()
 {
     for (auto& container : task_manager.aircraft_system_container) {
-        hako::assets::drone::DroneDynamicsInputType drone_input;
+        hako::assets::drone::DroneDynamicsInputType drone_input = {};
         mi_drone_control_in_t in;
         mi_drone_control_out_t out;
         DronePositionType pos = container.drone->get_drone_dynamics().get_pos();

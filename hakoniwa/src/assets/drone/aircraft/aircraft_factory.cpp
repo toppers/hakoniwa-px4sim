@@ -17,6 +17,8 @@
 #include "assets/drone/utils/sensor_noise.hpp"
 #include "config/drone_config.hpp"
 #include <math.h>
+#include "utils/hako_module_loader.hpp"
+#include "hako_module_drone_sensor_gyro.h"
 
 using hako::assets::drone::AirCraft;
 using hako::assets::drone::DroneDynamicsBodyFrameMatlab;
@@ -199,6 +201,21 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         auto noise = new SensorNoise(variance);
         HAKO_ASSERT(noise != nullptr);
         gyro->set_noise(noise);
+    }
+    auto module_path = drone_config.getCompSensorVendor("gyro");
+    if (!module_path.empty()) {
+        std::cout << "INFO: now loading gyro vendor model " << module_path << std::endl;
+        void *handle;
+        HakoModuleHeaderType *header = nullptr;
+        HakoModuleDroneSensorGyroType *gyro_model = nullptr;
+        handle = hako_module_handle(module_path.c_str(), &header);
+        HAKO_ASSERT(handle != nullptr);
+        gyro_model = (HakoModuleDroneSensorGyroType*)hako_module_load_symbol(handle, HAKO_MODULE_DRONE_SENSOR_GYRO_SYMBOLE_NAME);
+        HAKO_ASSERT(gyro_model != nullptr);
+        std::cout << "SUCCESS: Loaded module name: " << header->get_name() << std::endl;
+        auto v = gyro_model->init(nullptr);
+        HAKO_ASSERT(v == 0);
+        gyro->set_vendor(gyro_model);
     }
     drone->set_gyro(gyro);
     drone->get_logger().add_entry(*gyro, LOGPATH(drone->get_index(), "log_gyro.csv"));

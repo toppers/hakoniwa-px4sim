@@ -108,7 +108,7 @@ static void my_task()
         torque.data.y = control.angular.y;
         torque.data.z = control.angular.z;
     }
-    hako::assets::drone::DroneDynamicsInputType input;
+    hako::assets::drone::DroneDynamicsInputType input = {};
     input.no_use_actuator = true;
     input.thrust = thrust;
     input.torque = torque;

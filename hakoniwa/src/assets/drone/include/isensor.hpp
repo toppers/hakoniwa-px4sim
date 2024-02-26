@@ -2,6 +2,7 @@
 #define _ISENSOR_HPP_
 
 #include "drone_primitive_types.hpp"
+#include "idrone_dynamics.hpp"
 
 #include "isensor_noise.hpp"
 #include "isensor_data_assembler.hpp"
@@ -11,8 +12,13 @@ namespace hako::assets::drone {
 class ISensor {
 protected:
     ISensorNoise *noise;
+    void *vendor_model;
 public:
     virtual ~ISensor() {}
+    virtual void set_vendor(void *vendor)
+    {
+        this->vendor_model = vendor;
+    }
     virtual void set_noise(ISensorNoise *n)
     {
         this->noise = n;

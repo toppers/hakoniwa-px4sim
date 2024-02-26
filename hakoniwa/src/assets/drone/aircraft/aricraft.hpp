@@ -34,7 +34,7 @@ public:
 
         //sensors
         acc->run(drone_dynamics->get_vel_body_frame());
-        gyro->run(drone_dynamics->get_angular_vel_body_frame());
+        gyro->run(drone_dynamics->get_angular_vel_body_frame(), input.disturbance);
         gps->run(drone_dynamics->get_pos(), drone_dynamics->get_vel());
         mag->run(drone_dynamics->get_angle());
         baro->run(drone_dynamics->get_pos());

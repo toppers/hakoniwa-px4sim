@@ -67,6 +67,8 @@ target_include_directories(
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
     PRIVATE ${PHYSICS_SOURCE_DIR}
     PRIVATE ${CONTROL_SOURCE_DIR}/include
+    PRIVATE ${SENSOR_SOURCE_DIR}/include
+    PRIVATE ${SENSOR_SOURCE_DIR}/sensors/gyro/include
     PRIVATE ${nlohmann_json_SOURCE_DIR}/single_include
     PRIVATE ${MATLAB_SOURCE_DIR}
 )

@@ -8,6 +8,7 @@
 #include <filesystem>
 
 using json = nlohmann::json;
+namespace fs = std::filesystem;
 #ifdef __APPLE__
 #define SHARED_LIB_EXT  ".so"
 #elif __linux__
@@ -245,6 +246,33 @@ public:
             return configJson["components"]["thruster"]["vendor"].get<std::string>();
         } else {
             return "None";
+        }
+    }
+    std::string getLastDirectoryName(const std::string& pathStr) const {
+        fs::path pathObj(pathStr);
+
+        if (!pathObj.empty()) {
+            if (pathObj.filename() == "." || pathObj.filename() == ".." || pathObj.filename() == fs::path()) {
+                pathObj = pathObj.parent_path();
+            }
+            return pathObj.filename().string();
+        } else {
+            return "";
+        }
+    }
+    std::string getCompSensorVendor(const std::string& sensor_name) const {
+        if (configJson["components"]["sensors"][sensor_name].contains("vendor")) {
+            std::string moduleDirectory = configJson["components"]["sensors"][sensor_name]["vendor"].get<std::string>();
+            if (moduleDirectory.back() != '/' && moduleDirectory.back() != '\\') {
+                moduleDirectory += "/";
+            }
+#if WIN32
+            return moduleDirectory + getLastDirectoryName(moduleDirectory) + SHARED_LIB_EXT;
+#else
+            return moduleDirectory + "lib" + getLastDirectoryName(moduleDirectory) + SHARED_LIB_EXT;
+#endif
+        } else {
+            return "";
         }
     }
     double getCompSensorSampleCount(const std::string& sensor_name) const {

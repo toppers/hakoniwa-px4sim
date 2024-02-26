@@ -3,6 +3,7 @@
 
 #include "drone_primitive_types.hpp"
 #include "utils/icsv_log.hpp"
+#include "hako_module_drone_sensor.h"
 
 namespace hako::assets::drone {
 
@@ -25,10 +26,15 @@ typedef struct {
 } DroneDynamicsManualControlType;
 
 typedef struct {
+    mi_drone_sensor_disturbance_t values;
+} DroneDynamicsDisturbanceType;
+
+typedef struct {
     bool no_use_actuator;
     double controls[MAX_ROTOR_NUM];
     DroneDynamicsManualControlType manual;
     DroneDynamicsCollisionType collision;
+    DroneDynamicsDisturbanceType disturbance;
     DroneThrustType thrust;
     DroneTorqueType torque;
 } DroneDynamicsInputType;

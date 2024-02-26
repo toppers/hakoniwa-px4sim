@@ -245,7 +245,7 @@ static AircraftTaskManager task_manager;
 static void my_task()
 {
     for (auto& container : task_manager.aircraft_container) {
-        hako::assets::drone::DroneDynamicsInputType drone_input;
+        hako::assets::drone::DroneDynamicsInputType drone_input = {};
         drone_input.no_use_actuator = false;
         drone_input.manual.control = false;
         if (container.drone->get_drone_dynamics().has_collision_detection()) {

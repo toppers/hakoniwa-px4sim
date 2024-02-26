@@ -37,6 +37,8 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone/include
     PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
+    PRIVATE ${SENSOR_SOURCE_DIR}/include
+    PRIVATE ${SENSOR_SOURCE_DIR}/sensors/gyro/include
     PRIVATE ${GTEST_INCLUDE_DIRS}
     PRIVATE ${PHYSICS_SOURCE_DIR}
 )
