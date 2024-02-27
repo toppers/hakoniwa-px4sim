@@ -1,8 +1,9 @@
 #!/bin/bash
 
+export MULTI_INSTANCE_ID=0
 if [ $# -eq 1 ]
 then
-    export HAKO_CUSTOM_JSON_PATH=../config/custom_collision.json
+    export MULTI_INSTANCE_ID=$1
 fi
 
 if [ ! -f cmake-build/src/hako-px4sim ]

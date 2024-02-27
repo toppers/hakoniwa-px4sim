@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd cmake-build
-./src/hako-px4sim 127.0.0.1 4560 sim | tee log.txt
-#./src/hako-px4sim 127.0.0.1 4560 bypass | tee log.txt
+echo "./src/hako-px4sim 127.0.0.1 $((4560+${MULTI_INSTANCE_ID})) sim"
+./src/hako-px4sim 127.0.0.1 $((4560+${MULTI_INSTANCE_ID})) sim | tee log.txt

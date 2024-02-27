@@ -45,7 +45,8 @@ sleep 1
 
 echo "INFO: ACTIVATING hako-px4sim"
 cd cmake-build
-./src/hako-px4sim ${CORE_IPADDR} 4560 wsim
+echo "./src/hako-px4sim ${CORE_IPADDR} $((4560+${MULTI_INSTANCE_ID})) wsim"
+./src/hako-px4sim ${CORE_IPADDR} $((4560+${MULTI_INSTANCE_ID})) wsim
 
 echo "INFO: NOW STOPPING SIMULATION" 
 
