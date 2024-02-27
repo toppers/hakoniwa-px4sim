@@ -1,5 +1,11 @@
 #!/bin/bash
 
+MULTI_INSTANCE_ID=
+if [ $# -eq 1 ]
+then
+    MULTI_INSTANCE_ID=$1
+fi
+
 ARCH=`arch`
 OS_TYPE=`uname`
 WIN_WSL="OFF"
@@ -24,4 +30,11 @@ then
     fi
 fi
 
-make px4_sitl none_iris
+if [ -z ${MULTI_INSTANCE_ID} ]
+then
+    echo "INFO: SINGLE INSTANCE MODE"
+    make px4_sitl none_iris
+else
+    echo "INFO: MULTI INSTANCE MODE"
+     PX4_SIM_MODEL=none_iris ./build/px4_sitl_default/bin/px4 -i ${MULTI_INSTANCE_ID}
+fi
