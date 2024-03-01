@@ -13,6 +13,8 @@ typedef struct {
     /*
      * Drone's state
      */
+    double mass;
+    double drag;
     //position
     double pos_x;
     double pos_y;
