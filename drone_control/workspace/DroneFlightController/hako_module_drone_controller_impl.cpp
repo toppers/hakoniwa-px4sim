@@ -3,6 +3,8 @@
 #include "control/position/pid_ctrl_vertical_vel.hpp"
 #include "control/angle/pid_ctrl_yaw_angle.hpp"
 #include "control/angle/pid_ctrl_yaw_rate.hpp"
+#include "control/angle/pid_ctrl_roll_angle.hpp"
+#include "control/angle/pid_ctrl_roll_rate.hpp"
 
 static double get_limit_value(double input_value, double base_value, double min_value, double max_value)
 {
@@ -20,6 +22,8 @@ static PidCtrlVerticalPos *pid_ctrl_vertical_pos;
 static PidCtrlVerticalVel *pid_ctrl_vertical_vel;
 static PidCtrlYawAngle    *pid_ctrl_yaw_angle;
 static PidCtrlYawRate     *pid_ctrl_yaw_rate;
+static PidCtrlRollAngle   *pid_ctrl_roll_angle;
+static PidCtrlRollRate    *pid_ctrl_roll_rate;
 
 #define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
 
@@ -41,6 +45,14 @@ int hako_module_drone_controller_impl_init(void* context)
     if (pid_ctrl_yaw_rate == nullptr) {
         return -1;
     }
+    pid_ctrl_roll_angle = new PidCtrlRollAngle();
+    if (pid_ctrl_roll_angle == nullptr) {
+        return -1;
+    }
+    pid_ctrl_roll_rate = new PidCtrlRollRate();
+    if (pid_ctrl_roll_rate == nullptr) {
+        return -1;
+    }
     return 0;
 }
 typedef enum {
@@ -59,6 +71,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     mi_drone_control_out_t control_output;
     double target_yaw = DEGREE2RADIAN(270);
     double target_yaw_rate_max = RPM2EULER_RATE(10);
+    double target_roll = DEGREE2RADIAN(0);
+    double target_roll_rate_max = RPM2EULER_RATE(10);
     EulerType euler = {NORMALIZE_RADIAN(in->euler_x), NORMALIZE_RADIAN(in->euler_y), NORMALIZE_RADIAN(in->euler_z)};
     if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
         in->target_pos_z = -10;
@@ -118,7 +132,13 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
             }
         }
     }
-    control_output.torque_x = 0.0;
+    //roll control
+    {
+        double target_roll_rate = pid_ctrl_roll_angle->run(target_roll, euler);
+        target_roll_rate = get_limit_value(target_roll_rate, 0, -target_roll_rate_max, target_roll_rate_max);
+        control_output.torque_x = pid_ctrl_roll_rate->run(target_roll_rate, NORMALIZE_RADIAN(in->q));
+        control_output.torque_x = get_limit_value(control_output.torque_x, 0, -M_PI/10.0, M_PI/10.0);
+    }
     control_output.torque_y = 0.0;
     return control_output;
 }
