@@ -106,6 +106,11 @@ public:
         this->param_drag1 = drag1;
         this->param_drag2 = drag2;
     }
+    double get_drag() const override
+    {
+        return this->param_drag1;
+    }
+
     // Setters
     void set_pos(const DronePositionType &pos) override {
         position = pos;

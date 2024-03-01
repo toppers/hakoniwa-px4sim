@@ -181,6 +181,8 @@ static void my_task()
         hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
         hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_drone_dynamics().get_angular_vel_body_frame();
 
+        in.mass = container.drone->get_drone_dynamics().get_mass();
+        in.drag = container.drone->get_drone_dynamics().get_drag();
         in.pos_x = pos.data.x;
         in.pos_y = pos.data.y;
         in.pos_z = pos.data.z;
