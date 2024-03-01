@@ -178,12 +178,22 @@ static void my_task()
         mi_drone_control_out_t out;
         DronePositionType pos = container.drone->get_drone_dynamics().get_pos();
         DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
+        hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
+        hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_drone_dynamics().get_angular_vel_body_frame();
+
         in.pos_x = pos.data.x;
         in.pos_y = pos.data.y;
         in.pos_z = pos.data.z;
         in.euler_x = angle.data.x;
         in.euler_y = angle.data.y;
         in.euler_z = angle.data.z;
+        in.u = velocity.data.x;
+        in.v = velocity.data.y;
+        in.w = velocity.data.z;
+        in.p = angular_velocity.data.x;
+        in.q = angular_velocity.data.y;
+        in.r = angular_velocity.data.z;
+
         if (container.control_module.controller != nullptr) {
             out = container.control_module.controller->run(&in);
         }

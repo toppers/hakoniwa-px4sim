@@ -8,6 +8,14 @@ typedef struct {
     double euler_x;
     double euler_y;
     double euler_z;
+
+    double u; /* velocity x in body frame */
+    double v; /* velocity y in body frame */
+    double w; /* velocity z in body frame */
+
+    double p; /* anglular velocity x in body frame */
+    double q; /* anglular velocity y in body frame */
+    double r; /* anglular velocity z in body frame */
 } mi_drone_control_in_t;
 
 typedef struct {
