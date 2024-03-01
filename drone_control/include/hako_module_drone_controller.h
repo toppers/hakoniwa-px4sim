@@ -2,17 +2,30 @@
 #define _HAKO_MODULE_CONTROLLER_H_
 
 typedef struct {
+    /*
+     * Target
+     */
+    double target_pos_x;
+    double target_pos_y;
+    double target_pos_z;
+    double target_velocity;
+
+    /*
+     * Drone's state
+     */
+    //position
     double pos_x;
     double pos_y;
     double pos_z;
+    //angle
     double euler_x;
     double euler_y;
     double euler_z;
-
+    // velocity
     double u; /* velocity x in body frame */
     double v; /* velocity y in body frame */
     double w; /* velocity z in body frame */
-
+    // angular velocity
     double p; /* anglular velocity x in body frame */
     double q; /* anglular velocity y in body frame */
     double r; /* anglular velocity z in body frame */
