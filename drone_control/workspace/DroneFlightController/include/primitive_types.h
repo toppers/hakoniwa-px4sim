@@ -11,6 +11,7 @@ typedef EulerType EulerRateType;
 struct VectorType {
     double x, y, z;
 };
+typedef VectorType PositionType;
 typedef VectorType VelocityType;
 /* angular VECTORS omega=(p,q,r) in x, y, z , NOT PHI, THTEA, PSI */
 typedef VectorType AngularVectorType;
