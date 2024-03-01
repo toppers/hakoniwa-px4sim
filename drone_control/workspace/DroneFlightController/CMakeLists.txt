@@ -21,4 +21,5 @@ target_include_directories(
     PRIVATE include
     PRIVATE ../../include
     PRIVATE ..
+    PRIVATE .
 )

@@ -1,40 +1,29 @@
 #include "hako_module_drone_controller_impl.h"
+#include "control/position/pid_ctrl_vertical_pos.hpp"
+#include "control/position/pid_ctrl_vertical_vel.hpp"
 
 const char* hako_module_drone_controller_impl_get_name(void)
 {
-    return "DroneAvator";
+    return "DroneFlightController";
 }
 
-static double Kp = (1/4.0)*1.0e+0;
-static double Ki = 0.0;
-static double Kd = 0.0;
 
-
-static double integral = 0.0;
-static double prev_error = 0.0;
+static PidCtrlVerticalPos *pid_ctrl_vertical_pos;
+static PidCtrlVerticalVel *pid_ctrl_vertical_vel;
 
 int hako_module_drone_controller_impl_init(void* context)
 {
-    integral = 0.0;
-    prev_error = 0.0;
+    pid_ctrl_vertical_pos = new PidCtrlVerticalPos();
+    pid_ctrl_vertical_vel = new PidCtrlVerticalVel();
     return 0;
 }
 
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
-    const double mass = 0.1;
-    const double gravity = 9.81;
-    const double target_altitude = 10.0;
-    double error = target_altitude + in->pos_z;
-    integral += error * 0.003;
-    double derivative = (error - prev_error) / 0.003;
-
-    double output = Kp*error + (mass * gravity) + Ki*integral + Kd*derivative;
-
-    prev_error = error;
-
     mi_drone_control_out_t control_output;
-    control_output.thrust = output;
+    EulerType euler = {in->euler_x, in->euler_y, in->euler_z};
+    double target_velocity_z = pid_ctrl_vertical_pos->run(in->target_pos_z, in->pos_z, euler);
+    control_output.thrust = pid_ctrl_vertical_vel->run(in->target_velocity, in->w);
     control_output.torque_x = 0.0;
     control_output.torque_y = 0.0;
     control_output.torque_z = 0.0;

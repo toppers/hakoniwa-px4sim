@@ -10,7 +10,7 @@ private:
     double Ki;
     double Kd;
 
-    double setpoint;
+    double target;
     double integral;
     double prev_error;
     bool first_time;
@@ -19,20 +19,20 @@ private:
     int i_num = 0;
     double i_values[SIMPLE_PID_INUM];
 public:
-    PID(double Kp, double Ki, double Kd, double setpoint)
-        : Kp(Kp), Ki(Ki), Kd(Kd), setpoint(setpoint), integral(0.0), prev_error(0.0), first_time(true) 
+    PID(double Kp, double Ki, double Kd, double sp)
+        : Kp(Kp), Ki(Ki), Kd(Kd), target(sp), integral(0.0), prev_error(0.0), first_time(true) 
     {
         for (int i = 0; i < SIMPLE_PID_INUM; i++) {
             i_values[i] = 0;
         }
     }
 
-    void set_setpoint(double sp) {
-        setpoint = sp;
+    void set_target(double sp) {
+        target = sp;
     }
 
     double calculate(double input) {
-        double error = setpoint - input;
+        double error = target - input;
         i_values[i_inx++] = error;
 
         double derivative = (first_time) ? 0.0 : error - prev_error;
