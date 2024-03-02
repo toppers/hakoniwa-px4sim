@@ -146,6 +146,19 @@ static double rotate_yaw(double target_yaw, double r, EulerType &euler)
     torque_z = get_limit_value(torque_z, 0, -M_PI/4.0, M_PI/4.0);
     return torque_z;
 }
+static mi_drone_control_out_t do_hovering(mi_drone_control_in_t *in)
+{
+    mi_drone_control_out_t control_output;
+    EulerType euler = {NORMALIZE_RADIAN(in->euler_x), NORMALIZE_RADIAN(in->euler_y), NORMALIZE_RADIAN(in->euler_z)};
+    
+    double target_velocity_z = pid_ctrl_vertical_pos->run(in->target_pos_z, in->pos_z, euler);
+    target_velocity_z = get_limit_value(target_velocity_z, 0, -in->target_velocity, 0);
+    control_output.thrust = -pid_ctrl_vertical_vel->run(target_velocity_z, in->w) + (in->mass * GRAVITY / 1.1);
+    control_output.torque_x = move_horizontal(0, in->p, euler);
+    control_output.torque_y = move_forward(0, in->q, euler);
+    control_output.torque_z = rotate_yaw(0, in->r, euler);
+    return control_output;
+}
 
 static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *in)
 {
@@ -282,13 +295,19 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         }
         return out;
     }
-    else {
+    else if (count == 3)
+    {
         in->target_pos_x = -1;
         in->target_pos_y = -1;
         mi_drone_control_out_t out = drone_controller_impl_run(in);
         if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
             count++;
         }
+        return out;
+    }
+    else {
+        in->target_pos_z = -1;
+        mi_drone_control_out_t out = do_hovering(in);
         return out;
     }
 }

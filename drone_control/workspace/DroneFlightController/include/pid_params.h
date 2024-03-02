@@ -7,7 +7,7 @@
  */
 // position
 #define VERTICAL_POS_Kp 0.8
-#define VERTICAL_POS_Ki 0.0
+#define VERTICAL_POS_Ki 0.1
 #define VERTICAL_POS_Kd 0.8
 
 // velocity
