@@ -1,6 +1,8 @@
 #include "hako_module_drone_controller_impl.h"
 #include "control/position/pid_ctrl_vertical_pos.hpp"
 #include "control/position/pid_ctrl_vertical_vel.hpp"
+#include "control/position/pid_ctrl_forward_pos.hpp"
+#include "control/position/pid_ctrl_forward_vel.hpp"
 #include "control/angle/pid_ctrl_yaw_angle.hpp"
 #include "control/angle/pid_ctrl_yaw_rate.hpp"
 #include "control/angle/pid_ctrl_roll_angle.hpp"
@@ -22,6 +24,8 @@ const char* hako_module_drone_controller_impl_get_name(void)
 
 static PidCtrlVerticalPos *pid_ctrl_vertical_pos;
 static PidCtrlVerticalVel *pid_ctrl_vertical_vel;
+static PidCtrlForwardPos *pid_ctrl_forward_pos;
+static PidCtrlForwardVel *pid_ctrl_forward_vel;
 static PidCtrlYawAngle    *pid_ctrl_yaw_angle;
 static PidCtrlYawRate     *pid_ctrl_yaw_rate;
 static PidCtrlRollAngle   *pid_ctrl_roll_angle;
@@ -39,6 +43,14 @@ int hako_module_drone_controller_impl_init(void* context)
     }
     pid_ctrl_vertical_vel = new PidCtrlVerticalVel();
     if (pid_ctrl_vertical_vel == nullptr) {
+        return -1;
+    }
+    pid_ctrl_forward_pos = new PidCtrlForwardPos();
+    if (pid_ctrl_forward_pos == nullptr) {
+        return -1;
+    }
+    pid_ctrl_forward_vel = new PidCtrlForwardVel();
+    if (pid_ctrl_forward_vel == nullptr) {
         return -1;
     }
     pid_ctrl_yaw_angle = new PidCtrlYawAngle();
@@ -80,23 +92,24 @@ static DroneControlModeType drone_control_mode = DRONE_CONTROL_MODE_NONE;
  *  forward: 0..100
  *  back   : -100..0
  */
-#define MAX_FORWARD_DEGREE 10.0
+#define MAX_FORWARD_DEGREE 50.0
 static double move_forward(double power, double q, EulerType &euler)
 {
     double target_angle_degree = 0;
     power = get_limit_value(power, 0, -100, 100);
     if (power > 0) {
-        target_angle_degree = -get_limit_value(power/10.0, 0, 0, MAX_FORWARD_DEGREE);
+        target_angle_degree = -get_limit_value(power/2.0, 0, 0, MAX_FORWARD_DEGREE);
     }
     else {
-        target_angle_degree = -get_limit_value(power/10.0, 0, -MAX_FORWARD_DEGREE, 0);
+        target_angle_degree = -get_limit_value(power/2.0, 0, -MAX_FORWARD_DEGREE, 0);
     }
+    std::cout << "target_degree: " << target_angle_degree << std::endl;
     double target_pitch = DEGREE2RADIAN(target_angle_degree);
-    double target_pitch_rate_max = RPM2EULER_RATE(2);
+    double target_pitch_rate_max = RPM2EULER_RATE(100);
     double target_pitch_rate = pid_ctrl_pitch_angle->run(target_pitch, euler);
     target_pitch_rate = get_limit_value(target_pitch_rate, 0, -target_pitch_rate_max, target_pitch_rate_max);
     double torque_y = pid_ctrl_pitch_rate->run(target_pitch_rate, NORMALIZE_RADIAN(q));
-    torque_y = get_limit_value(torque_y, 0, -M_PI/10.0, M_PI/10.0);
+    torque_y = get_limit_value(torque_y, 0, -M_PI/8.0, M_PI/8.0);
     return torque_y;
 }
 /*
@@ -143,15 +156,21 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     double target_yaw = DEGREE2RADIAN(45);
     EulerType euler = {NORMALIZE_RADIAN(in->euler_x), NORMALIZE_RADIAN(in->euler_y), NORMALIZE_RADIAN(in->euler_z)};
     if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
-        in->target_pos_z = -10;
-        in->target_velocity = 3.5;
+        in->target_pos_x = 10;
+        in->target_pos_y = 10;
+        in->target_pos_z = -5;
+        in->target_velocity = 20;
         drone_control_mode = DRONE_CONTROL_MODE_TAKEOFF;
-        std::cout << "TARGET: pos = " << in->target_pos_z << std::endl;
+        std::cout << "TARGET: pos_x= " << in->target_pos_x << std::endl;
+        std::cout << "TARGET: pos_y= " << in->target_pos_y << std::endl;
+        std::cout << "TARGET: pos_z= " << in->target_pos_z << std::endl;
         std::cout << "TARGET: vel = " << in->target_velocity << std::endl;
         std::cout << "TARGET: yaw = " << target_yaw << std::endl;
 
         std::cout << "INFO: start takeoff" << std::endl;
     }
+    PositionType target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
+    PositionType current_pos = { in->pos_x, in->pos_y, in->pos_z };
     /*
      * Vertical control
      */
@@ -181,21 +200,33 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         static int target_done_count = 0;
         control_output.torque_z = rotate_yaw(target_yaw, in->r, euler);
         if (drone_control_mode == DRONE_CONTROL_MODE_YAW) {
-            if (ALMOST_EQUAL(target_yaw, euler.psi, DEGREE2RADIAN(1))) {
+            if (ALMOST_EQUAL(target_yaw, euler.psi, DEGREE2RADIAN(5))) {
                 target_done_count++;
             }
-            if (target_done_count >= 10) {
+            if (target_done_count >= 2) {
                 drone_control_mode = DRONE_CONTROL_MODE_MOVE;
-                std::cout << "INFO: start move mode" << std::endl;
+                std::cout << "INFO: start pitch mode" << std::endl;
             }
         }
     }
     if (drone_control_mode >= DRONE_CONTROL_MODE_MOVE) {
-        control_output.torque_y = move_forward(100, in->q, euler);
-    }
-    //roll control
-    {
+        std::pair<double, double> target_vel = pid_ctrl_forward_pos->run(target_pos, current_pos, euler);
+        double target_vel_f = target_vel.first;
+        double target_vel_h = target_vel.second;
+        target_vel_f = get_limit_value(target_vel_f, 0, -in->target_velocity, in->target_velocity);
+        target_vel_h = get_limit_value(target_vel_h, 0, -in->target_velocity, in->target_velocity);
+        double power_f = pid_ctrl_forward_vel->run(target_vel_f, in->q);
+        power_f = get_limit_value(power_f, 0, -100, 100);
         control_output.torque_x = move_horizontal(0, in->p, euler);
+        control_output.torque_y = move_forward(power_f, in->q, euler) ;
+        std::cout << "x: " << in->pos_x << std::endl;
+        std::cout << "y: " << in->pos_y << std::endl;
+        std::cout << "target_vel_f: " << target_vel_f << std::endl;
+        std::cout << "target_vel_h: " << target_vel_h << std::endl;
+        std::cout << "torque_x: " << control_output.torque_x << std::endl;
+        std::cout << "torque_y: " << control_output.torque_y << std::endl;
+        std::cout << "power_f: " << power_f << std::endl;
+        //std::cout << "power_y: " << power_y << std::endl;
     }
 
     return control_output;
