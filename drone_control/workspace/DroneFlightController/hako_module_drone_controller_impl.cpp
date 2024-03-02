@@ -105,11 +105,11 @@ static double move_forward(double power, double q, EulerType &euler)
     }
     std::cout << "target_degree: " << target_angle_degree << std::endl;
     double target_pitch = DEGREE2RADIAN(target_angle_degree);
-    double target_pitch_rate_max = RPM2EULER_RATE(100);
+    //double target_pitch_rate_max = RPM2EULER_RATE(100);
     double target_pitch_rate = pid_ctrl_pitch_angle->run(target_pitch, euler);
-    target_pitch_rate = get_limit_value(target_pitch_rate, 0, -target_pitch_rate_max, target_pitch_rate_max);
+    //target_pitch_rate = get_limit_value(target_pitch_rate, 0, -target_pitch_rate_max, target_pitch_rate_max);
     double torque_y = pid_ctrl_pitch_rate->run(target_pitch_rate, NORMALIZE_RADIAN(q));
-    torque_y = get_limit_value(torque_y, 0, -M_PI/8.0, M_PI/8.0);
+    //torque_y = get_limit_value(torque_y, 0, -M_PI/8.0, M_PI/8.0);
     return torque_y;
 }
 /*

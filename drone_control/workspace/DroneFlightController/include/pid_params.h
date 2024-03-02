@@ -19,14 +19,14 @@
  * Forward
  */
 // position
-#define FORWARD_POS_Kp 0.03
-#define FORWARD_POS_Ki 0.00001
-#define FORWARD_POS_Kd 2.2
+#define FORWARD_POS_Kp 0.2
+#define FORWARD_POS_Ki 0.0010
+#define FORWARD_POS_Kd 4.0
 
 // velocity
-#define FORWARD_VEL_Kp 1.5
+#define FORWARD_VEL_Kp 0.6
 #define FORWARD_VEL_Ki 0.0
-#define FORWARD_VEL_Kd 1.5
+#define FORWARD_VEL_Kd 2.5
 
 /*
  * Yaw
@@ -58,13 +58,13 @@
  * PITCH
  */
 // angle
-#define PITCH_ANGLE_Kp 1.5
+#define PITCH_ANGLE_Kp 0.2
 #define PITCH_ANGLE_Ki 0.00
-#define PITCH_ANGLE_Kd 0.100
+#define PITCH_ANGLE_Kd 0.001
 
 // angular velocity
 #define PITCH_VEL_Kp 0.02
-#define PITCH_VEL_Ki 0.00
-#define PITCH_VEL_Kd 0.0
+#define PITCH_VEL_Ki 0.00000
+#define PITCH_VEL_Kd 0.0001
 
 #endif /* _PID_PARAMS_H_ */
