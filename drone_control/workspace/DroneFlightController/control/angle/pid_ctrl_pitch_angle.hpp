@@ -6,7 +6,7 @@
 #include "utils/frame_convertor.hpp"
 #include "primitive_types.h"
 
-class PidCtrlRollAngle {
+class PidCtrlPitchAngle {
 private:
     PID pid;
 public:
@@ -15,8 +15,11 @@ public:
     }
     double run(double target, const EulerType& angle)
     {
+        EulerRateType euler_rate = {};
         pid.set_target(target);
-        return pid.calculate(angle.theta);
+        euler_rate.theta =  pid.calculate(angle.theta);
+        AngularVelocityType angular_velocity = body_angular_velocity_from_euler_rate(euler_rate, angle);
+        return angular_velocity.y;
     }
 };
 

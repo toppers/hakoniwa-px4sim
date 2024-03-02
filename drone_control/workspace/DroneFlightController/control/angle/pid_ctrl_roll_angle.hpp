@@ -15,8 +15,12 @@ public:
     }
     double run(double target, const EulerType& angle)
     {
+        EulerRateType euler_rate = {};
         pid.set_target(target);
-        return pid.calculate(angle.phi);
+        euler_rate.phi =  pid.calculate(angle.phi);
+        AngularVelocityType angular_velocity = body_angular_velocity_from_euler_rate(euler_rate, angle);
+        return angular_velocity.x;
+
     }
 };
 
