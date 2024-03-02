@@ -103,7 +103,7 @@ static double move_forward(double power, double q, EulerType &euler)
     else {
         target_angle_degree = -get_limit_value(power/2.0, 0, -MAX_FORWARD_DEGREE, 0);
     }
-    std::cout << "target_degree: " << target_angle_degree << std::endl;
+    //std::cout << "target_degree: " << target_angle_degree << std::endl;
     double target_pitch = DEGREE2RADIAN(target_angle_degree);
     //double target_pitch_rate_max = RPM2EULER_RATE(100);
     double target_pitch_rate = pid_ctrl_pitch_angle->run(target_pitch, euler);
@@ -147,19 +147,20 @@ static double rotate_yaw(double target_yaw, double r, EulerType &euler)
     return torque_z;
 }
 
-mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
+static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     /*
      * Target
      */
     mi_drone_control_out_t control_output;
-    double target_yaw = DEGREE2RADIAN(45);
+    static PositionType target_pos = {};
+    static double target_yaw = 0;
     EulerType euler = {NORMALIZE_RADIAN(in->euler_x), NORMALIZE_RADIAN(in->euler_y), NORMALIZE_RADIAN(in->euler_z)};
     if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
-        in->target_pos_x = 10;
-        in->target_pos_y = 10;
-        in->target_pos_z = -5;
-        in->target_velocity = 20;
+        target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
+        PositionType relative_vector = { in->target_pos_x - in->pos_x, in->target_pos_y - in->pos_y, 0};
+        target_yaw = atan2(relative_vector.y, relative_vector.x);
+
         drone_control_mode = DRONE_CONTROL_MODE_TAKEOFF;
         std::cout << "TARGET: pos_x= " << in->target_pos_x << std::endl;
         std::cout << "TARGET: pos_y= " << in->target_pos_y << std::endl;
@@ -169,8 +170,9 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
 
         std::cout << "INFO: start takeoff" << std::endl;
     }
-    PositionType target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
+    //PositionType target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
     PositionType current_pos = { in->pos_x, in->pos_y, in->pos_z };
+
     /*
      * Vertical control
      */
@@ -192,12 +194,14 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
             if (target_done_count >= 10) {
                 drone_control_mode = DRONE_CONTROL_MODE_YAW;
                 std::cout << "INFO: start yaw mode" << std::endl;
+                target_done_count = 0;
             }
         }
     }
     // Yaw control
     if (drone_control_mode >= DRONE_CONTROL_MODE_YAW) {
         static int target_done_count = 0;
+        //std::cout << "current yaw: " << euler.psi << std::endl;
         control_output.torque_z = rotate_yaw(target_yaw, in->r, euler);
         if (drone_control_mode == DRONE_CONTROL_MODE_YAW) {
             if (ALMOST_EQUAL(target_yaw, euler.psi, DEGREE2RADIAN(5))) {
@@ -205,7 +209,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
             }
             if (target_done_count >= 2) {
                 drone_control_mode = DRONE_CONTROL_MODE_MOVE;
-                std::cout << "INFO: start pitch mode" << std::endl;
+                std::cout << "INFO: start move mode" << std::endl;
+                target_done_count = 0;
             }
         }
     }
@@ -220,7 +225,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         power_f = get_limit_value(power_f, 0, -100, 100);
         power_h = get_limit_value(power_h, 0, -100, 100);
         control_output.torque_x = move_horizontal(power_h, in->p, euler);
-        control_output.torque_y = move_forward(power_f, in->q, euler) ;
+        control_output.torque_y = move_forward(power_f, in->q, euler);
+#if 0
         std::cout << "x: " << in->pos_x << std::endl;
         std::cout << "y: " << in->pos_y << std::endl;
         std::cout << "target_vel_f: " << target_vel_f << std::endl;
@@ -229,7 +235,60 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         std::cout << "torque_y: " << control_output.torque_y << std::endl;
         std::cout << "power_f: " << power_f << std::endl;
         std::cout << "power_h: " << power_h << std::endl;
+#endif
+        static int target_done_count = 0;
+        if (ALMOST_EQUAL(in->target_pos_x, in->pos_x, 0.5) & ALMOST_EQUAL(in->target_pos_y, in->pos_y, 0.5)) {
+            target_done_count++;
+        }
+        if (target_done_count >= 2) {
+            drone_control_mode = DRONE_CONTROL_MODE_NONE;
+            std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
+            target_done_count = 0;
+        }
     }
 
     return control_output;
+}
+
+mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
+{
+    static int count = 0;
+    in->target_pos_z = -10;
+    in->target_velocity = 20;
+    if (count == 0) {
+        in->target_pos_x = 0;
+        in->target_pos_y = 10;
+        mi_drone_control_out_t out = drone_controller_impl_run(in);
+        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
+            count++;
+        }
+        return out;
+    }
+    else if (count == 1) {
+        in->target_pos_x = 10;
+        in->target_pos_y = 10;
+        mi_drone_control_out_t out = drone_controller_impl_run(in);
+        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
+            count++;
+        }
+        return out;
+    }
+    else if (count == 2) {
+        in->target_pos_x = 10;
+        in->target_pos_y = 0;
+        mi_drone_control_out_t out = drone_controller_impl_run(in);
+        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
+            count++;
+        }
+        return out;
+    }
+    else {
+        in->target_pos_x = -1;
+        in->target_pos_y = -1;
+        mi_drone_control_out_t out = drone_controller_impl_run(in);
+        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
+            count++;
+        }
+        return out;
+    }
 }

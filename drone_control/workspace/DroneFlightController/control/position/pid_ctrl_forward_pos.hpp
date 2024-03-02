@@ -34,12 +34,11 @@ public:
 
         double diffF_local = -relative_len * cos(relative_psi);
         double diffH_local = relative_len * sin(relative_psi);
-        std::cout << "diffF: " << diffF_local << std::endl;
-        std::cout << "diffH: " << diffH_local << std::endl;
+        //std::cout << "diffF: " << diffF_local << std::endl;
+        //std::cout << "diffH: " << diffH_local << std::endl;
         pidF.set_target(0);
         pidH.set_target(0);
 
-        // PID制御による制御信号を計算
         double controlOutputF = pidF.calculate(diffF_local);
         double controlOutputH = pidH.calculate(diffH_local);
 
