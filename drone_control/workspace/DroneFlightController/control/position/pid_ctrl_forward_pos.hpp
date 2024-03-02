@@ -33,7 +33,7 @@ public:
         double relative_psi = atan2(relative_vector.y, relative_vector.x) - current_psi;
 
         double diffF_local = -relative_len * cos(relative_psi);
-        double diffH_local = -relative_len * sin(relative_psi);
+        double diffH_local = relative_len * sin(relative_psi);
         std::cout << "diffF: " << diffF_local << std::endl;
         std::cout << "diffH: " << diffH_local << std::endl;
         pidF.set_target(0);

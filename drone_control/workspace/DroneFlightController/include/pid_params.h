@@ -6,9 +6,9 @@
  * takeoff and landing
  */
 // position
-#define VERTICAL_POS_Kp 3.8
+#define VERTICAL_POS_Kp 0.8
 #define VERTICAL_POS_Ki 0.0
-#define VERTICAL_POS_Kd 3.8
+#define VERTICAL_POS_Kd 0.8
 
 // velocity
 #define VERTICAL_VEL_Kp 0.5
@@ -19,8 +19,8 @@
  * Forward
  */
 // position
-#define FORWARD_POS_Kp 0.2
-#define FORWARD_POS_Ki 0.0010
+#define FORWARD_POS_Kp 0.8
+#define FORWARD_POS_Ki 0.00
 #define FORWARD_POS_Kd 4.0
 
 // velocity
@@ -58,12 +58,12 @@
  * PITCH
  */
 // angle
-#define PITCH_ANGLE_Kp 0.2
-#define PITCH_ANGLE_Ki 0.00
+#define PITCH_ANGLE_Kp 1.5
+#define PITCH_ANGLE_Ki 0.01
 #define PITCH_ANGLE_Kd 0.001
 
 // angular velocity
-#define PITCH_VEL_Kp 0.02
+#define PITCH_VEL_Kp 0.001
 #define PITCH_VEL_Ki 0.00000
 #define PITCH_VEL_Kd 0.0001
 

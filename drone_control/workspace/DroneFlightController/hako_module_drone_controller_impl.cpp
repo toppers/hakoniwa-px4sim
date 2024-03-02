@@ -215,9 +215,11 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         double target_vel_h = target_vel.second;
         target_vel_f = get_limit_value(target_vel_f, 0, -in->target_velocity, in->target_velocity);
         target_vel_h = get_limit_value(target_vel_h, 0, -in->target_velocity, in->target_velocity);
-        double power_f = pid_ctrl_forward_vel->run(target_vel_f, in->q);
+        double power_f = pid_ctrl_forward_vel->runF(target_vel_f, in->q);
+        double power_h = pid_ctrl_forward_vel->runH(target_vel_h, in->p);
         power_f = get_limit_value(power_f, 0, -100, 100);
-        control_output.torque_x = move_horizontal(0, in->p, euler);
+        power_h = get_limit_value(power_h, 0, -100, 100);
+        control_output.torque_x = move_horizontal(power_h, in->p, euler);
         control_output.torque_y = move_forward(power_f, in->q, euler) ;
         std::cout << "x: " << in->pos_x << std::endl;
         std::cout << "y: " << in->pos_y << std::endl;
@@ -226,7 +228,7 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         std::cout << "torque_x: " << control_output.torque_x << std::endl;
         std::cout << "torque_y: " << control_output.torque_y << std::endl;
         std::cout << "power_f: " << power_f << std::endl;
-        //std::cout << "power_y: " << power_y << std::endl;
+        std::cout << "power_h: " << power_h << std::endl;
     }
 
     return control_output;

@@ -7,15 +7,21 @@
 
 class PidCtrlForwardVel {
 private:
-    PID pid;
+    PID pidF;
+    PID pidH;
 public:
-    PidCtrlForwardVel() : pid(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0)
+    PidCtrlForwardVel() : pidF(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0), pidH(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0)
     {
     }
-    double run(double target_vel, double current_vel)
+    double runF(double target_vel, double current_vel)
     {
-        pid.set_target(target_vel);
-        return pid.calculate(current_vel);
+        pidF.set_target(target_vel);
+        return pidF.calculate(current_vel);
+    }
+    double runH(double target_vel, double current_vel)
+    {
+        pidH.set_target(target_vel);
+        return pidH.calculate(current_vel);
     }
 };
 
