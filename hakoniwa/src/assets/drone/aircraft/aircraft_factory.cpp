@@ -213,8 +213,16 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         gyro_model = (HakoModuleDroneSensorGyroType*)hako_module_load_symbol(handle, HAKO_MODULE_DRONE_SENSOR_GYRO_SYMBOLE_NAME);
         HAKO_ASSERT(gyro_model != nullptr);
         std::cout << "SUCCESS: Loaded module name: " << header->get_name() << std::endl;
-        auto v = gyro_model->init(nullptr);
-        HAKO_ASSERT(v == 0);
+        std::string filepath = drone_config.getCompSensorContext("gyro", "file");
+        std::cout << "filepath:" << filepath <<std::endl;
+        if (filepath.empty()) {
+            auto v = gyro_model->init(nullptr);
+            HAKO_ASSERT(v == 0);
+        }
+        else {
+            auto v = gyro_model->init((void*)filepath.c_str());
+            HAKO_ASSERT(v == 0);
+        }
         gyro->set_vendor(gyro_model);
         drone->enable_disturb();
     }

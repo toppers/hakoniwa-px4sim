@@ -266,15 +266,34 @@ public:
             if (moduleDirectory.back() != '/' && moduleDirectory.back() != '\\') {
                 moduleDirectory += "/";
             }
+            std::string moduleName = getCompSensorContextModuleName(sensor_name);
+            if (moduleName.empty()) {
+                moduleName = getLastDirectoryName(moduleDirectory);
+            }
 #if WIN32
-            return moduleDirectory + getLastDirectoryName(moduleDirectory) + SHARED_LIB_EXT;
+            return moduleDirectory + moduleName + SHARED_LIB_EXT;
 #else
-            return moduleDirectory + "lib" + getLastDirectoryName(moduleDirectory) + SHARED_LIB_EXT;
+            return moduleDirectory + "lib" + moduleName + SHARED_LIB_EXT;
 #endif
         } else {
             return "";
         }
     }
+    std::string getCompSensorContextModuleName(const std::string& sensor_name) const
+    {
+        return getCompSensorContext(sensor_name, "moduleName");
+    }
+
+    std::string getCompSensorContext(const std::string& sensor_name, const std::string& param) const
+    {
+         if (configJson["components"]["sensors"][sensor_name].contains("context")) {
+            if (configJson["components"]["sensors"][sensor_name]["context"].contains(param)) {
+                return configJson["components"]["sensors"][sensor_name]["context"][param];
+            }
+        }
+        return "";
+    }
+
     double getCompSensorSampleCount(const std::string& sensor_name) const {
         return configJson["components"]["sensors"][sensor_name]["sampleCount"].get<double>();
     }
