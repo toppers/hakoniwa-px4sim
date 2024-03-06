@@ -297,6 +297,15 @@ public:
     {
         return configJson["controller"]["pid"][param1][param2][param3].get<double>();
     }
+    std::string getControllerModuleName() const
+    {
+        if (configJson["controller"].contains("moduleName")) {
+            return configJson["controller"]["moduleName"];
+        }
+        else {
+            return getRoboName();
+        }
+    }
     std::string getControllerModuleFilePath() const
     {
         if (configJson["controller"].contains("moduleDirectory")) {
@@ -305,9 +314,9 @@ public:
                 moduleDirectory += "/";
             }
 #if WIN32
-            return moduleDirectory + getRoboName() + SHARED_LIB_EXT;
+            return moduleDirectory + getControllerModuleName() + SHARED_LIB_EXT;
 #else
-            return moduleDirectory + "lib" + getRoboName() + SHARED_LIB_EXT;
+            return moduleDirectory + "lib" + getControllerModuleName() + SHARED_LIB_EXT;
 #endif
         }
         else {
