@@ -72,7 +72,7 @@
             "vendor": "../drone_sensors/cmake-build/sensors/gyro/vendor/hakogyro",
             "context": {
               "moduleName": "hakogyro3",
-              "file": "./config/test/sensor3.txt"
+              "file": "./config/hard-maker-demo/sensor3.txt"
             },
             "sampleCount": 1,
             "noise": 0.0
@@ -95,7 +95,7 @@
     "moduleDirectory": "../drone_control/cmake-build/workspace/DroneFlightController",
     "moduleName": "DroneFlightController3",
     "context": {
-      "file": "./config/test/plan3.txt"
+      "file": "./config/hard-maker-demo/plan3.txt"
     }
   }
 }
