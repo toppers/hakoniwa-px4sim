@@ -11,9 +11,9 @@
 #define VERTICAL_POS_Kd 0.8
 
 // velocity
-#define VERTICAL_VEL_Kp 0.5
+#define VERTICAL_VEL_Kp 0.8
 #define VERTICAL_VEL_Ki 0.0
-#define VERTICAL_VEL_Kd 0.5
+#define VERTICAL_VEL_Kd 0.8
 
 /*
  * Forward
