@@ -76,7 +76,7 @@ public:
     IAirCraft *drone;
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 
-    bool load_controller(const char* filepath) 
+    bool load_controller(const char* filepath, void* context) 
     {
         control_module.header = nullptr;
         control_module.controller = nullptr;
@@ -89,7 +89,7 @@ public:
             return false;
         }
         std::cout << "SUCCESS: Loaded module name: " << control_module.header->get_name() << std::endl;
-        return (control_module.controller->init(nullptr) == 0);
+        return (control_module.controller->init(context) == 0);
     }
 
 };
@@ -126,7 +126,13 @@ public:
             arg.control_module.controller = nullptr;
             std::string filepath = drone_config.getControllerModuleFilePath();
             if (!filepath.empty()) {
-                arg.load_controller(filepath.c_str());
+                std::string file = drone_config.getControllerContext("file");
+                if (file.empty()) {
+                    arg.load_controller(filepath.c_str(), nullptr);
+                }
+                else {
+                    arg.load_controller(filepath.c_str(), (void*)file.c_str());
+                }
             }
             else {
                 std::cerr << "WARNING: can not find module for " << drone->get_name() << std::endl;

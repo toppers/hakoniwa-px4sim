@@ -306,6 +306,15 @@ public:
             return getRoboName();
         }
     }
+    std::string getControllerContext(const std::string& param) const
+    {
+        if (configJson["controller"].contains("context")) {
+            if (configJson["controller"]["context"].contains(param)) {
+                return configJson["controller"]["context"][param];
+            }
+        }
+        return "";
+    }
     std::string getControllerModuleFilePath() const
     {
         if (configJson["controller"].contains("moduleDirectory")) {
