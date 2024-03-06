@@ -9,6 +9,7 @@
 #include "control/angle/pid_ctrl_roll_rate.hpp"
 #include "control/angle/pid_ctrl_pitch_angle.hpp"
 #include "control/angle/pid_ctrl_pitch_rate.hpp"
+#include "flight_plan.hpp"
 
 static double get_limit_value(double input_value, double base_value, double min_value, double max_value)
 {
@@ -35,8 +36,19 @@ static PidCtrlPitchRate   *pid_ctrl_pitch_rate;
 
 #define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
 
+static MovePlan move_plan;
+
 int hako_module_drone_controller_impl_init(void* context)
 {
+    if (context != nullptr) {
+        std::cout << "context:" << (const char*)context << std::endl;
+        std::string filepath((const char*)context);
+        if (move_plan.load_plan_from_file(filepath) == false) {
+            std::cout << "ERROR: can not load file: " << (const char*)context << std::endl;
+            return -1;
+        }
+    }
+
     pid_ctrl_vertical_pos = new PidCtrlVerticalPos();
     if (pid_ctrl_vertical_pos == nullptr) {
         return -1;
@@ -268,37 +280,11 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     static int count = 0;
     in->target_pos_z = -10;
     in->target_velocity = 20;
-    if (count == 0) {
-        in->target_pos_x = 0;
-        in->target_pos_y = 20;
-        mi_drone_control_out_t out = drone_controller_impl_run(in);
-        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
-            count++;
-        }
-        return out;
-    }
-    else if (count == 1) {
-        in->target_pos_x = 20;
-        in->target_pos_y = 0;
-        mi_drone_control_out_t out = drone_controller_impl_run(in);
-        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
-            count++;
-        }
-        return out;
-    }
-    else if (count == 2) {
-        in->target_pos_x = 0;
-        in->target_pos_y = -20;
-        mi_drone_control_out_t out = drone_controller_impl_run(in);
-        if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
-            count++;
-        }
-        return out;
-    }
-    else if (count == 3)
+
+    if (count < move_plan.positions.size())
     {
-        in->target_pos_x = -20;
-        in->target_pos_y = 0;
+        in->target_pos_x = move_plan.positions[count].x;
+        in->target_pos_y = move_plan.positions[count].y;
         mi_drone_control_out_t out = drone_controller_impl_run(in);
         if (drone_control_mode == DRONE_CONTROL_MODE_NONE) {
             count++;
