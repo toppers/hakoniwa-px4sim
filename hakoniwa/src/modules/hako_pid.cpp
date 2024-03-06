@@ -179,8 +179,8 @@ static void my_task()
         DronePositionType pos = container.drone->get_drone_dynamics().get_pos();
         DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
         hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
-        hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_drone_dynamics().get_angular_vel_body_frame();
-
+        //hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_drone_dynamics().get_angular_vel_body_frame();
+        hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_gyro().sensor_value();
         in.mass = container.drone->get_drone_dynamics().get_mass();
         in.drag = container.drone->get_drone_dynamics().get_drag();
         in.pos_x = pos.data.x;
@@ -214,6 +214,12 @@ static void my_task()
         drone_input.manual.control = false;
         drone_input.thrust = thrust;
         drone_input.torque = torque;
+        if (container.drone->get_drone_dynamics().has_collision_detection()) {
+            do_io_read_collision(container.drone, drone_input.collision);
+        }
+        if (container.drone->is_enabled_disturbance()) {
+            do_io_read_disturb(container.drone, drone_input.disturbance);
+        }
         container.drone->run(drone_input);
         calculate_simple_controls(container, thrust);
         do_io_write(container.drone, container.controls);
