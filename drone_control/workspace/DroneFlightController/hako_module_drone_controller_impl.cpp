@@ -262,10 +262,11 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
         std::cout << "power_h: " << power_h << std::endl;
 #endif
         static int target_done_count = 0;
-        if (ALMOST_EQUAL(in->target_pos_x, in->pos_x, 0.5) & ALMOST_EQUAL(in->target_pos_y, in->pos_y, 0.5)) {
+        if (ALMOST_EQUAL(in->target_pos_x, in->pos_x, 0.1) & ALMOST_EQUAL(in->target_pos_y, in->pos_y, 0.1)) {
             target_done_count++;
+            //std::cout << "INFO: pos( " << in->pos_x << " , " << in->pos_y << " )count: " << target_done_count  << std::endl;
         }
-        if (target_done_count >= 2) {
+        if (target_done_count >= 10) {
             drone_control_mode = DRONE_CONTROL_MODE_NONE;
             std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
             target_done_count = 0;
