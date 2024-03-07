@@ -69,7 +69,7 @@ static void my_setup()
 
 static void my_task()
 {
-
+    drone_control_proxy_manager.run();
     return;
 }
 
@@ -102,7 +102,7 @@ static void* asset_runner(void*)
     }
     while (true) {
         std::cout << "INFO: start simulation" << std::endl;
-        drone_control_proxy_manager.run();
+        drone_control_proxy_manager.do_task();
     }
     std::cout << "INFO: end simulation" << std::endl;
     hako_asset_runner_fin();

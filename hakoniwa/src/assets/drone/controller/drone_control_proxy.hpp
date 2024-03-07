@@ -116,6 +116,11 @@ public:
             drone_control_proxies.push_back(proxy);
         }
     }
+    void do_task()
+    {
+        task_manager.do_task();
+    }
+
     void run()
     {
         int index = 0;
