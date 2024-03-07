@@ -20,6 +20,10 @@ public:
     {
         return this->status;
     }
+    bool is_busy()
+    {
+        return this->status != OPERATION_STATUS_DONE;
+    }
     bool event_done()
     {
         switch (this->status) {
