@@ -7,7 +7,10 @@
 #define HAKO_AVATOR_CHANNLE_ID_COLLISION    2
 #define HAKO_AVATOR_CHANNLE_ID_MANUAL       3
 #define HAKO_AVATOR_CHANNEL_ID_DISTURB      4
-#define HAKO_AVATOR_CHANNLE_ID_CTRL         5 /* for pid control program only */
+#define HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF  5
+#define HAKO_AVATOR_CHANNEL_ID_CMD_MOVE     6
+#define HAKO_AVATOR_CHANNEL_ID_CMD_LAND     7
+#define HAKO_AVATOR_CHANNLE_ID_CTRL         8 /* for pid control program only */
 
 static inline void debug_print_drone_collision(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
 {
@@ -53,7 +56,6 @@ static inline void do_io_read_collision(hako::assets::drone::IAirCraft *drone, h
     drone_collision.collision = (bool)hako_collision.collision;
     if (drone_collision.collision) {
         drone_collision.contact_num = hako_collision.contact_num;
-        //ROS座標系 ==> 航空座標系
         drone_collision.relative_velocity.x = hako_collision.relative_velocity.x;
         drone_collision.relative_velocity.y = -hako_collision.relative_velocity.y;
         drone_collision.relative_velocity.z = -hako_collision.relative_velocity.z;
@@ -64,10 +66,6 @@ static inline void do_io_read_collision(hako::assets::drone::IAirCraft *drone, h
             drone_collision.contact_position[i].z = -hako_collision.contact_position[i].z;
         }
         debug_print_drone_collision(drone_collision);
-        /*
-         * Unityのシミュレーションは20msec周期で動作する。
-         * 一方、こちらは 3msec周期で動作するので、衝突データを打ち消しておかないと、次のタイミングで拾ってしまう。
-         */
         hako_collision.collision = false;
         if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, (const char*)&hako_collision, sizeof(hako_collision))) {
             std::cerr << "ERROR: can not write pdu data: Hako_Collision" << std::endl;
@@ -107,6 +105,25 @@ static inline void do_io_read_disturb(hako::assets::drone::IAirCraft *drone, hak
     //temperature
     drone_disturb.values.d_temp.value = hako_disturb.d_temp.value;
 }
+
+template<typename PacketType>
+static inline bool do_io_read_cmd(hako::assets::drone::IAirCraft *drone, int channel_id, PacketType& packet) {
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), channel_id, reinterpret_cast<char*>(&packet), sizeof(packet))) {
+        std::cerr << "ERROR: can not read pdu data: packet channel_id: " << channel_id  << std::endl;
+        return false;
+    }
+    return true;
+}
+
+template<typename PacketType>
+static inline bool do_io_write_cmd(hako::assets::drone::IAirCraft *drone, int channel_id, const PacketType& packet) {
+    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), channel_id, reinterpret_cast<const char*>(&packet), sizeof(packet))) {
+        std::cerr << "ERROR: can not write pdu data: packet channel_id: " << channel_id  << std::endl;
+        return false;
+    }
+    return true;
+}
+
 static inline void do_io_write(hako::assets::drone::IAirCraft *drone, double controls[hako::assets::drone::ROTOR_NUM])
 {
     Hako_HakoHilActuatorControls hil_actuator_controls;

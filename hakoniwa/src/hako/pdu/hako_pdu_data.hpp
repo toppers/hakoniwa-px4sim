@@ -9,6 +9,9 @@
 #include "hako_msgs/pdu_ctype_Collision.h"
 #include "hako_msgs/pdu_ctype_ManualPosAttControl.h"
 #include "hako_msgs/pdu_ctype_Disturbance.h"
+#include "hako_msgs/pdu_ctype_HakoDroneCmdTakeoff.h"
+#include "hako_msgs/pdu_ctype_HakoDroneCmdMove.h"
+#include "hako_msgs/pdu_ctype_HakoDroneCmdLand.h"
 #include "config/drone_config.hpp"
 
 extern bool hako_pdu_data_init(DroneConfigManager& mgr);
