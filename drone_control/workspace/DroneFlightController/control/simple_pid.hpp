@@ -1,10 +1,10 @@
-#ifndef _SIMPLE_PID_HPP_
-#define _SIMPLE_PID_HPP_
+#ifndef _SIMPLE_FLIGHT_CONTROL_PID_HPP_
+#define _SIMPLE_FLIGHT_CONTROL_PID_HPP_
 
 #include <iostream>
 #define SIMPLE_PID_INUM 10
 
-class PID {
+class FlightControlPID {
 private:
     double Kp;
     double Ki;
@@ -19,7 +19,7 @@ private:
     int i_num = 0;
     double i_values[SIMPLE_PID_INUM];
 public:
-    PID(double Kp, double Ki, double Kd, double sp)
+    FlightControlPID(double Kp, double Ki, double Kd, double sp)
         : Kp(Kp), Ki(Ki), Kd(Kd), target(sp), integral(0.0), prev_error(0.0), first_time(true) 
     {
         for (int i = 0; i < SIMPLE_PID_INUM; i++) {
@@ -57,4 +57,4 @@ public:
     }
 };
 
-#endif /* _SIMPLE_PID_HPP_ */
+#endif /* _SIMPLE_FLIGHT_CONTROL_PID_HPP_ */

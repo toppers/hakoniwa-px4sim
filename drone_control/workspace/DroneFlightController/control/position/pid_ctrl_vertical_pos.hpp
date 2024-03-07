@@ -8,7 +8,7 @@
 
 class PidCtrlVerticalPos {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlVerticalPos() : pid(VERTICAL_POS_Kp, VERTICAL_POS_Ki, VERTICAL_POS_Kd, 0)
     {

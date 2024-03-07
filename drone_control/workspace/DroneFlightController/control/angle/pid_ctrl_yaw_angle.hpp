@@ -8,7 +8,7 @@
 
 class PidCtrlYawAngle {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlYawAngle() : pid(YAW_ANGLE_Kp, YAW_ANGLE_Ki, YAW_ANGLE_Kd, 0)
     {

@@ -7,7 +7,7 @@
 
 class PidCtrlVerticalVel {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlVerticalVel() : pid(VERTICAL_VEL_Kp, VERTICAL_VEL_Ki, VERTICAL_VEL_Kd, 0)
     {

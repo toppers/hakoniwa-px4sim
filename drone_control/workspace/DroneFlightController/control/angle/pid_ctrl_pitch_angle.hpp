@@ -8,7 +8,7 @@
 
 class PidCtrlPitchAngle {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlPitchAngle() : pid(PITCH_ANGLE_Kp, PITCH_ANGLE_Ki, PITCH_ANGLE_Kd, 0)
     {

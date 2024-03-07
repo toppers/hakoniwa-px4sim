@@ -7,7 +7,7 @@
 
 class PidCtrlPitchRate {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlPitchRate() : pid(PITCH_VEL_Kp, PITCH_VEL_Ki, PITCH_VEL_Kd, 0)
     {

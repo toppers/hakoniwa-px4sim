@@ -10,8 +10,8 @@
 
 class PidCtrlForwardPos {
 private:
-    PID pidF;
-    PID pidH;
+    FlightControlPID pidF;
+    FlightControlPID pidH;
     double length(const PositionType& target_pos, const PositionType& current_pos)
     {
         return std::sqrt(std::pow(target_pos.x - current_pos.x, 2) + std::pow(target_pos.y - current_pos.y, 2));

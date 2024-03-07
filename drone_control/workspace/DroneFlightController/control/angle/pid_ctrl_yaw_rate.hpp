@@ -7,7 +7,7 @@
 
 class PidCtrlYawRate {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlYawRate() : pid(YAW_VEL_Kp, YAW_VEL_Ki, YAW_VEL_Kd, 0)
     {

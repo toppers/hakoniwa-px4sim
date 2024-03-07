@@ -1,7 +1,7 @@
 #ifndef _PID_PARAMS_H_
 #define _PID_PARAMS_H_
 
-#define GRAVITY 9.81
+#define PID_PARAM_GRAVITY 9.81
 /*
  * takeoff and landing
  */

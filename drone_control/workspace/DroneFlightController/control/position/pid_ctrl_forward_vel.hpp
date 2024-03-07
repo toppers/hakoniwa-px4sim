@@ -7,8 +7,8 @@
 
 class PidCtrlForwardVel {
 private:
-    PID pidF;
-    PID pidH;
+    FlightControlPID pidF;
+    FlightControlPID pidH;
 public:
     PidCtrlForwardVel() : pidF(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0), pidH(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0)
     {

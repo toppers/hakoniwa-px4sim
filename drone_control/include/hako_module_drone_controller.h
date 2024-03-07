@@ -2,6 +2,7 @@
 #define _HAKO_MODULE_CONTROLLER_H_
 
 typedef struct {
+    void *context;
     /*
      * Target
      */

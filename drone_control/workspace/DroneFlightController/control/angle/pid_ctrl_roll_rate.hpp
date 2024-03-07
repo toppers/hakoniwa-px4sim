@@ -7,7 +7,7 @@
 
 class PidCtrlRollRate {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlRollRate() : pid(ROLL_VEL_Kp, ROLL_VEL_Ki, ROLL_VEL_Kd, 0)
     {

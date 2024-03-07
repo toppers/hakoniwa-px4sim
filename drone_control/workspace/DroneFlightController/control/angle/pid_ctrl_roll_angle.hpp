@@ -8,7 +8,7 @@
 
 class PidCtrlRollAngle {
 private:
-    PID pid;
+    FlightControlPID pid;
 public:
     PidCtrlRollAngle() : pid(ROLL_ANGLE_Kp, ROLL_ANGLE_Ki, ROLL_ANGLE_Kd, 0)
     {
