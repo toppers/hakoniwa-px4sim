@@ -4,6 +4,7 @@
 #include "modules/hako_phys.hpp"
 #include "modules/hako_sim.hpp"
 #include "modules/hako_pid.hpp"
+#include "modules/hako_ext.hpp"
 #include "utils/hako_params.hpp"
 #include "config/drone_config.hpp"
 #ifndef WIN32
@@ -14,7 +15,7 @@ class DroneConfigManager drone_config_manager;
 int main(int argc, char* argv[]) 
 {
     if(argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid}> " << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid|ext}> " << std::endl;
         return -1;
     }
     const char* serverIp = argv[1];
@@ -26,6 +27,11 @@ int main(int argc, char* argv[])
     hako::px4::comm::ICommIO *comm_io  = nullptr;
     if (strcmp("pid", arg_mode) == 0) {
         hako_pid_main(true);
+        //not returned function.
+        //do not pass
+    }
+    if (strcmp("ext", arg_mode) == 0) {
+        hako_ext_main(true);
         //not returned function.
         //do not pass
     }

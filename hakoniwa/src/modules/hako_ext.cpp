@@ -1,4 +1,4 @@
-#include "hako_pid.hpp"
+#include "hako_ext.hpp"
 #include "hako_capi.h"
 #include "assets/drone/aircraft/aircraft_factory.hpp"
 #include "utils/hako_params.hpp"
@@ -9,7 +9,6 @@
 #include "utils/csv_logger.hpp"
 #include "assets/drone/controller/sample_controller.hpp"
 #include "utils/hako_utils.hpp"
-#include "drone_flight_controller.hpp"
 
 #include "utils/hako_osdep.h"
 #include <memory.h>
@@ -21,7 +20,7 @@
 static void* asset_runner(void*);
 static hako::assets::drone::AirCraftManager drone_manager;
 
-void hako_pid_main(bool master)
+void hako_ext_main(bool master)
 {
     std::string drone_config_directory = hako_param_env_get_string(DRONE_CONFIG_PATH);
     if (drone_config_manager.loadConfigsFromDirectory(drone_config_directory) == 0)
@@ -72,7 +71,6 @@ typedef struct {
 class AircraftSystemContainer
 {
 public:
-    DroneFlightControllerContextType context;
     AircraftControlModuleType control_module;
     hako::assets::drone::IController *controller;
     IAirCraft *drone;
@@ -133,8 +131,7 @@ public:
                     arg.load_controller(filepath.c_str(), nullptr);
                 }
                 else {
-                    arg.context.plan_filepath = file.c_str();
-                    arg.load_controller(filepath.c_str(), &arg.context);
+                    arg.load_controller(filepath.c_str(), (void*)file.c_str());
                 }
             }
             else {
@@ -190,7 +187,6 @@ static void my_task()
         hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
         //hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_drone_dynamics().get_angular_vel_body_frame();
         hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_gyro().sensor_value();
-        in.context = (void*)&container.context;
         in.mass = container.drone->get_drone_dynamics().get_mass();
         in.drag = container.drone->get_drone_dynamics().get_drag();
         in.pos_x = pos.data.x;

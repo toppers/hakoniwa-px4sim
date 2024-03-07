@@ -93,7 +93,7 @@
   },
   "controller": {
     "moduleDirectory": "../drone_control/cmake-build/workspace/DroneFlightController",
-    "moduleName": "DroneFlightController3",
+    "moduleName": "DroneFlightController",
     "context": {
       "file": "./config/hard-maker-demo/plan3.txt"
     }

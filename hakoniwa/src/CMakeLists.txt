@@ -34,11 +34,15 @@ set(SOURCE_FILES
     assets/drone/controller/sample_controller.cpp
     assets/drone/aircraft/aircraft_factory.cpp
 
+    ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController/hako_module_drone_controller_impl.cpp
+    ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController/utils/frame_convertor.cpp
+
     utils/hako_params.cpp
     utils/hako_module_loader.cpp
     modules/hako_phys.cpp
     modules/hako_sim.cpp
     modules/hako_pid.cpp
+    modules/hako_ext.cpp
     px4sim_main.cpp
 )
 if(WIN32)
@@ -67,6 +71,10 @@ target_include_directories(
     PRIVATE ${HAKONIWA_CORE_SOURCE_DIR}/include
     PRIVATE ${PHYSICS_SOURCE_DIR}
     PRIVATE ${CONTROL_SOURCE_DIR}/include
+    PRIVATE ${CONTROL_SOURCE_DIR}/workspace
+    PRIVATE ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController
+    PRIVATE ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController/include
+    PRIVATE ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController/utils
     PRIVATE ${SENSOR_SOURCE_DIR}/include
     PRIVATE ${SENSOR_SOURCE_DIR}/sensors/gyro/include
     PRIVATE ${nlohmann_json_SOURCE_DIR}/single_include
