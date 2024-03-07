@@ -1,6 +1,7 @@
 # ローダブルモジュールのビルド設定
 project(DroneFlightController)
 
+add_definitions(-DHAKO_MODULE_ENABLE_TARGET_CONTROL)
 # ソースファイル
 set(SOURCE_FILES
     utils/frame_convertor.cpp
@@ -13,7 +14,6 @@ add_library(
     ${SOURCE_FILES}
     ../hako_module_drone_controller.c
 )
-
 # ヘッダーファイルのインクルードディレクトリ指定
 target_include_directories(
     ${PROJECT_NAME} 

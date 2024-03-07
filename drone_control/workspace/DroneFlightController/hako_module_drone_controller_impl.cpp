@@ -275,7 +275,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
 
     return control_output;
 }
-
+#ifdef HAKO_MODULE_ENABLE_TARGET_CONTROL
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     static int count = 0;
@@ -298,3 +298,12 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         return out;
     }
 }
+
+#else
+mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
+{
+    return drone_controller_impl_run(in);
+}
+#endif /* HAKO_MODULE_ENABLE_TARGET_CONTROL */
+
+
