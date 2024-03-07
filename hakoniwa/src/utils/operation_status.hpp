@@ -16,7 +16,7 @@ public:
         this->status = OPERATION_STATUS_DONE;
     }
     virtual ~OperationStatus() {}
-    OperationStatusType status()
+    OperationStatusType get_status()
     {
         return this->status;
     }

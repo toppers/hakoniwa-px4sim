@@ -17,8 +17,8 @@ typedef enum {
 
 class MainStatus {
 private:
-    MainStatusType cancel_move_status;
     MainStatusType status;
+    MainStatusType cancel_move_status;
     OperationStatus operation;
     std::string get_status_str() {
         switch (status) {
