@@ -26,14 +26,15 @@ int hako_module_drone_controller_impl_init(void* context)
     for (int i = 0; i < DRONE_CONTROL_MODE_NUM; i++) {
         drone_context->count[i] = 0;
     }
-#ifdef HAKO_MODULE_ENABLE_TARGET_CONTROL
+    if (drone_context->plan_filepath == nullptr) {
+        return 0;
+    }
     std::cout << "context:" << drone_context->plan_filepath << std::endl;
     std::string filepath(drone_context->plan_filepath);
     if (drone_context->move_plan.load_plan_from_file(filepath) == false) {
         std::cout << "ERROR: can not load file: " << drone_context->plan_filepath << std::endl;
         return -1;
     }
-#endif
     return 0;
 }
 
@@ -96,7 +97,7 @@ static double rotate_yaw(DroneFlightControllerContextType *drone_context, double
     torque_z = get_limit_value(torque_z, 0, -M_PI/4.0, M_PI/4.0);
     return torque_z;
 }
-#ifdef HAKO_MODULE_ENABLE_TARGET_CONTROL
+
 static mi_drone_control_out_t do_hovering(mi_drone_control_in_t *in)
 {
     DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in->context;
@@ -111,7 +112,6 @@ static mi_drone_control_out_t do_hovering(mi_drone_control_in_t *in)
     control_output.torque_z = rotate_yaw(drone_context, 0, in->r, euler);
     return control_output;
 }
-#endif
 static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     /*
@@ -201,10 +201,13 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
 
     return control_output;
 }
-#ifdef HAKO_MODULE_ENABLE_TARGET_CONTROL
+
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in->context;
+    if (drone_context->plan_filepath == nullptr) {
+        return drone_controller_impl_run(in);
+    }
     in->target_pos_z = -10;
     in->target_velocity = 20;
     int count = drone_context->count[DRONE_CONTROL_MODE_NONE];
@@ -225,12 +228,5 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         return out;
     }
 }
-
-#else
-mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
-{
-    return drone_controller_impl_run(in);
-}
-#endif /* HAKO_MODULE_ENABLE_TARGET_CONTROL */
 
 

@@ -1,7 +1,6 @@
 # ローダブルモジュールのビルド設定
 project(DroneFlightController)
 
-add_definitions(-DHAKO_MODULE_ENABLE_TARGET_CONTROL)
 # ソースファイル
 set(SOURCE_FILES
     utils/frame_convertor.cpp
