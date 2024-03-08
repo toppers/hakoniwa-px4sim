@@ -63,7 +63,7 @@ static hako::assets::drone::DroneControlProxyManager drone_control_proxy_manager
 
 static void my_setup()
 {
-    //nothing to do
+    drone_control_proxy_manager.setup();
 }
 
 static void my_task()

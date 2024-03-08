@@ -30,7 +30,7 @@ private:
     void do_event()
     {
         if (state.get_status() == MAIN_STATUS_LANDED) {
-            if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff)) {
+            if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
                 state.takeoff();
                 in.target_pos_z = -cmd_takeoff.height;
                 in.target_pos_x = home_pos_x;
@@ -39,14 +39,14 @@ private:
             }
         }
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
-            if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land)) {
+            if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land) && cmd_land.header.request) {
                 state.land();
                 in.target_pos_z = -cmd_land.height;
                 in.target_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
                 in.target_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
                 in.target_velocity = cmd_land.speed;
             }
-            else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move)) {
+            else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && cmd_move.header.request) {
                 state.move();
                 in.target_pos_z = this->drone->get_drone_dynamics().get_pos().data.z;
                 in.target_pos_x = cmd_move.x;
@@ -82,6 +82,13 @@ private:
 
 public:
     mi_drone_control_in_t in = {};
+    void setup()
+    {
+        std::cout << "Setup pdu data" << std::endl;
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff);
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land);
+    }
 
     DroneControlProxy(hako::assets::drone::IAirCraft *obj) 
     {
@@ -114,6 +121,12 @@ public:
             proxy.in.mass = container.drone->get_drone_dynamics().get_mass();
             proxy.in.drag = container.drone->get_drone_dynamics().get_drag();
             drone_control_proxies.push_back(proxy);
+        }
+    }
+    void setup()
+    {
+        for (auto& proxy : drone_control_proxies) {
+            proxy.setup();
         }
     }
     void do_task()
