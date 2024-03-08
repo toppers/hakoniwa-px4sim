@@ -27,6 +27,72 @@ private:
     {
         return do_io_write_cmd(drone, channel_id, packet);
     }
+
+    void do_reply()
+    {
+        switch (state.get_status())
+        {
+            case MAIN_STATUS_TAKINGOFF:
+                cmd_takeoff.header.request = false;
+                cmd_takeoff.header.result = true;
+                cmd_takeoff.header.result_code = 0;
+                write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff);
+
+                //for test
+                //cmd_move.header.request = true;
+                //cmd_move.x = 5.0;
+                //cmd_move.y = 5.0;
+                //cmd_move.speed = 5.0;
+                //write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
+                break;
+            case MAIN_STATUS_LANDING:
+                cmd_land.header.request = false;
+                cmd_land.header.result = true;
+                cmd_land.header.result_code = 0;
+                write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land);
+                break;
+            case MAIN_STATUS_MOVING:
+                cmd_move.header.request = false;
+                cmd_move.header.result = true;
+                cmd_move.header.result_code = 0;
+                write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+public:
+    mi_drone_control_in_t in = {};
+    void setup()
+    {
+        std::cout << "Setup pdu data" << std::endl;
+        //for test
+        //cmd_takeoff.header.request = true;
+        //cmd_takeoff.height = 5.0;
+        //cmd_takeoff.speed = 5.0;
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff);
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land);
+    }
+
+    DroneControlProxy(hako::assets::drone::IAirCraft *obj) 
+    {
+        this->drone = obj;
+        home_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
+        home_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
+        home_pos_z = this->drone->get_drone_dynamics().get_pos().data.z;
+    }
+    virtual ~DroneControlProxy() {}
+
+    bool need_control()
+    {
+        if (state.get_status() == MAIN_STATUS_LANDED) {
+            return false;
+        }
+        return true;
+    }
     void do_event()
     {
         if (state.get_status() == MAIN_STATUS_LANDED) {
@@ -66,6 +132,7 @@ private:
             case MAIN_STATUS_LANDING:
             case MAIN_STATUS_MOVING:
                 if (drone_context->drone_control_mode == DRONE_CONTROL_MODE_NONE) {
+                    do_reply();
                     state.done();
                 }
                 break;
@@ -78,40 +145,8 @@ private:
                 //nothing to do
                 break;
         }
-    }
+    }    
 
-public:
-    mi_drone_control_in_t in = {};
-    void setup()
-    {
-        std::cout << "Setup pdu data" << std::endl;
-        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff);
-        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
-        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land);
-    }
-
-    DroneControlProxy(hako::assets::drone::IAirCraft *obj) 
-    {
-        this->drone = obj;
-        home_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
-        home_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
-        home_pos_z = this->drone->get_drone_dynamics().get_pos().data.z;
-    }
-    virtual ~DroneControlProxy() {}
-
-    bool need_control()
-    {
-        if (state.get_status() == MAIN_STATUS_LANDED) {
-            return false;
-        }
-        return true;
-    }
-
-    void run()
-    {
-        do_event();
-        do_control();
-    }
 };
 
 class DroneControlProxyManager {
@@ -152,7 +187,7 @@ public:
             DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
             hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
             hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_gyro().sensor_value();
-            proxy.run();
+            proxy.do_event();
             proxy.in.pos_x = pos.data.x;
             proxy.in.pos_y = pos.data.y;
             proxy.in.pos_z = pos.data.z;
@@ -168,6 +203,7 @@ public:
 
             if (proxy.need_control()) {
                 out = container.control_module.controller->run(&proxy.in);
+                proxy.do_control();
             }
 
             DroneThrustType thrust;
