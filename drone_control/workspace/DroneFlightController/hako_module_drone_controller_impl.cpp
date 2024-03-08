@@ -126,13 +126,13 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
         drone_context->target_yaw = atan2(relative_vector.y, relative_vector.x);
 
         drone_context->drone_control_mode = DRONE_CONTROL_MODE_TAKEOFF;
-        std::cout << "TARGET: pos_x= " << in->target_pos_x << std::endl;
-        std::cout << "TARGET: pos_y= " << in->target_pos_y << std::endl;
-        std::cout << "TARGET: pos_z= " << in->target_pos_z << std::endl;
-        std::cout << "TARGET: vel = " << in->target_velocity << std::endl;
-        std::cout << "TARGET: yaw = " << drone_context->target_yaw << std::endl;
+        //std::cout << "TARGET: pos_x= " << in->target_pos_x << std::endl;
+        //std::cout << "TARGET: pos_y= " << in->target_pos_y << std::endl;
+        //std::cout << "TARGET: pos_z= " << in->target_pos_z << std::endl;
+        //std::cout << "TARGET: vel = " << in->target_velocity << std::endl;
+        //std::cout << "TARGET: yaw = " << drone_context->target_yaw << std::endl;
 
-        std::cout << "INFO: start takeoff" << std::endl;
+        //std::cout << "INFO: start takeoff" << std::endl;
     }
     //PositionType target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
     PositionType current_pos = { in->pos_x, in->pos_y, in->pos_z };
@@ -155,7 +155,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
 
             if (drone_context->count[DRONE_CONTROL_MODE_TAKEOFF] >= 10) {
                 drone_context->drone_control_mode = DRONE_CONTROL_MODE_YAW;
-                std::cout << "INFO: start yaw mode" << std::endl;
+                //std::cout << "INFO: start yaw mode" << std::endl;
                 drone_context->count[DRONE_CONTROL_MODE_TAKEOFF] = 0;
             }
         }
@@ -170,7 +170,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
             }
             if (drone_context->count[DRONE_CONTROL_MODE_YAW] >= 2) {
                 drone_context->drone_control_mode = DRONE_CONTROL_MODE_MOVE;
-                std::cout << "INFO: start move mode" << std::endl;
+                //std::cout << "INFO: start move mode" << std::endl;
                 drone_context->count[DRONE_CONTROL_MODE_YAW] = 0;
             }
         }
@@ -194,7 +194,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
         }
         if (drone_context->count[DRONE_CONTROL_MODE_MOVE] >= 10) {
             drone_context->drone_control_mode = DRONE_CONTROL_MODE_NONE;
-            std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
+            //std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
             drone_context->count[DRONE_CONTROL_MODE_MOVE] = 0;
         }
     }
