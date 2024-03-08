@@ -34,9 +34,6 @@ set(SOURCE_FILES
     assets/drone/controller/sample_controller.cpp
     assets/drone/aircraft/aircraft_factory.cpp
 
-    ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController/hako_module_drone_controller_impl.cpp
-    ${CONTROL_SOURCE_DIR}/workspace/DroneFlightController/utils/frame_convertor.cpp
-
     utils/hako_params.cpp
     utils/hako_module_loader.cpp
     modules/hako_phys.cpp
