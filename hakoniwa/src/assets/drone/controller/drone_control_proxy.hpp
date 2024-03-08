@@ -99,6 +99,13 @@ public:
     }
     virtual ~DroneControlProxy() {}
 
+    bool need_control()
+    {
+        if (state.get_status() == MAIN_STATUS_LANDED) {
+            return false;
+        }
+        return true;
+    }
 
     void run()
     {
@@ -140,7 +147,7 @@ public:
         for (auto& container : task_manager.aircraft_system_container) {
             DroneControlProxy& proxy = drone_control_proxies[index];
             hako::assets::drone::DroneDynamicsInputType drone_input = {};
-            mi_drone_control_out_t out;
+            mi_drone_control_out_t out = {};
             DronePositionType pos = container.drone->get_drone_dynamics().get_pos();
             DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
             hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
@@ -159,11 +166,8 @@ public:
             proxy.in.q = angular_velocity.data.y;
             proxy.in.r = angular_velocity.data.z;
 
-            if (container.control_module.controller != nullptr) {
+            if (proxy.need_control()) {
                 out = container.control_module.controller->run(&proxy.in);
-            }
-            else {
-                out = container.controller->run(proxy.in);
             }
 
             DroneThrustType thrust;
