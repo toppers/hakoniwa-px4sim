@@ -17,7 +17,6 @@
 #include <iostream>
 #include <thread>
 
-#define HAKO_RUNNER_MASTER_MAX_DELAY_USEC       1000 /* usec*/
 #define HAKO_ASSET_NAME "px4sim"
 static void* asset_runner(void*);
 

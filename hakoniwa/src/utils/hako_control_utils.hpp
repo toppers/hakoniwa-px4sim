@@ -74,12 +74,12 @@ public:
             if (!filepath.empty()) {
                 std::string file = drone_config.getControllerContext("file");
                 if (file.empty()) {
-                    arg.load_controller(filepath.c_str(), nullptr);
+                    arg.context.plan_filepath = nullptr;
                 }
                 else {
                     arg.context.plan_filepath = file.c_str();
-                    arg.load_controller(filepath.c_str(), &arg.context);
                 }
+                arg.load_controller(filepath.c_str(), &arg.context);
             }
             else {
                 std::cerr << "WARNING: can not find module for " << drone->get_name() << std::endl;
