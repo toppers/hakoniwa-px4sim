@@ -103,6 +103,9 @@ public:
                 in.target_pos_x = home_pos_x;
                 in.target_pos_y = home_pos_y;
                 in.target_velocity = cmd_takeoff.speed;
+                std::cout << "takeoff: z = " << in.target_pos_z << std::endl;
+                std::cout << "takeoff: x = " << in.target_pos_x << std::endl;
+                std::cout << "takeoff: y = " << in.target_pos_y << std::endl;
             }
         }
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
@@ -115,6 +118,10 @@ public:
                 in.target_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
                 in.target_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
                 in.target_velocity = cmd_land.speed;
+                std::cout << "land: z = " << in.target_pos_z << std::endl;
+                std::cout << "land: x = " << in.target_pos_x << std::endl;
+                std::cout << "land: y = " << in.target_pos_y << std::endl;
+
             }
             else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && cmd_move.header.request) {
                 if (drone_context->drone_control_mode != DRONE_CONTROL_MODE_NONE) {
