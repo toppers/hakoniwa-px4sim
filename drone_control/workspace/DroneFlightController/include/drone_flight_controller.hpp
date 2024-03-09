@@ -17,6 +17,7 @@ typedef enum {
     DRONE_CONTROL_MODE_TAKEOFF,
     DRONE_CONTROL_MODE_YAW,
     DRONE_CONTROL_MODE_MOVE,
+    DRONE_CONTROL_MODE_LAND,
     DRONE_CONTROL_MODE_NUM
 } DroneControlModeType;
 typedef struct {

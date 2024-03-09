@@ -98,10 +98,10 @@ static double rotate_yaw(DroneFlightControllerContextType *drone_context, double
     return torque_z;
 }
 
-static mi_drone_control_out_t do_hovering(mi_drone_control_in_t *in)
+static mi_drone_control_out_t do_landing(mi_drone_control_in_t *in)
 {
     DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in->context;
-    mi_drone_control_out_t control_output;
+    mi_drone_control_out_t control_output = {};
     EulerType euler = {NORMALIZE_RADIAN(in->euler_x), NORMALIZE_RADIAN(in->euler_y), NORMALIZE_RADIAN(in->euler_z)};
     
     double target_velocity_z = drone_context->pid_ctrl_vertical_pos.run(in->target_pos_z, in->pos_z, euler);
@@ -110,6 +110,17 @@ static mi_drone_control_out_t do_hovering(mi_drone_control_in_t *in)
     control_output.torque_x = move_horizontal(drone_context, 0, in->p, euler);
     control_output.torque_y = move_forward(drone_context, 0, in->q, euler);
     control_output.torque_z = rotate_yaw(drone_context, 0, in->r, euler);
+    //std::cout << "yaw: " << euler.psi << " torque_z: " << control_output.torque_z << std::endl;
+    if (ALMOST_EQUAL(in->target_pos_z, in->pos_z, 0.1)) {
+        drone_context->count[DRONE_CONTROL_MODE_LAND]++;
+    }
+
+    if (drone_context->count[DRONE_CONTROL_MODE_LAND] >= 10) {
+        drone_context->drone_control_mode = DRONE_CONTROL_MODE_NONE;
+        std::cout << "INFO: Landing Operation is done" << std::endl;
+        drone_context->count[DRONE_CONTROL_MODE_LAND] = 0;
+    }
+
     return control_output;
 }
 static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *in)
@@ -206,7 +217,17 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
 {
     DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in->context;
     if (drone_context->plan_filepath == nullptr) {
-        return drone_controller_impl_run(in);
+        if ((drone_context->drone_control_mode == DRONE_CONTROL_MODE_NONE) && (in->target_pos_z > (in->pos_z + 1.0))) 
+        {
+            drone_context->drone_control_mode = DRONE_CONTROL_MODE_LAND;
+        }
+        if (drone_context->drone_control_mode == DRONE_CONTROL_MODE_LAND)
+        {
+            return do_landing(in);
+        }
+        else {
+            return drone_controller_impl_run(in);
+        }
     }
     in->target_pos_z = -10;
     in->target_velocity = 20;
@@ -224,7 +245,7 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     }
     else {
         in->target_pos_z = -1;
-        mi_drone_control_out_t out = do_hovering(in);
+        mi_drone_control_out_t out = do_landing(in);
         return out;
     }
 }
