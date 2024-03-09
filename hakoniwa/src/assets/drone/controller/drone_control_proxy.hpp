@@ -95,6 +95,7 @@ public:
     }
     void do_event()
     {
+        DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in.context;
         if (state.get_status() == MAIN_STATUS_LANDED) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
                 state.takeoff();
@@ -106,6 +107,9 @@ public:
         }
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land) && cmd_land.header.request) {
+                if (drone_context->drone_control_mode != DRONE_CONTROL_MODE_NONE) {
+                    return;
+                }
                 state.land();
                 in.target_pos_z = -cmd_land.height;
                 in.target_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
@@ -113,10 +117,17 @@ public:
                 in.target_velocity = cmd_land.speed;
             }
             else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && cmd_move.header.request) {
+                if (drone_context->drone_control_mode != DRONE_CONTROL_MODE_NONE) {
+                    return;
+                }
+                std::cout << "START MOVE" << std::endl;
                 state.move();
                 in.target_pos_z = this->drone->get_drone_dynamics().get_pos().data.z;
                 in.target_pos_x = cmd_move.x;
                 in.target_pos_y = cmd_move.y;
+                std::cout << "move: z = " << in.target_pos_z << std::endl;
+                std::cout << "move: x = " << in.target_pos_x << std::endl;
+                std::cout << "move: y = " << in.target_pos_y << std::endl;
             }
         }
         else {
