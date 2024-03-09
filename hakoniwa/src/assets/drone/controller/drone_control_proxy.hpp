@@ -129,9 +129,9 @@ public:
                 }
                 std::cout << "START MOVE" << std::endl;
                 state.move();
-                in.target_pos_z = this->drone->get_drone_dynamics().get_pos().data.z;
                 in.target_pos_x = cmd_move.x;
                 in.target_pos_y = cmd_move.y;
+                in.target_pos_z = -cmd_move.z;
                 std::cout << "move: z = " << in.target_pos_z << std::endl;
                 std::cout << "move: x = " << in.target_pos_x << std::endl;
                 std::cout << "move: y = " << in.target_pos_y << std::endl;
