@@ -5,9 +5,9 @@ const char* hako_module_drone_controller_impl_get_name(void)
     return "DroneAvator";
 }
 
-static double Kp = (1/4.0)*1.0e+0;
-static double Ki = 0.0;
-static double Kd = 0.0;
+static double Kp = 0.5;
+static double Ki = 0.01;
+static double Kd = 0.05;
 
 
 static double integral = 0.0;
