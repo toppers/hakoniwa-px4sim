@@ -1,34 +1,36 @@
-# 箱庭ドローン制御
-
-## これは何？
-
-ここでは、箱庭の[ドローン物理モデル](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_physics/README-ja.md)をPID制御する演習プログラムを作成します。
+English ｜ [日本語](README-ja.md)
 
 
-## 課題
+# Hakoniwa Drone Control
 
-ドローンを 10m 浮上させてホバリングしてください。
+## What is this?
 
-評価ポイントは以下のとおりです。
+Here, we create an exercise program to control the [drone physics model](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_physics/README.md) in the Hakoniwa using PID control.
 
-* 50点：100 秒後にホバリング状態になっていること
-* 30点: ホバリングするまでの時間が 10秒以内
-* 20点: オーバーシュートが 1m以内
+## Challenge
 
-## 演習内容
-### 前提とする情報
+Please make the drone hover at an altitude of 10 meters.
 
-* 質量：0.1 [ $kg$ ]
-* 空気摩擦定数：0.0001 [ $m/s\cdot kg$ ]
-* シミュレーション時間ステップ：3msec
+The evaluation points are as follows:
 
-### プログラミング言語
+* 50 points: Being in a hovering state after 100 seconds
+* 30 points: Time to hover is within 10 seconds
+* 20 points: Overshoot is within 1 meter
 
-C/C++言語で作成します。
+## Exercise Content
+### Assumed Information
 
-### ファイル構成
+* Mass: 0.1 [kg]
+* Air friction constant: 0.0001 [m/s·kg]
+* Simulation time step: 3 msec
 
-`hako_module_drone_controller_impl.cpp` を実装します。
+### Programming Language
+
+The program will be created in the C/C++ language.
+
+### File Structure
+
+Implement `hako_module_drone_controller_impl.cpp`.
 
 ```
 drone_control
@@ -45,20 +47,21 @@ drone_control
     └── hako_module_drone_controller_impl.h
 ```
 
-### プログラム構成
+### Program Structure
 
-以下の２関数を実装してください。
+Please implement the following two functions:
 
-* hako_module_drone_controller_impl_init
-  * プログラム起動時に１回だけ呼び出されます。制御に必要な初期化処理を実装します。
-  * 成功した場合は 0 を返してください。失敗した場合は 0 以外の値を返します。
-* hako_module_drone_controller_impl_run
-  * 制御タイミング毎に呼び出されます。ホバリング制御に必要な処理を実装します。
-  * 入力引数 in に、ドローンの状態（位置と姿勢角）が与えられます。
-  * 戻り値には、ドローンの制御指示値(推力とトルク)を返します。
+* `hako_module_drone_controller_impl_init`
+  * This function is called only once at program startup. Implement the necessary initialization for control here.
+  * Return 0 if the initialization succeeds. If it fails, return a non-zero value.
+* `hako_module_drone_controller_impl_run`
+  * This function is called at each control timing. Implement the necessary processes for hovering control.
+  * The input argument `in` will provide the state of the drone (position and attitude angle).
+  * The return value should be the control instructions for the drone (thrust and torque).
 
-**実装対象関数:**
-`TODO` 部分を書き換えてください。
+**Functions to Implement:**
+Please replace the `TODO` parts.
+
 ```
 int hako_module_drone_controller_impl_init(void* context)
 {
@@ -70,12 +73,11 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     //TODO
 }
 ```
-
-### 入出力データ情報
+### Input/Output Data Information
 
 #### mi_drone_control_in_t
 
-現在の機体の位置と姿勢情報です。
+This represents the current position and attitude information of the aircraft.
 
 **データ型:**
 ```
@@ -88,25 +90,25 @@ typedef struct {
     double euler_z;
 } mi_drone_control_in_t;
 ```
-* 座標系：NED
+* Coordinate System: NED
 * pos_x, pos_y, pos_z
-  * 単位：メートル
+  * Unit: Meters
   * pos_x: North
   * pos_y: East
   * pos_z: Down
-  * 初期値：全て 0 
+  * Initial Value: All 0
 * euler_x, euler_y, euler_z
-  * 単位：ラジアン
-  * euler_x: x軸方向の角度（ロール）
-  * euler_y: y軸方向の角度（ピッチ）
-  * euler_z: z軸方向の角度（ヨー）
-  * 初期値：全て 0 
+  * Unit: Radians
+  * euler_x: Angle in the direction of the x-axis (roll)
+  * euler_y: Angle in the direction of the y-axis (pitch)
+  * euler_z: Angle in the direction of the z-axis (yaw)
+  * Initial Value: All 0
 
 #### mi_drone_control_out_t
 
-機体への制御出力情報です。
+This structure represents the control output information to the aircraft.
 
-**データ型:**
+**Data Type:**
 ```
 typedef struct {
     double thrust;
@@ -116,72 +118,70 @@ typedef struct {
 } mi_drone_control_out_t;
 ```
 * thrust
-  * 単位：Newton (N)
-  * 機体の垂直方向の推力
+  * Unit: Newton (N)
+  * Vertical thrust of the aircraft
 * torque_x, torque_y, torque_z
-  * 単位：Newton-meter (Nm)
-  * torque_x: ロール方向のトルク
-  * torque_y: ピッチ方向のトルク
-  * torque_z: ヨー方向のトルク
+  * Unit: Newton-meter (Nm)
+  * torque_x: Torque in the roll direction
+  * torque_y: Torque in the pitch direction
+  * torque_z: Torque in the yaw direction
 
+# Environment Setup
 
-# 環境セットアップ
+Please place the program you have created under the [drone_control/workspace](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control/workspace) directory with a unique directory name.
 
-
-作成したプログラムは、[drone_control/workspace](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control/workspace) 配下に固有のディレクトリ名を設定して配置してください。
-
-配置例：
+Example of placement:
 ```
 Gemini
 ├── CMakeLists.txt
 └── hako_module_drone_controller_impl.cpp
 ```
+# Environment Setup
 
-`CMakeLists.txt` の `project` をディレクトリ名と一致していることを確認してください。
+Make sure that the `project` in `CMakeLists.txt` matches your directory name.
 
-例：ディレクトリ名が`Gemini`なので、project名は`Gemini`
+Example: If the directory name is `Gemini`, the project name should be `Gemini`.
 ```
-# ローダブルモジュールのビルド設定
+# Build settings for the loadable module
 project(Gemini)
 ```
 
-# ビルド方法
+# How to Build
 
-`cmake-build` に移動して、以下のコマンドを実行してください。
+Move to `cmake-build` and execute the following commands.
 
 ```
 cmake ..
 make
 ```
 
-成功すると、ローダブルモジュールが作成されます。
+Upon success, a loadable module will be created.
 
-例：lib<ディレクトリ名>.so が作成されます
+Example: lib<Directory Name>.so will be created
 ```
 cmake-build/workspace/Gemini/libGemini.so 
 ```
 
-# シミュレーション実行するための準備
+# Preparing to Run the Simulation
 
-作成したローダブルモジュールをシミュレーション上で実行するには以下の対応が必要となります。
+To run the created loadable module in the simulation, the following steps are necessary.
 
-1. hakoniwa-px4sim の [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README-ja.md) のインストール
-2. [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model) のインストール
-3. [箱庭側の設定](#箱庭側の設定)
-4. [Unity側の設定](#Unity側の設定)
+1. Install [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README-ja.md) from hakoniwa-px4sim.
+2. Install [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model).
+3. [Settings on the Hakoniwa side](#Settings-on-the-Hakoniwa-side).
+4. [Settings on the Unity side](#Settings-on-the-Unity-side).
 
-## 箱庭側の設定
+## Settings on the Hakoniwa Side
 
-### １個の機体をシミュレーションする場合
+### For Simulating a Single Aircraft
 
-デフォルトで用意している config ファイル(hakoniwa/config/drone_config_0.json)を使います。
+Use the default config file (hakoniwa/config/drone_config_0.json) provided.
 
+### For Simulating Multiple Aircraft Simultaneously
 
-### 複数機体を同時にシミュレーションする場合
+You will need to prepare the aircraft parameters for the Hakoniwa drone simulator for each loadable module you wish to run.
 
-箱庭ドローンシミュレータの機体パラメータを実行させたいローダーブルモジュール毎に用意する必要があります。
-
-例：
+Example:
 ```
 hakoniwa/config/sample_control
 ├── drone_config_0.json
@@ -189,65 +189,64 @@ hakoniwa/config/sample_control
 └── drone_config_2.json
 ```
 
-機体パラメータファイルの書式は以下としてください。
+The format for the aircraft parameter files should be as follows:
 
 * `drone_config_<index>.json`
-* `<index>` は、0からの連番としてください。
+* `<index>` should be a sequential number starting from 0.
 
-各機体のパラメータとしては、以下の項目のみを設定してください。
+For each aircraft's parameters, please set only the following items:
 
 * name
-  * ローダブルモジュールのディレクトリ名を指定してください。例：Gemini
+  * Specify the directory name of the loadable module. Example: Gemini
 * components.droneDynamics.position_meter
-  * 機体の初期位置を設定してください。他の機体と重複しない場所を指定ください。
+  * Set the initial position of the aircraft. Please choose a location that does not overlap with other aircraft.
 * controller.moduleDirectory
-  * `hakoniwa`ディレクトリからの相対パスで、ローダブルモジュールが配置されているディレクトリ名を指定してください。
-  * 例：../drone_control/cmake-build/workspace/Gemini
+  * Specify the directory name where the loadable module is placed, relative to the `hakoniwa` directory.
+  * Example: ../drone_control/cmake-build/workspace/Gemini
 
-## Unity側の設定
+## Settings on the Unity Side
 
-### １個の機体をシミュレーションする場合
+### For Simulating a Single Aircraft
 
-Scenes/Hakoniwaを利用してください。
+Please use the Scenes/Hakoniwa.
 
-シーン選択後、`Generate` してください。
+After selecting the scene, please click `Generate`.
 
-### 複数機体を同時にシミュレーションする場合
+### For Simulating Multiple Aircraft Simultaneously
 
-Scenes/MultiDronesを利用してください。
+Please use the Scenes/MultiDrones.
 
-機体をローダブルモジュール数分だけ配置してください。
+Place the number of aircraft corresponding to the number of loadable modules.
 
-機体の名前は、ローダブルモジュールのディレクトリ名と一致させてください。
+The name of each aircraft should match the directory name of the loadable module.
 
-例：
+Example:
 
 ![スクリーンショット 2024-02-19 14 45 27](https://github.com/toppers/hakoniwa-px4sim/assets/164193/f556e5f7-327c-47dd-80a6-c41a0382f619)
 
+After placing the aircraft, please click `Generate`.
 
-配置完了後、`Generate` してください。
+# How to Run the Simulation
 
-# シミュレーション実行方法
-
-`hakoniwa`ディレクトリ直下で、以下のコマンドを実行してください。
+Under the `hakoniwa` directory, execute the following command.
 
 ```
 bash drone-control.bash <hakoniwa-unity-drone-model location> <config directory>
 ```
 
-`<config directory>` には、機体パラメータファイルを配置したディレクトリパスを指定してください。
+For `<config directory>`, specify the directory path where the aircraft parameter files are located.
 
-例：１個の機体をシミュレーションする場合
+Example: For simulating a single aircraft
 ```
 bash drone-control.bash ../../hakoniwa-unity-drone-model config
 ```
 
-例：複数機体をシミュレーションする場合
+Example: For simulating multiple aircraft
 ```
 bash drone-control.bash ../../hakoniwa-unity-drone-model config/sample_control
 ```
 
-成功すると、以下のログが出力されますので、その後に、Unity側のシミュレーションを開始してください。
+Upon success, the following logs will be output, after which you should start the simulation on the Unity side.
 
 ```
 HAKO_CAPTURE_SAVE_FILEPATH : ./capture.bin
@@ -308,85 +307,128 @@ INFO: ChatGPT3_5 create_lchannel: logical_id=1 real_id=5 size=48
 WAIT START
 ```
 
-# プラント側の物理方程式
-z軸はNED座標系。
+# P Control and PD Control Strategies
 
-**対象の運動方程式：**
+From the physical equations of a drone's vertical motion, examples of P control and PD control strategies are presented.
 
-$\ddot{z} = -\frac{u(t)}{m} + g - \frac{d}{m} \dot{z}$
+## Plant Side Physical Equations
 
-**ラプラス変換:**
+The z-axis follows the NED coordinate system.
 
-$s^{2}Z(s) = -\frac{U(s)}{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
+**Target motion equation:**
 
-# 制御側の式
+$
+\ddot{z} = -\frac{u(t)}{m} + g - \frac{d}{m} \dot{z}
+$
 
-Rは正の値で指定する。
+**Laplace Transform:**
 
-## P制御
+$
+s^{2}Z(s) = -\frac{U(s)}{m} + \frac{g}{s} - \frac{d}{m} s Z(s)
+$
 
-**制御式:**
+## Control Side Equations
 
-$u(t) = K_p ( z(t) + R  ) + m g$
+R is specified as a positive value.
 
-**ラプラス変換:**
+### P Control
 
-$U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s}$
+**Control equation:**
 
-### プラント側の U(s) に P 制御の式をラプラス関数で代入
+$
+u(t) = K_p ( z(t) + R  ) + m g
+$
 
-$s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s}  }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
+**Laplace Transform:**
 
-左辺に微分項、右辺を積分項にしてみる。
+$
+U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s}
+$
 
-$s^{2}Z(s) + \frac{d}{m} s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}$
+#### Substituting P Control equation into U(s) on the Plant Side
 
-ここからZ(s)を求めるとこうなる。
+$
+s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s}  }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)
+$
 
-$Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + \frac{d}{m} s + \frac{K_p}{m})}$
+When separating differential and integral terms, you get:
 
-ここで、
+$
+s^{2}Z(s) + \frac{d}{m} s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}
+$
 
-$\omega_n^{2} = \frac{K_p}{m}$
+Solving for Z(s) leads to:
 
-$\zeta = \frac{d}{2\sqrt{mK_p}}$
+$
+Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + \frac{d}{m} s + \frac{K_p}{m})}
+$
 
-とおくと、こうなる。
+By defining:
 
-$Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}$
+$
+\omega_n^{2} = \frac{K_p}{m}
+$
 
-## PD制御
+$
+\zeta = \frac{d}{2\sqrt{mK_p}}
+$
 
-**制御式:**
+The equation becomes:
 
-$u(t) = K_p ( z(t) + R  ) + m g + K_d ( \dot{z(t) + R} ) $
+$
+Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}
+$
 
-Rは定数なので、こうなる。
+### PD Control
 
-$u(t) = K_p ( z(t) + R  ) + m g + K_d  \dot{z(t)}  $
+**Control equation:**
 
-**ラプラス変換:**
+$
+u(t) = K_p ( z(t) + R  ) + m g + K_d ( \dot{z(t) + R} )
+$
 
-$U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s} + K_d s Z(s) $
+Since R is a constant, it simplifies to:
 
-### プラント側のU(s) にPD制御の式をラプラス関数で代入
+$
+u(t) = K_p ( z(t) + R  ) + m g + K_d  \dot{z(t)}  
+$
 
-$s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s} + K_d s Z(s) }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
+**Laplace Transform:**
 
-左辺に微分項、右辺を積分項にしてみる。
+$
+U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s} + K_d s Z(s) 
+$
 
-$s^{2}Z(s) + \frac{d}{m} s Z(s) +  K_d s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}$
+#### Substituting PD Control equation into U(s) on the Plant Side
 
-ここからZ(s)を求めるとこうなる。
+$
+s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s} + K_d s Z(s) }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)
+$
 
-$Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + (\frac{d}{m} + K_d ) s + \frac{K_p}{m})}$
+When differentiating and integrating:
 
-ここで、
+$
+s^{2}Z(s) + \frac{d}{m} s Z(s) +  K_d s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}
+$
 
-$\omega_n^{2} = \frac{K_p}{m}$
+Solving for Z(s):
 
-$\zeta = \frac{d + m K_d}{2\sqrt{mK_p}}$
+$
+Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + (\frac{d}{m} + K_d ) s + \frac{K_p}{m})}
+$
 
-とおくと、こうなる。
+Defining:
 
-$Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}$
+$
+\omega_n^{2} = \frac{K_p}{m}
+$
+
+$
+\zeta = \frac{d + m K_d}{2\sqrt{mK_p}}
+$
+
+Leads to:
+
+$
+Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}
+$
