@@ -32,7 +32,7 @@ This repository is a simulation environment for drone plant models that can be i
 
 5. **Sensor Model Organization:** Sensor models are organized within the architecture based on clear specifications. This allows users to exchange sensor models according to the specifications. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs).
 
-6. **Headless Support:** Simulation can be run without Unity. This enables simulation execution in environments that do not require a graphical interface (`v1.1.0`). For more details, see [here](#headless-simulation).
+6. **Headless Support:** Simulation can be run without Unity. This enables simulation execution in environments that do not require a graphical interface. For more details, see [here](#headless-simulation).
 
 7. **Support for Automated Testing:** Enables test scenario-based automated testing. This makes it possible to automate repeated and consecutive tests, thereby streamlining the development process. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/px4/auto-test).
 
@@ -371,7 +371,10 @@ https://github.com/toppers/hakoniwa-px4sim/assets/164193/c1305966-d782-42f4-bd5b
 
 In Hakoniwa, drones can be tested for PID control without the use of Unity and PX4 (headless simulation). This is convenient for checking the operation of the drone dynamics you have created.
 
-https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller
+Here are the two methods for creating programs with headless simulation:
+
+1. [Method of building and integrating with the sandbox build process]((https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller))
+2. [Method of integrating as a loadable module](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control)
 
 # Community and Support
 

@@ -31,7 +31,7 @@
 
 5. **センサモデルの整備:** センサモデルはアーキテクチャ内で整理され、明確な仕様に基づいています。これにより、ユーザーはセンサモデルを仕様に合わせて交換することが可能です。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs)を参照ください。
 
-6. **ヘッドレス対応:** Unityなしでのシミュレーションが可能です。これにより、グラフィカルなインターフェースを必要としない環境でも、シミュレーションの実行が可能になります。詳細は[こちら](#ヘッドレスシミュレーション)(`v1.1.0`)。
+6. **ヘッドレス対応:** Unityなしでのシミュレーションが可能です。これにより、グラフィカルなインターフェースを必要としない環境でも、シミュレーションの実行が可能になります。詳細は[こちら](#ヘッドレスシミュレーション)。
 
 7. **自動テストのサポート:** テストシナリオベースでの自動テストが可能です。これにより、繰り返しのテストや連続したテストの自動化が実現可能になり、開発プロセスの効率化が図れます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/px4/auto-test)を参照ください。
 
@@ -384,7 +384,10 @@ https://github.com/toppers/hakoniwa-px4sim/assets/164193/c1305966-d782-42f4-bd5b
 
 作成したドローンのダイナミクスを動作チェックしたい場合に便利です。
 
-https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller
+ヘッドレス・シミュレーションで作成するプログラムとしては以下の２方式があります。
+
+1. [箱庭ビルドプロセスでビルドして組み込む方式](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller)
+2. [ローダブルモジュールとして組み込む方式](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control)
 
 # コミュニティとサポート
 
