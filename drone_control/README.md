@@ -317,15 +317,11 @@ The z-axis follows the NED coordinate system.
 
 **Target motion equation:**
 
-$
-\ddot{z} = -\frac{u(t)}{m} + g - \frac{d}{m} \dot{z}
-$
+$\ddot{z} = -\frac{u(t)}{m} + g - \frac{d}{m} \dot{z}$
 
 **Laplace Transform:**
 
-$
-s^{2}Z(s) = -\frac{U(s)}{m} + \frac{g}{s} - \frac{d}{m} s Z(s)
-$
+$s^{2}Z(s) = -\frac{U(s)}{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
 
 ## Control Side Equations
 
@@ -335,100 +331,66 @@ R is specified as a positive value.
 
 **Control equation:**
 
-$
-u(t) = K_p ( z(t) + R  ) + m g
-$
+$u(t) = K_p ( z(t) + R  ) + m g$
 
 **Laplace Transform:**
 
-$
-U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s}
-$
+$U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s}$
 
 #### Substituting P Control equation into U(s) on the Plant Side
 
-$
-s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s}  }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)
-$
+$s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s}  }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
 
 When separating differential and integral terms, you get:
 
-$
-s^{2}Z(s) + \frac{d}{m} s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}
-$
+$s^{2}Z(s) + \frac{d}{m} s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}$
 
 Solving for Z(s) leads to:
 
-$
-Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + \frac{d}{m} s + \frac{K_p}{m})}
-$
+$Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + \frac{d}{m} s + \frac{K_p}{m})}$
 
 By defining:
 
-$
-\omega_n^{2} = \frac{K_p}{m}
-$
+$\omega_n^{2} = \frac{K_p}{m}$
 
-$
-\zeta = \frac{d}{2\sqrt{mK_p}}
-$
+$\zeta = \frac{d}{2\sqrt{mK_p}}$
 
 The equation becomes:
 
-$
-Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}
-$
+$Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}$
 
 ### PD Control
 
 **Control equation:**
 
-$
-u(t) = K_p ( z(t) + R  ) + m g + K_d ( \dot{z(t) + R} )
-$
+$u(t) = K_p ( z(t) + R  ) + m g + K_d ( \dot{z(t) + R} )$
 
 Since R is a constant, it simplifies to:
 
-$
-u(t) = K_p ( z(t) + R  ) + m g + K_d  \dot{z(t)}  
-$
+$u(t) = K_p ( z(t) + R  ) + m g + K_d  \dot{z(t)}  $
 
 **Laplace Transform:**
 
-$
-U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s} + K_d s Z(s) 
-$
+$U(s) = K_p ( Z(s) + \frac{R}{s} ) + \frac{m g}{s} + K_d s Z(s) $
 
 #### Substituting PD Control equation into U(s) on the Plant Side
 
-$
-s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s} + K_d s Z(s) }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)
-$
+$s^{2}Z(s) = -\frac{ K_p ( Z(s) + \frac{R}{s}) + \frac{mg}{s} + K_d s Z(s) }{m} + \frac{g}{s} - \frac{d}{m} s Z(s)$
 
 When differentiating and integrating:
 
-$
-s^{2}Z(s) + \frac{d}{m} s Z(s) +  K_d s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}
-$
+$s^{2}Z(s) + \frac{d}{m} s Z(s) +  K_d s Z(s) + \frac{K_p}{m} Z(s) = ( -\frac{K_p R}{m}) \frac{1}{s}$
 
 Solving for Z(s):
 
-$
-Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + (\frac{d}{m} + K_d ) s + \frac{K_p}{m})}
-$
+$Z(s) = \frac{( -\frac{K_p R}{m})}{s(s^{2} + (\frac{d}{m} + K_d ) s + \frac{K_p}{m})}$
 
 Defining:
 
-$
-\omega_n^{2} = \frac{K_p}{m}
-$
+$\omega_n^{2} = \frac{K_p}{m}$
 
-$
-\zeta = \frac{d + m K_d}{2\sqrt{mK_p}}
-$
+$\zeta = \frac{d + m K_d}{2\sqrt{mK_p}}$
 
 Leads to:
 
-$
-Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}
-$
+$Z(s) = - R \frac{1}{s} \frac{\omega_n^{2}}{s^{2} + 2 \zeta \omega_n s + \omega_n^{2}}$
