@@ -167,10 +167,17 @@ cmake-build/workspace/Gemini/libGemini.so
 
 1. hakoniwa-px4sim の [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/README-ja.md) のインストール
 2. [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model) のインストール
-3. 箱庭側の設定
-4. Unity側の設定
+3. [箱庭側の設定](#箱庭側の設定)
+4. [Unity側の設定](#Unity側の設定)
 
 ## 箱庭側の設定
+
+### １個の機体をシミュレーションする場合
+
+デフォルトで用意している config ファイル(hakoniwa/config/drone_config_0.json)を使います。
+
+
+### 複数機体を同時にシミュレーションする場合
 
 箱庭ドローンシミュレータの機体パラメータを実行させたいローダーブルモジュール毎に用意する必要があります。
 
@@ -181,6 +188,11 @@ hakoniwa/config/sample_control
 ├── drone_config_1.json
 └── drone_config_2.json
 ```
+
+機体パラメータファイルの書式は以下としてください。
+
+* `drone_config_<index>.json`
+* `<index>` は、0からの連番としてください。
 
 各機体のパラメータとしては、以下の項目のみを設定してください。
 
@@ -194,6 +206,16 @@ hakoniwa/config/sample_control
 
 ## Unity側の設定
 
+### １個の機体をシミュレーションする場合
+
+Scenes/Hakoniwaを利用してください。
+
+シーン選択後、`Generate` してください。
+
+### 複数機体を同時にシミュレーションする場合
+
+Scenes/MultiDronesを利用してください。
+
 機体をローダブルモジュール数分だけ配置してください。
 
 機体の名前は、ローダブルモジュールのディレクトリ名と一致させてください。
@@ -201,7 +223,6 @@ hakoniwa/config/sample_control
 例：
 
 ![スクリーンショット 2024-02-19 14 45 27](https://github.com/toppers/hakoniwa-px4sim/assets/164193/f556e5f7-327c-47dd-80a6-c41a0382f619)
-
 
 
 配置完了後、`Generate` してください。
@@ -214,9 +235,16 @@ hakoniwa/config/sample_control
 bash drone-control.bash <hakoniwa-unity-drone-model location> <config directory>
 ```
 
-例：
+`<config directory>` には、機体パラメータファイルを配置したディレクトリパスを指定してください。
+
+例：１個の機体をシミュレーションする場合
 ```
-bash drone-control.bash ../../../hakoniwa-unity-drone-model config/sample_control
+bash drone-control.bash ../../hakoniwa-unity-drone-model config
+```
+
+例：複数機体をシミュレーションする場合
+```
+bash drone-control.bash ../../hakoniwa-unity-drone-model config/sample_control
 ```
 
 成功すると、以下のログが出力されますので、その後に、Unity側のシミュレーションを開始してください。
