@@ -24,7 +24,10 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     mi_drone_control_out_t out;
 
     double current_altitude = in->pos_z;
-    double error = TARGET_ALTITUDE - current_altitude;
+    //original code: bug
+    //double error = TARGET_ALTITUDE - current_altitude;
+    //fixed code
+    double error = TARGET_ALTITUDE + current_altitude;
     double proportional = KP * error;
     integral_error += error;
     double integral = KI * integral_error;

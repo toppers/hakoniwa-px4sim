@@ -26,9 +26,10 @@ int hako_module_drone_controller_impl_init(void* context)
 
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
-
-  double error_z = 10.0 - in->pos_z;
-
+  //original code: bug
+  //double error_z = 10.0 - in->pos_z;
+  //fixed code
+  double error_z = 10.0 + in->pos_z;
 
   double u_z = _kp_z * error_z + _ki_z * _integral_error_z + _kd_z * (error_z - _prev_z);
 
