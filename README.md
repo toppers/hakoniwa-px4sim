@@ -38,6 +38,8 @@ This repository is a simulation environment for drone plant models that can be i
 
 8. **External Parameterization of Aircraft Characteristics:** The characteristics of the drone can be parameterized externally. This allows for simulations tailored to various aircraft characteristics, enabling support for a wider range of test scenarios. For an example of parameter settings, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json).
 
+9. **Multi-Aircraft Support** By preparing multiple sets of drone airframe characteristic parameters, it is possible to simulate several aircraft simultaneously. For details, see [here](#Multi-Aircraft-Support).
+
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
 # Environment
@@ -375,6 +377,90 @@ Here are the two methods for creating programs with headless simulation:
 
 1. [Method of building and integrating with the sandbox build process]((https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller))
 2. [Method of integrating as a loadable module](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control)
+
+# Multi-Aircraft Support
+
+By preparing multiple sets of drone airframe characteristic parameters, it is possible to simulate several aircraft simultaneously.
+
+## Preliminary Preparation
+
+To simulate multiple aircraft simultaneously, the following preliminary preparations are required:
+
+* [Setting of airframe characteristic parameters](#Setting-of-airframe-characteristic-parameters)
+* [Unity settings](#Unity-settings)
+* [PX4 settings](#PX4-settings)
+* [QGC settings](#QGC-settings)
+
+### Setting of Airframe Characteristic Parameters
+
+Example: For two aircraft
+```
+hakoniwa/config
+├── drone_config_0.json
+└── drone_config_1.json
+```
+
+The format for the airframe parameter files should be as follows:
+
+* `drone_config_<index>.json`
+* `<index>` should be a sequential number starting from 0.
+
+For each aircraft's parameters, please set the following items appropriately:
+
+* name
+  * Match the name with the Unity aircraft name. Example: DroneAvatar1
+* components.droneDynamics.position_meter
+  * Set the initial position of the aircraft. Specify a location that does not overlap with other aircraft.
+
+### Unity Settings
+
+1. In the Unity editor, place drone avatars for each set of aircraft parameters. The drone avatar name and the "name" in the aircraft parameters must match.
+2. In the Unity editor, execute `Generate`, then copy and place the generated `custom.json` from `hakoniwa-unity-drone-model` into `hakoniwa/config/custom.json`.
+
+### PX4 Settings
+
+To launch PX4 in multiple instances, you need to prepare the PX4 filesystem for each aircraft.
+
+Copy and place the existing build directory as follows:
+
+Example: For two aircraft
+```
+cd px4/PX4-Autopilot
+cp -rp build build-0
+cp -rp build build-1
+```
+
+The format for the build directory name should be:
+
+* `build-<index>`
+* `<index>` should be a sequential number starting from 0.
+
+### QGC Settings
+
+Add port numbers for the second and subsequent aircraft in the communication link settings.
+
+The port number should be `18570 + <index>`, where `<index>` is a sequential number starting from 0.
+
+## How to Run the Simulation
+
+The method for running the simulation is the same as for a single aircraft.
+
+However, PX4 needs to be launched for each aircraft, so please start it with the following command, specifying the aircraft number:
+
+```
+bash ../sim/simstart.bash <index>
+```
+
+Example: For the first aircraft
+```
+bash ../sim/simstart.bash 0
+```
+
+Example: For the second aircraft
+```
+bash ../sim/simstart.bash 1
+```
+
 
 # Community and Support
 

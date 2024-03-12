@@ -36,5 +36,5 @@ then
     make px4_sitl none_iris
 else
     echo "INFO: MULTI INSTANCE MODE"
-     PX4_SIM_MODEL=none_iris ./build/px4_sitl_default/bin/px4 -i ${MULTI_INSTANCE_ID}
+     PX4_SIM_MODEL=none_iris ./build-${MULTI_INSTANCE_ID}/px4_sitl_default/bin/px4 -i ${MULTI_INSTANCE_ID}
 fi

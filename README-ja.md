@@ -37,6 +37,8 @@
 
 8. **機体特性の外部パラメータ化:** ドローンの機体特性は外部からの[パラメータ化](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa#機体のパラメータ説明)が可能です。これにより、さまざまな機体の特性に合わせたシミュレーションが実現でき、より幅広いテストシナリオへの対応が可能になります。パラメータ設定例は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json)。
 
+9. **複数機体対応** ドローンの機体特性パラメータを複数用意することで、機体を複数同時にシミュレーションすることができます。詳細は[こちら](#複数機体対応)
+
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
 
@@ -388,6 +390,89 @@ https://github.com/toppers/hakoniwa-px4sim/assets/164193/c1305966-d782-42f4-bd5b
 
 1. [箱庭ビルドプロセスでビルドして組み込む方式](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa/src/assets/drone/controller)
 2. [ローダブルモジュールとして組み込む方式](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_control)
+
+# 複数機体対応
+
+ドローンの機体特性パラメータを複数用意することで、機体を複数同時にシミュレーションすることができます。
+
+## 事前準備
+
+複数機体を同時シミュレーションするには、以下の事前準備が必要です。
+
+* [機体特性パラメータの設定](#機体特性パラメータの設定)
+* [Unityの設定](#Unityの設定)
+* [PX4の設定](#PX4の設定)
+* [QGCの設定](#QGCの設定)
+
+### 機体特性パラメータの設定
+
+例：２台の場合
+```
+hakoniwa/config
+├── drone_config_0.json
+└── drone_config_1.json
+```
+
+機体パラメータファイルの書式は以下としてください。
+
+* `drone_config_<index>.json`
+* `<index>` は、0からの連番としてください。
+
+各機体のパラメータとして、以下の項目を適切に設定してください。
+
+* name
+  * Unityの機体名と一致させてください。例：DroneAvator1
+* components.droneDynamics.position_meter
+  * 機体の初期位置を設定してください。他の機体と重複しない場所を指定ください。
+
+### Unityの設定
+
+1. Unityエディタで、機体パラメータ毎にドローンアバターを配置してください。ドローンアバター名と機体パラメータの "name" は必ず一致させてください。
+2. Unityエディタで、`Generate` を実行し、`hakoniwa-unity-drone-model`直下に生成されている`custom.json を `hakoniwa/config/custom.json`にコピー配置してください。
+
+### PX4の設定
+
+PX4をマルチインスタンスで起動するには、PX4のファイルシステムを機体毎に用意する必要があります。
+
+既存の build ディレクトリを以下の要領でコピー配置してください。
+
+例：２台の場合
+```
+cd px4/PX4-Autopilot
+cp -rp build build-0
+cp -rp build build-1
+```
+
+buildディレクトリ名の書式は以下としてください。
+
+* `build-<index>`
+* `<index>` は、0からの連番としてください。
+
+### QGCの設定
+
+通信リンクの設定に２台目以降のポート番号を追加します。
+
+ポート番号は、`18570 + <index>` としてください。`<index>` は、0からの連番です。
+
+## シミュレーション実行方法
+
+シミュレーション実行方法は、１台の場合と同じです。
+
+ただし、PX4は、機体毎に起動する必要がありますので、以下のコマンドで機体番号を指定して起動してください。
+
+```
+bash ../sim/simstart.bash <index>
+```
+
+例：１台目の場合
+```
+bash ../sim/simstart.bash 0
+```
+
+例：２台目の場合
+```
+bash ../sim/simstart.bash 1
+```
 
 # コミュニティとサポート
 
