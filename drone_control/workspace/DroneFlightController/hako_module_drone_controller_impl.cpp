@@ -233,7 +233,7 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     in->target_velocity = 20;
     int count = drone_context->count[DRONE_CONTROL_MODE_NONE];
 
-    if (count < drone_context->move_plan.positions.size())
+    if (count < (int)drone_context->move_plan.positions.size())
     {
         in->target_pos_x = drone_context->move_plan.positions[count].x;
         in->target_pos_y = drone_context->move_plan.positions[count].y;

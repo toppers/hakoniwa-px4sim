@@ -13,7 +13,7 @@ static double Kd = 0.05;
 static double integral = 0.0;
 static double prev_error = 0.0;
 
-int hako_module_drone_controller_impl_init(void* context)
+int hako_module_drone_controller_impl_init(void* )
 {
     integral = 0.0;
     prev_error = 0.0;
