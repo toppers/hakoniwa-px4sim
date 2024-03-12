@@ -21,6 +21,7 @@ private:
 public:
     SensorGyro(double dt, int sample_num) : delta_time_sec(dt), gyro_x(sample_num), gyro_y(sample_num), gyro_z(sample_num) 
     {
+        this->vendor_model = nullptr;
         this->noise = nullptr;
     }
     virtual ~SensorGyro() {}
