@@ -1,6 +1,7 @@
 #include "hako_module_header.h"
 #include "hako_module_drone_sensor_gyro.h"
 #include "hako_module_drone_sensor_gyro_impl.h"
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {

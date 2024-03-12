@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 extern const char* hako_module_drone_sensor_gyro_impl_get_name(void);
-extern int hako_module_drone_sensor_gyro_impl_init(void* context);
+extern int hako_module_drone_sensor_gyro_impl_init(mi_drone_sensor_gyro_context_t* context);
 extern mi_drone_sensor_gyro_out_t hako_module_drone_sensor_gyro_impl_run(mi_drone_sensor_gyro_in_t *in);
 
 #ifdef __cplusplus

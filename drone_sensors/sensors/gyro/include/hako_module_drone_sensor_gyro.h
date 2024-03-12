@@ -4,6 +4,13 @@
 #include "hako_module_drone_sensor.h"
 
 typedef struct {
+    int index;
+    void* opaque;
+    char* filepath;
+} mi_drone_sensor_gyro_context_t;
+
+typedef struct {
+    mi_drone_sensor_gyro_context_t *context;
     mi_drone_sensor_disturbance_t disturbance;
     double angular_velocity_x;
     double angular_velocity_y;
@@ -18,7 +25,7 @@ typedef struct {
 
 #define HAKO_MODULE_DRONE_SENSOR_GYRO_SYMBOLE_NAME   "hako_module_drone_sensor_gyro"
 typedef struct {
-    int (*init) (void* context);
+    int (*init) (mi_drone_sensor_gyro_context_t* context);
     mi_drone_sensor_gyro_out_t (*run) (mi_drone_sensor_gyro_in_t *in);
 } HakoModuleDroneSensorGyroType;
 

@@ -71,7 +71,7 @@
           "gyro": {
             "vendor": "../drone_sensors/cmake-build/sensors/gyro/vendor/hakogyro",
             "context": {
-              "moduleName": "hakogyro3",
+              "moduleName": "hakogyro",
               "file": "./config/hard-maker-demo/sensor3.txt"
             },
             "sampleCount": 1,

@@ -117,7 +117,7 @@ static mi_drone_control_out_t do_landing(mi_drone_control_in_t *in)
 
     if (drone_context->count[DRONE_CONTROL_MODE_LAND] >= 10) {
         drone_context->drone_control_mode = DRONE_CONTROL_MODE_NONE;
-        std::cout << "INFO: Landing Operation is done" << std::endl;
+        //std::cout << "INFO: Landing Operation is done" << std::endl;
         drone_context->count[DRONE_CONTROL_MODE_LAND] = 0;
     }
 
