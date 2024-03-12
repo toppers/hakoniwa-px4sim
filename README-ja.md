@@ -29,7 +29,7 @@
 
 4. **MATLAB/Simulinkとの互換性:** 物理式モデルは、MATLAB/Simulinkで作成したモデルとも連携できるようになっています。詳細は[こちら](#MATLAB連携)
 
-5. **センサモデルの整備:** センサモデルはアーキテクチャ内で整理され、明確な仕様に基づいています。これにより、ユーザーはセンサモデルを仕様に合わせて交換することが可能です。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs)を参照ください。
+5. **センサモデルの整備:** センサモデルはアーキテクチャ内で整理され、明確な仕様に基づいています。これにより、ユーザーはセンサモデルを仕様に合わせて交換することが可能です。各センサ仕様は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs)を参照ください。ベンダ毎のセンサの作成方法については、[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_sensors/README-ja.md)を参照ください。
 
 6. **ヘッドレス対応:** Unityなしでのシミュレーションが可能です。これにより、グラフィカルなインターフェースを必要としない環境でも、シミュレーションの実行が可能になります。詳細は[こちら](#ヘッドレスシミュレーション)。
 

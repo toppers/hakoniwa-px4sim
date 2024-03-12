@@ -30,7 +30,7 @@ This repository is a simulation environment for drone plant models that can be i
 
 4. **Compatibility with MATLAB/Simulink:** The physics model can be integrated with models created in MATLAB/Simulink. For more details, see [here](#integration-with-matlab).
 
-5. **Sensor Model Organization:** Sensor models are organized within the architecture based on clear specifications. This allows users to exchange sensor models according to the specifications. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs).
+5. **Sensor Model Organization:** Sensor models are organized within the architecture based on clear specifications. This allows users to exchange sensor models according to the specifications. For each sensor specification, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/phys_specs).　For instructions on how to create sensors for each vendor, please refer to [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_sensors/README.md).
 
 6. **Headless Support:** Simulation can be run without Unity. This enables simulation execution in environments that do not require a graphical interface. For more details, see [here](#headless-simulation).
 
