@@ -16,7 +16,7 @@ def main():
     client.armDisarm(True)
 
     client.takeoff(3)
-    client.moveToPosition(0, 3, 5, 5)
+    client.moveToPosition(0, 3, 3, 5)
     client.land()
 
     return 0
