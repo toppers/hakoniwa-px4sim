@@ -50,13 +50,14 @@
 * サポートOS
   * Arm系Mac (M1Mac, M2Mac)
   * Windows 10/11
+  * Windows WSL2
 * 利用する環境
   * Arm系Macの場合
     * Python 3.12
       * pyenvでインストールされたものを推奨
       * Jinja2 (`pip install -U jinja2`)
-  * Windowsの場合
-    * [Windowsの場合の箱庭構成例](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md)と同じです。
+  * WSLの場合
+    * [WSLの場合の箱庭構成例](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md)と同じです。
 * 利用するドローン
   * https://github.com/toppers/hakoniwa-unity-drone-model/tree/main
   * 下記のディレクトリ構成のように、本リポジトリと同じ階層でクローンしてください。
@@ -157,10 +158,10 @@ INFO  [simulator_mavlink] Waiting for simulator to accept connection on TCP port
 cd hakoniwa-px4sim/hakoniwa
 ```
 
-Windowsの場合は、以下のコマンドで docker コンテナに入ってください。
+WSLの場合は、以下のコマンドで docker コンテナに入ってください。
 
 ```
-bash docker/run.bash
+bash docker/run.bash <path/to/hakoniwa-unity-drone-model>
 ```
 
 箱庭を起動するためのスクリプトを実行します。
@@ -279,8 +280,8 @@ QGCを起動した後に、PX4との接続設定が必要となります。
 * タイプ：`UDP`
 * ポート：`18570`
 * サーバーアドレス：OSによって設定が違います
-  * Windowsの場合：WSL2上で、eth0 のIPアドレスを調べて設定してください。
-  * Windows以外の場合：お使いのethernetのIPアドレスを調べて設定してください。
+  * WSLの場合：WSL2上で、eth0 のIPアドレスを調べて設定してください。
+  * WSL以外の場合：お使いのethernetのIPアドレスを調べて設定してください。
 
 IPアドレスの調べ方（例）
 

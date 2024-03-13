@@ -49,13 +49,14 @@ This repository is a simulation environment for drone plant models that can be i
 * Supported OS:
   * Arm-based Macs (M1 Mac, M2 Mac)
   * Windows 10/11
+  * Windows WSL2
 * Required Environment:
   * For Arm-based Macs:
     * Python 3.10
       * Recommended to install via pyenv
       * Jinja2 (`pip install -U jinja2`)
-  * For Windows:
-    * Follow the same setup as the [Hakoniwa configuration example for Windows](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md).
+  * For WSL:
+    * Follow the same setup as the [Hakoniwa configuration example for WSL](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md).
 * Drones to Use:
   * https://github.com/toppers/hakoniwa-unity-drone-model/tree/main
   * Please clone in the same directory structure as this repository:
@@ -157,10 +158,10 @@ Navigate to the Hakoniwa directory:
 cd hakoniwa-px4sim/hakoniwa
 ```
 
-If you are using Windows, enter the Docker container with the following command:
+If you are using WSL, enter the Docker container with the following command:
 
 ```
-bash docker/run.bash
+bash docker/run.bash <path/to/hakoniwa-unity-drone-model>
 ```
 
 Execute the script to launch Hakoniwa:
@@ -274,8 +275,8 @@ Set the following:
 * Type: `UDP`
 * Port: `18570`
 * Server Address: The setting differs depending on the OS
-  * For Windows: On WSL2, check and set the IP address of eth0.
-  * For non-Windows: Check and set the IP address of your ethernet.
+  * For WSL: On WSL2, check and set the IP address of eth0.
+  * For non-WSL: Check and set the IP address of your ethernet.
 
 Example of how to check the IP address:
 
