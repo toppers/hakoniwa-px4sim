@@ -148,6 +148,12 @@ project(Gemini)
 
 # How to Build
 
+## For Windows
+
+The [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa) build process automatically builds  the applications.
+
+## For not Windows(WSL2/Mac)
+
 Move to `cmake-build` and execute the following commands.
 
 ```
@@ -230,12 +236,30 @@ After placing the aircraft, please click `Generate`.
 
 Under the `hakoniwa` directory, execute the following command.
 
+For Windows:
+```
+drone-control.bat <hakoniwa-unity-drone-model location> <config directory>
+```
+
+For not Windows:
 ```
 bash drone-control.bash <hakoniwa-unity-drone-model location> <config directory>
 ```
 
 For `<config directory>`, specify the directory path where the aircraft parameter files are located.
 
+## Examples for Windows
+Example: For simulating a single aircraft
+```
+./drone-control.bat ../../hakoniwa-unity-drone-model config/win
+```
+
+Example: For simulating multiple aircraft
+```
+./drone-control.bat ../../hakoniwa-unity-drone-model config/win/sample_control
+```
+
+## Examples for not Windows
 Example: For simulating a single aircraft
 ```
 bash drone-control.bash ../../hakoniwa-unity-drone-model config

@@ -149,6 +149,12 @@ project(Gemini)
 
 # ビルド方法
 
+## Windows の場合
+
+[hakoniwa](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa)のビルドで自動的にビルドされます。
+
+## Windows 以外の場合(WSL2/Mac)
+
 `cmake-build` に移動して、以下のコマンドを実行してください。
 
 ```
@@ -233,12 +239,31 @@ Scenes/MultiDronesを利用してください。
 
 `hakoniwa`ディレクトリ直下で、以下のコマンドを実行してください。
 
+Windowsの場合：
+```
+drone-control.bat <hakoniwa-unity-drone-model location> <config directory>
+```
+
+Windows以外の場合：
 ```
 bash drone-control.bash <hakoniwa-unity-drone-model location> <config directory>
 ```
 
 `<config directory>` には、機体パラメータファイルを配置したディレクトリパスを指定してください。
 
+
+## 例（Windowsの場合）
+例：１個の機体をシミュレーションする場合
+```
+./drone-control.bat ../../hakoniwa-unity-drone-model config/win
+```
+
+例：複数機体をシミュレーションする場合
+```
+./drone-control.bat ../../hakoniwa-unity-drone-model config/win/sample_control
+```
+
+## 例（Windows以外の場合）
 例：１個の機体をシミュレーションする場合
 ```
 bash drone-control.bash ../../hakoniwa-unity-drone-model config
