@@ -97,7 +97,7 @@ OK File exists: /usr/local/bin/hakoniwa/hako-proxy
 Check complete.
 ```
 
-# 箱庭のビルド手順（WSL2/Macの場合）
+# 箱庭のビルド手順（WSL2/Mac）
 
 箱庭環境をビルドします。ビルド方法としては、２パターンあります。
 

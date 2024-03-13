@@ -9,7 +9,15 @@ cd hakoniwa-px4sim/hakoniwa
 
 ## For Windows
 
-In the case of Windows, work will be carried out inside a Docker container.
+For Windows, please install the following tools:
+
+* Visual Studio (C++)
+  * Set the build mode to x64-Release
+* [Python 3.12](https://www.python.org/)
+
+## For WSL2
+
+In the case of WSL2, work will be carried out inside a Docker container.
 
 Please install the following beforehand:
 ```
@@ -84,7 +92,7 @@ OK File exists: /usr/local/bin/hakoniwa/hako-proxy
 Check complete.
 ```
 
-# Hakoniwa Build Instructions
+# Hakoniwa Build Instructions（WSL2/Mac）
 
 Build the Hakoniwa environment. There are two build methods.
 
@@ -99,6 +107,12 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
 ```
 
 Upon success, a file named `cmake-build/src/hako-px4sim` will be created.
+
+# Hakoniwa Build Instructions (Windows)
+
+1. Launch Visual Studio and select "Open a local folder".
+2. Choose hakoniwa-px4sim.
+3. Select "Build" → "Build All" to start the build process.
 
 # Aircraft Parameter Description
 
@@ -152,7 +166,7 @@ The settings for each item are as follows:
   - **sampleCount**: The number of samples.
   - **noise**: Noise level (standard deviation). If noise is not set, it is 0.
 
-# Hakoniwa Command and Library Installation Instructions
+# Hakoniwa Command and Library Installation Instructions(WSL2/Mac）
 
 Hakoniwa includes a command (`hako-cmd`) and a shared library (`libshakoc.[so|dylib]`). These are used when running simulations without Unity.
 
@@ -212,3 +226,20 @@ To apply the changes, run the following command:
 source ~/.bash_profile  # For Bash
 source ~/.zshrc         # For Zsh
 ```
+
+# Hakoniwa Command and Library Installation Instructions(Windows）
+
+Open the Windows console, navigate to `hakoniwa-px4sim/hakoniwa/third-party/hakoniwa-core-cpp-client`, and execute the install command.
+
+```
+.\install.bat
+```
+
+Upon success, the following environment variables will be set:
+
+* HAKO_CONFIG_PATH
+  * <path/to>\hakoniwa-core-cpp-client\cpp_core_config.json
+* PATH
+  * <path/to>\hakoniwa-core-cpp-client\out\build\x64-Release\core\sample\base-procs\hako-cmd
+
+If they are not set, please configure them manually.
