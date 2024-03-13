@@ -146,3 +146,12 @@ bash build.bash
     "noise": 0.0
 }
 ```
+
+## シミュレーション実行方法
+
+シミュレーションの実行方法は、[箱庭ドローン制御](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control)と同じです。
+
+Unity側のシーンは、`GyroDemo` を利用ください。
+機体パラメータファイルは、`config/hard-maker-demo` を利用ください。Windowsの場合は、`config/win/hard-maker-demo` です。
+
+

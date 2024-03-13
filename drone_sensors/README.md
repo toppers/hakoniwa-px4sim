@@ -141,3 +141,10 @@ Example of settings:
     "noise": 0.0
 }
 ```
+
+## How to Run the Simulation
+
+The method for running the simulation is the same as the [Hakoniwa Drone Control](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control).
+
+Please use the `GyroDemo` scene on the Unity side.
+For the aircraft parameter file, use `config/hard-maker-demo`. For Windows, it is `config/win/hard-maker-demo`.
