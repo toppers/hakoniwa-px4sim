@@ -29,6 +29,7 @@ RUN apt-get install -y cmake
 RUN apt-get install -y python3-pip python3-setuptools python3-wheel ninja-build
 RUN pip3 install --upgrade numpy empy toml
 RUN apt-get install lsof -y
+RUN apt-get install jq -y
 
 RUN mkdir /usr/local/lib/hakoniwa
 RUN mkdir /usr/local/bin/hakoniwa
@@ -65,6 +66,7 @@ RUN cp -rp py /usr/local/lib/hakoniwa/
 ENV PYTHONPATH="/usr/local/lib/hakoniwa/py:$PYTHONPATH"
 RUN cp cmake-build/src/proxy/hako-proxy /usr/local/bin/hakoniwa
 RUN cp cmake-build/core/sample/base-procs/hako-cmd/hako-cmd /usr/local/bin/hakoniwa
+RUN bash install.bash
 RUN pip3 install pyquaternion
 RUN pip3 install scipy
 
