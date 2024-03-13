@@ -66,6 +66,12 @@ target_include_directories(
 
 ## How to Build
 
+### For Windows
+
+The [hakoniwa](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa) build process automatically builds  the applications.
+
+### For not Windows(WSL2/Mac)
+
 The sensor module can be automatically built by moving to `drone_sensors` and executing the following command:
 
 ```bash

@@ -68,6 +68,13 @@ target_include_directories(
 
 ## ビルド方法
 
+
+### Windows の場合
+
+[hakoniwa](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa)のビルドで自動的にビルドされます。
+
+### Windows 以外の場合(WSL2/Mac)
+
 センサモジュールのビルドは、`drone_sensors` 直下に移動して、以下のコマンドを実行することで自動ビルドされます。
 
 ```
