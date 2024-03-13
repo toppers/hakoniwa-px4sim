@@ -1,5 +1,13 @@
 #!/bin/bash
 
+HAKONIWA_UNITY_DIR=
+if [ $# -ne 1 ]
+then
+    echo "Usage: $0 <unity dir>"
+    exit 1
+fi
+HAKONIWA_UNITY_DIR=$1
+
 HOST_WORKDIR=`pwd`
 DOCKER_DIR=/root/workspace
 IMAGE_NAME=`cat docker/image_name.txt`
@@ -38,10 +46,13 @@ else
         -v ${HOST_WORKDIR}:${DOCKER_DIR} \
         -v ${HOST_WORKDIR}/../cmake-options:/root/cmake-options \
         -v ${HOST_WORKDIR}/../drone_physics:/root/drone_physics \
+        -v ${HOST_WORKDIR}/../drone_api:/root/drone_api \
         -v ${HOST_WORKDIR}/../drone_sensors:/root/drone_sensors \
         -v ${HOST_WORKDIR}/../drone_control:/root/drone_control \
         -v ${HOST_WORKDIR}/../matlab-if:/root/matlab-if \
+        -v ${HOST_WORKDIR}/${HAKONIWA_UNITY_DIR}:/hakoniwa-unity-drone-model \
         -it --rm \
+        -e HAKO_MASTER_DISABLE=true \
 		-e CORE_IPADDR=${CORE_IPADDR} \
 		-e DELTA_MSEC=${DELTA_MSEC} \
 		-e MAX_DELAY_MSEC=${MAX_DELAY_MSEC} \

@@ -19,7 +19,7 @@ class MultirotorClient:
         default_drone_set = False
         for entry in self.pdudef['robots']:
             entry_name = entry['name']
-            if len(entry['shm_pdu_readers']) > 0 or len(entry['shm_pdu_writers']) > 0:
+            if len(entry['shm_pdu_readers']) > 0 or len(entry['shm_pdu_writers']) > 0 or len(entry['rpc_pdu_readers']) > 0 or len(entry['rpc_pdu_writers']) > 0:
                 self.vehicles[entry_name] = HakoDrone(entry_name)
                 if not default_drone_set:
                     self.default_drone_name = entry_name

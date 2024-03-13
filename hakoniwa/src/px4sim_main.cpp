@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <string>
 #include "comm/tcp_connector.hpp"
 #include "hako_capi.h"
 #include "modules/hako_phys.hpp"
@@ -18,6 +20,19 @@ int main(int argc, char* argv[])
         std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid|ext}> " << std::endl;
         return -1;
     }
+    const char* value = std::getenv("HAKO_MASTER_DISABLE");
+    bool enable_master = true;
+    if (value != nullptr) {
+        std::string valueStr(value);
+        if (valueStr == "true") {
+            std::cout << "hakoniwa master is disabled" << std::endl;
+            enable_master = false;
+        } else {
+            std::cout << "hakoniwa master is enabled" << std::endl;
+        }
+    } else {
+        std::cout << "hakoniwa master is enabled" << std::endl;
+    }
     const char* serverIp = argv[1];
     int serverPort = std::atoi(argv[2]);
     const char* arg_mode = argv[3];
@@ -26,12 +41,12 @@ int main(int argc, char* argv[])
 
     hako::px4::comm::ICommIO *comm_io  = nullptr;
     if (strcmp("pid", arg_mode) == 0) {
-        hako_pid_main(true);
+        hako_pid_main(enable_master);
         //not returned function.
         //do not pass
     }
     if (strcmp("ext", arg_mode) == 0) {
-        hako_ext_main(true);
+        hako_ext_main(enable_master);
         //not returned function.
         //do not pass
     }
