@@ -8,7 +8,15 @@ cd hakoniwa-px4sim/hakoniwa
 
 ## Windows の場合
 
-Windowsの場合は、docker コンテナ内での作業になります。
+Windowsの場合は、以下のツールを利用しますので、インストールください。
+
+* Visual Studio(C++)
+  * ビルドモードは、x64-Release としてください
+* [Python 3.12](https://www.python.org/)
+
+## WSL2 の場合
+
+WSL2の場合は、docker コンテナ内での作業になります。
 
 事前に以下のインストールをしてください。
 
@@ -89,7 +97,7 @@ OK File exists: /usr/local/bin/hakoniwa/hako-proxy
 Check complete.
 ```
 
-# 箱庭のビルド手順
+# 箱庭のビルド手順（WSL2/Macの場合）
 
 箱庭環境をビルドします。ビルド方法としては、２パターンあります。
 
@@ -108,6 +116,12 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
 
 成功すると、` cmake-build/src/hako-px4sim` というファイルが作成されます。
 
+
+# 箱庭のビルド手順（Windows）
+
+1. Visual Stuido　を起動し、「ローカルフォルダーを開く」を選択します。
+2. hakoniwa-px4sim を選択します。
+3. 「ビルド」→「すべてビルド」を選択するとビルドが始まります。
 
 # 機体のパラメータ説明
 
@@ -162,7 +176,7 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
   - **noise**:ノイズレベル(標準偏差)。ノイズ未設定の場合は0。
 
 
-# 箱庭コマンドおよびライブラリのインストール手順
+# 箱庭コマンドおよびライブラリのインストール手順(WSL2/Mac）
 
 箱庭にはコマンド(`hako-cmd`) と共有ライブラリ(`libshakoc.[so|dylib]`)があります。Unityを使用せずにシミュレーションを実行する場合に利用します。
 
@@ -223,3 +237,20 @@ export PATH=/usr/local/bin/hakoniwa:$PATH
 source ~/.bash_profile  # Bashの場合
 source ~/.zshrc         # Zshの場合
 ```
+
+# 箱庭コマンドおよびライブラリのインストール手順(Windows）
+
+Windowsコンソールを開き、`hakoniwa-px4sim/haoniwa/third-party/hakoniwa-core-cpp-client` に移動し、インストールコマンドを実行します。
+
+```
+ .\install.bat
+```
+
+成功すると、以下の環境変数が設定されます。
+
+* HAKO_CONFIG_PATH
+  * <path/to>\hakoniwa-core-cpp-client\cpp_core_config.json
+* PATH
+  * <path/to>\hakoniwa-core-cpp-client\out\build\x64-Release\core\sample\base-procs\hako-cmd
+
+もし、設定されていない場合は、手動で設定してください。
