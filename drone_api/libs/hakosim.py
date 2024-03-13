@@ -2,6 +2,7 @@ import hakopy
 import hako_pdu
 import pdu_info
 import json
+import os
 
 class HakoDrone:
     def __init__(self, name):
@@ -39,7 +40,8 @@ class MultirotorClient:
         return None
 
     def confirmConnection(self):
-        self.pdu_manager = hako_pdu.HakoPduManager('/usr/local/lib/hakoniwa/hako_binary/offset', self.config_path)
+        hako_binary_path = os.getenv('HAKO_BINARY_PATH', '/usr/local/lib/hakoniwa/hako_binary/offset')
+        self.pdu_manager = hako_pdu.HakoPduManager(hako_binary_path, self.config_path)
         ret = hakopy.init_for_external()
         if ret == False:
             print(f"ERROR: init_for_external() returns {ret}.")
