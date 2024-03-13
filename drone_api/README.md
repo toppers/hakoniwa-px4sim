@@ -34,6 +34,16 @@ client.land()
 
 Please execute the following command.
 
+## For Windows
+
+```
+cd drone_api
+mkdir install_dir
+<path/to>/install.bat 
+```
+
+## For not Windows
+
 ```bash
 bash drone_api/install.bash
 ```
@@ -52,6 +62,14 @@ The method for running the simulation is as follows.
 cd hakoniwa
 ```
 
+## For Windows
+
+```
+./drone-app.bat ../../hakoniwa-unity-drone-model ./config/win/api_sample
+```
+
+## For not Windows
+
 ```bash
 bash drone-app.bash ../../hakoniwa-unity-drone-model ./config/api_sample
 ```
@@ -64,6 +82,14 @@ After the simulation has been executed, you can run the Python program at any ti
 ```bash
 cd drone_api/sample
 ```
+
+## For Windows
+
+```
+python sample.py ../../../hakoniwa-unity-drone-model/custom.json
+```
+
+## For not Windows
 
 ```bash
 python3.12 sample.py ../../../hakoniwa-unity-drone-model/custom.json

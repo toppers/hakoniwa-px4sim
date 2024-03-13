@@ -35,6 +35,16 @@ client.land()
 
 以下のコマンドを実行してください。
 
+## Windows の場合
+
+```
+cd drone_api
+mkdir install_dir
+<path/to>/install.bat 
+```
+
+## Windows 以外の場合
+
 ```
 bash drone_api/install.bash
 ```
@@ -53,6 +63,14 @@ Scenes/ApiDemo を利用してください。
 cd hakoniwa
 ```
 
+## Windows の場合
+
+```
+./drone-app.bat ../../hakoniwa-unity-drone-model ./config/win/api_sample
+```
+
+## Windows 以外の場合
+
 ```
 bash drone-app.bash ../../hakoniwa-unity-drone-model ./config/api_sample
 ```
@@ -65,6 +83,14 @@ bash drone-app.bash ../../hakoniwa-unity-drone-model ./config/api_sample
 cd drone_api/sample
 ```
 
+## Windows の場合
+
 ```
-python3.12 drone_cmd.py ../../../hakoniwa-unity-drone-model/custom.json
+python sample.py ../../../hakoniwa-unity-drone-model/custom.json
+```
+
+## Windows 以外の場合
+
+```
+python3.12 sample.py ../../../hakoniwa-unity-drone-model/custom.json
 ```
