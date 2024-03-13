@@ -52,7 +52,7 @@
   * Windows 10/11
 * 利用する環境
   * Arm系Macの場合
-    * Python 3.10
+    * Python 3.12
       * pyenvでインストールされたものを推奨
       * Jinja2 (`pip install -U jinja2`)
   * Windowsの場合
@@ -110,6 +110,12 @@ cd hakoniwa-px4sim/px4/PX4-Autopilot
 
 PX4 on SITL をを起動します。
 
+Windows の場合:
+```
+bash ../sim/win-simstart.bash
+```
+
+Windows 以外の場合:
 ```
 bash ../sim/simstart.bash
 ```

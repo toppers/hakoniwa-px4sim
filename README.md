@@ -111,6 +111,12 @@ cd hakoniwa-px4sim/px4/PX4-Autopilot
 
 Launch PX4 on SITL:
 
+For Windows:
+```
+bash ../sim/win-simstart.bash
+```
+
+not Windows:
 ```
 bash ../sim/simstart.bash
 ```
