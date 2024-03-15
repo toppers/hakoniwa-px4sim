@@ -51,12 +51,20 @@ This repository is a simulation environment for drone plant models that can be i
   * Windows 10/11
   * Windows WSL2
 * Required Environment:
+  * Python 3.12
+  * jq
+  * cmake
+  * googletest
   * For Arm-based Macs:
-    * Python 3.10
-      * Recommended to install via pyenv
+      * Recommended to install via pyenv for python version control
       * Jinja2 (`pip install -U jinja2`)
   * For WSL:
     * Follow the same setup as the [Hakoniwa configuration example for WSL](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md).
+* Check Script:
+  * To verify that all the required environments are correctly installed, you can use the following command:
+    ```
+    bash hako-setup-check.bash
+    ```
 * Drones to Use:
   * https://github.com/toppers/hakoniwa-unity-drone-model/tree/main
   * Please clone in the same directory structure as this repository:

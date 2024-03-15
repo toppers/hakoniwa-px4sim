@@ -52,12 +52,20 @@
   * Windows 10/11
   * Windows WSL2
 * 利用する環境
+  * Python 3.12
+  * jq
+  * cmake
+  * googletest
   * Arm系Macの場合
-    * Python 3.12
-      * pyenvでインストールされたものを推奨
+      * Pythonはpyenvでインストールされたものを推奨
       * Jinja2 (`pip install -U jinja2`)
   * WSLの場合
     * [WSLの場合の箱庭構成例](https://github.com/toppers/hakoniwa-document/blob/main/architecture/examples/README-win.md)と同じです。
+* チェックスクリプト:
+  * 必要な全ての環境が正しくインストールされているかを確認するには、以下のコマンドを使用します:
+    ```
+    bash hako-setup-check.bash
+    ```
 * 利用するドローン
   * https://github.com/toppers/hakoniwa-unity-drone-model/tree/main
   * 下記のディレクトリ構成のように、本リポジトリと同じ階層でクローンしてください。

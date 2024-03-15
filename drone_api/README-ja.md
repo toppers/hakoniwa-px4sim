@@ -45,6 +45,12 @@ mkdir install_dir
 
 ## Windows 以外の場合
 
+```bash
+cd drone_control
+bash build.bash
+cd ..
+```
+
 ```
 bash drone_api/install.bash
 ```

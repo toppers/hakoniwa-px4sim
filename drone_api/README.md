@@ -44,6 +44,13 @@ mkdir install_dir
 
 ## For not Windows
 
+
+```bash
+cd drone_control
+bash build.bash
+cd ..
+```
+
 ```bash
 bash drone_api/install.bash
 ```
