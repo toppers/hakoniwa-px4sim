@@ -55,6 +55,12 @@ cd ..
 bash drone_api/install.bash
 ```
 
+また、環境変数PYTHONPATHに以下を追加してください。
+
+```
+export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
+```
+
 # Unityの設定
 
 Scenes/ApiDemo を利用してください。
