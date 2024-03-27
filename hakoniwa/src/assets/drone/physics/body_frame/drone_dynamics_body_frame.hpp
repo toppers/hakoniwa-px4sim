@@ -222,7 +222,7 @@ public:
             this->velocityBodyFrame.data.z = 0;
             //this->angularVelocityBodyFrame.data.x = 0;
             //this->angularVelocityBodyFrame.data.y = 0;
-            //this->angularVelocityBodyFrame.data.z = 0;
+            this->angularVelocityBodyFrame.data.z = 0;
         }
         this->total_time_sec += this->delta_time_sec;
     }
