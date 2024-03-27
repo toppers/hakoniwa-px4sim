@@ -1,5 +1,5 @@
 {
-  "name": "DroneFlightController",
+  "name": "DroneTransporter",
   "simulation": {
     "lockstep": true,
     "timeStep": 0.003,

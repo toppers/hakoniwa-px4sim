@@ -95,6 +95,7 @@ public:
     }
     void do_event()
     {
+        in.target_stay = 0;
         DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in.context;
         if (state.get_status() == MAIN_STATUS_LANDED) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
@@ -136,9 +137,13 @@ public:
                 std::cout << "move: x = " << in.target_pos_x << std::endl;
                 std::cout << "move: y = " << in.target_pos_y << std::endl;
             }
+            else {
+                in.target_stay = 1;
+            }
         }
         else {
             //TODO            
+            in.target_stay = 1;
         }
     }
     void do_control()
