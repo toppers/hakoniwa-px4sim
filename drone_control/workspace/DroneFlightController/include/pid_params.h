@@ -6,27 +6,31 @@
  * takeoff and landing
  */
 // position
-#define VERTICAL_POS_Kp 0.8
+#define VERTICAL_POS_Kp 1.8
 #define VERTICAL_POS_Ki 0.1
-#define VERTICAL_POS_Kd 0.8
+#define VERTICAL_POS_Kd 1.8
 
 // velocity
-#define VERTICAL_VEL_Kp 0.8
+#define VERTICAL_VEL_Kp 1.8
 #define VERTICAL_VEL_Ki 0.0
-#define VERTICAL_VEL_Kd 0.8
+#define VERTICAL_VEL_Kd 1.8
 
 /*
  * Forward
  */
 // position
-#define FORWARD_POS_Kp 0.8
+#define FORWARD_POS_Kp 1.8
 #define FORWARD_POS_Ki 0.00
-#define FORWARD_POS_Kd 4.0
+#define FORWARD_POS_Kd 1.8
 
 // velocity
-#define FORWARD_VEL_Kp 0.6
-#define FORWARD_VEL_Ki 0.0
-#define FORWARD_VEL_Kd 2.5
+#define FORWARD_VEL_Kp 0.1
+#define FORWARD_VEL_Ki 0.001
+#define FORWARD_VEL_Kd 0.1
+
+#define FORWARD_ANGLE_Kp 0.1
+#define FORWARD_ANGLE_Ki 0.0
+#define FORWARD_ANGLE_Kd 0.1
 
 /*
  * Yaw

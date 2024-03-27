@@ -49,10 +49,10 @@ static double move_forward(DroneFlightControllerContextType *drone_context, doub
     double target_angle_degree = 0;
     power = get_limit_value(power, 0, -100, 100);
     if (power > 0) {
-        target_angle_degree = -get_limit_value(power/2.0, 0, 0, MAX_FORWARD_DEGREE);
+        target_angle_degree = -get_limit_value(power/0.25, 0, 0, MAX_FORWARD_DEGREE);
     }
     else {
-        target_angle_degree = -get_limit_value(power/2.0, 0, -MAX_FORWARD_DEGREE, 0);
+        target_angle_degree = -get_limit_value(power/0.25, 0, -MAX_FORWARD_DEGREE, 0);
     }
     //std::cout << "target_degree: " << target_angle_degree << std::endl;
     double target_pitch = DEGREE2RADIAN(target_angle_degree);
@@ -75,10 +75,10 @@ static double move_horizontal(DroneFlightControllerContextType *drone_context, d
     double target_angle_degree = 0;
     power = get_limit_value(power, 0, -100, 100);
     if (power > 0) {
-        target_angle_degree = -get_limit_value(power/10.0, 0, 0, MAX_HORIZONTAL_DEGREE);
+        target_angle_degree = -get_limit_value(power/0.25, 0, 0, MAX_HORIZONTAL_DEGREE);
     }
     else {
-        target_angle_degree = -get_limit_value(power/10.0, 0, -MAX_HORIZONTAL_DEGREE, 0);
+        target_angle_degree = -get_limit_value(power/0.25, 0, -MAX_HORIZONTAL_DEGREE, 0);
     }
     double target_roll = DEGREE2RADIAN(target_angle_degree);
     double target_roll_rate = drone_context->pid_ctrl_roll_angle.run(target_roll, euler);
@@ -105,8 +105,8 @@ static mi_drone_control_out_t do_landing(mi_drone_control_in_t *in)
     EulerType euler = {NORMALIZE_RADIAN(in->euler_x), NORMALIZE_RADIAN(in->euler_y), NORMALIZE_RADIAN(in->euler_z)};
     
     double target_velocity_z = drone_context->pid_ctrl_vertical_pos.run(in->target_pos_z, in->pos_z, euler);
-    target_velocity_z = get_limit_value(target_velocity_z, 0, -in->target_velocity, 0);
-    control_output.thrust = -drone_context->pid_ctrl_vertical_vel.run(target_velocity_z, in->w) + (in->mass * PID_PARAM_GRAVITY / 1.3);
+    target_velocity_z = get_limit_value(target_velocity_z, 0, -in->target_velocity, in->target_velocity);
+    control_output.thrust = -drone_context->pid_ctrl_vertical_vel.run(target_velocity_z, in->w);
     control_output.torque_x = move_horizontal(drone_context, 0, in->p, euler);
     control_output.torque_y = move_forward(drone_context, 0, in->q, euler);
     control_output.torque_z = rotate_yaw(drone_context, 0, in->r, euler);
@@ -154,7 +154,8 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
     if (drone_context->drone_control_mode >= DRONE_CONTROL_MODE_TAKEOFF) {        
         double target_velocity_z = drone_context->pid_ctrl_vertical_pos.run(in->target_pos_z, in->pos_z, euler);
         target_velocity_z = get_limit_value(target_velocity_z, 0, -in->target_velocity, 0);
-        control_output.thrust = -drone_context->pid_ctrl_vertical_vel.run(target_velocity_z, in->w) + (in->mass * PID_PARAM_GRAVITY);
+        //control_output.thrust = -drone_context->pid_ctrl_vertical_vel.run(target_velocity_z, in->w) + (in->mass * PID_PARAM_GRAVITY);
+        control_output.thrust = -drone_context->pid_ctrl_vertical_vel.run(target_velocity_z, in->w);
         //std::cout << "pos_z: " << in->pos_z << std::endl;
         //std::cout << "in->w: " << in->w << std::endl;
         //std::cout << "target_velocity_z: " << target_velocity_z << std::endl;
@@ -192,8 +193,11 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
         double target_vel_h = target_vel.second;
         target_vel_f = get_limit_value(target_vel_f, 0, -in->target_velocity, in->target_velocity);
         target_vel_h = get_limit_value(target_vel_h, 0, -in->target_velocity, in->target_velocity);
+        double power_v = drone_context->pid_ctrl_forward_vel.runV(target_vel_f, in->u);
         double power_f = drone_context->pid_ctrl_forward_vel.runF(target_vel_f, in->q);
         double power_h = drone_context->pid_ctrl_forward_vel.runH(target_vel_h, in->p);
+        power_v = get_limit_value(power_v, 0, -1, 1);
+        control_output.thrust += power_v;
         power_f = get_limit_value(power_f, 0, -100, 100);
         power_h = get_limit_value(power_h, 0, -100, 100);
         control_output.torque_x = move_horizontal(drone_context, power_h, in->p, euler);
@@ -203,7 +207,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
             //std::cout << "INFO: pos( " << in->pos_x << " , " << in->pos_y << " )" << std::endl;
             drone_context->count[DRONE_CONTROL_MODE_MOVE]++;
         }
-        if (drone_context->count[DRONE_CONTROL_MODE_MOVE] >= 10) {
+        if (drone_context->count[DRONE_CONTROL_MODE_MOVE] >= 300) {
             drone_context->drone_control_mode = DRONE_CONTROL_MODE_NONE;
             std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
             drone_context->count[DRONE_CONTROL_MODE_MOVE] = 0;

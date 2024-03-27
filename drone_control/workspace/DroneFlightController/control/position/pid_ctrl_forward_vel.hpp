@@ -7,21 +7,30 @@
 
 class PidCtrlForwardVel {
 private:
-    FlightControlPID pidF;
-    FlightControlPID pidH;
+    FlightControlPID pidVel;
+    FlightControlPID pidAngleF;
+    FlightControlPID pidAngleH;
 public:
-    PidCtrlForwardVel() : pidF(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0), pidH(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0)
+    PidCtrlForwardVel() : 
+        pidVel(FORWARD_VEL_Kp, FORWARD_VEL_Ki, FORWARD_VEL_Kd, 0), 
+        pidAngleF(FORWARD_ANGLE_Kp, FORWARD_ANGLE_Ki, FORWARD_ANGLE_Kd, 0), 
+        pidAngleH(FORWARD_ANGLE_Kp, FORWARD_ANGLE_Ki, FORWARD_ANGLE_Kd, 0)
     {
+    }
+    double runV(double target_vel, double current_vel)
+    {
+        pidVel.set_target(target_vel);
+        return pidVel.calculate(current_vel);
     }
     double runF(double target_vel, double current_vel)
     {
-        pidF.set_target(target_vel);
-        return pidF.calculate(current_vel);
+        pidAngleF.set_target(target_vel);
+        return pidAngleF.calculate(current_vel);
     }
     double runH(double target_vel, double current_vel)
     {
-        pidH.set_target(target_vel);
-        return pidH.calculate(current_vel);
+        pidAngleH.set_target(target_vel);
+        return pidAngleH.calculate(current_vel);
     }
 };
 
