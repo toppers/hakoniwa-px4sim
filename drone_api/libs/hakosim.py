@@ -3,6 +3,7 @@ import hako_pdu
 import pdu_info
 import json
 import os
+import time
 
 class HakoDrone:
     def __init__(self, name):
@@ -87,6 +88,8 @@ class MultirotorClient:
                 command.write()
                 print('DONE')
                 break
+            #print("result: ",  pdu['header']['result'])
+            time.sleep(1)
         return True
 
     def get_vehicle_name(self, vehicle_name):
@@ -122,7 +125,7 @@ class MultirotorClient:
 
     def land(self, vehicle_name=None):
         if self.get_vehicle_name(vehicle_name) != None:
-            print("INFO: moveToPosition")
+            print("INFO: Landing")
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_LAND, self.get_vehicle_name(vehicle_name))
             pdu_cmd['height'] = 0
             pdu_cmd['speed'] = 5
@@ -130,3 +133,28 @@ class MultirotorClient:
         else:
             return False
 
+    def wait_grab(self, grab, vehicle_name):
+        while True:
+            command = self.pdu_manager.get_pdu(self.get_vehicle_name(vehicle_name), pdu_info.HAKO_AVATOR_CHANNEL_ID_STAT_MAG)
+            pdu_cmd = command.read()
+            #print("magnet_on: ", pdu_cmd['magnet_on'])
+            if grab:
+                if pdu_cmd['magnet_on'] == 1 and pdu_cmd['contact_on'] == 1:
+                    break
+            else:
+                if pdu_cmd['magnet_on'] == 0 and pdu_cmd['contact_on'] == 0:
+                    break
+
+    def grab_baggage(self, grab, vehicle_name=None):
+        if self.get_vehicle_name(vehicle_name) != None:
+            print("INFO: grab baggage: ", grab)
+            command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_MAG, self.get_vehicle_name(vehicle_name))
+            pdu_cmd['magnet_on'] = grab
+            command.write()
+            self.wait_grab(grab, vehicle_name)
+            pdu_cmd['header']['request'] = 0
+            pdu_cmd['header']['result'] = 0
+            command.write()
+            return True
+        else:
+            return False

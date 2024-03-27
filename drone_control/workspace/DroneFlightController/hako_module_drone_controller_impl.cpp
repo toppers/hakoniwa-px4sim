@@ -49,10 +49,10 @@ static double move_forward(DroneFlightControllerContextType *drone_context, doub
     double target_angle_degree = 0;
     power = get_limit_value(power, 0, -100, 100);
     if (power > 0) {
-        target_angle_degree = -get_limit_value(power/0.25, 0, 0, MAX_FORWARD_DEGREE);
+        target_angle_degree = -get_limit_value(power/1.0, 0, 0, MAX_FORWARD_DEGREE);
     }
     else {
-        target_angle_degree = -get_limit_value(power/0.25, 0, -MAX_FORWARD_DEGREE, 0);
+        target_angle_degree = -get_limit_value(power/1.0, 0, -MAX_FORWARD_DEGREE, 0);
     }
     //std::cout << "target_degree: " << target_angle_degree << std::endl;
     double target_pitch = DEGREE2RADIAN(target_angle_degree);
@@ -75,10 +75,10 @@ static double move_horizontal(DroneFlightControllerContextType *drone_context, d
     double target_angle_degree = 0;
     power = get_limit_value(power, 0, -100, 100);
     if (power > 0) {
-        target_angle_degree = -get_limit_value(power/0.25, 0, 0, MAX_HORIZONTAL_DEGREE);
+        target_angle_degree = -get_limit_value(power/1.0, 0, 0, MAX_HORIZONTAL_DEGREE);
     }
     else {
-        target_angle_degree = -get_limit_value(power/0.25, 0, -MAX_HORIZONTAL_DEGREE, 0);
+        target_angle_degree = -get_limit_value(power/1.0, 0, -MAX_HORIZONTAL_DEGREE, 0);
     }
     double target_roll = DEGREE2RADIAN(target_angle_degree);
     double target_roll_rate = drone_context->pid_ctrl_roll_angle.run(target_roll, euler);
@@ -134,16 +134,21 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
     if (drone_context->drone_control_mode == DRONE_CONTROL_MODE_NONE) {
         drone_context->target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
         PositionType relative_vector = { in->target_pos_x - in->pos_x, in->target_pos_y - in->pos_y, 0};
-        drone_context->target_yaw = atan2(relative_vector.y, relative_vector.x);
+        if (in->target_stay) {
+            drone_context->target_yaw = 0;
+        }
+        else {
+            drone_context->target_yaw = atan2(relative_vector.y, relative_vector.x);
+            //std::cout << "TARGET: pos_x= " << in->target_pos_x << std::endl;
+            //std::cout << "TARGET: pos_y= " << in->target_pos_y << std::endl;
+            //std::cout << "TARGET: pos_z= " << in->target_pos_z << std::endl;
+            //std::cout << "TARGET: vel = " << in->target_velocity << std::endl;
+            //std::cout << "TARGET: yaw = " << drone_context->target_yaw << std::endl;
+
+            //std::cout << "INFO: start takeoff" << std::endl;
+        }
 
         drone_context->drone_control_mode = DRONE_CONTROL_MODE_TAKEOFF;
-        std::cout << "TARGET: pos_x= " << in->target_pos_x << std::endl;
-        std::cout << "TARGET: pos_y= " << in->target_pos_y << std::endl;
-        std::cout << "TARGET: pos_z= " << in->target_pos_z << std::endl;
-        std::cout << "TARGET: vel = " << in->target_velocity << std::endl;
-        std::cout << "TARGET: yaw = " << drone_context->target_yaw << std::endl;
-
-        std::cout << "INFO: start takeoff" << std::endl;
     }
     //PositionType target_pos = { in->target_pos_x, in->target_pos_y, in->target_pos_z };
     PositionType current_pos = { in->pos_x, in->pos_y, in->pos_z };
@@ -167,7 +172,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
 
             if (drone_context->count[DRONE_CONTROL_MODE_TAKEOFF] >= 10) {
                 drone_context->drone_control_mode = DRONE_CONTROL_MODE_YAW;
-                std::cout << "INFO: start yaw mode" << std::endl;
+                //std::cout << "INFO: start yaw mode" << std::endl;
                 drone_context->count[DRONE_CONTROL_MODE_TAKEOFF] = 0;
             }
         }
@@ -177,12 +182,12 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
         //std::cout << "current yaw: " << euler.psi << std::endl;
         control_output.torque_z = rotate_yaw(drone_context, drone_context->target_yaw, in->r, euler);
         if (drone_context->drone_control_mode == DRONE_CONTROL_MODE_YAW) {
-            if (ALMOST_EQUAL(drone_context->target_yaw, euler.psi, DEGREE2RADIAN(5))) {
+            if (ALMOST_EQUAL(drone_context->target_yaw, euler.psi, DEGREE2RADIAN(1))) {
                 drone_context->count[DRONE_CONTROL_MODE_YAW]++;
             }
             if (drone_context->count[DRONE_CONTROL_MODE_YAW] >= 2) {
                 drone_context->drone_control_mode = DRONE_CONTROL_MODE_MOVE;
-                std::cout << "INFO: start move mode" << std::endl;
+                //std::cout << "INFO: start move mode" << std::endl;
                 drone_context->count[DRONE_CONTROL_MODE_YAW] = 0;
             }
         }
@@ -209,7 +214,7 @@ static mi_drone_control_out_t drone_controller_impl_run(mi_drone_control_in_t *i
         }
         if (drone_context->count[DRONE_CONTROL_MODE_MOVE] >= 300) {
             drone_context->drone_control_mode = DRONE_CONTROL_MODE_NONE;
-            std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
+            //std::cout << "INFO: ALL OPERATIONS are DONE" << std::endl;
             drone_context->count[DRONE_CONTROL_MODE_MOVE] = 0;
         }
     }

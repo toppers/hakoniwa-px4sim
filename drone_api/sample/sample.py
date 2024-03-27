@@ -3,6 +3,23 @@
 
 import sys
 import hakosim
+import time
+
+def transport(client, baggage_pos, transfer_pos):
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5)
+    time.sleep(3)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 0.7, 0.01)
+    time.sleep(3)
+    client.grab_baggage(True)
+    time.sleep(3)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 5)
+    time.sleep(3)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], transfer_pos['z'], 0.01)
+    time.sleep(3)
+    client.grab_baggage(False)
+    time.sleep(3)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.01)
+
 
 def main():
     if len(sys.argv) != 2:
@@ -16,8 +33,14 @@ def main():
     client.armDisarm(True)
 
     client.takeoff(3)
-    client.moveToPosition(0, 3, 3, 5)
-    client.land()
+    baggage_pos = { "x": 0, "y": 3 }
+    transfer_pos = { "x": 0, "y": -1, "z": 0.7 }
+    transport(client, baggage_pos, transfer_pos)
+    baggage_pos = { "x": 0, "y": 4 }
+    transfer_pos = { "x": 0, "y": -1, "z": 1.2 }
+    transport(client, baggage_pos, transfer_pos)
+
+    #client.land()
 
     return 0
 
