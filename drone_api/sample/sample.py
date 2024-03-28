@@ -40,6 +40,15 @@ def main():
     transfer_pos = { "x": 0, "y": -1, "z": 1.2 }
     transport(client, baggage_pos, transfer_pos)
 
+    client.moveToPosition(-2, -1, 3, 5)
+    time.sleep(3)
+    client.moveToPosition(-2, -1, 0.7, 5)
+    time.sleep(3)
+
+    png_image = client.simGetImage("0", hakosim.ImageType.Scene)
+    if png_image:
+        with open("scene.png", "wb") as f:
+            f.write(png_image)
     #client.land()
 
     return 0

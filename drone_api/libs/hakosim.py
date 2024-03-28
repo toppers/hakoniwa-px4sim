@@ -5,11 +5,16 @@ import json
 import os
 import time
 
+
+class ImageType:
+    Scene = "png"
+
 class HakoDrone:
     def __init__(self, name):
         self.name = name
         self.enableApiControl = False
         self.arm = False
+        self.camera_cmd_request_id = 1
 
 class MultirotorClient:
     def __init__(self, config_path):
@@ -158,3 +163,30 @@ class MultirotorClient:
             return True
         else:
             return False
+
+    def _get_camera_data(self, vehicle):
+        while True:
+            command = self.pdu_manager.get_pdu(vehicle.name, pdu_info.HAKO_AVATOR_CHANNEL_ID_CAMERA_DATA)
+            pdu_data = command.read()
+            if pdu_data['request_id'] == vehicle.camera_cmd_request_id:
+                return pdu_data['image']['data']
+            time.sleep(0.5)
+
+    def simGetImage(self, id, image_type, vehicle_name=None):
+        vehicle_name = self.get_vehicle_name(vehicle_name)
+        if vehicle_name != None:
+            vehicle = self.vehicles[vehicle_name]
+            print("INFO: get image ")
+            command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_CAMERA, vehicle_name)
+            pdu_cmd['request_id'] = vehicle.camera_cmd_request_id
+            pdu_cmd['encode_type'] = 0
+            command.write()
+            img = self._get_camera_data(vehicle)
+            pdu_cmd['header']['request'] = 0
+            pdu_cmd['header']['result'] = 0
+            command.write()
+            vehicle.camera_cmd_request_id = vehicle.camera_cmd_request_id + 1
+            return bytes(img)
+        else:
+            return None
+
