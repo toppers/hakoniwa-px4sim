@@ -4,6 +4,7 @@ import pdu_info
 import json
 import os
 import time
+import hakosim_types
 
 
 class ImageType:
@@ -69,6 +70,17 @@ class MultirotorClient:
             self.vehicles[vehicle_name].arm = v
         else:
             print(f"Vehicle '{vehicle_name}' not found.")
+
+    def simGetVehiclePose(self, vehicle_name=None):
+        name = self.get_vehicle_name(vehicle_name)
+        pdu = self.pdu_manager.get_pdu(name, pdu_info.HAKO_AVATOR_CHANNLE_ID_POS)
+        pdu_data = pdu.read()
+        pos = hakosim_types.Vector3r(pdu_data['linear']['x'], pdu_data['linear']['y'], pdu_data['linear']['z'])
+        orientation = hakosim_types.Quaternionr.euler_to_quaternion(pdu_data['angular']['x'], pdu_data['angular']['y'], pdu_data['angular']['z'])
+        #print(f"roll:{pdu_data['angular']['x']}")
+        #print(f"pitch: {pdu_data['angular']['y']}")
+        #print(f"yaw: {pdu_data['angular']['z']}")
+        return hakosim_types.Pose(pos, orientation)
 
     def get_packet(self, channel, vehicle_name):
         command = self.pdu_manager.get_pdu(vehicle_name, channel)

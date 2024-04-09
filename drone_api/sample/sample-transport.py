@@ -4,7 +4,6 @@
 import sys
 import hakosim
 import time
-import math
 
 def transport(client, baggage_pos, transfer_pos):
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5)
@@ -19,13 +18,8 @@ def transport(client, baggage_pos, transfer_pos):
     time.sleep(3)
     client.grab_baggage(False)
     time.sleep(3)
-    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.01)
+    #client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.01)
 
-def debug_pos(client):
-    pose = client.simGetVehiclePose()
-    print(f"POS  : {pose.position.x_val} {pose.position.y_val} {pose.position.z_val}")
-    roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
-    print(f"ANGLE: {math.degrees(roll)} {math.degrees(pitch)} {math.degrees(yaw)}")
 
 def main():
     if len(sys.argv) != 2:
@@ -40,28 +34,22 @@ def main():
 
     client.takeoff(3)
     baggage_pos = { "x": 0, "y": 3 }
-    transfer_pos = { "x": 0, "y": -1, "z": 0.7 }
+    transfer_pos = { "x": 0, "y": -3, "z": 3 }
     transport(client, baggage_pos, transfer_pos)
-    debug_pos(client)
+    #baggage_pos = { "x": 0, "y": 4 }
+    #transfer_pos = { "x": 0, "y": -3, "z": 3 }
+    #transport(client, baggage_pos, transfer_pos)
 
-    baggage_pos = { "x": 0, "y": 4 }
-    transfer_pos = { "x": 0, "y": -1, "z": 1.2 }
-    transport(client, baggage_pos, transfer_pos)
-    debug_pos(client)
-
-    client.moveToPosition(-2, -1, 3, 5)
-    debug_pos(client)
+    client.moveToPosition(-5, -10, 3, 5)
     time.sleep(3)
-    client.moveToPosition(-2, -1, 0.7, 5)
-    debug_pos(client)
+    client.moveToPosition(-5, -10, 0.7, 5)
     time.sleep(3)
 
     png_image = client.simGetImage("0", hakosim.ImageType.Scene)
     if png_image:
         with open("scene.png", "wb") as f:
             f.write(png_image)
-    client.land()
-    debug_pos(client)
+    #client.land()
 
     return 0
 
