@@ -5,7 +5,7 @@ import json
 import os
 import time
 import hakosim_types
-
+import hakosim_lidar
 
 class ImageType:
     Scene = "png"
@@ -202,3 +202,20 @@ class MultirotorClient:
         else:
             return None
 
+    def getLidarData(self, vehicle_name=None):
+        vehicle_name = self.get_vehicle_name(vehicle_name)
+        if vehicle_name != None:
+            vehicle = self.vehicles[vehicle_name]
+            lidar_pdu = self.pdu_manager.get_pdu(vehicle.name, pdu_info.HAKO_AVATOR_CHANNEL_ID_LIDAR_DATA)
+            lidar_pdu_data = lidar_pdu.read()
+            lidar_pos_pdu = self.pdu_manager.get_pdu(vehicle.name, pdu_info.HAKO_AVATOR_CHANNEL_ID_LIDAR_POS)
+            lidar_pos_pdu_data = lidar_pos_pdu.read()
+            time_stamp = lidar_pdu_data['header']['stamp']['sec']
+            point_cloud_bytes = lidar_pdu_data['data__raw']
+            point_cloud = hakosim_lidar.LidarData.extract_xyz_from_point_cloud(point_cloud_bytes)
+            position = hakosim_types.Vector3r(lidar_pos_pdu_data['linear']['x'], lidar_pos_pdu_data['linear']['y'], lidar_pos_pdu_data['linear']['z'])
+            orientation = hakosim_types.Quaternionr.euler_to_quaternion(lidar_pos_pdu_data['angular']['x'], lidar_pos_pdu_data['angular']['y'], lidar_pos_pdu_data['angular']['z'])
+            pose = hakosim_types.Pose(position, orientation)
+            return hakosim_lidar.LidarData(point_cloud, time_stamp, pose)
+        else:
+            return None

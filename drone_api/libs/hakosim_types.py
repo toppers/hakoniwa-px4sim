@@ -6,6 +6,9 @@ class Vector3r:
         self.y_val = y_val
         self.z_val = z_val
 
+    def __repr__(self):
+        return f"Vector3r(x_val={self.x_val}, y_val={self.y_val}, z_val={self.z_val})"
+
 class Quaternionr:
     def __init__(self, w_val=1.0, x_val=0.0, y_val=0.0, z_val=0.0):
         self.w_val = w_val
@@ -47,6 +50,9 @@ class Quaternionr:
 
         return roll_x, pitch_y, yaw_z
 
+    def __repr__(self):
+        return f"Quaternionr(w_val={self.w_val}, x_val={self.x_val}, y_val={self.y_val}, z_val={self.z_val})"
+
 class Pose:
     def __init__(self, position=None, orientation=None):
         if position is None:
@@ -57,3 +63,5 @@ class Pose:
         self.position = position
         self.orientation = orientation
 
+    def __repr__(self):
+        return f"Pose(position={self.position}, orientation={self.orientation})"
