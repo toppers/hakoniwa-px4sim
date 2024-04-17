@@ -182,7 +182,7 @@ class MultirotorClient:
             pdu_data = command.read()
             if pdu_data['request_id'] == vehicle.camera_cmd_request_id:
                 return pdu_data['image']['data']
-            time.sleep(0.5)
+            #time.sleep(0.5)
 
     def simGetImage(self, id, image_type, vehicle_name=None):
         vehicle_name = self.get_vehicle_name(vehicle_name)
@@ -201,7 +201,7 @@ class MultirotorClient:
             return bytes(img)
         else:
             return None
-
+    
     def getLidarData(self, vehicle_name=None):
         vehicle_name = self.get_vehicle_name(vehicle_name)
         if vehicle_name != None:
