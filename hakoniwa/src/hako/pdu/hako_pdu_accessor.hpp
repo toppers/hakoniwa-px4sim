@@ -124,7 +124,7 @@ static inline bool do_io_write_cmd(hako::assets::drone::IAirCraft *drone, int ch
     return true;
 }
 
-static inline void do_io_write(hako::assets::drone::IAirCraft *drone, double controls[hako::assets::drone::ROTOR_NUM])
+static inline void do_io_write(hako::assets::drone::IAirCraft *drone, const double controls[hako::assets::drone::ROTOR_NUM])
 {
     Hako_HakoHilActuatorControls hil_actuator_controls;
     Hako_Twist pos;

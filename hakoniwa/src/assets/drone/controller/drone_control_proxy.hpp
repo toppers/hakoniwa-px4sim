@@ -180,11 +180,11 @@ public:
     void init(Hako_uint64 microseconds, Hako_uint64 dt_usec)
     {
         task_manager.init(microseconds, dt_usec);
-        for (auto& container : task_manager.aircraft_system_container) {
-            DroneControlProxy proxy(container.drone);
-            proxy.in.context = (void*)&container.context;
-            proxy.in.mass = container.drone->get_drone_dynamics().get_mass();
-            proxy.in.drag = container.drone->get_drone_dynamics().get_drag();
+        for (auto& module : task_manager.get_modules()) {
+            DroneControlProxy proxy(module.drone);
+            proxy.in.context = (void*)&module.context;
+            proxy.in.mass = module.drone->get_drone_dynamics().get_mass();
+            proxy.in.drag = module.drone->get_drone_dynamics().get_drag();
             drone_control_proxies.push_back(proxy);
         }
     }
@@ -202,14 +202,14 @@ public:
     void run()
     {
         int index = 0;
-        for (auto& container : task_manager.aircraft_system_container) {
+        for (auto& module : task_manager.get_modules()) {
             DroneControlProxy& proxy = drone_control_proxies[index];
             hako::assets::drone::DroneDynamicsInputType drone_input = {};
             mi_drone_control_out_t out = {};
-            DronePositionType pos = container.drone->get_drone_dynamics().get_pos();
-            DroneEulerType angle = container.drone->get_drone_dynamics().get_angle();
-            hako::assets::drone::DroneVelocityBodyFrameType velocity = container.drone->get_drone_dynamics().get_vel_body_frame();
-            hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_gyro().sensor_value();
+            DronePositionType pos = module.drone->get_drone_dynamics().get_pos();
+            DroneEulerType angle = module.drone->get_drone_dynamics().get_angle();
+            hako::assets::drone::DroneVelocityBodyFrameType velocity = module.drone->get_drone_dynamics().get_vel_body_frame();
+            hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = module.drone->get_gyro().sensor_value();
             proxy.do_event();
             proxy.in.pos_x = pos.data.x;
             proxy.in.pos_y = pos.data.y;
@@ -225,7 +225,7 @@ public:
             proxy.in.r = angular_velocity.data.z;
 
             if (proxy.need_control()) {
-                out = container.control_module.controller->run(&proxy.in);
+                out = module.control_module.controller->run(&proxy.in);
                 proxy.do_control();
             }
 
@@ -240,15 +240,15 @@ public:
             drone_input.manual.control = false;
             drone_input.thrust = thrust;
             drone_input.torque = torque;
-            if (container.drone->get_drone_dynamics().has_collision_detection()) {
-                do_io_read_collision(container.drone, drone_input.collision);
+            if (module.drone->get_drone_dynamics().has_collision_detection()) {
+                do_io_read_collision(module.drone, drone_input.collision);
             }
-            if (container.drone->is_enabled_disturbance()) {
-                do_io_read_disturb(container.drone, drone_input.disturbance);
+            if (module.drone->is_enabled_disturbance()) {
+                do_io_read_disturb(module.drone, drone_input.disturbance);
             }
-            container.drone->run(drone_input);
-            calculate_simple_controls(container, thrust);
-            do_io_write(container.drone, container.controls);
+            module.drone->run(drone_input);
+            calculate_simple_controls(module, thrust);
+            do_io_write(module.drone, module.controls);
             index++;
         }
     }

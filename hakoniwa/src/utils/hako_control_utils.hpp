@@ -11,7 +11,7 @@ typedef struct {
     HakoModuleDroneControllerType *controller;
 } AircraftControlModuleType;
 
-class AircraftSystemContainer
+class AirCraftModule
 {
 public:
     DroneFlightControllerContextType context;
@@ -53,11 +53,15 @@ private:
         hako_asset_time_usec += delta_time_usec;
         return true;
     }
+    std::vector<AirCraftModule> aircraft_modules;
 
-public:
-    std::vector<AircraftSystemContainer> aircraft_system_container;
     Hako_uint64 hako_asset_time_usec;
     Hako_uint64 delta_time_usec;
+public:
+    std::vector<AirCraftModule> get_modules() const
+    {
+        return this->aircraft_modules;
+    }
     void init(Hako_uint64 microseconds, Hako_uint64 dt_usec)
     {
         hako_asset_time_usec = microseconds;
@@ -65,7 +69,7 @@ public:
         drone_manager.createAirCrafts(drone_config_manager);
         for (auto* drone : drone_manager.getAllAirCrafts()) {
             std::cout << "INFO: loading drone & controller: " << drone->get_index() << std::endl;
-            AircraftSystemContainer arg;
+            AirCraftModule arg;
             arg.drone = drone;
             DroneConfig drone_config;
             drone_config_manager.getConfig(drone->get_index(), drone_config);
@@ -93,7 +97,7 @@ public:
                     return;
                 }
             }
-            aircraft_system_container.push_back(arg);
+            aircraft_modules.push_back(arg);
         }
     }
     void do_task()
@@ -101,9 +105,9 @@ public:
         while (do_asset_task() == true){};
     }
 };
-static inline void calculate_simple_controls(AircraftSystemContainer& container, const DroneThrustType& thrust)
+static inline void calculate_simple_controls(AirCraftModule& module, const DroneThrustType& thrust)
 {
-    double hovering_force = container.drone->get_drone_dynamics().get_mass() * hako::assets::drone::GRAVITY;
+    double hovering_force = module.drone->get_drone_dynamics().get_mass() * hako::assets::drone::GRAVITY;
     double max_hovering_force = 2.0 * hovering_force;
     double control = 0;
     if (thrust.data > max_hovering_force) {
@@ -113,7 +117,7 @@ static inline void calculate_simple_controls(AircraftSystemContainer& container,
         control = thrust.data / max_hovering_force;
     }
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
-        container.controls[i] = control;
+        module.controls[i] = control;
     }
     return;
 }
