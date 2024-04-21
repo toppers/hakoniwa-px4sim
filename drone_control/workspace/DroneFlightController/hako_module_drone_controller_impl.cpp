@@ -17,12 +17,11 @@ const char* hako_module_drone_controller_impl_get_name(void)
 
 void* hako_module_drone_controller_impl_create_context(void* arguments)
 {
-    void *obj = malloc(sizeof(DroneFlightControllerContextType));
+    void *obj = new DroneFlightControllerContextType();
     if (obj == nullptr) {
         std::cerr << "ERROR: can not create memory for DroneFlightControllerContextType" << std::endl;
         exit(1);
     }
-    memset(obj, 0, sizeof(DroneFlightControllerContextType));
     if (arguments != nullptr) {
         DroneFlightControllerContextType *fcontext = (DroneFlightControllerContextType*)obj;
         fcontext->plan_filepath = (const char*)arguments;
