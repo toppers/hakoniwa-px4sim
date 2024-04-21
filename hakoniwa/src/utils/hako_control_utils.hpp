@@ -38,7 +38,7 @@ public:
 
 };
 
-class AircraftSystemTaskManager
+class AirCraftModuleSimulator
 {
 private:
     hako::assets::drone::AirCraftManager drone_manager;

@@ -174,13 +174,13 @@ public:
 
 class DroneControlProxyManager {
 private:
-    AircraftSystemTaskManager task_manager;
+    AirCraftModuleSimulator module_simulator;
     std::vector<DroneControlProxy> drone_control_proxies;
 public:
     void init(Hako_uint64 microseconds, Hako_uint64 dt_usec)
     {
-        task_manager.init(microseconds, dt_usec);
-        for (auto& module : task_manager.get_modules()) {
+        module_simulator.init(microseconds, dt_usec);
+        for (auto& module : module_simulator.get_modules()) {
             DroneControlProxy proxy(module.drone);
             proxy.in.context = (void*)&module.context;
             proxy.in.mass = module.drone->get_drone_dynamics().get_mass();
@@ -196,13 +196,13 @@ public:
     }
     void do_task()
     {
-        task_manager.do_task();
+        module_simulator.do_task();
     }
 
     void run()
     {
         int index = 0;
-        for (auto& module : task_manager.get_modules()) {
+        for (auto& module : module_simulator.get_modules()) {
             DroneControlProxy& proxy = drone_control_proxies[index];
             hako::assets::drone::DroneDynamicsInputType drone_input = {};
             mi_drone_control_out_t out = {};

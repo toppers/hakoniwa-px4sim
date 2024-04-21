@@ -59,7 +59,7 @@ void hako_pid_main(bool master)
     //not reached
     return;
 }
-static AircraftSystemTaskManager task_manager;
+static AirCraftModuleSimulator module_simulator;
 
 static void my_setup()
 {
@@ -67,7 +67,7 @@ static void my_setup()
 }
 static void my_task()
 {
-    for (auto& module : task_manager.get_modules()) {
+    for (auto& module : module_simulator.get_modules()) {
         hako::assets::drone::DroneDynamicsInputType drone_input = {};
         mi_drone_control_in_t in;
         mi_drone_control_out_t out;
@@ -143,7 +143,7 @@ static void* asset_runner(void*)
         return nullptr;
     }
     Hako_uint64 delta_time_usec = static_cast<Hako_uint64>(drone_config.getSimTimeStep() * 1000000.0);
-    task_manager.init(0, delta_time_usec);
+    module_simulator.init(0, delta_time_usec);
     hako_asset_runner_register_callback(&my_callbacks);
     const char* config_path = hako_param_env_get_string(HAKO_CUSTOM_JSON_PATH);
     if (hako_asset_runner_init(HAKO_ASSET_NAME, config_path, delta_time_usec) == false) {
@@ -152,7 +152,7 @@ static void* asset_runner(void*)
     }
     while (true) {
         std::cout << "INFO: start simulation" << std::endl;
-        task_manager.do_task();
+        module_simulator.do_task();
     }
     std::cout << "INFO: end simulation" << std::endl;
     hako_asset_runner_fin();
