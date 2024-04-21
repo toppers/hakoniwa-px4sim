@@ -2,7 +2,42 @@
 #define _HAKO_MODULE_CONTROLLER_H_
 
 typedef struct {
+    double roll;
+    double pitch;
+} mi_drone_control_in_attitude_t;
+typedef struct {
+    double power;
+} mi_drone_control_in_throttle_t;
+typedef struct {
+    double r;
+} mi_drone_control_in_direction_velocity_t;
+
+typedef struct {
+    double x;
+    double y;
+} mi_drone_control_in_position_t;
+typedef struct {
+    double height;
+} mi_drone_control_in_altitude_t;
+
+typedef struct {
+    int radio_control; /* 0: off, 1: on */
+    /*
+     * Radio control
+     */
+    mi_drone_control_in_attitude_t attitude;
+    mi_drone_control_in_throttle_t throttle;
+    mi_drone_control_in_direction_velocity_t direction_velocity;
+    /*
+     * Position control
+     */
+    mi_drone_control_in_position_t position;
+    mi_drone_control_in_altitude_t altitude;
+} mi_drone_control_in_target_t;
+
+typedef struct {
     void *context;
+    /* deprecated : start */
     /*
      * Target
      */
@@ -11,6 +46,12 @@ typedef struct {
     double target_pos_z;
     double target_velocity;
     int   target_stay;
+    /* deprecated : end */
+
+    /*
+     * Control information
+     */
+    mi_drone_control_in_target_t target;
 
     /*
      * Drone's state
