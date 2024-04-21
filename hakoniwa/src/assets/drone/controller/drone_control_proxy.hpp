@@ -93,10 +93,9 @@ public:
         }
         return true;
     }
-    void do_event()
+    void do_event(bool is_operation_doing)
     {
         in.target_stay = 0;
-        DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in.context;
         if (state.get_status() == MAIN_STATUS_LANDED) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
                 state.takeoff();
@@ -111,7 +110,7 @@ public:
         }
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land) && cmd_land.header.request) {
-                if (drone_context->drone_control_mode != DRONE_CONTROL_MODE_NONE) {
+                if (is_operation_doing) {
                     return;
                 }
                 state.land();
@@ -125,7 +124,7 @@ public:
 
             }
             else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && cmd_move.header.request) {
-                if (drone_context->drone_control_mode != DRONE_CONTROL_MODE_NONE) {
+                if (is_operation_doing) {
                     return;
                 }
                 std::cout << "START MOVE" << std::endl;
@@ -146,15 +145,14 @@ public:
             in.target_stay = 1;
         }
     }
-    void do_control()
+    void do_control(bool is_operation_doing)
     {
-        DroneFlightControllerContextType *drone_context = (DroneFlightControllerContextType*)in.context;
         switch (state.get_status())
         {
             case MAIN_STATUS_TAKINGOFF:
             case MAIN_STATUS_LANDING:
             case MAIN_STATUS_MOVING:
-                if (drone_context->drone_control_mode == DRONE_CONTROL_MODE_NONE) {
+                if (!is_operation_doing) {
                     do_reply();
                     state.done();
                 }
@@ -182,7 +180,7 @@ public:
         module_simulator.init(microseconds, dt_usec);
         for (auto& module : module_simulator.get_modules()) {
             DroneControlProxy proxy(module.drone);
-            proxy.in.context = (void*)&module.context;
+            proxy.in.context = module.get_context();
             proxy.in.mass = module.drone->get_drone_dynamics().get_mass();
             proxy.in.drag = module.drone->get_drone_dynamics().get_drag();
             drone_control_proxies.push_back(proxy);
@@ -210,7 +208,7 @@ public:
             DroneEulerType angle = module.drone->get_drone_dynamics().get_angle();
             hako::assets::drone::DroneVelocityBodyFrameType velocity = module.drone->get_drone_dynamics().get_vel_body_frame();
             hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = module.drone->get_gyro().sensor_value();
-            proxy.do_event();
+            proxy.do_event(module.control_module.controller->is_operation_doing(module.get_context()));
             proxy.in.pos_x = pos.data.x;
             proxy.in.pos_y = pos.data.y;
             proxy.in.pos_z = pos.data.z;
@@ -226,7 +224,7 @@ public:
 
             if (proxy.need_control()) {
                 out = module.control_module.controller->run(&proxy.in);
-                proxy.do_control();
+                proxy.do_control(module.control_module.controller->is_operation_doing(module.get_context()));
             }
 
             DroneThrustType thrust;

@@ -8,6 +8,14 @@ const char* hako_module_drone_controller_impl_get_name(void)
 double _kp_z = 1.0, _ki_z = 0.0, _kd_z = 0.0, _integral_error_z = 0.0, _prev_z = 0.0;
 double _dt; // Assuming _dt is defined somewhere
 
+void* hako_module_drone_controller_impl_create_context(void*)
+{
+    return nullptr;
+}
+int hako_module_drone_controller_impl_is_operation_doing(void*)
+{
+    return true;
+}
 int hako_module_drone_controller_impl_init(void* context)
 {
 

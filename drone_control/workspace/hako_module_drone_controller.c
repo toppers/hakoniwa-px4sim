@@ -22,6 +22,8 @@ extern "C" {
     };
 
     HAKO_MODULE_EXPORT HakoModuleDroneControllerType hako_module_drone_controller = {
+        .create_context = hako_module_drone_controller_impl_create_context,
+        .is_operation_doing = hako_module_drone_controller_impl_is_operation_doing,
         .init = hako_module_drone_controller_impl_init,
         .run = hako_module_drone_controller_impl_run,
     };

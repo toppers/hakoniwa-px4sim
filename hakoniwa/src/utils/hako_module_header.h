@@ -2,7 +2,7 @@
 #define _HAKO_MODULE_HEADER_H_
 
 #define HAKO_MODULE_MAGICNO         0xFEFE8528
-#define HAKO_MODULE_VERSION         0x00001000
+#define HAKO_MODULE_VERSION         0x00001010
 #define HAOKO_MODULE_HEADER_NAME   "hako_module_header"
 typedef struct {
     unsigned int magicno;

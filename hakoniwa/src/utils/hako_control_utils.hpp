@@ -1,7 +1,6 @@
 #ifndef _HAKO_CONTROL_UTILS_HPP_
 #define _HAKO_CONTROL_UTILS_HPP_
 
-#include "drone_flight_controller.hpp"
 #include "utils/hako_module_loader.hpp"
 #include "hako_module_drone_controller.h"
 
@@ -13,14 +12,19 @@ typedef struct {
 
 class AirCraftModule
 {
+private:
+    void *context;
 public:
-    DroneFlightControllerContextType context;
+    void *get_context()
+    {
+        return this->context;
+    }
     AircraftControlModuleType control_module;
     hako::assets::drone::IController *controller;
     IAirCraft *drone;
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 
-    bool load_controller(const char* filepath, void* context) 
+    bool load_controller(const char* filepath, void* arguments) 
     {
         control_module.header = nullptr;
         control_module.controller = nullptr;
@@ -32,6 +36,7 @@ public:
         if (control_module.controller == nullptr) {
             return false;
         }
+        this->context = control_module.controller->create_context(arguments);
         std::cout << "SUCCESS: Loaded module name: " << control_module.header->get_name() << std::endl;
         return (control_module.controller->init(context) == 0);
     }
@@ -76,14 +81,12 @@ public:
             arg.control_module.controller = nullptr;
             std::string filepath = drone_config.getControllerModuleFilePath();
             if (!filepath.empty()) {
+                void* arguments = nullptr;
                 std::string file = drone_config.getControllerContext("file");
-                if (file.empty()) {
-                    arg.context.plan_filepath = nullptr;
+                if (!file.empty()) {
+                    arguments = (void*)file.c_str();
                 }
-                else {
-                    arg.context.plan_filepath = file.c_str();
-                }
-                arg.load_controller(filepath.c_str(), &arg.context);
+                arg.load_controller(filepath.c_str(), arguments);
             }
             else {
                 std::cerr << "WARNING: can not find module for " << drone->get_name() << std::endl;

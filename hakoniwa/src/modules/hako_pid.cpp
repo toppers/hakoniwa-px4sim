@@ -76,7 +76,7 @@ static void my_task()
         hako::assets::drone::DroneVelocityBodyFrameType velocity = module.drone->get_drone_dynamics().get_vel_body_frame();
         //hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = container.drone->get_drone_dynamics().get_angular_vel_body_frame();
         hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = module.drone->get_gyro().sensor_value();
-        in.context = (void*)&module.context;
+        in.context = module.get_context();
         in.mass = module.drone->get_drone_dynamics().get_mass();
         in.drag = module.drone->get_drone_dynamics().get_drag();
         in.pos_x = pos.data.x;

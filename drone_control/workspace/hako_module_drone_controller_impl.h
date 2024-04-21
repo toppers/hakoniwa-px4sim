@@ -9,6 +9,8 @@ extern "C" {
 #define HAKO_MODULE_DRONE_MASS  0.1 /* kg */
 
 extern const char* hako_module_drone_controller_impl_get_name(void);
+extern void* hako_module_drone_controller_impl_create_context(void* arguments);
+extern int hako_module_drone_controller_impl_is_operation_doing(void* context);
 extern int hako_module_drone_controller_impl_init(void* context);
 extern mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in);
 
