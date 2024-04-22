@@ -7,20 +7,40 @@ import pygame
 import time
 import math
 
+def average_axis(history, new_value, history_length=5):
+    history.append(new_value)
+    if len(history) > history_length:
+        history.pop(0)
+    return sum(history) / len(history)
+
+def discretize_value(value):
+    return round(value / 0.1) * 0.1
+
 def joystick_control(client: hakosim.MultirotorClient, joysitck):
+    axis_history = {0: [], 1: [], 2: [], 3: []} 
     try:
         while True:
             data = client.getGameJoystickData()
             for event in pygame.event.get():
                 if event.type == pygame.JOYAXISMOTION:
-                    data['axis'] = list(data['axis']) 
-                    data['axis'][event.axis] = event.value
+                    if (event.axis < 4):
+                        avg_value = average_axis(axis_history[event.axis], event.value)
+                        data['axis'] = list(data['axis']) 
+                        data['axis'][event.axis] = discretize_value(avg_value)
+                    else:
+                        print(f'ERROR: not supported axis index: {event.axis}')
                 elif event.type == pygame.JOYBUTTONDOWN:
-                    data['button'] = list(data['button'])
-                    data['button'][event.button] = True
+                    if (event.button < 4):
+                        data['button'] = list(data['button'])
+                        data['button'][event.button] = True
+                    else:
+                        print(f'ERROR: not supported button index: {event.button}')
                 elif event.type == pygame.JOYBUTTONUP:
-                    data['button'] = list(data['button'])
-                    data['button'][event.button] = False
+                    if (event.button < 4):
+                        data['button'] = list(data['button'])
+                        data['button'][event.button] = False
+                    else:
+                        print(f'ERROR: not supported button index: {event.button}')
             client.putGameJoystickData(data)
     except KeyboardInterrupt:
         # Ctrl+Cが押されたときにジョイスティックをクリーンアップ
