@@ -34,7 +34,7 @@ int hako_module_drone_controller_impl_init(void*)
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     mi_drone_control_out_t out = {};
-    //std::cout << "in->target.throttle.power: " << in->target.throttle.power << std::endl;
+    std::cout << "in->target.throttle.power: " << in->target.throttle.power << std::endl;
     return out;
 }
 
