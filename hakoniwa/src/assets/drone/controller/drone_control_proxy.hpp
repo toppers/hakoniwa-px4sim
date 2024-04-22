@@ -12,8 +12,8 @@
 #define GAME_CTRL_BUTTON_TAKEOFF_LAND   3
 */
 
-#define GAME_CTRL_AXIS_UP_DOWN          0
-#define GAME_CTRL_AXIS_LR_RR            1
+#define GAME_CTRL_AXIS_UP_DOWN          1
+#define GAME_CTRL_AXIS_LR_RR            0
 #define GAME_CTRL_AXIS_LEFT_RIGHT       2
 #define GAME_CTRL_AXIS_FORWARD_BACK     3
 
