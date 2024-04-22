@@ -2,6 +2,9 @@
 #define _RADIO_CONTROLLER_HPP_
 
 #include "pid_control.hpp"
+
+#define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -20,22 +23,33 @@ typedef struct {
     double q;
     double r;
 } PidRateControlOutputType;
+typedef struct {
+    double roll_rate;
+    double pitch_rate;
+} PidControlOutputType;
 
 class RadioController {
 private:
     double delta_time;
-    double angular_rate_cycle;
+    //angle control
     double angular_cycle;
-    double angular_rate_simulation_time;
     double angular_simulation_time;
-    PidRateControlOutputType prev_out = {};
+    PidControl *angular_roll = nullptr;
+    PidControl *angular_pitch = nullptr;
+
+    //rate control
+    double angular_rate_cycle;
+    double angular_rate_simulation_time;
+    PidRateControlOutputType prev_rate_out = {};
+    PidControlOutputType prev_angle_out = {};
     PidControl *angular_rate_roll = nullptr;
     PidControl *angular_rate_pitch = nullptr;
     PidControl *angular_rate_yaw = nullptr;
 
 public:
-    RadioController(PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt)
-        : angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt) {}
+    RadioController(PidControl *roll, PidControl *pitch, PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt)
+        : angular_roll(roll), angular_pitch(pitch), 
+            angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt) {}
     virtual ~RadioController() {}
 
 
@@ -65,25 +79,36 @@ public:
 
     PidRateControlOutputType run_angular_rate_control(PidControlInputType roll, PidControlInputType pitch, PidControlInputType yaw)
     {
-        PidRateControlOutputType out = prev_out;
+        PidRateControlOutputType out = prev_rate_out;
         if (angular_rate_simulation_time >= angular_rate_cycle) {
             out.p = get_target_rate_value(this->angular_rate_roll, 1, M_PI/10.0, roll.target, roll.current);
             out.q = get_target_rate_value(this->angular_rate_pitch, 1, M_PI/10.0, pitch.target, pitch.current);
             out.r = get_target_rate_value(this->angular_rate_yaw, 20, M_PI/4.0, yaw.target, yaw.current);
             angular_rate_simulation_time = 0;
-            prev_out = out;
+            prev_rate_out = out;
         }
         this->angular_rate_simulation_time += this->delta_time;
         return out;
     }
 
-    void run_angular_control()
+    double get_target_value(PidControl *ctrl, double max_angle, double target, double current)
     {
+        double target_angle = target * DEGREE2RADIAN(max_angle);
+        double out_value = ctrl->calculate(target_angle, NORMALIZE_RADIAN(current));
+        return out_value;
+    }
+    PidControlOutputType run_angular_control(PidControlInputType roll, PidControlInputType pitch)
+    {
+        PidControlOutputType out = prev_angle_out;
         if (angular_simulation_time >= angular_cycle) {
-            run_angular_control();
+            out.roll_rate = get_target_value(this->angular_roll, 20, roll.target, roll.current);
+            out.pitch_rate = get_target_value(this->angular_pitch, 20, pitch.target, pitch.current);
             angular_simulation_time = 0;
+
+            //std::cout << "target(roll_rate): " << out.roll_rate << " target: " << RADIAN2DEGREE(roll.target) << " current:  " << RADIAN2DEGREE(roll.current) << std::endl;
         }
         this->angular_simulation_time += this->delta_time;
+        return out;
     }
 
 };
