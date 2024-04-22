@@ -10,8 +10,28 @@
 #define HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF  5
 #define HAKO_AVATOR_CHANNEL_ID_CMD_MOVE     6
 #define HAKO_AVATOR_CHANNEL_ID_CMD_LAND     7
-#define HAKO_AVATOR_CHANNLE_ID_CTRL         8 /* for pid control program only */
+#define HAKO_AVATOR_CHANNEL_ID_CMD_MAG      8
+#define HAKO_AVATOR_CHANNEL_ID_STAT_MAG     9
+#define HAKO_AVATOR_CHANNEL_ID_CMD_CAMERA   10
+#define HAKO_AVATOR_CHANNEL_ID_CAMERA_DATA  11
+#define HAKO_AVATOR_CHANNEL_ID_LIDAR_DATA   12
+#define HAKO_AVATOR_CHANNEL_ID_LIDAR_POS    13
+#define HAKO_AVATOR_CHANNEL_ID_GAME_CTRL    14
+#define HAKO_AVATOR_CHANNLE_ID_CTRL         15 /* for pid control program only */
+/*
 
+        {
+          "type": "hako_msgs/GameControllerOperation",
+          "org_name": "hako_cmd_game",
+          "name": "DroneTransporter_hako_cmd_game",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 14,
+          "pdu_size": 52,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        }
+*/
 static inline void debug_print_drone_collision(hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
 {
     std::cout << "Collision: " << (drone_collision.collision ? "Yes" : "No") << std::endl;
