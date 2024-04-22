@@ -30,11 +30,14 @@ int hako_module_drone_controller_impl_init(void*)
 {
     return 0;
 }
-
+#define THROTTLE_GAIN 0.1
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     mi_drone_control_out_t out = {};
-    std::cout << "in->target.throttle.power: " << in->target.throttle.power << std::endl;
+    if (in->target.throttle.power > 0) {
+        std::cout << "in->target.throttle.power: " << in->target.throttle.power << std::endl;
+    }
+    out.thrust = (in->mass * 9.81) - (THROTTLE_GAIN * in->target.throttle.power);
     return out;
 }
 
