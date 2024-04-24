@@ -1,0 +1,68 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import sys
+import hakosim
+import pygame
+import time
+import math
+
+def average_axis(history, new_value, history_length=5):
+    history.append(new_value)
+    if len(history) > history_length:
+        history.pop(0)
+    return sum(history) / len(history)
+
+def discretize_value(value):
+    return round(value / 0.1) * 0.1
+
+def joystick_control(client: hakosim.MultirotorClient, joysitck):
+    axis_history = {0: [], 1: [], 2: [], 3: []} 
+    try:
+        while True:
+            data = client.getGameJoystickData()
+            for event in pygame.event.get():
+                if event.type == pygame.JOYAXISMOTION:
+                    if (event.axis < 4):
+                        avg_value = average_axis(axis_history[event.axis], event.value)
+                        data['axis'] = list(data['axis']) 
+                        data['axis'][event.axis] = discretize_value(avg_value)
+                    else:
+                        print(f'ERROR: not supported axis index: {event.axis}')
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    if (event.button < 4):
+                        data['button'] = list(data['button'])
+                        data['button'][event.button] = True
+                    else:
+                        print(f'ERROR: not supported button index: {event.button}')
+                elif event.type == pygame.JOYBUTTONUP:
+                    if (event.button < 4):
+                        data['button'] = list(data['button'])
+                        data['button'][event.button] = False
+                    else:
+                        print(f'ERROR: not supported button index: {event.button}')
+            client.putGameJoystickData(data)
+    except KeyboardInterrupt:
+        # Ctrl+Cが押されたときにジョイスティックをクリーンアップ
+        pygame.joystick.quit()
+        pygame.quit()
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} <config_path>")
+        return 1
+    pygame.init()
+    pygame.joystick.init()
+    joystick = pygame.joystick.Joystick(0)
+    joystick.init()
+
+    # connect to the HakoSim simulator
+    client = hakosim.MultirotorClient(sys.argv[1])
+    client.confirmConnection()
+    client.enableApiControl(True)
+    client.armDisarm(True)
+    joystick_control(client, joystick)
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

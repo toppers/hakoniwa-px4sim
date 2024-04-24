@@ -133,14 +133,16 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     IThrustDynamics *thrust = nullptr;
     auto thrust_vendor = drone_config.getCompThrusterVendor();
     std::cout<< "Thruster vendor: " << thrust_vendor << std::endl;
+    double param_A = 1.0;
+    double param_B = THRUST_PARAM_B;
     if (thrust_vendor == "linear") {
         thrust = new ThrustDynamicsLinear(DELTA_TIME_SEC);
         HAKO_ASSERT(thrust != nullptr);
         double HoveringRpm = drone_config.getCompThrusterParameter("HoveringRpm");
         HAKO_ASSERT(HoveringRpm != 0);
         double mass = drone_dynamics->get_mass();
-        double param_A = (mass * GRAVITY / (HoveringRpm * ROTOR_NUM));
-        double param_B = drone_config.getCompThrusterParameter("parameterB_linear");
+        param_A = (mass * GRAVITY / (HoveringRpm * ROTOR_NUM));
+        param_B = drone_config.getCompThrusterParameter("parameterB_linear");
         static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
             param_A,
             param_B
@@ -155,7 +157,7 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         double HoveringRpm = drone_config.getCompThrusterParameter("HoveringRpm");
         HAKO_ASSERT(HoveringRpm != 0);
         double mass = drone_dynamics->get_mass();
-        double param_A = ( 
+        param_A = ( 
                             mass * GRAVITY / 
                             (
                                 pow(HoveringRpm, 2) * ROTOR_NUM
@@ -180,6 +182,11 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     }    
 
     thrust->set_rotor_config(rotor_config);
+    DroneMixer *mixer = new DroneMixer(ROTOR_K, param_A, param_B, rotor_config);
+    HAKO_ASSERT(mixer != nullptr);
+    bool inv_m = mixer->calculate_M_inv();
+    HAKO_ASSERT(inv_m == true);
+    drone->set_mixer(mixer);
 
     //sensor acc
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);

@@ -1,7 +1,6 @@
 #ifndef _HAKO_CONTROL_UTILS_HPP_
 #define _HAKO_CONTROL_UTILS_HPP_
 
-#include "drone_flight_controller.hpp"
 #include "utils/hako_module_loader.hpp"
 #include "hako_module_drone_controller.h"
 
@@ -11,16 +10,21 @@ typedef struct {
     HakoModuleDroneControllerType *controller;
 } AircraftControlModuleType;
 
-class AircraftSystemContainer
+class AirCraftModule
 {
+private:
+    void *context;
 public:
-    DroneFlightControllerContextType context;
+    void *get_context()
+    {
+        return this->context;
+    }
     AircraftControlModuleType control_module;
     hako::assets::drone::IController *controller;
     IAirCraft *drone;
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 
-    bool load_controller(const char* filepath, void* context) 
+    bool load_controller(const char* filepath, void* arguments) 
     {
         control_module.header = nullptr;
         control_module.controller = nullptr;
@@ -32,13 +36,14 @@ public:
         if (control_module.controller == nullptr) {
             return false;
         }
+        this->context = control_module.controller->create_context(arguments);
         std::cout << "SUCCESS: Loaded module name: " << control_module.header->get_name() << std::endl;
         return (control_module.controller->init(context) == 0);
     }
 
 };
 
-class AircraftSystemTaskManager
+class AirCraftModuleSimulator
 {
 private:
     hako::assets::drone::AirCraftManager drone_manager;
@@ -53,11 +58,15 @@ private:
         hako_asset_time_usec += delta_time_usec;
         return true;
     }
+    std::vector<AirCraftModule> aircraft_modules;
 
-public:
-    std::vector<AircraftSystemContainer> aircraft_system_container;
     Hako_uint64 hako_asset_time_usec;
     Hako_uint64 delta_time_usec;
+public:
+    std::vector<AirCraftModule> get_modules() const
+    {
+        return this->aircraft_modules;
+    }
     void init(Hako_uint64 microseconds, Hako_uint64 dt_usec)
     {
         hako_asset_time_usec = microseconds;
@@ -65,21 +74,19 @@ public:
         drone_manager.createAirCrafts(drone_config_manager);
         for (auto* drone : drone_manager.getAllAirCrafts()) {
             std::cout << "INFO: loading drone & controller: " << drone->get_index() << std::endl;
-            AircraftSystemContainer arg;
+            AirCraftModule arg;
             arg.drone = drone;
             DroneConfig drone_config;
             drone_config_manager.getConfig(drone->get_index(), drone_config);
             arg.control_module.controller = nullptr;
             std::string filepath = drone_config.getControllerModuleFilePath();
             if (!filepath.empty()) {
+                void* arguments = nullptr;
                 std::string file = drone_config.getControllerContext("file");
-                if (file.empty()) {
-                    arg.context.plan_filepath = nullptr;
+                if (!file.empty()) {
+                    arguments = (void*)file.c_str();
                 }
-                else {
-                    arg.context.plan_filepath = file.c_str();
-                }
-                arg.load_controller(filepath.c_str(), &arg.context);
+                arg.load_controller(filepath.c_str(), arguments);
             }
             else {
                 std::cerr << "WARNING: can not find module for " << drone->get_name() << std::endl;
@@ -93,7 +100,7 @@ public:
                     return;
                 }
             }
-            aircraft_system_container.push_back(arg);
+            aircraft_modules.push_back(arg);
         }
     }
     void do_task()
@@ -101,9 +108,9 @@ public:
         while (do_asset_task() == true){};
     }
 };
-static inline void calculate_simple_controls(AircraftSystemContainer& container, const DroneThrustType& thrust)
+static inline void calculate_simple_controls(AirCraftModule& module, const DroneThrustType& thrust)
 {
-    double hovering_force = container.drone->get_drone_dynamics().get_mass() * hako::assets::drone::GRAVITY;
+    double hovering_force = module.drone->get_drone_dynamics().get_mass() * hako::assets::drone::GRAVITY;
     double max_hovering_force = 2.0 * hovering_force;
     double control = 0;
     if (thrust.data > max_hovering_force) {
@@ -113,7 +120,7 @@ static inline void calculate_simple_controls(AircraftSystemContainer& container,
         control = thrust.data / max_hovering_force;
     }
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
-        container.controls[i] = control;
+        module.controls[i] = control;
     }
     return;
 }

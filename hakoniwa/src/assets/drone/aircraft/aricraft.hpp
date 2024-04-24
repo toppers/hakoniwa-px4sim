@@ -9,10 +9,19 @@ namespace hako::assets::drone {
 class AirCraft : public hako::assets::drone::IAirCraft {
 private:
     CsvLogger logger;
+    DroneMixer *mixer = nullptr;
 public:
     virtual ~AirCraft() 
     {
         logger.close();
+    }
+    void set_mixer(DroneMixer *obj)
+    {
+        this->mixer = obj;
+    }
+    DroneMixer& get_mixer() override
+    {
+        return *this->mixer;
     }
     void run(DroneDynamicsInputType& input) override
     {

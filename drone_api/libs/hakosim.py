@@ -188,7 +188,7 @@ class MultirotorClient:
         vehicle_name = self.get_vehicle_name(vehicle_name)
         if vehicle_name != None:
             vehicle = self.vehicles[vehicle_name]
-            print("INFO: get image ")
+            #print("INFO: get image ")
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_CAMERA, vehicle_name)
             pdu_cmd['request_id'] = vehicle.camera_cmd_request_id
             pdu_cmd['encode_type'] = 0
@@ -219,3 +219,24 @@ class MultirotorClient:
             return hakosim_lidar.LidarData(point_cloud, time_stamp, pose)
         else:
             return None
+
+    def getGameJoystickData(self, vehicle_name=None):
+        vehicle_name = self.get_vehicle_name(vehicle_name)
+        if vehicle_name != None:
+            vehicle = self.vehicles[vehicle_name]
+            game_pdu = self.pdu_manager.get_pdu(vehicle.name, pdu_info.HAKO_AVATOR_CHANNEL_ID_GAME_CTRL)
+            game_pdu_data = game_pdu.read()
+            return game_pdu_data
+        else:
+            return None
+
+    def putGameJoystickData(self, data, vehicle_name=None):
+        vehicle_name = self.get_vehicle_name(vehicle_name)
+        if vehicle_name != None:
+            vehicle = self.vehicles[vehicle_name]
+            game_pdu = self.pdu_manager.get_pdu(vehicle.name, pdu_info.HAKO_AVATOR_CHANNEL_ID_GAME_CTRL)
+            game_pdu.obj = data
+            game_pdu.write()
+            return True
+        else:
+            return False

@@ -15,6 +15,29 @@ const char* hako_module_drone_controller_impl_get_name(void)
 #define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
 
 
+void* hako_module_drone_controller_impl_create_context(void* arguments)
+{
+    void *obj = new DroneFlightControllerContextType();
+    if (obj == nullptr) {
+        std::cerr << "ERROR: can not create memory for DroneFlightControllerContextType" << std::endl;
+        exit(1);
+    }
+    if (arguments != nullptr) {
+        DroneFlightControllerContextType *fcontext = (DroneFlightControllerContextType*)obj;
+        fcontext->plan_filepath = (const char*)arguments;
+    }
+    return obj;
+}
+
+int hako_module_drone_controller_impl_is_operation_doing(void *context)
+{
+    DroneFlightControllerContextType *fcontext = (DroneFlightControllerContextType*)context;
+    if (fcontext->drone_control_mode != DRONE_CONTROL_MODE_NONE) {
+        return true;
+    }
+    return false;
+}
+
 int hako_module_drone_controller_impl_init(void* context)
 {
     if (context == nullptr) {
