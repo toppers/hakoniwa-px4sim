@@ -35,38 +35,30 @@ const char* hako_module_drone_controller_impl_get_name(void)
 
 void* hako_module_drone_controller_impl_create_context(void*)
 {
-    PidControl *roll = new PidControl(PID_PARM_ROLL_Kp, PID_PARM_ROLL_Ki, PID_PARM_ROLL_Kd, 0, SIMULATION_DELTA_TIME);
-    if (roll == nullptr) {
-        std::cerr << "ERROR: can not allocate memory..." << std::endl;
-        exit(1);
-    }
-    PidControl *pitch = new PidControl(PID_PARM_PITCH_Kp, PID_PARM_PITCH_Ki, PID_PARM_PITCH_Kd, 0, SIMULATION_DELTA_TIME);
-    if (pitch == nullptr) {
-        std::cerr << "ERROR: can not allocate memory..." << std::endl;
-        exit(1);
-    }
-    PidControl *roll_rate = new PidControl(PID_PARM_ROLL_RATE_Kp, PID_PARM_ROLL_RATE_Ki, PID_PARM_ROLL_RATE_Kd, 0, SIMULATION_DELTA_TIME);
-    if (roll_rate == nullptr) {
-        std::cerr << "ERROR: can not allocate memory..." << std::endl;
-        exit(1);
-    }
-    PidControl *pitch_rate = new PidControl(PID_PARM_PITCH_RATE_Kp, PID_PARM_PITCH_RATE_Ki, PID_PARM_PITCH_RATE_Kd, 0, SIMULATION_DELTA_TIME);
-    if (pitch_rate == nullptr) {
-        std::cerr << "ERROR: can not allocate memory..." << std::endl;
-        exit(1);
-    }
-    PidControl *yaw_rate = new PidControl(PID_PARM_YAW_RATE_Kp, PID_PARM_YAW_RATE_Ki, PID_PARM_YAW_RATE_Kd, 0, SIMULATION_DELTA_TIME);
-    if (yaw_rate == nullptr) {
-        std::cerr << "ERROR: can not allocate memory..." << std::endl;
-        exit(1);
-    }
-    RadioController *rc = new RadioController(roll, pitch, roll_rate, pitch_rate, yaw_rate, SIMULATION_DELTA_TIME);
+    RadioControllerParamType param;
+    param.delta_time = SIMULATION_DELTA_TIME;
+    param.throttle_gain = THROTTLE_GAIN;
+    param.angular_cycle = ANGULAR_CYCLE;
+    param.angular_rate_cycle = ANGULAR_RATE_CYCLE;
+    param.roll.Kp = PID_PARM_ROLL_Kp;
+    param.roll.Ki = PID_PARM_ROLL_Ki;
+    param.roll.Kd = PID_PARM_ROLL_Kd;
+    param.pitch.Kp = PID_PARM_PITCH_Kp;
+    param.pitch.Ki = PID_PARM_PITCH_Ki;
+    param.pitch.Kd = PID_PARM_PITCH_Kd;
+    param.roll_rate.Kp = PID_PARM_ROLL_RATE_Kp;
+    param.roll_rate.Ki = PID_PARM_ROLL_RATE_Ki;
+    param.roll_rate.Kd = PID_PARM_ROLL_RATE_Kd;
+    param.pitch_rate.Kp = PID_PARM_PITCH_RATE_Kp;
+    param.pitch_rate.Ki = PID_PARM_PITCH_RATE_Ki;
+    param.pitch_rate.Kd = PID_PARM_PITCH_RATE_Kd;
+    param.yaw_rate.Kp = PID_PARM_YAW_RATE_Kp;
+    param.yaw_rate.Ki = PID_PARM_YAW_RATE_Ki;
+    param.yaw_rate.Kd = PID_PARM_YAW_RATE_Kd;
+    auto rc = create_radio_controller(param);
     if (rc == nullptr) {
-        std::cerr << "ERROR: can not allocate memory..." << std::endl;
         exit(1);
     }
-    rc->set_angular_cycle(ANGULAR_CYCLE);
-    rc->set_angular_rate_cycle(ANGULAR_RATE_CYCLE);
     return (void*)rc;
 }
 
@@ -83,28 +75,11 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
 {
     RadioController *rc = (RadioController*)in->context;
     mi_drone_control_out_t out = {};
-    out.thrust = (in->mass * 9.81) - (THROTTLE_GAIN * in->target.throttle.power);
 
-    // angle control
-    PidControlInputType roll_angle;
-    roll_angle.current = in->euler_x;
-    roll_angle.target = in->target.attitude.roll;
-    PidControlInputType pitch_angle;
-    pitch_angle.current = in->euler_y;
-    pitch_angle.target = in->target.attitude.pitch;
-    PidControlOutputType ret_angle = rc->run_angular_control(roll_angle, pitch_angle);
-
-    // rate control
-    PidControlInputType roll;
-    roll.current = in->p;
-    roll.target = ret_angle.roll_rate;
-    PidControlInputType pitch;
-    pitch.current = in->q;
-    pitch.target = ret_angle.pitch_rate;
-    PidControlInputType yaw;
-    yaw.current = in->r;
-    yaw.target = in->target.direction_velocity.r;
-    PidRateControlOutputType ret = rc->run_angular_rate_control(roll, pitch, yaw);
+    //control
+    out.thrust = rc->run_thrust_control(in->mass, 9.81, in->target.throttle.power);
+    PidControlOutputType ret_angle = rc->run_angular_control({in->euler_x, in->target.attitude.roll}, {in->euler_y, in->target.attitude.pitch});
+    PidRateControlOutputType ret = rc->run_angular_rate_control({in->p, ret_angle.roll_rate}, {in->q, ret_angle.pitch_rate}, {in->r, in->target.direction_velocity.r});
     out.torque_x = ret.p;
     out.torque_y = ret.q;
     out.torque_z = ret.r;
