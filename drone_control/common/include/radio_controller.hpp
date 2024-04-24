@@ -2,6 +2,7 @@
 #define _RADIO_CONTROLLER_HPP_
 
 #include "pid_control.hpp"
+#include "flight_controller_types.hpp"
 
 #define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
 
@@ -29,6 +30,21 @@ struct PidRateControlOutputType {
     PidRateControlOutputType(double p_val, double q_val, double r_val)
         : p(p_val), q(q_val), r(r_val) {}
 };
+struct RadioControlInputType {
+    FlightControllerInputEulerType euler;
+    FlightControllerInputAngularRateType angular_rate;
+    double target_thrust;
+    double target_roll;
+    double target_pitch;
+    double target_angular_rate_r;
+    RadioControlInputType() : euler(), angular_rate(), target_roll(0), target_pitch(0), target_thrust(0), target_angular_rate_r(0) {}
+    RadioControlInputType(
+        FlightControllerInputEulerType e, FlightControllerInputAngularRateType rate, 
+        double t_t, double t_r, double t_p, double t_arr) : 
+        euler(e), angular_rate(rate), 
+        target_thrust(t_t),target_roll(t_r), target_pitch(t_p), target_angular_rate_r(t_arr) {}    
+};
+
 struct PidControlOutputType {
     double roll_rate;
     double pitch_rate;
@@ -43,6 +59,8 @@ typedef struct {
     double Kd;
 } RadioControllerPidParamType;
 typedef struct {
+    double mass;
+    double gravity;
     double delta_time;
     double angular_cycle;
     double angular_rate_cycle;
@@ -58,6 +76,8 @@ class RadioController {
 private:
     double delta_time;
     double throttle_gain;
+    double mass;
+    double gravity;
     //angle control
     double angular_cycle;
     double angular_simulation_time;
@@ -93,25 +113,6 @@ private:
         return out_value;
     }
 
-
-public:
-    RadioController(PidControl *roll, PidControl *pitch, PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt, double throttle_gain)
-        : angular_roll(roll), angular_pitch(pitch), 
-            angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt), throttle_gain(throttle_gain) {}
-    virtual ~RadioController() {}
-
-    void set_angular_rate_cycle(double cycle)
-    {
-        angular_rate_cycle = cycle;
-        angular_rate_simulation_time = 0;
-    }
-    void set_angular_cycle(double cycle)
-    {
-        angular_cycle = cycle;
-        angular_simulation_time = 0;
-    }
-
-
     PidRateControlOutputType run_angular_rate_control(PidControlInputType roll, PidControlInputType pitch, PidControlInputType yaw)
     {
         PidRateControlOutputType out = prev_rate_out;
@@ -139,12 +140,92 @@ public:
         this->angular_simulation_time += this->delta_time;
         return out;
     }
-    double run_thrust_control(double mass, double gravity, double power)
+    double run_thrust_control(double power)
     {
-        return (mass * gravity) - (this->throttle_gain * power);
+        return (this->mass * this->gravity) - (this->throttle_gain * power);
+    }
+
+public:
+    RadioController(PidControl *roll, PidControl *pitch, PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt, double throttle_gain, double m, double g)
+        : angular_roll(roll), angular_pitch(pitch), 
+            angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt), throttle_gain(throttle_gain), mass(m), gravity(g) {}
+    virtual ~RadioController() {}
+
+    void set_angular_rate_cycle(double cycle)
+    {
+        angular_rate_cycle = cycle;
+        angular_rate_simulation_time = 0;
+    }
+    void set_angular_cycle(double cycle)
+    {
+        angular_cycle = cycle;
+        angular_simulation_time = 0;
+    }
+
+    FlightControllerOutputType run(RadioControlInputType& in)
+    {
+        FlightControllerOutputType out;
+        out.thrust = this->run_thrust_control(in.target_thrust);
+        PidControlOutputType ret_angle = this->run_angular_control({in.euler.x, in.target_roll}, {in.euler.y, in.target_pitch});
+        PidRateControlOutputType ret = this->run_angular_rate_control({in.angular_rate.p, ret_angle.roll_rate}, {in.angular_rate.q, ret_angle.pitch_rate}, {in.angular_rate.r, in.target_angular_rate_r});
+        out.torque_x = ret.p;
+        out.torque_y = ret.q;
+        out.torque_z = ret.r;
+        return out;
     }
 
 };
+
+#define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
+#define ANGULAR_RATE_CYCLE        SIMULATION_DELTA_TIME // 333.3Hz
+#define ANGULAR_CYCLE             (SIMULATION_DELTA_TIME * 10.0) // 33.3Hz
+#define RADIO_CONTROL_MASS       0.1
+#define RADIO_CONTROL_GRAVITY    9.81
+#define THROTTLE_GAIN 0.3
+
+#define PID_PARM_ROLL_Kp        100.0
+#define PID_PARM_ROLL_Ki        0.1
+#define PID_PARM_ROLL_Kd        100.0
+#define PID_PARM_PITCH_Kp       100.0
+#define PID_PARM_PITCH_Ki       0.1
+#define PID_PARM_PITCH_Kd       100.0
+
+#define PID_PARM_ROLL_RATE_Kp     0.001
+#define PID_PARM_ROLL_RATE_Ki     0.0001
+#define PID_PARM_ROLL_RATE_Kd     0.001
+#define PID_PARM_PITCH_RATE_Kp    0.001
+#define PID_PARM_PITCH_RATE_Ki    0.0001
+#define PID_PARM_PITCH_RATE_Kd    0.001
+#define PID_PARM_YAW_RATE_Kp      0.01
+#define PID_PARM_YAW_RATE_Ki      0.001
+#define PID_PARM_YAW_RATE_Kd      0.01
+
+static inline RadioControllerParamType get_radio_control_default_parameters()
+{
+    RadioControllerParamType param;
+    param.mass = RADIO_CONTROL_MASS;
+    param.gravity = RADIO_CONTROL_GRAVITY;
+    param.delta_time = SIMULATION_DELTA_TIME;
+    param.throttle_gain = THROTTLE_GAIN;
+    param.angular_cycle = ANGULAR_CYCLE;
+    param.angular_rate_cycle = ANGULAR_RATE_CYCLE;
+    param.roll.Kp = PID_PARM_ROLL_Kp;
+    param.roll.Ki = PID_PARM_ROLL_Ki;
+    param.roll.Kd = PID_PARM_ROLL_Kd;
+    param.pitch.Kp = PID_PARM_PITCH_Kp;
+    param.pitch.Ki = PID_PARM_PITCH_Ki;
+    param.pitch.Kd = PID_PARM_PITCH_Kd;
+    param.roll_rate.Kp = PID_PARM_ROLL_RATE_Kp;
+    param.roll_rate.Ki = PID_PARM_ROLL_RATE_Ki;
+    param.roll_rate.Kd = PID_PARM_ROLL_RATE_Kd;
+    param.pitch_rate.Kp = PID_PARM_PITCH_RATE_Kp;
+    param.pitch_rate.Ki = PID_PARM_PITCH_RATE_Ki;
+    param.pitch_rate.Kd = PID_PARM_PITCH_RATE_Kd;
+    param.yaw_rate.Kp = PID_PARM_YAW_RATE_Kp;
+    param.yaw_rate.Ki = PID_PARM_YAW_RATE_Ki;
+    param.yaw_rate.Kd = PID_PARM_YAW_RATE_Kd;
+    return param;    
+}
 
 static inline RadioController* create_radio_controller(const RadioControllerParamType& param)
 {
@@ -174,7 +255,7 @@ static inline RadioController* create_radio_controller(const RadioControllerPara
         std::cerr << "ERROR: can not allocate memory..." << std::endl;
         return nullptr;
     }
-    RadioController *rc = new RadioController(roll, pitch, roll_rate, pitch_rate, yaw_rate, param.delta_time, param.throttle_gain);
+    RadioController *rc = new RadioController(roll, pitch, roll_rate, pitch_rate, yaw_rate, param.delta_time, param.throttle_gain, param.mass, param.gravity);
     if (rc == nullptr) {
         std::cerr << "ERROR: can not allocate memory..." << std::endl;
         return nullptr;
