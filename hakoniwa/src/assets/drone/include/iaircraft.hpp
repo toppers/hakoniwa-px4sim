@@ -9,6 +9,7 @@
 #include "isensor_gps.hpp"
 #include "isensor_gyro.hpp"
 #include "isensor_mag.hpp"
+#include "assets/drone/controller/drone_mixer.hpp"
 
 namespace hako::assets::drone {
 
@@ -29,6 +30,7 @@ protected:
 public:
     virtual ~IAirCraft() {}
     virtual void run(DroneDynamicsInputType& input) = 0;
+    virtual DroneMixer& get_mixer() = 0;
     void enable_disturb()
     {
         this->enable_disturbance = true;
