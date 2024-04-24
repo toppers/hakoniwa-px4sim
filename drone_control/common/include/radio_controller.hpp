@@ -1,27 +1,8 @@
 #ifndef _RADIO_CONTROLLER_HPP_
 #define _RADIO_CONTROLLER_HPP_
 
-#include "pid_control.hpp"
 #include "flight_controller_types.hpp"
 
-#define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-#define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
-#define RADIAN2DEGREE(v)    ( (180.0 * (v)) / M_PI )
-#define RPM2EULER_RATE(v)   ( ((v) * 2 * M_PI) / 60.0 )
-#define TWO_PI (2.0 * M_PI)
-#define NORMALIZE_RADIAN(x) (fmod((x), TWO_PI))
-
-struct PidControlInputType {
-    double target;
-    double current;
-    PidControlInputType() : target(0), current(0) {}
-    PidControlInputType(double current_val, double target_val)
-        : current(current_val), target(target_val) {}
-};
 struct PidRateControlOutputType {
     double p;
     double q;
@@ -45,11 +26,11 @@ struct RadioControlInputType {
         target_thrust(t_t),target_roll(t_r), target_pitch(t_p), target_angular_rate_r(t_arr) {}    
 };
 
-struct PidControlOutputType {
+struct RadioControlPidControlOutputType {
     double roll_rate;
     double pitch_rate;
-    PidControlOutputType() : roll_rate(0), pitch_rate(0) {}
-    PidControlOutputType(double roll_rate_val, double pitch_rate_val)
+    RadioControlPidControlOutputType() : roll_rate(0), pitch_rate(0) {}
+    RadioControlPidControlOutputType(double roll_rate_val, double pitch_rate_val)
         : roll_rate(roll_rate_val), pitch_rate(pitch_rate_val) {}
 };
 
@@ -88,7 +69,7 @@ private:
     double angular_rate_cycle;
     double angular_rate_simulation_time;
     PidRateControlOutputType prev_rate_out;
-    PidControlOutputType prev_angle_out;
+    RadioControlPidControlOutputType prev_angle_out;
     PidControl *angular_rate_roll = nullptr;
     PidControl *angular_rate_pitch = nullptr;
     PidControl *angular_rate_yaw = nullptr;
@@ -127,9 +108,9 @@ private:
         return out;
     }
 
-    PidControlOutputType run_angular_control(PidControlInputType roll, PidControlInputType pitch)
+    RadioControlPidControlOutputType run_angular_control(PidControlInputType roll, PidControlInputType pitch)
     {
-        PidControlOutputType out = prev_angle_out;
+        RadioControlPidControlOutputType out = prev_angle_out;
         if (angular_simulation_time >= angular_cycle) {
             out.roll_rate = get_target_value(this->angular_roll, 20, roll.target, roll.current);
             out.pitch_rate = get_target_value(this->angular_pitch, 20, pitch.target, pitch.current);
@@ -166,7 +147,7 @@ public:
     {
         FlightControllerOutputType out;
         out.thrust = this->run_thrust_control(in.target_thrust);
-        PidControlOutputType ret_angle = this->run_angular_control({in.euler.x, in.target_roll}, {in.euler.y, in.target_pitch});
+        RadioControlPidControlOutputType ret_angle = this->run_angular_control({in.euler.x, in.target_roll}, {in.euler.y, in.target_pitch});
         PidRateControlOutputType ret = this->run_angular_rate_control({in.angular_rate.p, ret_angle.roll_rate}, {in.angular_rate.q, ret_angle.pitch_rate}, {in.angular_rate.r, in.target_angular_rate_r});
         out.torque_x = ret.p;
         out.torque_y = ret.q;
