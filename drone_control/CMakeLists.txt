@@ -12,6 +12,7 @@ endif()
 
 include_directories(
     include
+    common/include
     ${HAKONIWA_SOURCE_DIR}/src/utils
 )
 
