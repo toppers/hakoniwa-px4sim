@@ -51,8 +51,8 @@
 #define PID_PARM_VY_Kp        PID_PARAM_V_BASE
 #define PID_PARM_VY_Ki        0.1
 #define PID_PARM_VY_Kd        PID_PARAM_V_BASE
-#define PID_PARAM_MAX_ROLL    20
-#define PID_PARAM_MAX_PITCH   20
+#define PID_PARAM_MAX_ROLL    50
+#define PID_PARAM_MAX_PITCH   50
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*
