@@ -7,6 +7,16 @@
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
 /*
+ * Heading Control
+ */
+#define PID_PARM_HEAD_Kp        1.0
+#define PID_PARM_HEAD_Ki        0.1
+#define PID_PARM_HEAD_Kd        1.0
+#define PID_PARAM_MAX_RRATE     10.0
+#define HEAD_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
+#define HEAD_DELTA_VALUE_M       1.0 /* deg */
+
+/*
  * Position Control
  */
 #define PID_PARM_POSX_Kp        1.5
