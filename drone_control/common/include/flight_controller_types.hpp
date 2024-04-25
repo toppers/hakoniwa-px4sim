@@ -7,6 +7,20 @@
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
 /*
+ * Position Control
+ */
+#define PID_PARM_POSX_Kp        1.5
+#define PID_PARM_POSX_Ki        0.3
+#define PID_PARM_POSX_Kd        2.0
+#define PID_PARM_POSY_Kp        1.5
+#define PID_PARM_POSY_Ki        0.3
+#define PID_PARM_POSY_Kd        2.0
+#define PID_PARAM_MAX_SPD       20.0
+#define POS_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
+#define POS_DELTA_VALUE_M       0.5   /* 50cm */
+#define POS_VALUE_MAX           100.0 /* 100m */
+
+/*
  * Altitude Control
  */
 #define PID_PARM_ALT_Kp        100.0
