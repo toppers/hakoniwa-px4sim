@@ -1,6 +1,7 @@
 #ifndef _MOVE_POSITION_CONTROLLER_HPP_
 #define _MOVE_POSITION_CONTROLLER_HPP_
 
+#include "heading_controller.hpp"
 #include "position_controller.hpp"
 #include "radio_controller.hpp"
 
@@ -9,6 +10,17 @@ private:
     double delta_time;
     double simulation_time = 0;
 public:
+    HeadingController heading;
+    double r_angle;
+    double angle_time = 0;
+    void update_target_angle(double v)
+    {
+        if (angle_time >= HEAD_CONTROL_CYCLE) {
+            angle_time = 0;
+            r_angle += v * HEAD_DELTA_VALUE_M;
+        }
+        angle_time += this->delta_time;
+    }
     PositionController pos;
     RadioController *rc;
     double r_pos_x;

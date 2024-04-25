@@ -32,6 +32,18 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     RadioController *rc = ms->rc;
     mi_drone_control_out_t out = {};
 
+    //Heading control;
+    double angle = in->target.direction_velocity.r;
+    ms->update_target_angle(angle);
+    HeadingControlInputType h_in;
+    h_in.euler = {in->euler_x, in->euler_y, in->euler_z};
+    h_in.target_angle_deg = ms->r_angle;
+    HeadingControlPidControlOutputType h_out = ms->heading.run(h_in);
+    std::cout << "TARGET ANGLE ( " << h_in.target_angle_deg <<  " )" <<std::endl;
+    std::cout << "CURRENT ANGLE( " << RADIAN2DEGREE(h_in.euler.z) << " )" <<std::endl;
+    std::cout << "TARGET  RATE( " << h_out.angular_rate_r << " )" <<std::endl;
+    std::cout << "CURRENT RATE( " << in->r << " )" <<std::endl;
+
     //position control
     double pos_x = -in->target.attitude.pitch;
     double pos_y = in->target.attitude.roll;
@@ -43,10 +55,10 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     p_in.target_x = ms->r_pos_x;
     p_in.target_y = ms->r_pos_y;
     PositionControlPidControlOutputType p_out = ms->pos.run(p_in);
-    std::cout << "TARGET POS ( " << p_in.target_x << ", " << p_in.target_y << " )" <<std::endl;
-    std::cout << "CURRENT POS( " << p_in.pos.x << ", " << p_in.pos.y << " )" <<std::endl;
-    std::cout << "TARGET  VEL( " << p_out.target_vx << ", " << p_out.target_vy << " )" <<std::endl;
-    std::cout << "CURRENT VEL( " << in->u << ", " << in->v << " )" <<std::endl;
+    //std::cout << "TARGET POS ( " << p_in.target_x << ", " << p_in.target_y << " )" <<std::endl;
+    //std::cout << "CURRENT POS( " << p_in.pos.x << ", " << p_in.pos.y << " )" <<std::endl;
+    //std::cout << "TARGET  VEL( " << p_out.target_vx << ", " << p_out.target_vy << " )" <<std::endl;
+    //std::cout << "CURRENT VEL( " << in->u << ", " << in->v << " )" <<std::endl;
 
     //altitude control
     double throttle_value = -in->target.throttle.power;
@@ -58,8 +70,6 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
 
     //speed control
     SpeedControlInputType s_in;
-    //s_in.target_vx = in->target.attitude.pitch * -PID_PARAM_MAX_SPD; /* -20m/s to 20m/s */
-    //s_in.target_vy = in->target.attitude.roll * PID_PARAM_MAX_SPD;  /* -20m/s to 20m/s */
     s_in.target_vx = p_out.target_vx;
     s_in.target_vy = p_out.target_vy;
     s_in.velocity = { in->u, in->v, in->w };
@@ -72,7 +82,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     rin.target_thrust = a_out.throttle_power;                           //TARGET: thrust
     rin.target_roll = s_out.roll;
     rin.target_pitch = s_out.pitch;
-    rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
+    //rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
+    rin.target_angular_rate_r = h_out.angular_rate_r;
 
     FlightControllerOutputType ret = rc->run(rin);
     out.thrust = ret.thrust;
