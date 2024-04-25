@@ -38,7 +38,7 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
 
     double target_pos_x = in->target_pos_x;
     double target_pos_y = in->target_pos_y;
-    double target_pos_z = in->target_pos_z;
+    double target_pos_z = -in->target_pos_z;
     double target_velocity = in->target_velocity;
     double target_angle = 0; //TODO
 
