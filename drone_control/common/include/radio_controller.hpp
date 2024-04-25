@@ -3,6 +3,7 @@
 
 #include "flight_controller_types.hpp"
 #include "speed_controller.hpp"
+#include "altitude_controller.hpp"
 
 struct PidRateControlOutputType {
     double p;
@@ -119,7 +120,7 @@ private:
     }
     double run_thrust_control(double power)
     {
-        return (this->mass * this->gravity) - (this->throttle_gain * power);
+        return (this->mass * this->gravity) + (this->throttle_gain * power);
     }
 
 public:
@@ -137,6 +138,21 @@ public:
     {
         angular_cycle = cycle;
         angular_simulation_time = 0;
+    }
+    //altitude control
+    double r_altitude = 0;
+    double alt_time = 0;
+    AltitudeController alt;
+    void update_target_altitude(double v)
+    {
+        if (alt_time >= ALT_CONTROL_CYCLE) {
+            alt_time = 0;
+            r_altitude += v * ALT_DELTA_VALUE_M;
+            if (r_altitude >= ALT_VALUE_MAX) {
+                r_altitude = ALT_VALUE_MAX;
+            }
+        }
+        alt_time += this->delta_time;
     }
     //speed control
     SpeedController spd;

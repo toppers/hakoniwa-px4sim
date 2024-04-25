@@ -16,6 +16,17 @@
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
 /*
+ * Altitude Control
+ */
+#define PID_PARM_ALT_Kp        100.0
+#define PID_PARM_ALT_Ki        0.1
+#define PID_PARM_ALT_Kd        100.0
+#define PID_PARAM_MAX_POWER    10.0
+#define ALT_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
+#define ALT_DELTA_VALUE_M       0.1 /* 10cm */
+#define ALT_VALUE_MAX           100.0 /* 100m */
+
+/*
  * Speed Control
  */
 #define PID_PARAM_V_BASE      10.0
@@ -25,8 +36,8 @@
 #define PID_PARM_VY_Kp        PID_PARAM_V_BASE
 #define PID_PARM_VY_Ki        0.1
 #define PID_PARM_VY_Kd        PID_PARAM_V_BASE
-#define PID_PARAM_MAX_ROLL    30
-#define PID_PARAM_MAX_PITCH   30
+#define PID_PARAM_MAX_ROLL    50
+#define PID_PARAM_MAX_PITCH   50
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*
@@ -34,14 +45,15 @@
  */
 #define RADIO_CONTROL_MASS       0.1
 #define RADIO_CONTROL_GRAVITY    9.81
-#define THROTTLE_GAIN            0.3
+#define THROTTLE_GAIN            PID_PARAM_MAX_POWER
 
-#define PID_PARM_ROLL_Kp        100.0
+#define PID_PARM_ANGLE_BASE     40.0
+#define PID_PARM_ROLL_Kp        PID_PARM_ANGLE_BASE
 #define PID_PARM_ROLL_Ki        0.1
-#define PID_PARM_ROLL_Kd        100.0
-#define PID_PARM_PITCH_Kp       100.0
+#define PID_PARM_ROLL_Kd        PID_PARM_ANGLE_BASE
+#define PID_PARM_PITCH_Kp       PID_PARM_ANGLE_BASE
 #define PID_PARM_PITCH_Ki       0.1
-#define PID_PARM_PITCH_Kd       100.0
+#define PID_PARM_PITCH_Kd       PID_PARM_ANGLE_BASE
 
 #define PID_PARM_ROLL_RATE_Kp     0.001
 #define PID_PARM_ROLL_RATE_Ki     0.0001
@@ -87,6 +99,15 @@ struct FlightControllerInputVelocityType
     FlightControllerInputVelocityType(): u(0), v(0), w(0) {}
     FlightControllerInputVelocityType(double _u, double _v, double _w) :
         u(_u), v(_v), w(_w) {}
+};
+struct FlightControllerInputPositionType
+{
+    double x;
+    double y;
+    double z;
+    FlightControllerInputPositionType(): x(0), y(0), z(0) {}
+    FlightControllerInputPositionType(double _x, double _y, double _z) :
+        x(_x), y(_y), z(_z) {}
 };
 
 struct FlightControllerOutputType {
