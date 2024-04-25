@@ -3,7 +3,7 @@
 
 #include "control/simple_pid.hpp"
 #include "pid_params.h"
-#include "primitive_types.h"
+#include "frame_types.h"
 
 class PidCtrlForwardVel {
 private:

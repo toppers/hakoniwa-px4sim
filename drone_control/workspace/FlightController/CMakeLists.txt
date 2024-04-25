@@ -1,9 +1,8 @@
 # ローダブルモジュールのビルド設定
-project(DroneFlightController)
+project(FlightController)
 
 # ソースファイル
 set(SOURCE_FILES
-    ../../common/src/frame_convertor.cpp
     hako_module_drone_controller_impl.cpp
 )
 
@@ -11,6 +10,7 @@ set(SOURCE_FILES
 add_library(
     ${PROJECT_NAME} MODULE 
     ${SOURCE_FILES}
+    ../../common/src/frame_convertor.cpp
     ../hako_module_drone_controller.c
 )
 # ヘッダーファイルのインクルードディレクトリ指定
