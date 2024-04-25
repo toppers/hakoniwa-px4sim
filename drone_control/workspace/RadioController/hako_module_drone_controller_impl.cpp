@@ -36,14 +36,26 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     RadioController *rc = (RadioController*)in->context;
     mi_drone_control_out_t out = {};
 
+    SpeedControlInputType s_in;
+    s_in.target_vx = in->target.attitude.pitch * -20; /* -10m/s to 10m/s */
+    s_in.target_vy = in->target.attitude.roll * 20;  /* -10m/s to 10m/s */
+    s_in.velocity = { in->u, in->v, in->w };
+    SpeedControlPidControlOutputType s_out = rc->spd.run(s_in);
+    std::cout << "TARGET VELOCITY ( " << s_in.target_vx << ", " << s_in.target_vy << " )" <<std::endl;
+    std::cout << "CURRENT VELOCITY( " << s_in.velocity.u << ", " << s_in.velocity.v << " )" <<std::endl;
+    std::cout << "TARGET  ANGLE   ( " << s_out.pitch << ", " << s_out.roll << " )" <<std::endl;
+    std::cout << "CURRENT ANGLE   ( " << in->euler_y << ", " << in->euler_x << " )" <<std::endl;
+
     RadioControlInputType rin;
     rin.euler = {in->euler_x, in->euler_y, in->euler_z};                //STATE: euler
     rin.angular_rate = {in->p, in->q, in->r};                           //STATE: angular_rate
     rin.target_thrust = in->target.throttle.power;                      //TARGET: thrust
-    rin.target_roll = in->target.attitude.roll;                         //TARGET: angular.roll
-    rin.target_pitch = in->target.attitude.pitch;                       //TARGET: angular.pitch
+    //rin.target_roll = in->target.attitude.roll;                         //TARGET: angular.roll
+    //rin.target_pitch = in->target.attitude.pitch;                       //TARGET: angular.pitch
+    rin.target_roll = s_out.roll;
+    rin.target_pitch = s_out.pitch;
     rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
-    
+
     FlightControllerOutputType ret = rc->run(rin);
     out.thrust = ret.thrust;
     out.torque_x = ret.torque_x;

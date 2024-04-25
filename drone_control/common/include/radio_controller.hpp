@@ -2,6 +2,7 @@
 #define _RADIO_CONTROLLER_HPP_
 
 #include "flight_controller_types.hpp"
+#include "speed_controller.hpp"
 
 struct PidRateControlOutputType {
     double p;
@@ -75,22 +76,17 @@ private:
     PidControl *angular_rate_yaw = nullptr;
 
 
-    double get_limit_value(double input_value, double base_value, double min_value, double max_value)
-    {
-        double limited_value = base_value + std::max(min_value, std::min(max_value, input_value));
-        return limited_value;
-    }
     double get_target_rate_value(PidControl *ctrl, double rpm_max, double max_angle_rate, double target, double current)
     {
         double target_rate_max = RPM2EULER_RATE(rpm_max);
-        double target_rate = get_limit_value(target, 0, -target_rate_max, target_rate_max);
+        double target_rate = flight_controller_get_limit_value(target, 0, -target_rate_max, target_rate_max);
         double out_value = ctrl->calculate(target, NORMALIZE_RADIAN(current));
-        return get_limit_value(out_value, 0, -max_angle_rate, max_angle_rate);
+        return flight_controller_get_limit_value(out_value, 0, -max_angle_rate, max_angle_rate);
     }
     double get_target_value(PidControl *ctrl, double max_angle, double target, double current)
     {
-        double target_angle = target * DEGREE2RADIAN(max_angle);
-        double out_value = ctrl->calculate(target_angle, NORMALIZE_RADIAN(current));
+        //double target_angle = target * DEGREE2RADIAN(max_angle);
+        double out_value = ctrl->calculate(DEGREE2RADIAN(target), NORMALIZE_RADIAN(current));
         return out_value;
     }
 
@@ -112,8 +108,8 @@ private:
     {
         RadioControlPidControlOutputType out = prev_angle_out;
         if (angular_simulation_time >= angular_cycle) {
-            out.roll_rate = get_target_value(this->angular_roll, 20, roll.target, roll.current);
-            out.pitch_rate = get_target_value(this->angular_pitch, 20, pitch.target, pitch.current);
+            out.roll_rate = get_target_value(this->angular_roll, PID_PARAM_MAX_ROLL, roll.target, roll.current);
+            out.pitch_rate = get_target_value(this->angular_pitch, PID_PARAM_MAX_PITCH, pitch.target, pitch.current);
             angular_simulation_time = 0;
 
             //std::cout << "target(roll_rate): " << out.roll_rate << " target: " << RADIAN2DEGREE(roll.target) << " current:  " << RADIAN2DEGREE(roll.current) << std::endl;
@@ -142,7 +138,9 @@ public:
         angular_cycle = cycle;
         angular_simulation_time = 0;
     }
-
+    //speed control
+    SpeedController spd;
+    
     FlightControllerOutputType run(RadioControlInputType& in)
     {
         FlightControllerOutputType out;
@@ -157,29 +155,9 @@ public:
 
 };
 
-#define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 #define ANGULAR_RATE_CYCLE        SIMULATION_DELTA_TIME // 333.3Hz
 #define ANGULAR_CYCLE             (SIMULATION_DELTA_TIME * 10.0) // 33.3Hz
-#define RADIO_CONTROL_MASS       0.1
-#define RADIO_CONTROL_GRAVITY    9.81
-#define THROTTLE_GAIN 0.3
 
-#define PID_PARM_ROLL_Kp        100.0
-#define PID_PARM_ROLL_Ki        0.1
-#define PID_PARM_ROLL_Kd        100.0
-#define PID_PARM_PITCH_Kp       100.0
-#define PID_PARM_PITCH_Ki       0.1
-#define PID_PARM_PITCH_Kd       100.0
-
-#define PID_PARM_ROLL_RATE_Kp     0.001
-#define PID_PARM_ROLL_RATE_Ki     0.0001
-#define PID_PARM_ROLL_RATE_Kd     0.001
-#define PID_PARM_PITCH_RATE_Kp    0.001
-#define PID_PARM_PITCH_RATE_Ki    0.0001
-#define PID_PARM_PITCH_RATE_Kd    0.001
-#define PID_PARM_YAW_RATE_Kp      0.01
-#define PID_PARM_YAW_RATE_Ki      0.001
-#define PID_PARM_YAW_RATE_Kd      0.01
 
 static inline RadioControllerParamType get_radio_control_default_parameters()
 {
