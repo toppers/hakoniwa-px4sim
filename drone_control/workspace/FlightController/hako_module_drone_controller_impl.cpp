@@ -39,10 +39,10 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     h_in.euler = {in->euler_x, in->euler_y, in->euler_z};
     h_in.target_angle_deg = ms->r_angle;
     HeadingControlPidControlOutputType h_out = ms->heading.run(h_in);
-    std::cout << "TARGET ANGLE ( " << h_in.target_angle_deg <<  " )" <<std::endl;
-    std::cout << "CURRENT ANGLE( " << RADIAN2DEGREE(h_in.euler.z) << " )" <<std::endl;
-    std::cout << "TARGET  RATE( " << h_out.angular_rate_r << " )" <<std::endl;
-    std::cout << "CURRENT RATE( " << in->r << " )" <<std::endl;
+    //std::cout << "TARGET ANGLE ( " << h_in.target_angle_deg <<  " )" <<std::endl;
+    //std::cout << "CURRENT ANGLE( " << RADIAN2DEGREE(h_in.euler.z) << " )" <<std::endl;
+    //std::cout << "TARGET  RATE( " << h_out.angular_rate_r << " )" <<std::endl;
+    //std::cout << "CURRENT RATE( " << in->r << " )" <<std::endl;
 
     //position control
     double pos_x = -in->target.attitude.pitch;

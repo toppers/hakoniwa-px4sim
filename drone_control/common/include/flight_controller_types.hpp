@@ -27,7 +27,7 @@
 #define PID_PARM_POSY_Kd        2.0
 #define PID_PARAM_MAX_SPD       20.0
 #define POS_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
-#define POS_DELTA_VALUE_M       0.5   /* 50cm */
+#define POS_DELTA_VALUE_M       0.1   /* 10cm */
 #define POS_VALUE_MAX           100.0 /* 100m */
 
 /*
