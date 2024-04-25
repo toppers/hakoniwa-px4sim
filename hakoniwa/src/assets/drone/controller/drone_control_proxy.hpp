@@ -41,7 +41,6 @@ private:
         lastButtonState[index] = currentButtonState;
         return false;
     }
-    bool radio_control_on = false;
 
 
     double home_pos_x = 0;
@@ -102,6 +101,7 @@ private:
 
 public:
     mi_drone_control_in_t in = {};
+    bool radio_control_on = false;
     void setup()
     {
         std::cout << "Setup pdu data" << std::endl;
@@ -186,6 +186,7 @@ public:
                 in.target_pos_x = cmd_move.x;
                 in.target_pos_y = cmd_move.y;
                 in.target_pos_z = -cmd_move.z;
+                in.target_velocity = cmd_move.speed;
                 std::cout << "move: z = " << in.target_pos_z << std::endl;
                 std::cout << "move: x = " << in.target_pos_x << std::endl;
                 std::cout << "move: y = " << in.target_pos_y << std::endl;
@@ -275,6 +276,7 @@ public:
             proxy.in.p = angular_velocity.data.x;
             proxy.in.q = angular_velocity.data.y;
             proxy.in.r = angular_velocity.data.z;
+            proxy.in.radio_control = (proxy.radio_control_on == false) ? 0 : 1;
 
             if (proxy.need_control()) {
                 out = module.control_module.controller->run(&proxy.in);
