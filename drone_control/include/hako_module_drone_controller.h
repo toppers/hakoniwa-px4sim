@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct {
     void *context;
+    int radio_control;
     /* deprecated : start */
     /*
      * Target

@@ -43,14 +43,16 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     double target_angle = 0; //TODO
 
     //for radio control
-    ms->update_target_angle(in->target.direction_velocity.r);
-    ms->update_target_pos(-in->target.attitude.pitch, in->target.attitude.roll);    
-    rc->update_target_altitude(-in->target.throttle.power);
-    target_pos_x = ms->r_pos_x;
-    target_pos_y = ms->r_pos_y;
-    target_pos_z = rc->r_altitude;
-    target_velocity = PID_PARAM_MAX_SPD;
-    target_angle = ms->r_angle;
+    if (in->radio_control != 0) {
+        ms->update_target_angle(in->target.direction_velocity.r);
+        ms->update_target_pos(-in->target.attitude.pitch, in->target.attitude.roll);    
+        rc->update_target_altitude(-in->target.throttle.power);
+        target_pos_x = ms->r_pos_x;
+        target_pos_y = ms->r_pos_y;
+        target_pos_z = rc->r_altitude;
+        target_velocity = PID_PARAM_MAX_SPD;
+        target_angle = ms->r_angle;
+    }
 
     FlightControllerOutputType ret = ms->run(
         target_pos_x, target_pos_y, target_pos_z,
