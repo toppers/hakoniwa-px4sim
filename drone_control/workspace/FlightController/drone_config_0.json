@@ -1,0 +1,93 @@
+{
+  "name": "DroneTransporter",
+  "simulation": {
+    "lockstep": true,
+    "timeStep": 0.003,
+    "logOutputDirectory": ".",
+    "logOutput": {
+      "sensors": {
+          "acc": true,
+          "gyro": true,
+          "mag": true,
+          "baro": true,
+          "gps": true    
+      },
+      "mavlink": {
+          "hil_sensor": true,
+          "hil_gps": true,
+          "hil_actuator_controls": true
+      }
+    },
+    "mavlink_tx_period_msec": {
+      "hil_sensor": 3,
+      "hil_gps": 3
+    },
+    "location": {
+      "latitude": 47.641468,
+      "longitude": -122.140165,
+      "altitude": 121.321,
+      "magneticField": {
+        "intensity_nT": 53045.1,
+        "declination_deg": 15.306,
+        "inclination_deg": 68.984
+      }  
+    }
+  },
+  "components": {
+      "droneDynamics": {
+          "physicsEquation": "BodyFrame",
+          "collision_detection": true,
+          "manual_control": false,
+          "airFrictionCoefficient": [ 0.02, 0.0 ],
+          "inertia": [ 0.0000625, 0.00003125, 0.00009375 ],
+          "mass_kg": 0.1,
+          "body_size": [ 0.1, 0.1, 0.01 ],
+          "position_meter": [ 0, 0, 0 ],
+          "angle_degree": [ 0, 0, 0 ]
+        },
+        "rotor": {
+          "vendor": "None",
+          "Tr": 0.2,
+          "Kr": 8000,
+          "rpmMax": 8000
+        },
+        "thruster": {
+          "vendor": "None",
+          "rotorPositions": [
+            {"position": [  0.05,  0.05, 0 ], "rotationDirection":  1.0 },
+            {"position": [ -0.05, -0.05, 0 ], "rotationDirection":  1.0 },
+            {"position": [  0.05, -0.05, 0 ], "rotationDirection": -1.0 },
+            {"position": [ -0.05,  0.05, 0 ], "rotationDirection": -1.0 }
+            ],
+          "HoveringRpm": 4000,
+          "parameterB":  1.3e-10,
+          "parameterJr": 1.0e-10
+        },
+        "sensors": {
+          "acc": {
+            "sampleCount": 1,
+            "noise": 0.03
+          },
+          "gyro": {
+            "sampleCount": 1,
+            "noise": 0.0
+          },
+          "mag": {
+            "sampleCount": 1,
+            "noise": 0.03
+          },
+          "baro": {
+            "sampleCount": 1,
+            "noise": 0.01
+          },
+          "gps": {
+            "sampleCount": 1,
+            "noise": 0
+          }
+        }
+  },
+  "controller": {
+    "moduleDirectory": "../drone_control/cmake-build/workspace/FlightController",
+    "moduleName": "FlightController"
+  }
+}

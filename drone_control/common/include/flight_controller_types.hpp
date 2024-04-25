@@ -2,18 +2,23 @@
 #define _FLIGHT_CONTROLLER_TYPES_HPP_
 
 #include "pid_control.hpp"
+#include "frame_types.h"
 
-#define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-#define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
-#define RADIAN2DEGREE(v)    ( (180.0 * (v)) / M_PI )
-#define RPM2EULER_RATE(v)   ( ((v) * 2 * M_PI) / 60.0 )
-#define TWO_PI (2.0 * M_PI)
-#define NORMALIZE_RADIAN(x) (fmod((x), TWO_PI))
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
+
+/*
+ * Position Control
+ */
+#define PID_PARM_POSX_Kp        1.5
+#define PID_PARM_POSX_Ki        0.3
+#define PID_PARM_POSX_Kd        2.0
+#define PID_PARM_POSY_Kp        1.5
+#define PID_PARM_POSY_Ki        0.3
+#define PID_PARM_POSY_Kd        2.0
+#define PID_PARAM_MAX_SPD       20.0
+#define POS_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
+#define POS_DELTA_VALUE_M       0.5   /* 50cm */
+#define POS_VALUE_MAX           100.0 /* 100m */
 
 /*
  * Altitude Control
@@ -36,8 +41,8 @@
 #define PID_PARM_VY_Kp        PID_PARAM_V_BASE
 #define PID_PARM_VY_Ki        0.1
 #define PID_PARM_VY_Kd        PID_PARAM_V_BASE
-#define PID_PARAM_MAX_ROLL    50
-#define PID_PARAM_MAX_PITCH   50
+#define PID_PARAM_MAX_ROLL    20
+#define PID_PARAM_MAX_PITCH   20
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*

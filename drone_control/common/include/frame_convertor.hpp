@@ -1,7 +1,7 @@
 #ifndef _FRAME_CONVERTOR_HPP_
 #define _FRAME_CONVERTOR_HPP_
 
-#include "primitive_types.h"
+#include "frame_types.h"
 
 #if defined(__cplusplus)
 extern "C" {

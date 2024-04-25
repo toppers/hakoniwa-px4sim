@@ -151,6 +151,9 @@ public:
             if (r_altitude >= ALT_VALUE_MAX) {
                 r_altitude = ALT_VALUE_MAX;
             }
+            else if (r_altitude < 0) {
+                r_altitude = 0;
+            }
         }
         alt_time += this->delta_time;
     }

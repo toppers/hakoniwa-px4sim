@@ -3,8 +3,7 @@
 
 #include "control/simple_pid.hpp"
 #include "pid_params.h"
-#include "utils/frame_convertor.hpp"
-#include "primitive_types.h"
+#include "frame_convertor.hpp"
 #include <cmath> // for std::sqrt, std::pow, std::sin, std::cos
 #include <iostream>
 
