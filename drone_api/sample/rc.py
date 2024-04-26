@@ -16,8 +16,15 @@ def average_axis(history, new_value, history_length=5):
 def discretize_value(value):
     return round(value / 0.1) * 0.1
 
+def saveCameraImage(client):
+    png_image = client.simGetImage("0", hakosim.ImageType.Scene)
+    if png_image:
+        with open("scene.png", "wb") as f:
+            f.write(png_image)
+
 def joystick_control(client: hakosim.MultirotorClient, joysitck):
     axis_history = {0: [], 1: [], 2: [], 3: []} 
+    camera_button_index = 2
     try:
         while True:
             data = client.getGameJoystickData()
@@ -33,6 +40,9 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
                     if (event.button < 4):
                         data['button'] = list(data['button'])
                         data['button'][event.button] = True
+                        if event.button == camera_button_index:
+                            time.sleep(0.5)
+                            saveCameraImage(client)
                     else:
                         print(f'ERROR: not supported button index: {event.button}')
                 elif event.type == pygame.JOYBUTTONUP:

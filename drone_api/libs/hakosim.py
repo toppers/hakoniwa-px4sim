@@ -214,6 +214,15 @@ class MultirotorClient:
         else:
             return None
     
+    def simGetCameraImage(self, id, image_type, vehicle_name=None):
+        if vehicle_name != None:
+            vehicle = self.vehicles[vehicle_name]
+            img = self._get_camera_data(vehicle)
+            return bytes(img)
+        else:
+            return None
+
+
     def getLidarData(self, vehicle_name=None):
         vehicle_name = self.get_vehicle_name(vehicle_name)
         if vehicle_name != None:
