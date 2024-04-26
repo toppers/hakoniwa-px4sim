@@ -127,16 +127,6 @@ public:
     }
     virtual ~DroneControlProxy() {}
 
-    bool need_control()
-    {
-        if (this->radio_control_on) {
-            return true;
-        }
-        if (state.get_status() == MAIN_STATUS_LANDED) {
-            return false;
-        }
-        return true;
-    }
     void do_event()
     {
         (void)read_cmd(HAKO_AVATOR_CHANNLE_ID_POS, drone_pos);
@@ -152,7 +142,6 @@ public:
                 in.target.direction_velocity.r = cmd_game.axis[GAME_CTRL_AXIS_LR_RR];
             }
         }
-        in.target_stay = 0;
         if (state.get_status() == MAIN_STATUS_LANDED) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
                 state.takeoff();
@@ -192,12 +181,11 @@ public:
                 std::cout << "move: y = " << in.target_pos_y << std::endl;
             }
             else {
-                in.target_stay = 1;
+                // nothing to do
             }
         }
         else {
-            //TODO            
-            in.target_stay = 1;
+            // nothing to do
         }
     }
     int count = 0;
@@ -313,10 +301,8 @@ public:
             proxy.in.r = angular_velocity.data.z;
             proxy.in.radio_control = (proxy.radio_control_on == false) ? 0 : 1;
 
-            if (proxy.need_control()) {
-                out = module.control_module.controller->run(&proxy.in);
-                proxy.do_control();
-            }
+            out = module.control_module.controller->run(&proxy.in);
+            proxy.do_control();
 
             DroneThrustType thrust;
             DroneTorqueType torque;

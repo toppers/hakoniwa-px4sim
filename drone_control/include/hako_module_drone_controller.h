@@ -47,7 +47,6 @@ typedef struct {
     double target_pos_y;
     double target_pos_z;
     double target_velocity;
-    int   target_stay;
     /* deprecated : end */
 
     /*
