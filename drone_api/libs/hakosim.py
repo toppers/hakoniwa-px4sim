@@ -1,6 +1,7 @@
 import hakopy
 import hako_pdu
 import pdu_info
+import math
 import json
 import os
 import time
@@ -124,11 +125,12 @@ class MultirotorClient:
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, self.get_vehicle_name(vehicle_name))
             pdu_cmd['height'] = height
             pdu_cmd['speed'] = 5
+            pdu_cmd['yaw_deg'] = self._get_yaw_degree(vehicle_name)
             return self.reply_and_wait_res(command)
         else:
             return False
         
-    def moveToPosition(self, x, y, z, speed, vehicle_name=None):
+    def moveToPosition(self, x, y, z, speed, yaw_deg=None, vehicle_name=None):
         if self.get_vehicle_name(vehicle_name) != None:
             print("INFO: moveToPosition")
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, self.get_vehicle_name(vehicle_name))
@@ -136,6 +138,10 @@ class MultirotorClient:
             pdu_cmd['y'] = y
             pdu_cmd['z'] = z
             pdu_cmd['speed'] = speed
+            if yaw_deg == None:
+                yaw_deg = self._get_yaw_degree(vehicle_name)
+            pdu_cmd['yaw_deg'] = yaw_deg
+            #print(f'yaw_deg: {yaw_deg}')
             return self.reply_and_wait_res(command)
         else:
             return False
@@ -146,6 +152,7 @@ class MultirotorClient:
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_LAND, self.get_vehicle_name(vehicle_name))
             pdu_cmd['height'] = 0
             pdu_cmd['speed'] = 5
+            pdu_cmd['yaw_deg'] = self._get_yaw_degree(vehicle_name)
             return self.reply_and_wait_res(command)
         else:
             return False
@@ -183,6 +190,11 @@ class MultirotorClient:
             if pdu_data['request_id'] == vehicle.camera_cmd_request_id:
                 return pdu_data['image']['data']
             #time.sleep(0.5)
+
+    def _get_yaw_degree(self, vehicle_name=None):
+        pose = self.simGetVehiclePose(vehicle_name)
+        _, _, yaw = hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
+        return math.degrees(yaw)
 
     def simGetImage(self, id, image_type, vehicle_name=None):
         vehicle_name = self.get_vehicle_name(vehicle_name)
