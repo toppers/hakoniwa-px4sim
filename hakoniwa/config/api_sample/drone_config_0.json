@@ -87,7 +87,7 @@
         }
   },
   "controller": {
-    "moduleDirectory": "../drone_control/cmake-build/workspace/DroneFlightController",
-    "moduleName": "DroneFlightController"
+    "moduleDirectory": "../drone_control/cmake-build/workspace/FlightController",
+    "moduleName": "FlightController"
   }
 }

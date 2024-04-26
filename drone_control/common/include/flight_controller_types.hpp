@@ -6,6 +6,8 @@
 
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
+//#define RADIO_CONTROL_ON
+
 /*
  * Heading Control
  */
@@ -27,13 +29,17 @@
 #define PID_PARM_POSY_Kd        2.0
 #define PID_PARAM_MAX_SPD       20.0
 #define POS_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
-#define POS_DELTA_VALUE_M       0.5   /* 50cm */
+#define POS_DELTA_VALUE_M       0.1   /* 10cm */
 #define POS_VALUE_MAX           100.0 /* 100m */
 
 /*
  * Altitude Control
  */
+#ifdef RADIO_CONTROL_ON
 #define PID_PARM_ALT_Kp        100.0
+#else
+#define PID_PARM_ALT_Kp        2.0
+#endif
 #define PID_PARM_ALT_Ki        0.1
 #define PID_PARM_ALT_Kd        100.0
 #define PID_PARAM_MAX_POWER    10.0
@@ -51,8 +57,13 @@
 #define PID_PARM_VY_Kp        PID_PARAM_V_BASE
 #define PID_PARM_VY_Ki        0.1
 #define PID_PARM_VY_Kd        PID_PARAM_V_BASE
-#define PID_PARAM_MAX_ROLL    20
-#define PID_PARAM_MAX_PITCH   20
+#ifdef RADIO_CONTROL_ON
+#define PID_PARAM_MAX_ROLL    50
+#define PID_PARAM_MAX_PITCH   50
+#else
+#define PID_PARAM_MAX_ROLL    5
+#define PID_PARAM_MAX_PITCH   5
+#endif
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*

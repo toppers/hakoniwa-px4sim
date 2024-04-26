@@ -3,6 +3,7 @@
 
 #include "utils/main_status.hpp"
 #include "hako/pdu/hako_pdu_accessor.hpp"
+#define ALMOST_EQUAL(target, current, range) ( ( (current) >= ((target) - (range)) ) &&  ( (current) <= ((target) + (range)) ) )
 
 #define GAME_CTRL_CHECK_COUNT_MAX       10
 #define GAME_CTRL_BUTTON_RADIO_CONTROL  0
@@ -41,7 +42,6 @@ private:
         lastButtonState[index] = currentButtonState;
         return false;
     }
-    bool radio_control_on = false;
 
 
     double home_pos_x = 0;
@@ -52,6 +52,7 @@ private:
     Hako_HakoDroneCmdLand cmd_land = {};
     Hako_HakoDroneCmdMove cmd_move = {};
     Hako_GameControllerOperation cmd_game = {};
+    Hako_Twist drone_pos = {};
 
     hako::assets::drone::IAirCraft *drone;
     template<typename PacketType>
@@ -102,6 +103,7 @@ private:
 
 public:
     mi_drone_control_in_t in = {};
+    bool radio_control_on = false;
     void setup()
     {
         std::cout << "Setup pdu data" << std::endl;
@@ -125,18 +127,9 @@ public:
     }
     virtual ~DroneControlProxy() {}
 
-    bool need_control()
+    void do_event()
     {
-        if (this->radio_control_on) {
-            return true;
-        }
-        if (state.get_status() == MAIN_STATUS_LANDED) {
-            return false;
-        }
-        return true;
-    }
-    void do_event(bool is_operation_doing)
-    {
+        (void)read_cmd(HAKO_AVATOR_CHANNLE_ID_POS, drone_pos);
         if (read_cmd(HAKO_AVATOR_CHANNEL_ID_GAME_CTRL, cmd_game)) {
             if (this->is_button_state_change(GAME_CTRL_BUTTON_RADIO_CONTROL)) {
                 this->radio_control_on = !this->radio_control_on;
@@ -149,7 +142,6 @@ public:
                 in.target.direction_velocity.r = cmd_game.axis[GAME_CTRL_AXIS_LR_RR];
             }
         }
-        in.target_stay = 0;
         if (state.get_status() == MAIN_STATUS_LANDED) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
                 state.takeoff();
@@ -157,6 +149,7 @@ public:
                 in.target_pos_x = home_pos_x;
                 in.target_pos_y = home_pos_y;
                 in.target_velocity = cmd_takeoff.speed;
+                in.target_yaw_deg = -cmd_takeoff.yaw_deg;
                 std::cout << "takeoff: z = " << in.target_pos_z << std::endl;
                 std::cout << "takeoff: x = " << in.target_pos_x << std::endl;
                 std::cout << "takeoff: y = " << in.target_pos_y << std::endl;
@@ -164,49 +157,80 @@ public:
         }
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land) && cmd_land.header.request) {
-                if (is_operation_doing) {
-                    return;
-                }
                 state.land();
                 in.target_pos_z = -cmd_land.height;
                 in.target_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
                 in.target_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
                 in.target_velocity = cmd_land.speed;
+                in.target_yaw_deg = -cmd_land.yaw_deg;
                 std::cout << "land: z = " << in.target_pos_z << std::endl;
                 std::cout << "land: x = " << in.target_pos_x << std::endl;
                 std::cout << "land: y = " << in.target_pos_y << std::endl;
 
             }
             else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && cmd_move.header.request) {
-                if (is_operation_doing) {
-                    return;
-                }
                 std::cout << "START MOVE" << std::endl;
                 state.move();
                 in.target_pos_x = cmd_move.x;
                 in.target_pos_y = cmd_move.y;
                 in.target_pos_z = -cmd_move.z;
+                in.target_velocity = cmd_move.speed;
+                in.target_yaw_deg = -cmd_move.yaw_deg;
                 std::cout << "move: z = " << in.target_pos_z << std::endl;
                 std::cout << "move: x = " << in.target_pos_x << std::endl;
                 std::cout << "move: y = " << in.target_pos_y << std::endl;
             }
             else {
-                in.target_stay = 1;
+                // nothing to do
             }
         }
         else {
-            //TODO            
-            in.target_stay = 1;
+            // nothing to do
         }
     }
-    void do_control(bool is_operation_doing)
+    int count = 0;
+    int max_count = 100;
+    bool almost_equal(double target_pos_x, double target_pos_y, double target_pos_z, double target_yaw_deg,
+                        double pos_x, double pos_y, double pos_z, double yaw_deg)
+    {
+        if (ALMOST_EQUAL(target_pos_x, pos_x, 0.1) == false) {
+            count = 0;
+            return false;
+        }
+        if (ALMOST_EQUAL(target_pos_y, pos_y, 0.1) == false) {
+            count = 0;
+            return false;
+        }
+        if (ALMOST_EQUAL(target_pos_z, pos_z, 0.1) == false) {
+            count = 0;
+            return false;
+        }
+        if (ALMOST_EQUAL(target_yaw_deg, yaw_deg, 0.5) == false) {
+            count = 0;
+            return false;
+        }
+        count++;
+        if (count < max_count) {
+            return false;
+        }
+        count = 0;
+        return true;
+
+    }
+    bool is_operation_done()
+    {
+        //std::cout << "tgt ( " << in.target_pos_x << ", " << in.target_pos_y << ", " << in.target_pos_z << ": yaw=" << -in.target_yaw_deg<< " )" << std::endl;
+        //std::cout << "pos ( " << drone_pos.linear.x << ", " << -drone_pos.linear.y << ", " << -drone_pos.linear.z << ": yaw=" << RADIAN2DEGREE(drone_pos.angular.z) <<  " )" << std::endl;
+        return almost_equal(in.target_pos_x, in.target_pos_y, in.target_pos_z, -in.target_yaw_deg, drone_pos.linear.x, -drone_pos.linear.y, -drone_pos.linear.z, RADIAN2DEGREE(drone_pos.angular.z));
+    }
+    void do_control()
     {
         switch (state.get_status())
         {
             case MAIN_STATUS_TAKINGOFF:
             case MAIN_STATUS_LANDING:
             case MAIN_STATUS_MOVING:
-                if (!is_operation_doing) {
+                if (is_operation_done()) {
                     do_reply();
                     state.done();
                 }
@@ -262,7 +286,7 @@ public:
             DroneEulerType angle = module.drone->get_drone_dynamics().get_angle();
             hako::assets::drone::DroneVelocityBodyFrameType velocity = module.drone->get_drone_dynamics().get_vel_body_frame();
             hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = module.drone->get_gyro().sensor_value();
-            proxy.do_event(module.control_module.controller->is_operation_doing(module.get_context()));
+            proxy.do_event();
             proxy.in.pos_x = pos.data.x;
             proxy.in.pos_y = pos.data.y;
             proxy.in.pos_z = pos.data.z;
@@ -275,11 +299,10 @@ public:
             proxy.in.p = angular_velocity.data.x;
             proxy.in.q = angular_velocity.data.y;
             proxy.in.r = angular_velocity.data.z;
+            proxy.in.radio_control = (proxy.radio_control_on == false) ? 0 : 1;
 
-            if (proxy.need_control()) {
-                out = module.control_module.controller->run(&proxy.in);
-                proxy.do_control(module.control_module.controller->is_operation_doing(module.get_context()));
-            }
+            out = module.control_module.controller->run(&proxy.in);
+            proxy.do_control();
 
             DroneThrustType thrust;
             DroneTorqueType torque;

@@ -7,18 +7,15 @@ import time
 import math
 
 def transport(client, baggage_pos, transfer_pos):
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 0, -90)
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5)
-    time.sleep(3)
-    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 0.7, 0.01)
-    time.sleep(3)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5, 0)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 0.7, 0.01, 0)
     client.grab_baggage(True)
-    time.sleep(3)
-    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 5)
-    time.sleep(3)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 0.01)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.1)
     client.moveToPosition(transfer_pos['x'], transfer_pos['y'], transfer_pos['z'], 0.01)
-    time.sleep(3)
     client.grab_baggage(False)
-    time.sleep(3)
     client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.01)
 
 def debug_pos(client):

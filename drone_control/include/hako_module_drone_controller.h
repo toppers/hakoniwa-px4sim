@@ -37,6 +37,8 @@ typedef struct {
 
 typedef struct {
     void *context;
+    int radio_control;
+    double target_yaw_deg;
     /* deprecated : start */
     /*
      * Target
@@ -45,7 +47,6 @@ typedef struct {
     double target_pos_y;
     double target_pos_z;
     double target_velocity;
-    int   target_stay;
     /* deprecated : end */
 
     /*

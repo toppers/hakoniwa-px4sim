@@ -55,7 +55,9 @@ def main():
     pygame.joystick.init()
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
-
+    # 接続されているジョイスティックの数を取得
+    joystick_count = pygame.joystick.get_count()
+    print(f"Number of joysticks: {joystick_count}")
     # connect to the HakoSim simulator
     client = hakosim.MultirotorClient(sys.argv[1])
     client.confirmConnection()
