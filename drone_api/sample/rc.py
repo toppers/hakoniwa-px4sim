@@ -24,6 +24,8 @@ def saveCameraImage(client):
 
 def joystick_control(client: hakosim.MultirotorClient, joysitck):
     axis_history = {0: [], 1: [], 2: [], 3: []} 
+    magnet_on = False
+    magnet_button_index = 1
     camera_button_index = 2
     try:
         while True:
@@ -39,7 +41,15 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
                 elif event.type == pygame.JOYBUTTONDOWN:
                     if (event.button < 4):
                         data['button'] = list(data['button'])
-                        data['button'][event.button] = True
+                        if (event.button != magnet_button_index):
+                            data['button'][event.button] = True
+                        else:
+                            if magnet_on:
+                                magnet_on = False
+                            else:
+                                magnet_on = True
+                            print(f'magnet_on: {magnet_on}')
+                            data['button'][event.button] = magnet_on
                         if event.button == camera_button_index:
                             time.sleep(0.5)
                             saveCameraImage(client)
@@ -47,8 +57,9 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
                         print(f'ERROR: not supported button index: {event.button}')
                 elif event.type == pygame.JOYBUTTONUP:
                     if (event.button < 4):
-                        data['button'] = list(data['button'])
-                        data['button'][event.button] = False
+                        if event.button != magnet_button_index:
+                            data['button'] = list(data['button'])
+                            data['button'][event.button] = False
                     else:
                         print(f'ERROR: not supported button index: {event.button}')
             client.putGameJoystickData(data)
