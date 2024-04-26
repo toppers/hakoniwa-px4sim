@@ -139,6 +139,7 @@ public:
     }
     void do_event()
     {
+        (void)read_cmd(HAKO_AVATOR_CHANNLE_ID_POS, drone_pos);
         if (read_cmd(HAKO_AVATOR_CHANNEL_ID_GAME_CTRL, cmd_game)) {
             if (this->is_button_state_change(GAME_CTRL_BUTTON_RADIO_CONTROL)) {
                 this->radio_control_on = !this->radio_control_on;
@@ -159,6 +160,7 @@ public:
                 in.target_pos_x = home_pos_x;
                 in.target_pos_y = home_pos_y;
                 in.target_velocity = cmd_takeoff.speed;
+                in.target_yaw_deg = -cmd_takeoff.yaw_deg;
                 std::cout << "takeoff: z = " << in.target_pos_z << std::endl;
                 std::cout << "takeoff: x = " << in.target_pos_x << std::endl;
                 std::cout << "takeoff: y = " << in.target_pos_y << std::endl;
@@ -171,6 +173,7 @@ public:
                 in.target_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
                 in.target_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
                 in.target_velocity = cmd_land.speed;
+                in.target_yaw_deg = -cmd_land.yaw_deg;
                 std::cout << "land: z = " << in.target_pos_z << std::endl;
                 std::cout << "land: x = " << in.target_pos_x << std::endl;
                 std::cout << "land: y = " << in.target_pos_y << std::endl;
@@ -183,6 +186,7 @@ public:
                 in.target_pos_y = cmd_move.y;
                 in.target_pos_z = -cmd_move.z;
                 in.target_velocity = cmd_move.speed;
+                in.target_yaw_deg = -cmd_move.yaw_deg;
                 std::cout << "move: z = " << in.target_pos_z << std::endl;
                 std::cout << "move: x = " << in.target_pos_x << std::endl;
                 std::cout << "move: y = " << in.target_pos_y << std::endl;
@@ -198,8 +202,8 @@ public:
     }
     int count = 0;
     int max_count = 100;
-    bool almost_equal(double target_pos_x, double target_pos_y, double target_pos_z,
-                        double pos_x, double pos_y, double pos_z)
+    bool almost_equal(double target_pos_x, double target_pos_y, double target_pos_z, double target_yaw_deg,
+                        double pos_x, double pos_y, double pos_z, double yaw_deg)
     {
         if (ALMOST_EQUAL(target_pos_x, pos_x, 0.1) == false) {
             count = 0;
@@ -213,6 +217,10 @@ public:
             count = 0;
             return false;
         }
+        if (ALMOST_EQUAL(target_yaw_deg, yaw_deg, 0.5) == false) {
+            count = 0;
+            return false;
+        }
         count++;
         if (count < max_count) {
             return false;
@@ -223,12 +231,9 @@ public:
     }
     bool is_operation_done()
     {
-        if (read_cmd(HAKO_AVATOR_CHANNLE_ID_POS, drone_pos)) {
-            std::cout << "tgt ( " << in.target_pos_x << ", " << in.target_pos_y << ", " << in.target_pos_z << " )" << std::endl;
-            std::cout << "pos ( " << drone_pos.linear.x << ", " << -drone_pos.linear.y << ", " << -drone_pos.linear.z << " )" << std::endl;
-            return almost_equal(in.target_pos_x, in.target_pos_y, in.target_pos_z, drone_pos.linear.x, -drone_pos.linear.y, -drone_pos.linear.z);
-        }
-        return false;
+        //std::cout << "tgt ( " << in.target_pos_x << ", " << in.target_pos_y << ", " << in.target_pos_z << ": yaw=" << -in.target_yaw_deg<< " )" << std::endl;
+        //std::cout << "pos ( " << drone_pos.linear.x << ", " << -drone_pos.linear.y << ", " << -drone_pos.linear.z << ": yaw=" << RADIAN2DEGREE(drone_pos.angular.z) <<  " )" << std::endl;
+        return almost_equal(in.target_pos_x, in.target_pos_y, in.target_pos_z, -in.target_yaw_deg, drone_pos.linear.x, -drone_pos.linear.y, -drone_pos.linear.z, RADIAN2DEGREE(drone_pos.angular.z));
     }
     void do_control()
     {
