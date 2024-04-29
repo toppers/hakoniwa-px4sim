@@ -43,8 +43,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     a_in.pos = { in->pos_x, in->pos_y, in->pos_z };
     a_in.target_altitude = rc->r_altitude;
     AltitudeControlPidControlOutputType a_out = rc->alt.run(a_in);
-    std::cout << "TARGET ALTITUDE : " << a_in.target_altitude <<std::endl;
-    std::cout << "CURRENT ALTITUDE: " << -a_in.pos.z <<std::endl;
+    //std::cout << "TARGET ALTITUDE : " << a_in.target_altitude <<std::endl;
+    //std::cout << "CURRENT ALTITUDE: " << -a_in.pos.z <<std::endl;
 
     //speed control
     SpeedControlInputType s_in;

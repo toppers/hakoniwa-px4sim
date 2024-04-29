@@ -85,3 +85,13 @@ python3.12 rc.py <path/to>/hakoniwa-unity-drone-model/custom.json
 
 * □ボタンを押下すると、ドローン前方のカメラの映像を撮影し、drone_api/sample/scene.png ファイルとして出力します。
 * ○ボタンを押下すると、ドローン直下 50cm 以下に配置されている荷物をピックアップできます。ボタンはトグル仕様となっているため、もう一度押下すると、荷物を離します。
+
+飛行中に、ドローンの前方に装着されているカメラをリアルに表示することができます。
+
+端末C:
+```
+cd drone_api/sample
+python3.12 camera.py <path/to>/hakoniwa-unity-drone-model/custom.json
+```
+
+成功するとカメラ映像がポップアップされます。

@@ -6,7 +6,7 @@
 
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
-//#define RADIO_CONTROL_ON
+#define RADIO_CONTROL_ON
 
 /*
  * Heading Control
@@ -52,18 +52,21 @@
  */
 #define PID_PARAM_V_BASE      10.0
 #define PID_PARM_VX_Kp        PID_PARAM_V_BASE
+#ifdef RADIO_CONTROL_ON
+#define PID_PARM_VX_Ki        0.0
+#else
 #define PID_PARM_VX_Ki        0.1
+#endif
 #define PID_PARM_VX_Kd        PID_PARAM_V_BASE
 #define PID_PARM_VY_Kp        PID_PARAM_V_BASE
-#define PID_PARM_VY_Ki        0.1
-#define PID_PARM_VY_Kd        PID_PARAM_V_BASE
 #ifdef RADIO_CONTROL_ON
-#define PID_PARAM_MAX_ROLL    50
-#define PID_PARAM_MAX_PITCH   50
+#define PID_PARM_VY_Ki        0.0
 #else
+#define PID_PARM_VY_Ki        0.1
+#endif
+#define PID_PARM_VY_Kd        PID_PARAM_V_BASE
 #define PID_PARAM_MAX_ROLL    5
 #define PID_PARAM_MAX_PITCH   5
-#endif
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*
@@ -75,10 +78,18 @@
 
 #define PID_PARM_ANGLE_BASE     40.0
 #define PID_PARM_ROLL_Kp        PID_PARM_ANGLE_BASE
+#ifdef RADIO_CONTROL_ON
+#define PID_PARM_ROLL_Ki        0.0
+#else
 #define PID_PARM_ROLL_Ki        0.1
+#endif
 #define PID_PARM_ROLL_Kd        PID_PARM_ANGLE_BASE
 #define PID_PARM_PITCH_Kp       PID_PARM_ANGLE_BASE
+#ifdef RADIO_CONTROL_ON
+#define PID_PARM_PITCH_Ki       0.0
+#else
 #define PID_PARM_PITCH_Ki       0.1
+#endif
 #define PID_PARM_PITCH_Kd       PID_PARM_ANGLE_BASE
 
 #define PID_PARM_ROLL_RATE_Kp     0.001
