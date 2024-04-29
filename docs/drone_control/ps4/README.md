@@ -13,7 +13,7 @@ This manual explains how to operate drones using a PS4 controller.
 ## Required Software
 
 * Python 3.12
-* [Expected environment for Hakoniwa Drone Simulator](https://github.com/toppers/hakoniwa-px4sim/blob/main/README-ja.md#%E7%92%B0%E5%A2%83)
+* [Expected environment for Hakoniwa Drone Simulator](https://github.com/toppers/hakoniwa-px4sim/blob/main/README.md)
 
 # Architecture
 
