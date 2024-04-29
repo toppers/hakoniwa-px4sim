@@ -223,6 +223,10 @@ public:
         //std::cout << "pos ( " << drone_pos.linear.x << ", " << -drone_pos.linear.y << ", " << -drone_pos.linear.z << ": yaw=" << RADIAN2DEGREE(drone_pos.angular.z) <<  " )" << std::endl;
         return almost_equal(in.target_pos_x, in.target_pos_y, in.target_pos_z, -in.target_yaw_deg, drone_pos.linear.x, -drone_pos.linear.y, -drone_pos.linear.z, RADIAN2DEGREE(drone_pos.angular.z));
     }
+    MainStatusType get_status()
+    {
+        return state.get_status();
+    }
     void do_control()
     {
         switch (state.get_status())
@@ -301,8 +305,10 @@ public:
             proxy.in.r = angular_velocity.data.z;
             proxy.in.radio_control = (proxy.radio_control_on == false) ? 0 : 1;
 
-            out = module.control_module.controller->run(&proxy.in);
-            proxy.do_control();
+            if ((proxy.get_status() != MAIN_STATUS_LANDED) || proxy.radio_control_on) {
+                out = module.control_module.controller->run(&proxy.in);
+                proxy.do_control();
+            }
 
             DroneThrustType thrust;
             DroneTorqueType torque;
