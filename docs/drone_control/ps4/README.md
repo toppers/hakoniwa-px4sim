@@ -85,3 +85,16 @@ In the Hakoniwa Drone Simulator, you can interact with objects on Unity with the
 
 * Press the square button to take a picture with the camera in front of the drone and output it as the file `drone_api/sample/scene.png`.
 * Press the circle button to pick up cargo placed within 50 cm below the drone. Pressing the button again releases the cargo.
+
+
+Here's the English translation of your text:
+
+During flight, you can realistically display the camera mounted in front of the drone.
+
+Terminal C:
+```
+cd drone_api/sample
+python3.12 camera.py <path/to>/hakoniwa-unity-drone-model/custom.json
+```
+
+If successful, the camera footage will pop up.
