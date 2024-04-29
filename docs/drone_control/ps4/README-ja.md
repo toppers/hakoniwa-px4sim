@@ -40,6 +40,26 @@ USB接続されたPS4コントローラの操作内容は、Pythonプログラ�
 3. [箱庭ドローン Python ライブラリのインストール](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README-ja.md#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%96%B9%E6%B3%95)
 
 
+# シミュレーション実行方法
+
+端末を２個起動し、以下の順番でプログラムを起動します。
+
+端末A:
+```
+cd hakoniwa
+bash drone-app.bash <path/to>/hakoniwa-unity-drone-model ./config/api_sample
+```
+
+端末B:
+```
+cd drone_api/sample
+python3.12 rc.py <path/to>/hakoniwa-unity-drone-model/custom.json
+```
+
+次に、Unityを起動し、STARTボタンをクリックするとシミュレーション開始します。
+
+シミュレーションを止める場合は、起動順番と逆順でプログラムを停止してください。
+
 # 基本操作
 
 ドローン操作は、[モード２](https://atcl-dsj.com/useful/2264/#:~:text=%E3%83%BB%E3%83%A2%E3%83%BC%E3%83%89%EF%BC%92%E3%81%AE%E6%93%8D%E4%BD%9C%E6%96%B9%E6%B3%95&text=%E3%83%A2%E3%83%BC%E3%83%89%EF%BC%92%E3%81%AE%E6%93%8D%E4%BD%9C%E6%96%B9%E6%B3%95%E3%81%A8%E3%81%97%E3%81%A6%E3%81%AF%E3%80%81%E3%83%A2%E3%83%BC%E3%83%89%EF%BC%91%E3%81%A8,%E3%82%92%E8%A1%8C%E3%81%A3%E3%81%A6%E3%81%84%E3%81%8D%E3%81%BE%E3%81%99%E3%80%82)と同等の仕様としています(下図)。
@@ -61,5 +81,5 @@ USB接続されたPS4コントローラの操作内容は、Pythonプログラ�
 
 箱庭ドローンシミュレータでは、箱庭ドローンとUnity上のオブジェクトとインタラクションすることができます。
 
-* ▫︎ボタンを押下すると、ドローン前方のカメラの映像を撮影し、drone_api/sample/scene.png ファイルとして出力します。
+* □ボタンを押下すると、ドローン前方のカメラの映像を撮影し、drone_api/sample/scene.png ファイルとして出力します。
 * ○ボタンを押下すると、ドローン直下 50cm 以下に配置されている荷物をピックアップできます。ボタンはトグル仕様となっているため、もう一度押下すると、荷物を離します。
