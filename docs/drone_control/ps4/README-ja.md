@@ -49,7 +49,7 @@ USB接続されたPS4コントローラの操作内容は、Pythonプログラ�
 端末A:
 ```
 cd hakoniwa
-bash drone-app.bash <path/to>/hakoniwa-unity-drone-model ./config/api_sample
+bash drone-app.bash <path/to>/hakoniwa-unity-drone-model ./config/rc
 ```
 
 端末B:
