@@ -47,7 +47,7 @@ Open two terminals and start the programs in the following order:
 Terminal A:
 ```
 cd hakoniwa
-bash drone-app.bash <path/to>/hakoniwa-unity-drone-model ./config/api_sample
+bash drone-app.bash <path/to>/hakoniwa-unity-drone-model ./config/rc
 ```
 
 
