@@ -1,5 +1,5 @@
 {
-  "name": "DroneFlightController",
+  "name": "DroneTransporter",
   "simulation": {
     "lockstep": true,
     "timeStep": 0.003,
@@ -87,7 +87,7 @@
         }
   },
   "controller": {
-    "moduleDirectory": "..\\out\\build\\x64-Release\\drone_control\\workspace\\DroneFlightController",
-    "moduleName": "DroneFlightController"
+    "moduleDirectory": "..\\out\\build\\x64-Release\\drone_control\\workspace\\FlightController",
+    "moduleName": "FlightController"
   }
 }
