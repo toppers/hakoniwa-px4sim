@@ -7,8 +7,6 @@
 
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
-#define RADIO_CONTROL_ON
-
 /*
  * Heading Control
  */

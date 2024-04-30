@@ -5,6 +5,7 @@ project(RadioController)
 set(SOURCE_FILES
     hako_module_drone_controller_impl.cpp
 )
+add_definitions(-DRADIO_CONTROL_ON)
 
 # ローダブルモジュールとして動的ライブラリを生成
 add_library(
