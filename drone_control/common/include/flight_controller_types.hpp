@@ -1,6 +1,7 @@
 #ifndef _FLIGHT_CONTROLLER_TYPES_HPP_
 #define _FLIGHT_CONTROLLER_TYPES_HPP_
 
+#include <cmath>
 #include "pid_control.hpp"
 #include "frame_types.h"
 
