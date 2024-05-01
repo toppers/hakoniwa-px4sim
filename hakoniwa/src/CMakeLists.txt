@@ -12,6 +12,7 @@ MESSAGE(STATUS "OS_TYPE=" ${OS_TYPE})
 include(FetchContent)
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
 FetchContent_MakeAvailable(json)
+#add_definitions(-DDRONE_ENABLE_MIXER)
 
 set(SOURCE_FILES
     comm/tcp_connector.cpp

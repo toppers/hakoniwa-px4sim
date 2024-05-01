@@ -17,36 +17,41 @@ namespace hako::assets::drone {
         double param_Kr;
         double param_A;
         double param_B;
-        glm::mat4 M;
-        glm::mat4 M_inv;
-        glm::mat4 A;
-        glm::mat4 A_inv;
-        glm::mat4 MA_inv;
+        glm::dmat4 M;
+        glm::dmat4 M_inv;
+        glm::dmat4 A;
+        glm::dmat4 A_inv;
+        glm::dmat4 MA_inv;
         bool debugEnabled = false;
-
-    public:
+    public: 
         virtual ~DroneMixer() {}
         DroneMixer(double Kr, double a, double b, RotorConfigType rotor[ROTOR_NUM])
         {
             this->param_Kr = Kr;
             this->param_A = a;
             this->param_B = b;
-            this->M = glm::mat4(1.0f);
-            this->M[0] = glm::vec4(1, 1, 1, 1);
-            //this->M[1] = glm::vec4(rotor[0].data.y, rotor[1].data.y, rotor[2].data.y, rotor[3].data.y);
-            //this->M[2] = glm::vec4(-rotor[0].data.x, -rotor[1].data.x, -rotor[2].data.x, -rotor[3].data.x);
-            this->M[1] = glm::vec4(-rotor[0].data.y, -rotor[1].data.y, -rotor[2].data.y, -rotor[3].data.y);
-            this->M[2] = glm::vec4(rotor[0].data.x, rotor[1].data.x, rotor[2].data.x, rotor[3].data.x);
-            this->M[3] = glm::vec4(rotor[0].ccw, rotor[1].ccw, rotor[2].ccw, rotor[3].ccw);
+            this->M = glm::dmat4(1.0f);
+            this->M[0] = glm::dvec4(1, 1, 1, 1);
+            this->M[1] = glm::dvec4(-rotor[0].data.y, -rotor[1].data.y, -rotor[2].data.y, -rotor[3].data.y);
+            this->M[2] = glm::dvec4(rotor[0].data.x, rotor[1].data.x, rotor[2].data.x, rotor[3].data.x);
+            this->M[3] = glm::dvec4(rotor[0].ccw, rotor[1].ccw, rotor[2].ccw, rotor[3].ccw);
             this->M = glm::transpose(this->M);
             
-            this->A = glm::mat4(1.0f);
-            this->A[0] = glm::vec4( (a ), 0, 0, 0);
-            this->A[1] = glm::vec4( 0, (a ), 0, 0);
-            this->A[2] = glm::vec4( 0, 0, (a ), 0);
-            this->A[3] = glm::vec4( 0, 0, 0, (b ));
+            this->A = glm::dmat4(1.0f);
+            this->A[0] = glm::dvec4( (a ), 0, 0, 0);
+            this->A[1] = glm::dvec4( 0, (a ), 0, 0);
+            this->A[2] = glm::dvec4( 0, 0, (a ), 0);
+            this->A[3] = glm::dvec4( 0, 0, 0, (b ));
             this->A = glm::transpose(this->A);
             this->A_inv = glm::inverse(A);
+        }
+        static void printMatrix(const glm::dmat4& mat) {
+            for (int i = 0; i < 4; i++) { 
+                for (int j = 0; j < 4; j++) {
+                    std::cout << mat[j][i] << " ";
+                }
+                std::cout << std::endl;
+            }
         }
         bool calculate_M_inv()
         {
@@ -61,14 +66,16 @@ namespace hako::assets::drone {
         }
         PwmDuty run(double thrust, double torque_x, double torque_y, double torque_z)
         {
-            glm::vec4 U = glm::vec4(thrust, torque_x, torque_y, torque_z);
+            glm::dvec4 U = glm::dvec4(thrust, torque_x, torque_y, torque_z);
             
-            glm::vec4 Omega2 = M_inv * A_inv * U;
+            glm::dvec4 Omega2 = MA_inv * U;
             PwmDuty duty = {};
             for (int i = 0; i < ROTOR_NUM; i++) {
                 if (Omega2[i] < 0) {
-                    std::cout << "ERROR: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
-                    std::cout << "ERROR: Invalid caluculation of Omega to duty because of omega^2("<< i << ") is minus value(" << Omega2[i] << ")..." << std::endl;
+                    if (debugEnabled) {
+                        std::cout << "ERROR: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
+                        std::cout << "ERROR: Invalid caluculation of Omega to duty because of omega^2("<< i << ") is minus value(" << Omega2[i] << ")..." << std::endl;
+                    }
                     Omega2[i] = 0;
                 }
                 else {
@@ -81,16 +88,16 @@ namespace hako::assets::drone {
             return duty;
         }
         glm::vec4 reconstructControlInput(const PwmDuty& duty) {
-            glm::vec4 Omega2;
+            glm::dvec4 Omega2;
             for (int i = 0; i < ROTOR_NUM; i++) {
                 Omega2[i] = std::pow(duty.d[i] * param_Kr, 2);
             }
             return A * M * Omega2;
         }
         bool testReconstruction(double thrust, double torque_x, double torque_y, double torque_z) {
-            glm::vec4 U_original = glm::vec4(thrust, torque_x, torque_y, torque_z);
+            glm::dvec4 U_original = glm::dvec4(thrust, torque_x, torque_y, torque_z);
             PwmDuty duty = run(thrust, torque_x, torque_y, torque_z);
-            glm::vec4 U_reconstructed = reconstructControlInput(duty);
+            glm::dvec4 U_reconstructed = reconstructControlInput(duty);
 
             const double epsilon = 1e-5;
             for (int i = 0; i < 4; i++) {

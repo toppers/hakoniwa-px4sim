@@ -317,19 +317,17 @@ public:
             torque.data.y = out.torque_y;
             torque.data.z = out.torque_z;
 
-#if 0
+#ifdef DRONE_ENABLE_MIXER
             auto mixer = module.drone->get_mixer();
             PwmDuty duty = mixer.run(thrust.data, torque.data.x, torque.data.y, torque.data.z);
             for (int i = 0; i < ROTOR_NUM; i++) {
                 drone_input.controls[i] = duty.d[i];
                 module.controls[i] = duty.d[i];
             }
-            bool ret = mixer.testReconstruction(thrust.data, torque.data.x, torque.data.y, torque.data.z);
-            if (ret == false) {
-                std::cout << "ERROR: can not reconstruct.." << std::endl;
-            }
-#endif
+            drone_input.no_use_actuator = false;
+#else
             drone_input.no_use_actuator = true;
+#endif
             drone_input.manual.control = false;
             drone_input.thrust = thrust;
             drone_input.torque = torque;
@@ -340,7 +338,10 @@ public:
                 do_io_read_disturb(module.drone, drone_input.disturbance);
             }
             module.drone->run(drone_input);
+#ifdef DRONE_ENABLE_MIXER
+#else
             calculate_simple_controls(module, thrust);
+#endif
             do_io_write(module.drone, module.controls);
             index++;
         }
