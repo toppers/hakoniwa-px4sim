@@ -35,11 +35,12 @@
   - `height` (float): 離陸後の高さ。
   - `vehicle_name` (str, optional): 操作対象のドローン名。
 
-### `moveToPosition(x, y, z, speed, vehicle_name=None)`
+### `moveToPosition(x, y, z, speed, yaw_deg=None, vehicle_name=None)`
 - 概要: 指定された位置へドローンを移動させます。
 - 引数:
   - `x`, `y`, `z` (float): 目標位置の座標。
   - `speed` (float): 移動速度。
+  - `yaw_deg` (float, optional): 移動時のyaw角度（度）。指定しない場合は現在の姿勢を維持します。
   - `vehicle_name` (str, optional): 操作対象のドローン名。
 
 ### `land(vehicle_name=None)`
@@ -59,3 +60,19 @@
   - `id` (int): カメラのID。
   - `image_type` (str): 画像のタイプ（例: "png"）。
   - `vehicle_name` (str, optional): 操作対象のドローン名。
+
+### `getLidarData(vehicle_name=None)`
+- 概要: Lidarデータを取得します。
+- 引数:
+  - `vehicle_name` (str, optional): Lidarデータを取得するドローン名。
+
+### `getGameJoystickData(vehicle_name=None)`
+- 概要: ゲームパッドのデータを取得します。
+- 引数:
+  - `vehicle_name` (str, optional): データを取得するドローン名。
+
+### `putGameJoystickData(data, vehicle_name=None)`
+- 概要: ゲームパッドのデータを送信します。
+- 引数:
+  - `data`: 送信するゲームパッドのデータ。
+  - `vehicle_name` (str, optional): データを送信するドローン名。

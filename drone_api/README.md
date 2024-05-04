@@ -5,30 +5,24 @@ English ｜ [日本語](README-ja.md)
 
 This provides an API for controlling the Hakoniwa's plant model with Python programs.
 
-The Hakoniwa API (`hakosim`) essentially follows the signature of the AirSim API.
+The Hakoniwa API (`hakosim`) essentially follows the signature of the [AirSim](https://microsoft.github.io/AirSim/) API.
+
+For an overview of the Hakoniwa Python API, please refer to [this link](https://github.com/toppers/hakoniwa-px4sim/tree/main/drone_api/libs).
 
 # Example Program
 
-After performing the initialization process, the following operations are executed:
+We've prepared an [example program](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/sample/sample.py) to help you understand how to use the Python API.
 
-* Takes off to 3 meters.
-  * client.takeoff(3)
-* Moves to position (0, 3, 3) at 5m/sec.
-  * client.moveToPosition(0, 3, 3, 5)
-* Lands.
-  * client.land()
+The sample program performs the following functions:
 
-```python
-# connect to the HakoSim simulator
-client = hakosim.MultirotorClient(<custom.json>)
-client.confirmConnection()
-client.enableApiControl(True)
-client.armDisarm(True)
+* Taking off the drone
+* Moving the drone
+* Displaying the drone's position information
+* Transporting cargo
+* Capturing and saving images from the drone's front-facing camera
+* Retrieving and debugging 3D LiDAR data
+* Landing the drone
 
-client.takeoff(3)
-client.moveToPosition(0, 3, 3, 5)
-client.land()
-```
 
 # Installation
 
@@ -107,3 +101,76 @@ python sample.py ../../../hakoniwa-unity-drone-model/custom.json
 ```bash
 python3.12 sample.py ../../../hakoniwa-unity-drone-model/custom.json
 ```
+
+Here's the English translation of the provided text:
+
+---
+
+# Hakoniwa Drone Configuration File
+
+Various sensors/actuators are implemented on the Hakoniwa drone in Unity. These features have parameters, which can be set by placing a parameter definition file (drone_config.json) directly under hakoniwa-unity-drone-model/plugin/plugin-srcs to reflect these parameters.
+
+Example configuration:
+```json
+{
+    "drones": {
+        "DroneTransporter": {
+            "audio_rotor_path": "file:///Users/tmori/Downloads/spo_ge_doron_tobi_r01.mp3",
+            "LiDARs": {
+                "LiDAR": {
+                    "Enabled": false,
+                    "NumberOfChannels": 16,
+                    "RotationsPerSecond": 10,
+                    "PointsPerSecond": 10000,
+                    "MaxDistance": 10,
+                    "X": 0.45, "Y": 0, "Z": -0.3,
+                    "Roll": 0, "Pitch": 0, "Yaw" : 0,
+                    "VerticalFOVUpper": 5,
+                    "VerticalFOVLower": -5,
+                    "HorizontalFOVStart": -5,
+                    "HorizontalFOVEnd": 5,
+                    "DrawDebugPoints": true
+                }
+            }
+        }
+    }
+}
+```
+
+* audio_rotor_path: File path for the drone rotor sound. If the file exists, rotor sounds can be played.
+* LiDARs: Configuration settings for the LiDAR mounted on the drone.
+* Enabled: Whether the LiDAR is enabled or disabled. 'true' is enabled, 'false' is disabled.
+* NumberOfChannels: Number of channels for the LiDAR.
+* RotationsPerSecond: Rotational speed of the LiDAR (rotations per second).
+* PointsPerSecond: Total number of points per second for the LiDAR.
+* MaxDistance: Maximum measurable distance by the LiDAR (in meters).
+* X, Y, Z: Position of the LiDAR relative to the drone's coordinates (in meters).
+* Roll, Pitch, Yaw: Orientation of the LiDAR (roll, pitch, yaw angles).
+* VerticalFOVUpper: Upper vertical Field of View (FOV) for the LiDAR.
+* VerticalFOVLower: Lower vertical Field of View (FOV) for the LiDAR.
+* HorizontalFOVStart: Starting angle of the horizontal FOV for the LiDAR.
+* HorizontalFOVEnd: Ending angle of the horizontal FOV for the LiDAR.
+* DrawDebugPoints: Whether to draw debug points for the LiDAR (only if using the Unity editor).
+
+The basic specs for the Hakoniwa LiDAR are as follows:
+
+```
+Frequency: 5Hz
+Horizontal: -90° to 90°
+Vertical: -30° to 30°
+Resolution: 1°
+```
+
+The PDU data size calculated above is used as the upper limit size, so the parameter definitions have the following constraints:
+
+* NumberOfChannels: 61
+* HorizontalPointsPerRotation = 181
+  * PointsPerRotation = PointsPerSecond / RotationsPerSecond
+  * HorizontalPointsPerRotation = PointsPerRotation / NumberOfChannels
+
+The resolutions in horizontal and vertical directions are calculated using the following formulas:
+
+* Horizontal direction: HorizontalRanges / HorizontalPointsPerRotation
+  * HorizontalRanges = HorizontalFOVEnd - HorizontalFOVStart
+* Vertical direction: VerticalRanges / param.NumberOfChannels
+  * VerticalRanges = VerticalFOVUpper - VerticalFOVLower

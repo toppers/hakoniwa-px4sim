@@ -233,7 +233,10 @@ class MultirotorClient:
             lidar_pos_pdu_data = lidar_pos_pdu.read()
             time_stamp = lidar_pdu_data['header']['stamp']['sec']
             point_cloud_bytes = lidar_pdu_data['data__raw']
-            point_cloud = hakosim_lidar.LidarData.extract_xyz_from_point_cloud(point_cloud_bytes)
+            height = lidar_pdu_data['height']
+            row_step = lidar_pdu_data['row_step']
+            total_data_bytes = height * row_step
+            point_cloud = hakosim_lidar.LidarData.extract_xyz_from_point_cloud(point_cloud_bytes, total_data_bytes)
             position = hakosim_types.Vector3r(lidar_pos_pdu_data['linear']['x'], lidar_pos_pdu_data['linear']['y'], lidar_pos_pdu_data['linear']['z'])
             orientation = hakosim_types.Quaternionr.euler_to_quaternion(lidar_pos_pdu_data['angular']['x'], lidar_pos_pdu_data['angular']['y'], lidar_pos_pdu_data['angular']['z'])
             pose = hakosim_types.Pose(position, orientation)

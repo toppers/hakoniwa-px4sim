@@ -34,9 +34,9 @@ class LidarData:
 
 
     @staticmethod
-    def extract_xyz_from_point_cloud(point_cloud_bytes):
+    def extract_xyz_from_point_cloud(point_cloud_bytes, total_data_bytes):
         # 各ポイントは16バイトで、x, y, z, intensityが含まれています。
-        num_points = len(point_cloud_bytes) // 16
+        num_points = total_data_bytes // 16
         # 出力リストを初期化
         points = []
 
