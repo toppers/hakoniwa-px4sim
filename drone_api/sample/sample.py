@@ -5,6 +5,8 @@ import sys
 import hakosim
 import time
 import math
+import numpy
+import pprint
 
 def transport(client, baggage_pos, transfer_pos):
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 0, -90)
@@ -24,6 +26,15 @@ def debug_pos(client):
     roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
     print(f"ANGLE: {math.degrees(roll)} {math.degrees(pitch)} {math.degrees(yaw)}")
 
+def parse_lidarData(data):
+
+    # reshape array of floats to array of [X,Y,Z]
+    points = numpy.array(data.point_cloud, dtype=numpy.dtype('f4'))
+    points = numpy.reshape(points, (int(points.shape[0]/3), 3))
+    
+    return points
+
+
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <config_path>")
@@ -34,6 +45,22 @@ def main():
     client.confirmConnection()
     client.enableApiControl(True)
     client.armDisarm(True)
+
+    lidarData = client.getLidarData()
+    if (len(lidarData.point_cloud) < 3):
+        print("\tNo points received from Lidar data")
+    else:
+        print(f"len: {len(lidarData.point_cloud)}")
+        points = parse_lidarData(lidarData)
+        print("\tReading: time_stamp: %d number_of_points: %d" % (lidarData.time_stamp, len(points)))
+        print("\t\tlidar position: %s" % (pprint.pformat(lidarData.pose.position)))
+        print("\t\tlidar orientation: %s" % (pprint.pformat(lidarData.pose.orientation)))
+    
+        #lidar_z = lidarData.pose.position.z_val
+        condition = numpy.logical_and(points <= 2, points > 0)
+        filtered_points = points[numpy.any(condition, axis=1)]
+
+        print(filtered_points)
 
     client.takeoff(3)
     baggage_pos = { "x": 0, "y": 3 }
@@ -49,9 +76,26 @@ def main():
     client.moveToPosition(-2, -1, 3, 5)
     debug_pos(client)
     time.sleep(3)
-    client.moveToPosition(-2, -1, 0.7, 5)
+    client.moveToPosition(-2, -1, 0.3, 5)
     debug_pos(client)
     time.sleep(3)
+
+    lidarData = client.getLidarData()
+    if (len(lidarData.point_cloud) < 3):
+        print("\tNo points received from Lidar data")
+    else:
+        print(f"len: {len(lidarData.point_cloud)}")
+        points = parse_lidarData(lidarData)
+        print("\tReading: time_stamp: %d number_of_points: %d" % (lidarData.time_stamp, len(points)))
+        print("\t\tlidar position: %s" % (pprint.pformat(lidarData.pose.position)))
+        print("\t\tlidar orientation: %s" % (pprint.pformat(lidarData.pose.orientation)))
+    
+        #lidar_z = lidarData.pose.position.z_val
+        condition = numpy.logical_and(points <= 2, points > 0)
+        filtered_points = points[numpy.any(condition, axis=1)]
+
+        print(filtered_points)
+
 
     png_image = client.simGetImage("0", hakosim.ImageType.Scene)
     if png_image:
