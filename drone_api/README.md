@@ -23,6 +23,9 @@ The sample program performs the following functions:
 * Retrieving and debugging 3D LiDAR data
 * Landing the drone
 
+# Demo
+
+https://www.youtube.com/watch?v=ZaJunG7pxi8
 
 # Installation
 
