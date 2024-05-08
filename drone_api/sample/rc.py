@@ -14,7 +14,7 @@ def average_axis(history, new_value, history_length=5):
     return sum(history) / len(history)
 
 def discretize_value(value):
-    return round(value / 0.1) * 0.1
+    return round(value / 0.25) * 0.25
 
 def saveCameraImage(client):
     png_image = client.simGetImage("0", hakosim.ImageType.Scene)

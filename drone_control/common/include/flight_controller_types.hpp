@@ -49,23 +49,37 @@
 /*
  * Speed Control
  */
+#ifdef RADIO_CONTROL_ON
 #define PID_PARAM_V_BASE      10.0
+#else
+#define PID_PARAM_V_BASE      10.0
+#endif
 #define PID_PARM_VX_Kp        PID_PARAM_V_BASE
 #ifdef RADIO_CONTROL_ON
 #define PID_PARM_VX_Ki        0.0
 #else
 #define PID_PARM_VX_Ki        0.1
 #endif
+#ifdef RADIO_CONTROL_ON
+#define PID_PARM_VX_Kd        PID_PARAM_V_BASE * 2
+#else
 #define PID_PARM_VX_Kd        PID_PARAM_V_BASE
+#endif
 #define PID_PARM_VY_Kp        PID_PARAM_V_BASE
 #ifdef RADIO_CONTROL_ON
 #define PID_PARM_VY_Ki        0.0
 #else
 #define PID_PARM_VY_Ki        0.1
 #endif
+#ifdef RADIO_CONTROL_ON
+#define PID_PARM_VY_Kd        PID_PARAM_V_BASE * 2
+#define PID_PARAM_MAX_ROLL    8
+#define PID_PARAM_MAX_PITCH   8
+#else
 #define PID_PARM_VY_Kd        PID_PARAM_V_BASE
 #define PID_PARAM_MAX_ROLL    5
 #define PID_PARAM_MAX_PITCH   5
+#endif
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*
