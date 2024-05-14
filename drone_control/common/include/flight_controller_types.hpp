@@ -21,10 +21,10 @@
  * Position Control
  */
 #define PID_PARM_POSX_Kp        1.5
-#define PID_PARM_POSX_Ki        0.3
+#define PID_PARM_POSX_Ki        0.01
 #define PID_PARM_POSX_Kd        2.0
 #define PID_PARM_POSY_Kp        1.5
-#define PID_PARM_POSY_Ki        0.3
+#define PID_PARM_POSY_Ki        0.01
 #define PID_PARM_POSY_Kd        2.0
 #define PID_PARAM_MAX_SPD       20.0
 #define POS_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
@@ -49,37 +49,15 @@
 /*
  * Speed Control
  */
-#ifdef RADIO_CONTROL_ON
 #define PID_PARAM_V_BASE      10.0
-#else
-#define PID_PARAM_V_BASE      10.0
-#endif
 #define PID_PARM_VX_Kp        PID_PARAM_V_BASE
-#ifdef RADIO_CONTROL_ON
 #define PID_PARM_VX_Ki        0.0
-#else
-#define PID_PARM_VX_Ki        0.1
-#endif
-#ifdef RADIO_CONTROL_ON
 #define PID_PARM_VX_Kd        PID_PARAM_V_BASE * 2
-#else
-#define PID_PARM_VX_Kd        PID_PARAM_V_BASE
-#endif
-#define PID_PARM_VY_Kp        PID_PARAM_V_BASE
-#ifdef RADIO_CONTROL_ON
+#define PID_PARM_VY_Kp        PID_PARAM_V_BASE * 2
 #define PID_PARM_VY_Ki        0.0
-#else
-#define PID_PARM_VY_Ki        0.1
-#endif
-#ifdef RADIO_CONTROL_ON
 #define PID_PARM_VY_Kd        PID_PARAM_V_BASE * 2
 #define PID_PARAM_MAX_ROLL    8
 #define PID_PARAM_MAX_PITCH   8
-#else
-#define PID_PARM_VY_Kd        PID_PARAM_V_BASE
-#define PID_PARAM_MAX_ROLL    5
-#define PID_PARAM_MAX_PITCH   5
-#endif
 #define SPD_CONTROL_CYCLE     (SIMULATION_DELTA_TIME * 10) //33.3Hz
 
 /*
@@ -91,26 +69,18 @@
 
 #define PID_PARM_ANGLE_BASE     40.0
 #define PID_PARM_ROLL_Kp        PID_PARM_ANGLE_BASE
-#ifdef RADIO_CONTROL_ON
 #define PID_PARM_ROLL_Ki        0.0
-#else
-#define PID_PARM_ROLL_Ki        0.1
-#endif
 #define PID_PARM_ROLL_Kd        PID_PARM_ANGLE_BASE
 #define PID_PARM_PITCH_Kp       PID_PARM_ANGLE_BASE
-#ifdef RADIO_CONTROL_ON
 #define PID_PARM_PITCH_Ki       0.0
-#else
-#define PID_PARM_PITCH_Ki       0.1
-#endif
 #define PID_PARM_PITCH_Kd       PID_PARM_ANGLE_BASE
 
-#define PID_PARM_ROLL_RATE_Kp     0.001
-#define PID_PARM_ROLL_RATE_Ki     0.0001
-#define PID_PARM_ROLL_RATE_Kd     0.001
-#define PID_PARM_PITCH_RATE_Kp    0.001
-#define PID_PARM_PITCH_RATE_Ki    0.0001
-#define PID_PARM_PITCH_RATE_Kd    0.001
+#define PID_PARM_ROLL_RATE_Kp     0.0045
+#define PID_PARM_ROLL_RATE_Ki     0.3
+#define PID_PARM_ROLL_RATE_Kd     0.0045
+#define PID_PARM_PITCH_RATE_Kp    0.0045
+#define PID_PARM_PITCH_RATE_Ki    0.3
+#define PID_PARM_PITCH_RATE_Kd    0.0045
 #define PID_PARM_YAW_RATE_Kp      0.01
 #define PID_PARM_YAW_RATE_Ki      0.001
 #define PID_PARM_YAW_RATE_Kd      0.01

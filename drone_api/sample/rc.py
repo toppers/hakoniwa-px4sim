@@ -81,6 +81,7 @@ def main():
     joystick.init()
     # connect to the HakoSim simulator
     client = hakosim.MultirotorClient(sys.argv[1])
+    client.default_drone_name = "DroneTransporter"
     client.confirmConnection()
     client.enableApiControl(True)
     client.armDisarm(True)
