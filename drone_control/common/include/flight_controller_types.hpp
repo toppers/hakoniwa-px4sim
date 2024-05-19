@@ -44,7 +44,7 @@
 #define PID_PARAM_MAX_POWER    10.0
 #define ALT_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
 #define ALT_DELTA_VALUE_M       0.1 /* 10cm */
-#define ALT_VALUE_MAX           100.0 /* 100m */
+#define ALT_VALUE_MAX           1000.0 /* 1000m */
 
 /*
  * Speed Control
