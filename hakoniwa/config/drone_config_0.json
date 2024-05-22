@@ -60,7 +60,7 @@
             {"position": [ -0.05,  0.05, 0 ], "rotationDirection": -1.0 }
             ],
           "HoveringRpm": 4000,
-          "parameterB":  1.3e-10,
+          "parameterB":  0.3e-10,
           "parameterJr": 1.0e-10
         },
         "sensors": {

@@ -149,6 +149,28 @@
           "pdu_size": 102668,
           "write_cycle": 1,
           "method_type": "SHM"
+        },
+        {
+          "type": "sensor_msgs/PointCloud2",
+          "org_name": "lidar_points",
+          "name": "DroneTransporter_lidar_points",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 13,
+          "pdu_size": 177376,
+          "write_cycle": 5,
+          "method_type": "SHM"
+        },
+        {
+          "type": "geometry_msgs/Twist",
+          "org_name": "lidar_pos",
+          "name": "DroneTransporter_lidar_pos",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 14,
+          "pdu_size": 48,
+          "write_cycle": 5,
+          "method_type": "SHM"
         }
       ]
     }
