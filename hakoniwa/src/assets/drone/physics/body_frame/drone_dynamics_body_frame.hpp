@@ -183,6 +183,10 @@ public:
 
         //convert to ground frame
         this->velocity = this->convert(this->velocityBodyFrame);
+
+        // ADD WIND CONDITION HERE. (wind vector, in ground frame)
+        // this->velocity += (wind_x, wind_y, wind_z);
+
         this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
 
         //collision detection
