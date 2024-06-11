@@ -1,3 +1,3 @@
-DroneAvator_Kp=0.5
+DroneAvator_Kp=10
 DroneAvator_Ki=0.0
 DroneAvator_Kd=0.0
