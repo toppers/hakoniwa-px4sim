@@ -37,8 +37,8 @@ def main(input_file):
     # Rise time T_r
     rise_time_start = data[data['Z'] >= c * RISE_TIME_10_PERCENT]['timestamp'].min()
     rise_time_end = data[data['Z'] >= c * RISE_TIME_90_PERCENT]['timestamp'].min()
-    print(f"rise_time_start: {rise_time_start}")
-    print(f"rise_time_end  : {rise_time_end}")
+    #print(f"rise_time_start: {rise_time_start}")
+    #print(f"rise_time_end  : {rise_time_end}")
 
     T_r = rise_time_end - rise_time_start
     
@@ -48,7 +48,7 @@ def main(input_file):
     
     # Maximum overshoot O_s
     max_value = data['Z'].max()
-    print(f"max_value     : {max_value}")
+    #print(f"max_value     : {max_value}")
     O_s = max_value - c
     
     # Settling time T_s
@@ -62,11 +62,11 @@ def main(input_file):
                 break
     
     # Output results
-    print(f"Steady state value c: {c:.3f} m")
-    print(f"Rise time T_r: {T_r:.3f} seconds")
-    print(f"Delay time T_d: {T_d:.3f} seconds")
-    print(f"Maximum overshoot O_s: {O_s:.3f} m")
-    print(f"5% settling time T_s: {T_s:.3f} seconds")
+    print(f"c(Steady state value)  : {c:.3f} m")
+    print(f"T_r(Rise time)         : {T_r:.3f} seconds")
+    print(f"T_d(Delay time)        : {T_d:.3f} seconds")
+    print(f"O_s(Maximum overshoot) : {O_s:.3f} m")
+    print(f"T_s(5% settling time)  : {T_s:.3f} seconds")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
