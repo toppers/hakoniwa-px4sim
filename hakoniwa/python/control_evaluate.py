@@ -10,6 +10,14 @@ RISE_TIME_90_PERCENT = 0.9
 DELAY_TIME_PERCENT = 0.5
 SETTLING_TIME_PERCENT = 0.05
 
+TARGET_TR = 10.0
+TARGET_TD = 5.0
+TARGET_OS = 1.0
+TARGET_TS = 20.0
+TARGET_HEIGHT = 10.0
+TARGET_CV = 0.01
+
+
 def main(input_file):
     # Read data file
     data = pd.read_csv(input_file)
@@ -61,12 +69,20 @@ def main(input_file):
                 T_s = data['timestamp'].iloc[i]
                 break
     
+    # Determine results
+    cs_result = "OK" if np.abs(c - TARGET_HEIGHT) <= TARGET_HEIGHT * TARGET_CV else "NG"
+    tr_result = "OK" if T_r <= TARGET_TR else "NG"
+    td_result = "OK" if T_d <= TARGET_TD else "NG"
+    os_result = "OK" if O_s <= TARGET_OS else "NG"
+    ts_result = "OK" if T_s is not None and T_s <= TARGET_TS else "NG"
+
     # Output results
-    print(f"c(Steady state value)  : {c:.3f} m")
-    print(f"T_r(Rise time)         : {T_r:.3f} seconds")
-    print(f"T_d(Delay time)        : {T_d:.3f} seconds")
-    print(f"O_s(Maximum overshoot) : {O_s:.3f} m")
-    print(f"T_s(5% settling time)  : {T_s:.3f} seconds")
+    print(f"{cs_result} : c(Steady state value)  : {c:.3f} m")
+    print(f"{tr_result} : T_r(Rise time)         : {T_r:.3f} seconds")
+    print(f"{td_result} : T_d(Delay time)        : {T_d:.3f} seconds")
+    print(f"{os_result} : O_s(Maximum overshoot) : {O_s:.3f} m")
+    print(f"{ts_result} : T_s(5% settling time)  : {T_s:.3f} seconds")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
