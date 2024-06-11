@@ -77,11 +77,11 @@ def main(input_file):
     ts_result = "OK" if T_s is not None and T_s <= TARGET_TS else "NG"
 
     # Output results
-    print(f"{cs_result} : c(Steady state value)  : {c:.3f} m")
-    print(f"{tr_result} : T_r(Rise time)         : {T_r:.3f} seconds")
-    print(f"{td_result} : T_d(Delay time)        : {T_d:.3f} seconds")
-    print(f"{os_result} : O_s(Maximum overshoot) : {O_s:.3f} m")
-    print(f"{ts_result} : T_s(5% settling time)  : {T_s:.3f} seconds")
+    print(f"{cs_result} c(Steady state value)  : {c:.3f} m (Target: {TARGET_HEIGHT}±{TARGET_HEIGHT * TARGET_CV:.3f} m)")
+    print(f"{tr_result} T_r(Rise time)         : {T_r:.3f} s (Target: ≤ {TARGET_TR:.3f} s)")
+    print(f"{td_result} T_d(Delay time)        : {T_d:.3f} s (Target: ≤ {TARGET_TD:.3f} s)")
+    print(f"{os_result} O_s(Maximum overshoot) : {O_s:.3f} m (Target: ≤ {TARGET_OS:.3f} m)")
+    print(f"{ts_result} T_s(5% settling time)  : {T_s:.3f} s (Target: ≤ {TARGET_TS:.3f} s)")
 
 
 if __name__ == "__main__":
