@@ -49,7 +49,6 @@ private:
 
     DroneEulerRateType convert(const DroneAngularVelocityBodyFrameType& src)
     {
-        // TODO hiranabe 2020/12/10
         drone_physics::EulerRateType rate = drone_physics::euler_rate_from_body_angular_velocity(src, angle);
         drone_physics::EulerRateType dest = { rate.phi, rate.theta, rate.psi };
         return dest;
