@@ -54,9 +54,14 @@ static inline void debug_print_drone_collision(hako::assets::drone::DroneDynamic
 static inline void do_io_read_control(hako::assets::drone::IAirCraft *drone, DroneThrustType& thrust, DroneTorqueType& torque)
 {
     Hako_Twist control;
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_Twist)];
 
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_CTRL, (char*)&control, sizeof(control))) {
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_CTRL, buffer, sizeof(buffer))) {
         std::cerr << "ERROR: can not read pdu data: control" << std::endl;
+        return;
+    }
+    if (hako_pdu_get_fixed_data(buffer, (char*)&control, sizeof(Hako_Twist), sizeof(buffer)) < 0) {
+        std::cerr << "ERROR: can not get pdu data: control" << std::endl;
         return;
     }
     thrust.data = control.linear.z;
@@ -65,13 +70,18 @@ static inline void do_io_read_control(hako::assets::drone::IAirCraft *drone, Dro
     torque.data.z = control.angular.z;
     return;
 }
-
 static inline void do_io_read_collision(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsCollisionType& drone_collision)
 {
     Hako_Collision hako_collision;
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_Collision)];
     memset(&drone_collision, 0, sizeof(drone_collision));
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, (char*)&hako_collision, sizeof(hako_collision))) {
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, buffer, sizeof(buffer))) {
         std::cerr << "ERROR: can not read pdu data: Hako_Collision" << std::endl;
+        return;
+    }
+    if (hako_pdu_get_fixed_data(buffer, (char*)&hako_collision, sizeof(Hako_Collision), sizeof(buffer)) < 0) {
+        std::cerr << "ERROR: can not get pdu data: Hako_Collision" << std::endl;
+        return;
     }
     drone_collision.collision = (bool)hako_collision.collision;
     if (drone_collision.collision) {
@@ -87,17 +97,31 @@ static inline void do_io_read_collision(hako::assets::drone::IAirCraft *drone, h
         }
         debug_print_drone_collision(drone_collision);
         hako_collision.collision = false;
-        if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, (const char*)&hako_collision, sizeof(hako_collision))) {
+
+        // 書き込み用バッファを準備する
+        char write_buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_Collision)];
+        if (hako_pdu_put_fixed_data(write_buffer, reinterpret_cast<const char*>(&hako_collision), sizeof(Hako_Collision), sizeof(write_buffer)) < 0) {
+            std::cerr << "ERROR: can not put pdu data: Hako_Collision" << std::endl;
+            return;
+        }
+        if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_COLLISION, write_buffer, sizeof(write_buffer))) {
             std::cerr << "ERROR: can not write pdu data: Hako_Collision" << std::endl;
         }
     }
 }
+
 static inline void do_io_read_manual(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsManualControlType& drone_manual)
 {
     Hako_ManualPosAttControl hako_manual;
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_ManualPosAttControl)];
     memset(&hako_manual, 0, sizeof(hako_manual));
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MANUAL, (char*)&hako_manual, sizeof(hako_manual))) {
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MANUAL, buffer, sizeof(buffer))) {
         std::cerr << "ERROR: can not read pdu data: Hako_ManualPosAttControl" << std::endl;
+        return;
+    }
+    if (hako_pdu_get_fixed_data(buffer, (char*)&hako_manual, sizeof(Hako_ManualPosAttControl), sizeof(buffer)) < 0) {
+        std::cerr << "ERROR: can not get pdu data: Hako_ManualPosAttControl" << std::endl;
+        return;
     }
     drone_manual.control = hako_manual.do_operation;
     if (drone_manual.control) {
@@ -109,7 +133,14 @@ static inline void do_io_read_manual(hako::assets::drone::IAirCraft *drone, hako
         drone_manual.pos.data.x = hako_manual.posatt.linear.x;
         drone_manual.pos.data.y = hako_manual.posatt.linear.y;
         drone_manual.pos.data.z = hako_manual.posatt.linear.z;
-        if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MANUAL, (const char*)&hako_manual, sizeof(hako_manual))) {
+
+        // 書き込み用バッファを準備する
+        char write_buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_ManualPosAttControl)];
+        if (hako_pdu_put_fixed_data(write_buffer, reinterpret_cast<const char*>(&hako_manual), sizeof(Hako_ManualPosAttControl), sizeof(write_buffer)) < 0) {
+            std::cerr << "ERROR: can not put pdu data: Hako_ManualPosAttControl" << std::endl;
+            return;
+        }
+        if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MANUAL, write_buffer, sizeof(write_buffer))) {
             std::cerr << "ERROR: can not write pdu data: Hako_ManualPosAttControl" << std::endl;
         }
     }
@@ -118,18 +149,31 @@ static inline void do_io_read_manual(hako::assets::drone::IAirCraft *drone, hako
 static inline void do_io_read_disturb(hako::assets::drone::IAirCraft *drone, hako::assets::drone::DroneDynamicsDisturbanceType& drone_disturb)
 {
     Hako_Disturbance hako_disturb;
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_Disturbance)];
     memset(&hako_disturb, 0, sizeof(hako_disturb));
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNEL_ID_DISTURB, (char*)&hako_disturb, sizeof(hako_disturb))) {
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), HAKO_AVATOR_CHANNEL_ID_DISTURB, buffer, sizeof(buffer))) {
         std::cerr << "ERROR: can not read pdu data: Hako_Disturbance" << std::endl;
+        return;
+    }
+    if (hako_pdu_get_fixed_data(buffer, (char*)&hako_disturb, sizeof(Hako_Disturbance), sizeof(buffer)) < 0) {
+        std::cerr << "ERROR: can not get pdu data: Hako_Disturbance" << std::endl;
+        return;
     }
     //temperature
     drone_disturb.values.d_temp.value = hako_disturb.d_temp.value;
 }
+#include <iomanip>  // for std::hex and std::setfill
 
 template<typename PacketType>
-static inline bool do_io_read_cmd(hako::assets::drone::IAirCraft *drone, int channel_id, PacketType& packet) {
-    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), channel_id, reinterpret_cast<char*>(&packet), sizeof(packet))) {
-        std::cerr << "ERROR: can not read pdu data: packet channel_id: " << channel_id  << std::endl;
+static inline bool do_io_read_cmd(hako::assets::drone::IAirCraft *drone, int channel_id, PacketType& packet)
+{
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(PacketType)];
+    if (!hako_asset_runner_pdu_read(drone->get_name().c_str(), channel_id, buffer, sizeof(buffer))) {
+        std::cerr << "ERROR: can not read pdu data: packet channel_id: " << channel_id << std::endl;
+        return false;
+    }
+    if (hako_pdu_get_fixed_data(buffer, (char*)&packet, sizeof(PacketType), sizeof(buffer)) < 0) {
+        //std::cerr << "ERROR: can not get pdu data: PacketType" << std::endl;
         return false;
     }
     return true;
@@ -137,8 +181,13 @@ static inline bool do_io_read_cmd(hako::assets::drone::IAirCraft *drone, int cha
 
 template<typename PacketType>
 static inline bool do_io_write_cmd(hako::assets::drone::IAirCraft *drone, int channel_id, const PacketType& packet) {
-    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), channel_id, reinterpret_cast<const char*>(&packet), sizeof(packet))) {
-        std::cerr << "ERROR: can not write pdu data: packet channel_id: " << channel_id  << std::endl;
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(PacketType)];
+    if (hako_pdu_put_fixed_data(buffer, reinterpret_cast<const char*>(&packet), sizeof(PacketType), sizeof(buffer)) < 0) {
+        std::cerr << "ERROR: can not put pdu data: PacketType" << std::endl;
+        return false;
+    }
+    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), channel_id, buffer, sizeof(buffer))) {
+        std::cerr << "ERROR: can not write pdu data: packet channel_id: " << channel_id << std::endl;
         return false;
     }
     return true;
@@ -148,13 +197,20 @@ static inline void do_io_write(hako::assets::drone::IAirCraft *drone, const doub
 {
     Hako_HakoHilActuatorControls hil_actuator_controls;
     Hako_Twist pos;
+    char buffer_hil_actuator[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_HakoHilActuatorControls)];
+    char buffer_pos[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_Twist)];
 
     memset(&hil_actuator_controls, 0, sizeof(hil_actuator_controls));
     for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
         hil_actuator_controls.controls[i] = controls[i];
     }
-    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MOTOR, (const char*)&hil_actuator_controls, sizeof(hil_actuator_controls))) {
+    if (hako_pdu_put_fixed_data(buffer_hil_actuator, reinterpret_cast<const char*>(&hil_actuator_controls), sizeof(Hako_HakoHilActuatorControls), sizeof(buffer_hil_actuator)) < 0) {
+        std::cerr << "ERROR: can not put pdu data: hil_actuator_controls" << std::endl;
+        return;
+    }
+    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_MOTOR, buffer_hil_actuator, sizeof(buffer_hil_actuator))) {
         std::cerr << "ERROR: can not write pdu data: hil_actuator_controls" << std::endl;
+        return;
     }
 
     DronePositionType dpos = drone->get_drone_dynamics().get_pos();
@@ -165,8 +221,14 @@ static inline void do_io_write(hako::assets::drone::IAirCraft *drone, const doub
     pos.angular.x = dangle.data.x;
     pos.angular.y = -dangle.data.y;
     pos.angular.z = -dangle.data.z;
-    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_POS, (const char*)&pos, sizeof(pos))) {
+
+    if (hako_pdu_put_fixed_data(buffer_pos, reinterpret_cast<const char*>(&pos), sizeof(Hako_Twist), sizeof(buffer_pos)) < 0) {
+        std::cerr << "ERROR: can not put pdu data: pos" << std::endl;
+        return;
+    }
+    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), HAKO_AVATOR_CHANNLE_ID_POS, buffer_pos, sizeof(buffer_pos))) {
         std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
+        return;
     }
 }
 

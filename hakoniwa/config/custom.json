@@ -12,7 +12,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter",
           "channel_id": 0,
-          "pdu_size": 88,
+          "pdu_size": 112,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -23,7 +23,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter",
           "channel_id": 1,
-          "pdu_size": 48,
+          "pdu_size": 72,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -34,7 +34,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 3,
-          "pdu_size": 56,
+          "pdu_size": 80,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -45,7 +45,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 5,
-          "pdu_size": 40,
+          "pdu_size": 64,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -56,7 +56,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 6,
-          "pdu_size": 56,
+          "pdu_size": 80,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -67,7 +67,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 7,
-          "pdu_size": 40,
+          "pdu_size": 64,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -78,7 +78,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 8,
-          "pdu_size": 52,
+          "pdu_size": 76,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -89,7 +89,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 9,
-          "pdu_size": 16,
+          "pdu_size": 40,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -100,7 +100,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 11,
-          "pdu_size": 20,
+          "pdu_size": 44,
           "write_cycle": 1,
           "method_type": "SHM"
         }
@@ -113,7 +113,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 2,
-          "pdu_size": 280,
+          "pdu_size": 304,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -124,7 +124,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 4,
-          "pdu_size": 8,
+          "pdu_size": 32,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -135,7 +135,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 10,
-          "pdu_size": 8,
+          "pdu_size": 32,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -146,7 +146,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 12,
-          "pdu_size": 102668,
+          "pdu_size": 102716,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -157,7 +157,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 13,
-          "pdu_size": 177376,
+          "pdu_size": 177400,
           "write_cycle": 5,
           "method_type": "SHM"
         },
@@ -168,7 +168,7 @@
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 14,
-          "pdu_size": 48,
+          "pdu_size": 72,
           "write_cycle": 5,
           "method_type": "SHM"
         }
