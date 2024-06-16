@@ -53,7 +53,8 @@ int hako_module_drone_controller_impl_init(void* context)
     prev_error = 0.0;
     return 0;
 }
-
+#define THRUST_MAX (9.81 * 1.1)
+#define THRUST_MIN (0.0)
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
     const double target_altitude = 10.0;
@@ -67,6 +68,13 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     double output = Kp * error + Ki * integral + Kd * derivative;
     
     prev_error = error;
+
+    if (output > THRUST_MAX) {
+        output = THRUST_MAX;
+    }
+    else if (output < THRUST_MIN) {
+        output = THRUST_MIN;
+    }
     
     mi_drone_control_out_t control_output;
     control_output.thrust = output;

@@ -26,6 +26,7 @@ public:
     void reset() override
     {
         drone_dynamics->reset();
+        logger.reset();
     }
     void run(DroneDynamicsInputType& input) override
     {

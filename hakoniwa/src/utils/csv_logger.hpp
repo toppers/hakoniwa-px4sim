@@ -3,19 +3,25 @@
 
 #include "csv_data.hpp"
 #include "icsv_log.hpp"
+#include <vector>
+#include <string>
+#include <stdint.h>
 
 typedef struct {
     ICsvLog *log;
     CsvData *csv_data;
+    std::string file_name;
 } CsvLogEntryType;
 
 #define MAX_WRITE_COUNT 256
+
 class CsvLogger {
 private:
     std::vector<CsvLogEntryType> entries;
     int write_count;
     static bool enable_flag;
     static uint64_t time_usec;
+
 public:
     CsvLogger() : write_count(0) {}
 
@@ -26,25 +32,26 @@ public:
     void add_entry(ICsvLog& log, const std::string& file_name) {
         CsvData *csv_data = new CsvData(file_name, {log.log_head()});
         csv_data->flush();
-        CsvLogEntryType entry = { &log, csv_data };
+        CsvLogEntryType entry = { &log, csv_data, file_name };
         entries.push_back(entry);
     }
-    static void set_time_usec(uint64_t t)
-    {
+
+    static void set_time_usec(uint64_t t) {
         time_usec = t;
     }
-    static uint64_t get_time_usec()
-    {
+
+    static uint64_t get_time_usec() {
         return time_usec;
     }
-    static void enable()
-    {
+
+    static void enable() {
         enable_flag = true;
     }
-    static void disable()
-    {
+
+    static void disable() {
         enable_flag = false;
     }
+
     void run() {
         if (enable_flag == false) {
             return;
@@ -59,6 +66,20 @@ public:
             }
             write_count = 0;
         }
+    }
+
+    void reset() {
+        // Close current CSV files and reinitialize them
+        for (auto& entry : entries) {
+            if (entry.csv_data) {
+                entry.csv_data->flush();
+                delete entry.csv_data;
+                // Reopen the CSV file, effectively resetting it
+                entry.csv_data = new CsvData(entry.file_name, {entry.log->log_head()});
+                entry.csv_data->flush();
+            }
+        }
+        write_count = 0;
     }
 
     void close() {

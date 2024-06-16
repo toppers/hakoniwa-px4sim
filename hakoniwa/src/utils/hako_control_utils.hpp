@@ -79,6 +79,7 @@ public:
         for (auto module : get_modules()) {
             module.reset();
         }
+        hako_asset_time_usec = 0;
     }
     void init(Hako_uint64 microseconds, Hako_uint64 dt_usec)
     {
