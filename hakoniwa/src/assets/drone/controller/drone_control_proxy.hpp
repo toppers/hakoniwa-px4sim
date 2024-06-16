@@ -268,6 +268,10 @@ public:
             drone_control_proxies.push_back(proxy);
         }
     }
+    void reset()
+    {
+        module_simulator.reset();
+    }
     void setup()
     {
         for (auto& proxy : drone_control_proxies) {

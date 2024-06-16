@@ -125,7 +125,7 @@ static void my_task()
 
 static void my_reset()
 {
-    //nothing to do
+    module_simulator.reset();
 }
 
 static hako_asset_runner_callback_t my_callbacks = {

@@ -74,7 +74,7 @@ static void my_task()
 
 static void my_reset()
 {
-    //nothing to do
+    drone_control_proxy_manager.reset();
 }
 
 static hako_asset_runner_callback_t my_callbacks = {

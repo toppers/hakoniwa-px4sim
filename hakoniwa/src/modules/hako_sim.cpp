@@ -120,6 +120,9 @@ public:
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
     hako::assets::drone::MavlinkIO mavlink_io;
     Hako_uint64 px4_time_usec;
+    void reset() {
+        drone->reset();
+    }
 };
 
 class AircraftTaskManager
@@ -268,7 +271,9 @@ static void my_task()
 
 static void my_reset()
 {
-    //nothing to do
+    for (auto& container : task_manager.aircraft_container) {
+        container.reset();
+    }
 }
 
 static hako_asset_runner_callback_t my_callbacks = {

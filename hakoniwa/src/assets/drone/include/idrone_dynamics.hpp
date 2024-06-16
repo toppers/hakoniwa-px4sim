@@ -46,6 +46,7 @@ protected:
 public:
     virtual ~IDroneDynamics() {}
 
+    virtual void reset() = 0;
     virtual void set_drag(double drag1, double drag2) = 0;
     virtual double get_drag() const = 0;
     virtual void set_collision_detection(bool enable) = 0;

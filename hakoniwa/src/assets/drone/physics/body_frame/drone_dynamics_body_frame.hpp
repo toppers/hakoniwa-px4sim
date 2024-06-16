@@ -26,6 +26,12 @@ private:
     bool param_collision_detection;
     bool param_manual_control;
     /*
+     * initial state
+     */
+    DronePositionType initial_position;
+    DroneEulerType initial_angle;
+
+    /*
      * internal state
      */
     DronePositionType position;
@@ -35,8 +41,6 @@ private:
 
     DroneVelocityBodyFrameType velocityBodyFrame;
     DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
-    DroneVelocityBodyFrameType next_velocityBodyFrame;
-    DroneAngularVelocityBodyFrameType next_angularVelocityBodyFrame;
 
     double delta_time_sec;
     double total_time_sec;
@@ -80,6 +84,15 @@ public:
         this->param_manual_control = false;
     }
     virtual ~DroneDynamicsBodyFrame() {}
+    void reset() override
+    {
+        position = initial_position;
+        angle = initial_angle;
+        velocity = {0, 0, 0};
+        angularVelocity = {0, 0, 0};
+        velocityBodyFrame = {0, 0, 0};
+        angularVelocityBodyFrame = {0, 0, 0};
+    }
     void set_body_size(double x, double y, double z) override
     {
         this->param_size_x = x;
@@ -113,6 +126,7 @@ public:
     // Setters
     void set_pos(const DronePositionType &pos) override {
         position = pos;
+        initial_position = pos;
     }
 
     void set_vel(const DroneVelocityType &vel) override {
@@ -121,6 +135,7 @@ public:
 
     void set_angle(const DroneEulerType &ang) override {
         angle = ang;
+        initial_angle = ang;
     }
     void set_manual_control(bool enable) override {
         this->param_manual_control = enable;

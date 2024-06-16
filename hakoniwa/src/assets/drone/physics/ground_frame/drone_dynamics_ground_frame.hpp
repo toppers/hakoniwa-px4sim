@@ -23,6 +23,12 @@ private:
     bool param_collision_detection;
     bool param_manual_control;
     /*
+     * initial state
+     */
+    DronePositionType initial_position;
+    DroneEulerType initial_angle;
+
+    /*
      * internal state
      */
     DronePositionType position;           // Initialized to zero by default (glm::dvec3)
@@ -60,6 +66,11 @@ public:
         this->param_manual_control = false;
     }
     virtual ~DroneDynamicsGroundFrame() {}
+    void reset() override
+    {
+        position = initial_position;
+        angle = initial_angle;
+    }
     void set_collision_detection(bool enable) override {
         this->param_collision_detection = enable;
     }
@@ -109,6 +120,9 @@ public:
     // Setters
     void set_pos(const DronePositionType &pos) override {
         position = pos;
+        initial_position = pos;
+        velocity = {0, 0, 0};
+        angularVelocity = {0, 0, 0};
     }
 
     void set_vel(const DroneVelocityType &vel) override {
@@ -117,6 +131,7 @@ public:
 
     void set_angle(const DroneEulerType &ang) override {
         angle = ang;
+        initial_angle = ang;
     }
 
     void set_angular_vel(const DroneEulerRateType &angularVel) override {

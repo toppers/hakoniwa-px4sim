@@ -23,6 +23,10 @@ public:
     {
         return *this->mixer;
     }
+    void reset() override
+    {
+        drone_dynamics->reset();
+    }
     void run(DroneDynamicsInputType& input) override
     {
         //actuators

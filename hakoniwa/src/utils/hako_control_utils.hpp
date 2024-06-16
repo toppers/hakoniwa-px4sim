@@ -24,6 +24,13 @@ public:
     IAirCraft *drone;
     double controls[hako::assets::drone::ROTOR_NUM] = { 0, 0, 0, 0};
 
+    void reset()
+    {
+        //drone dynamics
+        drone->reset();
+        //drone controller
+        control_module.controller->init(this->context);
+    }
     bool load_controller(const char* filepath, void* arguments) 
     {
         control_module.header = nullptr;
@@ -66,6 +73,12 @@ public:
     std::vector<AirCraftModule> get_modules() const
     {
         return this->aircraft_modules;
+    }
+    void reset()
+    {
+        for (auto module : get_modules()) {
+            module.reset();
+        }
     }
     void init(Hako_uint64 microseconds, Hako_uint64 dt_usec)
     {
