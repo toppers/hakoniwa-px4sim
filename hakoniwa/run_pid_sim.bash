@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # シミュレーション実行時間
-SIMULATION_TIME=10
+SIMULATION_TIME=3
 
 # 初期集団を生成
 python python/adjust_pid_params.py --generate_initial_population > population.txt

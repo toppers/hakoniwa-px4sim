@@ -70,18 +70,53 @@ def read_pid_params(filename):
     return params
 
 def fitness(results):
-    # フィットネス関数を定義
-    fitness_value = 0
+    # フィットネス関数を定義して定量化
+    fitness_value = 0.0
     if results['steady_state_ok']:
-        fitness_value += 1
+        fitness_value += 1.0
+    else:
+        # ステディステートの誤差に基づいてスコアを減算
+        target = 10.0
+        tolerance = 0.1
+        error = abs(results['steady_state'] - target)
+        fitness_value -= min(error / tolerance, 1.0)
+
     if results['rise_time_ok']:
-        fitness_value += 1
+        fitness_value += 1.0
+    else:
+        # ライズタイムのスコア減算（小さい方が良い）
+        target = 10.0
+        tolerance = 10.0
+        error = max(0, target - results['rise_time'])  # 小さい方が良いのでtargetから引く
+        fitness_value += min(error / tolerance, 1.0)  # プラスに加算
+
     if results['delay_time_ok']:
-        fitness_value += 1
+        fitness_value += 1.0
+    else:
+        # ディレイタイムのスコア減算（小さい方が良い）
+        target = 5.0
+        tolerance = 5.0
+        error = max(0, target - results['delay_time'])  # 小さい方が良いのでtargetから引く
+        fitness_value += min(error / tolerance, 1.0)  # プラスに加算
+
     if results['overshoot_ok']:
-        fitness_value += 1
+        fitness_value += 1.0
+    else:
+        # オーバーシュートのスコア減算
+        target = 1.0
+        tolerance = 1.0
+        error = results['overshoot'] - target
+        fitness_value -= min(error / tolerance, 1.0)
+
     if results['settling_time_ok']:
-        fitness_value += 1
+        fitness_value += 1.0
+    else:
+        # セトリングタイムのスコア減算（小さい方が良い）
+        target = 20.0
+        tolerance = 20.0
+        error = max(0, target - results['settling_time'])  # 小さい方が良いのでtargetから引く
+        fitness_value += min(error / tolerance, 1.0)  # プラスに加算
+
     return fitness_value
 
 def generate_initial_population(size):
