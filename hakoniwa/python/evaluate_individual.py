@@ -22,47 +22,36 @@ def calculate_fitness(results):
     if not results:
         return fitness_value
 
-    if results['steady_state_ok']:
-        fitness_value += 1.0
-    else:
-        target = 10.0
-        tolerance = 0.1
-        error = abs(results['steady_state'] - target)
-        fitness_value -= min(error / tolerance, 1.0)
+    # Steady state
+    target_steady_state = 10.0
+    tolerance_steady_state = 0.1
+    error_steady_state = min(abs(results['steady_state'] - target_steady_state), 1)
+    fitness_value += max(0, 1.0 - (error_steady_state / tolerance_steady_state))
 
-    if results['rise_time_ok']:
-        fitness_value += 1.0
-    else:
-        target = 10.0
-        tolerance = 10.0
-        error = max(0, target - results['rise_time'])
-        fitness_value += min(error / tolerance, 1.0)
+    # Rise time
+    tolerance_rise_time = 10.0
+    error_rise_time = min(abs(results['rise_time'] - 0.0), 1)  # 0に近いほど良い
+    fitness_value += max(0, 1.0 - (error_rise_time / tolerance_rise_time))
 
-    if results['delay_time_ok']:
-        fitness_value += 1.0
-    else:
-        target = 5.0
-        tolerance = 5.0
-        error = max(0, target - results['delay_time'])
-        fitness_value += min(error / tolerance, 1.0)
+    # Delay time
+    tolerance_delay_time = 5.0
+    error_delay_time = min(abs(results['delay_time'] - 0.0),1)  # 0に近いほど良い
+    fitness_value += max(0, 1.0 - (error_delay_time / tolerance_delay_time))
 
-    if results['overshoot_ok']:
-        fitness_value += 1.0
-    else:
-        target = 1.0
-        tolerance = 1.0
-        error = results['overshoot'] - target
-        fitness_value -= min(error / tolerance, 1.0)
+    # Overshoot
+    target_overshoot = 1.0
+    if (results['overshoot'] > target_overshoot):
+        pass
+    elif (results['overshoot'] >= 0) and (results['overshoot'] < target_overshoot):
+        fitness_value += 10.0 * (2.0 - results['overshoot'])
 
-    if results['settling_time_ok']:
-        fitness_value += 1.0
-    else:
-        target = 20.0
-        tolerance = 20.0
-        error = max(0, target - results['settling_time'])
-        fitness_value += min(error / tolerance, 1.0)
+    # Settling time
+    tolerance_settling_time = 20.0
+    error_settling_time = min(abs(results['settling_time'] - 0.0), 1)  # 0に近いほど良い
+    fitness_value += max(0, 1.0 - (error_settling_time / tolerance_settling_time))
 
     return fitness_value
+
 
 def main(input_file, output_file):
     try:
