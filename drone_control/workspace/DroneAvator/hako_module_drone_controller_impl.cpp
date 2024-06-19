@@ -79,7 +79,7 @@ int hako_module_drone_controller_impl_init(void* argp)
     context->prev_error = 0.0;
     return 0;
 }
-#define THRUST_MAX (9.81 * 100.0)
+#define THRUST_MAX (9.81 * 5.0)
 #define THRUST_MIN (0.0)
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
