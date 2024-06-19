@@ -47,6 +47,9 @@ for i in {1..10}; do
         then
             # シミュレーションのリセット
             hako-cmd reset
+        else
+            echo "Please hakoniwa sim start"
+            read
         fi
 
         sleep 3
