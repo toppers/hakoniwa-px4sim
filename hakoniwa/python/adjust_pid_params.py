@@ -7,7 +7,7 @@ Ki_range = (0, 2)
 Kd_range = (0, 10)
 
 # 初期集団サイズ
-population_size = 10
+population_size = 4
 
 def read_evaluation_results(filename):
     results = {

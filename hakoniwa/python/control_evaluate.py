@@ -75,6 +75,8 @@ def main(input_file):
     td_result = "OK" if T_d <= TARGET_TD else "NG"
     os_result = "OK" if O_s <= TARGET_OS else "NG"
     ts_result = "OK" if T_s is not None and T_s <= TARGET_TS else "NG"
+    if T_s is None:
+        T_s = 10000.0
 
     # Output results
     print(f"{cs_result} c(Steady state value)  : {c:.3f} m (Target: {TARGET_HEIGHT}±{TARGET_HEIGHT * TARGET_CV:.3f} m)")
