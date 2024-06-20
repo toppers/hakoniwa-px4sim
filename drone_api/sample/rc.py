@@ -39,7 +39,8 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
                     else:
                         print(f'ERROR: not supported axis index: {event.axis}')
                 elif event.type == pygame.JOYBUTTONDOWN:
-                    if (event.button < 4):
+                    if (event.button < 16):
+                        print("button down: index=", event.button)
                         data['button'] = list(data['button'])
                         if (event.button != magnet_button_index):
                             data['button'][event.button] = True
@@ -56,8 +57,9 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
                     else:
                         print(f'ERROR: not supported button index: {event.button}')
                 elif event.type == pygame.JOYBUTTONUP:
-                    if (event.button < 4):
+                    if (event.button < 16):
                         if event.button != magnet_button_index:
+                            print("button up: index=", event.button)
                             data['button'] = list(data['button'])
                             data['button'][event.button] = False
                     else:

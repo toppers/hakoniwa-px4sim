@@ -87,6 +87,10 @@
         }
   },
   "controller": {
-    "moduleDirectory": "../drone_control/cmake-build/workspace/DroneAvator"
+    "moduleDirectory": "../drone_control/cmake-build/workspace/DroneAvator",
+    "moduleName": "DroneAvator",
+    "context": {
+      "file": "DroneAvator"
+    }
   }
 }
