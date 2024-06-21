@@ -17,6 +17,7 @@ class HakoDrone:
         self.enableApiControl = False
         self.arm = False
         self.camera_cmd_request_id = 1
+        self.camera_move_cmd_request_id = 1
 
 class MultirotorClient:
     def __init__(self, config_path):
@@ -191,6 +192,16 @@ class MultirotorClient:
                 return pdu_data['image']['data']
             #time.sleep(0.5)
 
+    def _get_camera_info(self, vehicle):
+        while True:
+            command = self.pdu_manager.get_pdu(vehicle.name, pdu_info.HAKO_AVATOR_CHANNEL_ID_CAMERA_INFO)
+            pdu_data = command.read()
+            if pdu_data['request_id'] == vehicle.camera_move_cmd_request_id:
+                #print("request_id", pdu_data['request_id'])
+                #print("angle", pdu_data['angle'])
+                return pdu_data['angle']
+            time.sleep(0.5)
+
     def _get_yaw_degree(self, vehicle_name=None):
         pose = self.simGetVehiclePose(vehicle_name)
         _, _, yaw = hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
@@ -213,7 +224,24 @@ class MultirotorClient:
             return bytes(img)
         else:
             return None
-    
+    def simSetCameraOrientation(self, id, degree, vehicle_name=None):
+        vehicle_name = self.get_vehicle_name(vehicle_name)
+        if vehicle_name != None:
+            vehicle = self.vehicles[vehicle_name]
+            command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_CAMERA_MOVE, vehicle_name)
+            pdu_cmd['request_id'] = vehicle.camera_move_cmd_request_id
+            pdu_cmd['angle']['x'] = 0
+            pdu_cmd['angle']['y'] = degree
+            pdu_cmd['angle']['z'] = 0
+            command.write()
+            info = self._get_camera_info(vehicle)
+            pdu_cmd['header']['request'] = 0
+            pdu_cmd['header']['result'] = 0
+            command.write()
+            vehicle.camera_move_cmd_request_id = vehicle.camera_move_cmd_request_id + 1
+            return info
+        else:
+            return None
     def simGetCameraImage(self, id, image_type, vehicle_name=None):
         if vehicle_name != None:
             vehicle = self.vehicles[vehicle_name]
