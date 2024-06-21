@@ -67,7 +67,7 @@
 #define RADIO_CONTROL_GRAVITY    9.81
 #define THROTTLE_GAIN            PID_PARAM_MAX_POWER
 
-#define PID_PARM_ANGLE_BASE     40.0
+#define PID_PARM_ANGLE_BASE     20.0
 #define PID_PARM_ROLL_Kp        PID_PARM_ANGLE_BASE
 #define PID_PARM_ROLL_Ki        0.0
 #define PID_PARM_ROLL_Kd        PID_PARM_ANGLE_BASE
