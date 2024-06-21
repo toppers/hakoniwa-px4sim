@@ -61,6 +61,13 @@
   - `image_type` (str): 画像のタイプ（例: "png"）。
   - `vehicle_name` (str, optional): 操作対象のドローン名。
 
+### `simSetCameraOrientation(id, degree, vehicle_name=None)`
+- 概要: ドローンのカメラの向きを設定します。
+- 引数:
+  - id (int): カメラのID。
+  - degree (float): カメラのピッチ角度（度）。
+  - vehicle_name (str, optional): 操作対象のドローン名。
+
 ### `getLidarData(vehicle_name=None)`
 - 概要: Lidarデータを取得します。
 - 引数:
