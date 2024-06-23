@@ -1,0 +1,72 @@
+{
+  "robots": [
+    {
+      "name": "TB3RoboAvatar",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [
+        {
+          "type": "geometry_msgs/Twist",
+          "org_name": "cmd_pos",
+          "name": "TB3RoboAvatar_cmd_pos",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 0,
+          "pdu_size": 72,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        }
+      ],
+      "shm_pdu_writers": [
+        {
+          "type": "std_msgs/Bool",
+          "org_name": "baggage_sensor",
+          "name": "TB3RoboAvatar_baggage_sensor",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 1,
+          "pdu_size": 28,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        }
+      ]
+    },
+    {
+      "name": "LiDARSensor2D",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [],
+      "shm_pdu_writers": [
+        {
+          "type": "sensor_msgs/LaserScan",
+          "org_name": "scan",
+          "name": "LiDARSensor2D_scan",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 0,
+          "pdu_size": 6088,
+          "write_cycle": 5,
+          "method_type": "SHM"
+        }
+      ]
+    },
+    {
+      "name": "TB3RoboModel",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [
+        {
+          "type": "geometry_msgs/Twist",
+          "org_name": "cmd_vel",
+          "name": "TB3RoboModel_cmd_vel",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter",
+          "channel_id": 1,
+          "pdu_size": 72,
+          "write_cycle": 10,
+          "method_type": "SHM"
+        }
+      ]
+    }
+  ]
+}
