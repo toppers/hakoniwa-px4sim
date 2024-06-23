@@ -10,7 +10,7 @@ import pprint
 
 def transport(client, baggage_pos, transfer_pos):
     h = 1.0
-    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], h, 0, -90)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], h, 0, 90)
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], h, 5)
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], h, 5, 0)
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 0.1, 0.01, 0)
@@ -40,13 +40,21 @@ def main():
     client.armDisarm(True)
 
     client.takeoff(1)
-    baggage_pos = { "x": 0, "y": -4 }
-    transfer_pos = { "x": 0, "y": 0, "z": 0.1 }
+    baggage_pos = { "x": 0.0, "y": -4 }
+    transfer_pos = { "x": 0.17, "y": 0, "z": 0.1 }
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
 
-    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 1.0, 0, -90)
-    #client.land()
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 1.0, 0, 90)
+
+    time.sleep(10)
+
+    baggage_pos = { "x": 1.01, "y": -0.031 }
+    transfer_pos = { "x": 0.0, "y": 0, "z": 0.1 }
+    transport(client, baggage_pos, transfer_pos)
+    debug_pos(client)
+
+    client.land()
     debug_pos(client)
 
     return 0
