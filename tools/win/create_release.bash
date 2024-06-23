@@ -59,8 +59,17 @@ cp drone_api/sample/rc.py     ${TO_DIR}/hakoniwa-px4-win/hakoniwa/apps/
 cp drone_api/sample/sample.py ${TO_DIR}/hakoniwa-px4-win/hakoniwa/apps/
 
 # hakoniwa/bin
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/bin
+cp -rp tools/win/template/hakoniwa-px4-win/hakoniwa/bin/* ${TO_DIR}/hakoniwa-px4-win/hakoniwa/bin/
+
 # hakoniwa/config
 # hakoniwa/config_api
 # hakoniwa/config_api2
+
 # hakoniwa/py
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/py
+cp -rp hakoniwa/third-party/hakoniwa-core-cpp-client/bindings/python/hako_binary ${TO_DIR}/hakoniwa-px4-win/hakoniwa/py/
+cp hakoniwa/third-party/hakoniwa-core-cpp-client/bindings/python/hako_pdu.py ${TO_DIR}/hakoniwa-px4-win/hakoniwa/py/
+cp drone_api/libs/*.py ${TO_DIR}/hakoniwa-px4-win/hakoniwa/py/
+
 # hakoniwa/out
