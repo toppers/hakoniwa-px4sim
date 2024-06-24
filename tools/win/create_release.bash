@@ -86,8 +86,24 @@ mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/bin
 cp -rp tools/win/template/hakoniwa-px4-win/hakoniwa/bin/* ${TO_DIR}/hakoniwa-px4-win/hakoniwa/bin/
 
 # hakoniwa/config
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/cpp_core_config.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config/
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/custom.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config/
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/drone_config_0.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config/
+
 # hakoniwa/config_api
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/cpp_core_config.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api/
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/custom.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api/
+jq '.controller.moduleDirectory = "..\\..\\out\\build\\x64-Release\\drone_control\\workspace\\RadioController"' \
+    hakoniwa/config/rc/drone_config_0.json > ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api/drone_config_0.json
+
 # hakoniwa/config_api2
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api2
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/cpp_core_config.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api2/
+cp tools/win/template/hakoniwa-px4-win/hakoniwa/config/custom.json ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api2/
+jq '.controller.moduleDirectory = "..\\..\\out\\build\\x64-Release\\drone_control\\workspace\\FlightController"' \
+    hakoniwa/config/api_sample/drone_config_0.json > ${TO_DIR}/hakoniwa-px4-win/hakoniwa/config_api2/drone_config_0.json
 
 # hakoniwa/py
 mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/py
