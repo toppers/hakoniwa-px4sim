@@ -41,6 +41,29 @@ then
 else
     mkdir ${TO_DIR}/hakoniwa-px4-win
 fi
+OUT_WORKSPACE=build/x64-Release/drone_control/workspace
+OUT_HAKOSRC=build/x64-Release/hakoniwa/src
+
+if [ ! -f ${PX4OUT_DIR}/${OUT_WORKSPACE}/DroneAvator/DroneAvator.dll  ]
+then
+    echo "ERROR: can not find ${PX4OUT_DIR}/${OUT_WORKSPACE}/DroneAvator/DroneAvator.dll"
+    exit 1
+fi
+if [ ! -f ${PX4OUT_DIR}/${OUT_WORKSPACE}/FlightController/FlightController.dll  ]
+then
+    echo "ERROR: can not find ${PX4OUT_DIR}/${OUT_WORKSPACE}/FlightController/FlightController.dll"
+    exit 1
+fi
+if [ ! -f ${PX4OUT_DIR}/${OUT_WORKSPACE}/RadioController/RadioController.dll  ]
+then
+    echo "ERROR: can not find ${PX4OUT_DIR}/${OUT_WORKSPACE}/RadioController/RadioController.dll"
+    exit 1
+fi
+if [ ! -f ${PX4OUT_DIR}/${OUT_HAKOSRC}/hako-px4sim.exe  ]
+then
+    echo "ERROR: can not find ${PX4OUT_DIR}/${OUT_HAKOSRC}/hako-px4sim.exe"
+    exit 1
+fi
 
 # README
 cp tools/win/template/hakoniwa-px4-win/README* ${TO_DIR}/hakoniwa-px4-win/
@@ -73,3 +96,21 @@ cp hakoniwa/third-party/hakoniwa-core-cpp-client/bindings/python/hako_pdu.py ${T
 cp drone_api/libs/*.py ${TO_DIR}/hakoniwa-px4-win/hakoniwa/py/
 
 # hakoniwa/out
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/build
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/build/x64-Release
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/build/x64-Release/drone_control
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}
+
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}/DroneAvator
+cp ${PX4OUT_DIR}/${OUT_WORKSPACE}/DroneAvator/DroneAvator.dll ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}/DroneAvator/
+
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}/FlightController
+cp ${PX4OUT_DIR}/${OUT_WORKSPACE}/FlightController/FlightController.dll ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}/DroneAvator/
+
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}/RadioController
+cp ${PX4OUT_DIR}/${OUT_WORKSPACE}/RadioController/RadioController.dll ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_WORKSPACE}/RadioController/
+
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/build/x64-Release/hakoniwa
+mkdir  ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_HAKOSRC}
+cp -rp ${PX4OUT_DIR}/${OUT_HAKOSRC}/hako-px4sim.exe ${TO_DIR}/hakoniwa-px4-win/hakoniwa/out/${OUT_HAKOSRC}/
