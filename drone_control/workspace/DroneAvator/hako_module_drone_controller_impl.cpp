@@ -1,7 +1,11 @@
 #include "hako_module_drone_controller_impl.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <unistd.h>
+#endif
 #include <string.h>
 
 const char* hako_module_drone_controller_impl_get_name(void)
@@ -33,23 +37,34 @@ int hako_module_drone_controller_impl_is_operation_doing(void*)
     return true;
 }
 
-int hako_module_drone_controller_impl_init(void* argp)
-{
+int hako_module_drone_controller_impl_init(void* argp) {
     MyContextType* context = (MyContextType*)argp;
     char cwd[1024];
+
+#ifdef _WIN32
+    if (GetCurrentDirectory(sizeof(cwd), cwd) != 0) {
+        printf("Current working dir: %s\n", cwd);
+    }
+    else {
+        perror("GetCurrentDirectory() error");
+        return -1;
+    }
+#else
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("Current working dir: %s\n", cwd);
-    } else {
+    }
+    else {
         perror("getcwd() error");
         return -1;
     }
+#endif
 
     FILE* file = fopen("drone_control_params.txt", "r");
-    if (file == nullptr) {
+    if (file == NULL) {
         perror("Failed to open params.txt");
         return -1;
     }
-    
+
     char line[256];
     char param_name[256];
     char name[256];
@@ -61,17 +76,20 @@ int hako_module_drone_controller_impl_init(void* argp)
             if (strcmp(name, context->name) == 0) {
                 if (strcmp(param_type, "Kp") == 0) {
                     context->Kp = param_value;
-                } else if (strcmp(param_type, "Ki") == 0) {
+                }
+                else if (strcmp(param_type, "Ki") == 0) {
                     context->Ki = param_value;
-                } else if (strcmp(param_type, "Kd") == 0) {
+                }
+                else if (strcmp(param_type, "Kd") == 0) {
                     context->Kd = param_value;
                 }
             }
         }
     }
-    printf("DroneController Name: %s Kp=%lf Kd=%lf Ki=%lf\n", 
-            context->name, 
-            context->Kp, context->Kd, context->Ki);
+
+    printf("DroneController Name: %s Kp=%lf Kd=%lf Ki=%lf\n",
+        context->name,
+        context->Kp, context->Kd, context->Ki);
 
     fclose(file);
 
