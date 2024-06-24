@@ -68,6 +68,8 @@ def main():
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
 
+    client.simSetCameraOrientation("0",15)
+
     baggage_pos = { "x": 0, "y": 4 }
     transfer_pos = { "x": 0, "y": -1, "z": 1.2 }
     transport(client, baggage_pos, transfer_pos)
@@ -101,6 +103,9 @@ def main():
     if png_image:
         with open("scene.png", "wb") as f:
             f.write(png_image)
+
+    client.simSetCameraOrientation("0",-90)
+
     client.land()
     debug_pos(client)
 
