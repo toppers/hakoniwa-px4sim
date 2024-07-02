@@ -8,6 +8,15 @@ import math
 import numpy
 import pprint
 
+import hako_pdu
+import pdu_info
+
+def get_robot_pos(client, name, channel_id):
+    pdu = client.pdu_manager.get_pdu(name, channel_id)
+    pdu_data = pdu.read()
+    pdu_data['linear']['y'] = -pdu_data['linear']['y']
+    return pdu_data
+
 def transport(client, baggage_pos, transfer_pos):
     h = 1.0
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], h, 0, 90)
@@ -39,20 +48,35 @@ def main():
     client.enableApiControl(True)
     client.armDisarm(True)
 
+
     client.takeoff(1)
+    robo_pos = get_robot_pos(client, "TB3RoboAvatar", 0)
+    print(f'robo_pos({robo_pos['linear']['x']}, {robo_pos['linear']['y']}, {robo_pos['linear']['z']})')
     baggage_pos = { "x": 0.0, "y": -4 }
-    transfer_pos = { "x": 0.17, "y": 0, "z": 0.1 }
+    transfer_pos = { "x": robo_pos['linear']['x'], "y": robo_pos['linear']['y'], "z": 0.1 }
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
+    robo_pos = get_robot_pos(client, "TB3RoboAvatar", 0)
+    print(f'robo_pos({robo_pos['linear']['x']}, {robo_pos['linear']['y']}, {robo_pos['linear']['z']})')
 
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 1.0, 0, 90)
 
-    time.sleep(10)
+    while True:
+        time.sleep(5)
+        robo_pos = get_robot_pos(client, "TB3RoboAvatar", 0)
+        print(f'robo_pos({robo_pos['linear']['x']}, {robo_pos['linear']['y']}, {robo_pos['linear']['z']})')
+        if robo_pos['linear']['x'] >= 2.0:
+            break
 
-    baggage_pos = { "x": 1.01, "y": -0.031 }
+    time.sleep(1)
+    robo_pos = get_robot_pos(client, "TB3RoboAvatar", 0)
+    print(f'robo_pos({robo_pos['linear']['x']}, {robo_pos['linear']['y']}, {robo_pos['linear']['z']})')
+    baggage_pos = { "x": robo_pos['linear']['x'], "y": robo_pos['linear']['y'] }
     transfer_pos = { "x": 0.0, "y": 0, "z": 0.1 }
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
+    robo_pos = get_robot_pos(client, "TB3RoboAvatar", 0)
+    print(f'robo_pos({robo_pos['linear']['x']}, {robo_pos['linear']['y']}, {robo_pos['linear']['z']})')
 
     client.land()
     debug_pos(client)
