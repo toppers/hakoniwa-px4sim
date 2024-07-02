@@ -4,6 +4,9 @@ setlocal
 set "HAKO_CUSTOM_JSON_PATH=..\config_api2\custom.json"
 set "DRONE_CONFIG_PATH=..\config_api2"
 
+REM create_mmap.bat を呼び出す
+call create_mmap.bat
+
 if not exist "%HAKO_CUSTOM_JSON_PATH%" (
     echo ERROR: can not find "%HAKO_CUSTOM_JSON_PATH%"
     exit /b 1
