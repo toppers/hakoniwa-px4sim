@@ -1,4 +1,5 @@
 #!/bin/bash
+trap 'kill 0' EXIT
 
 if [ $# -ne 2 ]
 then
@@ -28,7 +29,7 @@ else
     activate_master
 fi
 
-cmake-build/src/hako-px4sim 127.0.0.1 4560 ext
+cmake-build/src/hako-px4sim 127.0.0.1 4560 ext &
 
 if [ -z $HAKO_MASTER_DISABLE ]
 then
@@ -41,4 +42,5 @@ else
     echo "      try executing the 'reset' command to resolve the issue."
 fi
 
+wait
 exit 0
