@@ -263,7 +263,7 @@ $$
 \begin{array}{llll}
 \dot{u} = & &-g \sin{\theta} &-(qw -rv) &-\frac{d}{m}u \\
 \dot{v} = & &+g \cos{\theta}\sin{\phi} &-(ru -pw) &-\frac{d}{m}v \\
-\dot{w} = &-\frac{T}{m} &+ g \cos{\theta}cos{\phi} &-(pv-qu) &-\frac{d}{m}w
+\dot{w} = &-\frac{T}{m} &+ g \cos{\theta} \cos{\phi} &-(pv-qu) &-\frac{d}{m}w
 \end{array}
 $$
 
@@ -293,6 +293,7 @@ where;
 
 ## Ground frame dynamics
 The ground frame dynamics of the translational motion is as follows.
+Note that the fraction of the air is also assumed to be the same in the three direction.
 The rotational motion in the ground frame are not calculated in this library
 because time-varying inertia is too complex(to me) in the ground frame.
 
@@ -384,6 +385,8 @@ $$
     r
 \end{bmatrix}
 $$
+
+Note that this matrix is close to $I$(identity) when all the angles are small.
 
 The function name is `euler_rate_from_body_angular_velocity` ,
 and the inverse transformation is `body_angular_velocity_from_euler_rate`.

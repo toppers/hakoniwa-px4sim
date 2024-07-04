@@ -260,9 +260,9 @@ $$
 
 $$
 \begin{array}{llll}
-\dot{u} = & &-g \sin{\theta} &-(qw -rv) &-\frac{d}{m}u \\
-\dot{v} = & &+g \cos{\theta}\sin{\phi} &-(ru -pw) &-\frac{d}{m}v \\
-\dot{w} = &-\frac{T}{m} &+ g \cos{\theta}cos{\phi} &-(pv-qu) &-\frac{d}{m}w
+\dot{u} = & &-g \sin{\theta} &-(qw -rv) &-\frac{d_u}{m}u \\
+\dot{v} = & &+g \cos{\theta}\sin{\phi} &-(ru -pw) &-\frac{d_v}{m}v \\
+\dot{w} = &-\frac{T}{m} &+ g \cos{\theta} \cos{\phi} &-(pv-qu) &-\frac{d_w}{m}w
 \end{array}
 $$
 
@@ -293,8 +293,9 @@ $$
 
 ### 地上座標系の動力学方程式
 
-地上座標系では並進についてのみ以下のように計算できます
-（すべて地上座標系を使った回転はイナーシャの時間変化等のため複雑になるので，等ライブラリでは扱わない）．
+地上座標系では並進についてのみ以下のように計算できます．
+ただし，空気抵抗はすべての方向で同じとして扱っている．
+すべて地上座標系を使った回転はイナーシャの時間変化等のため複雑になるので，等ライブラリでは扱わない．
 
 $$
 \begin{array}{llll}
@@ -383,6 +384,8 @@ $$
     r
 \end{bmatrix}
 $$
+
+この行列は3つの角が$0$に近いには，単位行列に近くなります．
 
 関数名は，`euler_rate_from_body_angular_velocity` ．逆変換は，`body_angular_velocity_from_euler_rate` ．
 
