@@ -56,6 +56,9 @@ mi_drone_acceleration_out_t mi_drone_acceleration(
     const mi_drone_acceleration_in_t* in);
 void mi_drone_acceleration_initialize(void);
 
+mi_drone_acceleration_out_t drone_acceleration_by_linear_at_hover(
+    const mi_drone_acceleration_in_t* in);
+
 /***
 The Original function signatures are:
 

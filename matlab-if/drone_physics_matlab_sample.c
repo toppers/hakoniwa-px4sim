@@ -3,7 +3,7 @@
 #include <math.h>
 
 #include "drone_physics_matlab.h"
-#include "../drone_physics/drone_physics_c.h"
+#include "drone_physics_c.h"
 
 mi_drone_acceleration_out_t mi_drone_acceleration(const mi_drone_acceleration_in_t* in) {
     dp_velocity_t vel = {in->u, in->v, in->w};

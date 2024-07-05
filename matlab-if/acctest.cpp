@@ -5,7 +5,7 @@
 #include "drone_physics_osdep.h"
 
 #include "drone_physics_matlab.h"
-#include "../drone_physics/drone_physics_c.h"
+#include "drone_physics_c.h"
 
 #define assert_almost_equal(a, b) \
     assert(fabs((a) - (b)) < 0.0001 || (fprintf(stderr, "%s=%g <-?-> %s=%g\n", #a, (a), #b, (b)), 0))
