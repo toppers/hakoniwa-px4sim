@@ -25,6 +25,7 @@ else()
     add_library(
         drone_physics_matlab STATIC
         drone_physics_matlab_sample.c
+        drone_acceleration_by_linear_at_hover.c
     )
     target_include_directories(
         drone_physics_matlab

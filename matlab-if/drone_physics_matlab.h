@@ -51,14 +51,21 @@ typedef struct mi_drone_acceleration_out_t {
     double dr; /* dot r  = z coordinate of angular vector acceleration */
 } mi_drone_acceleration_out_t;
 
+//#define DRONE_SIMPLE_PHYSICS
+mi_drone_acceleration_out_t drone_acceleration_by_linear_at_hover(
+    const mi_drone_acceleration_in_t* in);
+#ifndef DRONE_SIMPLE_PHYSICS
 /* Matlab function entry point */
 mi_drone_acceleration_out_t mi_drone_acceleration(
     const mi_drone_acceleration_in_t* in);
+#else
+static inline mi_drone_acceleration_out_t mi_drone_acceleration(
+    const mi_drone_acceleration_in_t* in)
+{
+    return drone_acceleration_by_linear_at_hover(in);
+}
+#endif
 void mi_drone_acceleration_initialize(void);
-
-mi_drone_acceleration_out_t drone_acceleration_by_linear_at_hover(
-    const mi_drone_acceleration_in_t* in);
-
 /***
 The Original function signatures are:
 
