@@ -3,12 +3,9 @@
 #include <algorithm>
 #include <iostream>
 
-//TODO
-
-
 const char* hako_module_drone_controller_impl_get_name(void)
 {
-    return "RadioController";
+    return "FlightController";
 }
 
 

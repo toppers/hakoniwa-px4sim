@@ -35,6 +35,11 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
 {
     RadioController *rc = (RadioController*)in->context;
     mi_drone_control_out_t out = {};
+    if (rc->r_altitude_initialized == false) {
+        rc->r_altitude = -in->pos_z;
+        rc->r_altitude_initialized = true;
+        std::cout << "r_altitude: " << rc->r_altitude << std::endl;
+    }
 
     //altitude control
     double throttle_value = -in->target.throttle.power;

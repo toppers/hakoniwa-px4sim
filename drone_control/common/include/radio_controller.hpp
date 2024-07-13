@@ -140,6 +140,7 @@ public:
         angular_simulation_time = 0;
     }
     //altitude control
+    bool r_altitude_initialized = false;
     double r_altitude = 0;
     double alt_time = 0;
     AltitudeController alt;
