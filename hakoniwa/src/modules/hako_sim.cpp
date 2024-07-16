@@ -103,10 +103,6 @@ void hako_sim_main(bool master, hako::px4::comm::IcommEndpointType serverEndpoin
 }
 
 
-static void my_setup()
-{
-    //nothing to do
-}
 #include <chrono>
 #include "utils/csv_logger.hpp"
 bool CsvLogger::enable_flag = false;
@@ -269,6 +265,14 @@ static void my_task()
     return;
 }
 
+static void my_setup()
+{
+    for (auto& container : task_manager.aircraft_container) {
+        std::cout << "INFO: Setup pdu data : " << container.drone->get_name() << std::endl;
+        Hako_GameControllerOperation cmd_game = {};
+        do_io_write_cmd(container.drone, HAKO_AVATOR_CHANNEL_ID_GAME_CTRL, cmd_game);
+    }
+}
 static void my_reset()
 {
     for (auto& container : task_manager.aircraft_container) {

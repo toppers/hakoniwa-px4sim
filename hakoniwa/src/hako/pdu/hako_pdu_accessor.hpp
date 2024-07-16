@@ -189,7 +189,7 @@ static inline bool do_io_write_cmd(hako::assets::drone::IAirCraft *drone, int ch
         return false;
     }
     if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), channel_id, buffer, sizeof(buffer))) {
-        std::cerr << "ERROR: can not write pdu data: packet channel_id: " << channel_id << std::endl;
+        std::cerr << "ERROR: can not write pdu data: packet channel_id: " << channel_id << " pdu_size: " << sizeof(buffer) << std::endl;
         return false;
     }
     return true;
