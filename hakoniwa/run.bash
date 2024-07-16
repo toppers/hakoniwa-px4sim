@@ -19,7 +19,7 @@ then
     then
         bash run-win.bash
     else
-        echo "ERROR: not supported OS: `uname -a`"
+    	bash run-mac.bash
     fi
 else
     bash run-mac.bash
