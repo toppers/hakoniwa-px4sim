@@ -56,7 +56,7 @@ Next, enter the Docker container with the following command:
 bash docker/run.bash
 ```
 
-## For Mac
+## For Mac/Ubuntu
 
 Please install the hakonwia core functions:
 
@@ -92,7 +92,7 @@ OK File exists: /usr/local/bin/hakoniwa/hako-proxy
 Check complete.
 ```
 
-# Hakoniwa Build Instructions（WSL2/Mac）
+# Hakoniwa Build Instructions（WSL2/Mac/Ubuntu）
 
 Build the Hakoniwa environment. There are two build methods.
 
@@ -166,7 +166,7 @@ The settings for each item are as follows:
   - **sampleCount**: The number of samples.
   - **noise**: Noise level (standard deviation). If noise is not set, it is 0.
 
-# Hakoniwa Command and Library Installation Instructions(WSL2/Mac）
+# Hakoniwa Command and Library Installation Instructions(WSL2/Mac/Ubuntu）
 
 Hakoniwa includes a command (`hako-cmd`) and a shared library (`libshakoc.[so|dylib]`). These are used when running simulations without Unity.
 

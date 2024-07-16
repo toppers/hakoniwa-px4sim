@@ -62,7 +62,7 @@ toppersjp/hakoniwa-px4sim         v1.0.1    c34c696b8007   About an hour ago   3
 bash docker/run.bash 
 ```
 
-## Mac の場合
+## Mac/Ubuntu の場合
 
 箱庭コア機能をインストールします。
 
@@ -97,7 +97,7 @@ OK File exists: /usr/local/bin/hakoniwa/hako-proxy
 Check complete.
 ```
 
-# 箱庭のビルド手順（WSL2/Mac）
+# 箱庭のビルド手順（WSL2/Mac/Ubuntu）
 
 箱庭環境をビルドします。ビルド方法としては、２パターンあります。
 
@@ -176,7 +176,7 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
   - **noise**:ノイズレベル(標準偏差)。ノイズ未設定の場合は0。
 
 
-# 箱庭コマンドおよびライブラリのインストール手順(WSL2/Mac）
+# 箱庭コマンドおよびライブラリのインストール手順(WSL2/Mac/Ubuntu）
 
 箱庭にはコマンド(`hako-cmd`) と共有ライブラリ(`libshakoc.[so|dylib]`)があります。Unityを使用せずにシミュレーションを実行する場合に利用します。
 
