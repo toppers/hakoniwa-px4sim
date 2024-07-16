@@ -6,7 +6,7 @@ Operation Check Status:
 
 - [X] Mac
 - [X] Windows/WSL2
-- [ ] Ubuntu
+- [X] Ubuntu
 
 ## Common Steps
 
@@ -25,7 +25,7 @@ cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/
 cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
 ```
 
-## PX4 Build Instructions for Windows
+## PX4 Build Instructions for Windows/WSL2 and Ubuntu
 
 Navigate to the PX4-Autopilot directory:
 ```

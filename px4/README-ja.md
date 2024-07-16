@@ -6,7 +6,7 @@
 
 - [X] Mac
 - [X] Windows/WSL2
-- [ ] Ubuntu
+- [X] Ubuntu
 
 
 ## 共通手順
@@ -27,7 +27,7 @@ cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/
 cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
 ```
 
-## Windows向け PX4ビルド手順
+## Windows/WS2 およびUbuntu向け PX4ビルド手順
 
 ```
 cd PX4-Autopilot 
