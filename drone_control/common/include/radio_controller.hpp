@@ -95,9 +95,9 @@ private:
     {
         PidRateControlOutputType out = prev_rate_out;
         if (angular_rate_simulation_time >= angular_rate_cycle) {
-            out.p = get_target_rate_value(this->angular_rate_roll, 1, M_PI/10.0, roll.target, roll.current);
-            out.q = get_target_rate_value(this->angular_rate_pitch, 1, M_PI/10.0, pitch.target, pitch.current);
-            out.r = get_target_rate_value(this->angular_rate_yaw, 20, M_PI/4.0, yaw.target, yaw.current);
+            out.p = get_target_rate_value(this->angular_rate_roll, PID_PARAM_H_RPM_MAX, PID_PARAM_H_ANGLE_RATE_MAX, roll.target, roll.current);
+            out.q = get_target_rate_value(this->angular_rate_pitch, PID_PARAM_H_RPM_MAX, PID_PARAM_H_ANGLE_RATE_MAX, pitch.target, pitch.current);
+            out.r = get_target_rate_value(this->angular_rate_yaw, PID_PARAM_YAW_RPM_MAX, PID_PARAM_YAW_ANGLE_RATE_MAX, yaw.target, yaw.current);
             angular_rate_simulation_time = 0;
             prev_rate_out = out;
         }
