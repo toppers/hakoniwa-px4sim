@@ -51,16 +51,18 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     //std::cout << "TARGET ALTITUDE : " << a_in.target_altitude <<std::endl;
     //std::cout << "CURRENT ALTITUDE: " << -a_in.pos.z <<std::endl;
 
-    //speed control
-    SpeedControlInputType s_in;
-    s_in.target_vx = in->target.attitude.pitch * -20; /* -20m/s to 20m/s */
-    s_in.target_vy = in->target.attitude.roll * 20;  /* -20m/s to 20m/s */
+    SpeedControlInputType s_in = {};
     s_in.velocity = { in->u, in->v, in->w };
+#ifdef RADIO_CONTROL_USE_SPD_CTRL
+    //speed control
+    s_in.target_vx = in->target.attitude.pitch * -RADIO_CONTROL_HORIZONTAL_MAX_SPD; /* -20m/s to 20m/s */
+    s_in.target_vy = in->target.attitude.roll * RADIO_CONTROL_HORIZONTAL_MAX_SPD;  /* -20m/s to 20m/s */
     SpeedControlPidControlOutputType s_out = rc->spd.run(s_in);
     //std::cout << "TARGET VELOCITY ( " << s_in.target_vx << ", " << s_in.target_vy << " )" <<std::endl;
     //std::cout << "CURRENT VELOCITY( " << s_in.velocity.u << ", " << s_in.velocity.v << " )" <<std::endl;
     //std::cout << "TARGET  ANGLE   ( " << s_out.pitch << ", " << s_out.roll << " )" <<std::endl;
     //std::cout << "CURRENT ANGLE   ( " << in->euler_y << ", " << in->euler_x << " )" <<std::endl;
+#endif
 
     //radio control
     RadioControlInputType rin;
@@ -68,10 +70,13 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     rin.angular_rate = {in->p, in->q, in->r};                           //STATE: angular_rate
     //rin.target_thrust = -in->target.throttle.power;                   //TARGET: thrust
     rin.target_thrust = a_out.throttle_power;                           //TARGET: thrust
-    //rin.target_roll = in->target.attitude.roll;                         //TARGET: angular.roll
-    //rin.target_pitch = in->target.attitude.pitch;                       //TARGET: angular.pitch
+#ifdef RADIO_CONTROL_USE_SPD_CTRL
     rin.target_roll = s_out.roll;
     rin.target_pitch = s_out.pitch;
+#else
+    rin.target_roll = in->target.attitude.roll * PID_PARM_ANGLE_BASE;   //TARGET: angular.roll
+    rin.target_pitch = in->target.attitude.pitch * PID_PARM_ANGLE_BASE; //TARGET: angular.pitch
+#endif
     rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
 
     FlightControllerOutputType ret = rc->run(rin);

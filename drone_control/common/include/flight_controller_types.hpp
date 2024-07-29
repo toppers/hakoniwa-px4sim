@@ -49,6 +49,8 @@
 /*
  * Speed Control
  */
+#define RADIO_CONTROL_HORIZONTAL_MAX_SPD      20.0
+#define RADIO_CONTROL_USE_SPD_CTRL 
 #ifdef RADIO_CONTROL_ON
 #define PID_PARAM_V_BASE      20.0
 #else
