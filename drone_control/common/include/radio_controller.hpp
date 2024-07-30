@@ -63,6 +63,7 @@ typedef struct {
     double pid_param_h_angle_rate_max;
     double pid_param_yaw_rpm_max;
     double pid_param_yaw_angle_rate_max;
+    bool use_spd_ctrl;
 } RadioControllerParamType;
 
 class RadioController {
@@ -112,6 +113,13 @@ private:
             pid_param_yaw_rpm_max = loader->getParameter("PID_PARAM_YAW_RPM_MAX");
             pid_param_yaw_angle_rate_max = loader->getParameter("PID_PARAM_YAW_ANGLE_RATE_MAX");
             max_spd = loader->getParameter("PID_PARAM_MAX_SPD");
+            double v = loader->getParameter("RADIO_CONTROL_USE_SPD_CTRL");
+            if (v == 0) {
+                use_spd_ctrl = false;
+            }
+            else {
+                use_spd_ctrl = true;
+            }
 
         } else {
             delta_time = SIMULATION_DELTA_TIME;
@@ -130,7 +138,11 @@ private:
             pid_param_yaw_rpm_max = PID_PARAM_YAW_RPM_MAX;
             pid_param_yaw_angle_rate_max = PID_PARAM_YAW_ANGLE_RATE_MAX;
             max_spd = PID_PARAM_MAX_SPD;
-
+#ifdef RADIO_CONTROL_USE_SPD_CTRL
+            use_spd_ctrl = false;
+#else
+            use_spd_ctrl = true;
+#endif
         }
     }
 
@@ -175,6 +187,7 @@ private:
     }
 
 public:
+    bool use_spd_ctrl = false;
     double max_spd = PID_PARAM_MAX_SPD;
     double delta_time;
     AltitudeController alt;
@@ -287,6 +300,13 @@ static inline RadioControllerParamType get_radio_control_default_parameters() {
         param.pid_param_h_angle_rate_max = loader.getParameter("PID_PARAM_H_ANGLE_RATE_MAX");
         param.pid_param_yaw_rpm_max = loader.getParameter("PID_PARAM_YAW_RPM_MAX");
         param.pid_param_yaw_angle_rate_max = loader.getParameter("PID_PARAM_YAW_ANGLE_RATE_MAX");
+        double v = loader.getParameter("RADIO_CONTROL_USE_SPD_CTRL");
+        if (v == 0) {
+            param.use_spd_ctrl = false;
+        }
+        else {
+            param.use_spd_ctrl = true;
+        }
 
     } else {
         param.mass = RADIO_CONTROL_MASS;
@@ -319,6 +339,11 @@ static inline RadioControllerParamType get_radio_control_default_parameters() {
         param.pid_param_h_angle_rate_max = PID_PARAM_H_ANGLE_RATE_MAX;
         param.pid_param_yaw_rpm_max = PID_PARAM_YAW_RPM_MAX;
         param.pid_param_yaw_angle_rate_max = PID_PARAM_YAW_ANGLE_RATE_MAX;
+#ifdef RADIO_CONTROL_USE_SPD_CTRL
+        param.use_spd_ctrl = false;
+#else
+        param.use_spd_ctrl = true;
+#endif
 
     }
 
@@ -359,6 +384,7 @@ static inline RadioController* create_radio_controller(const RadioControllerPara
     rc->set_angular_cycle(param.angular_cycle);
     rc->set_angular_rate_cycle(param.angular_rate_cycle);
     rc->set_alt_control_cycle(param.alt_control_cycle);
+    rc->use_spd_ctrl = param.use_spd_ctrl;
     return rc;
 }
 
