@@ -5,6 +5,8 @@
 #include "pid_control.hpp"
 #include "frame_types.h"
 
+#define ENV_HAKO_CONTROLLER_PARAM_FILE "HAKO_CONTROLLER_PARAM_FILE"
+
 #define SIMULATION_DELTA_TIME     0.003 // 333.3Hz
 
 /*
@@ -49,7 +51,6 @@
 /*
  * Speed Control
  */
-#define RADIO_CONTROL_HORIZONTAL_MAX_SPD      20.0
 #define RADIO_CONTROL_USE_SPD_CTRL 
 #ifdef RADIO_CONTROL_ON
 #define PID_PARAM_V_BASE      20.0
@@ -95,6 +96,9 @@
 #define PID_PARM_YAW_RATE_Kp      0.01
 #define PID_PARM_YAW_RATE_Ki      0.001
 #define PID_PARM_YAW_RATE_Kd      0.01
+
+#define ANGULAR_RATE_CYCLE        SIMULATION_DELTA_TIME // 333.3Hz
+#define ANGULAR_CYCLE             (SIMULATION_DELTA_TIME * 10.0) // 33.3Hz
 
 struct PidControlInputType {
     double target;

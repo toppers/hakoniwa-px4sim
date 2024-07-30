@@ -55,8 +55,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     s_in.velocity = { in->u, in->v, in->w };
 #ifdef RADIO_CONTROL_USE_SPD_CTRL
     //speed control
-    s_in.target_vx = in->target.attitude.pitch * -RADIO_CONTROL_HORIZONTAL_MAX_SPD; /* -20m/s to 20m/s */
-    s_in.target_vy = in->target.attitude.roll * RADIO_CONTROL_HORIZONTAL_MAX_SPD;  /* -20m/s to 20m/s */
+    s_in.target_vx = in->target.attitude.pitch * -rc->max_spd; /* -20m/s to 20m/s */
+    s_in.target_vy = in->target.attitude.roll * rc->max_spd;  /* -20m/s to 20m/s */
     SpeedControlPidControlOutputType s_out = rc->spd.run(s_in);
     //std::cout << "TARGET VELOCITY ( " << s_in.target_vx << ", " << s_in.target_vy << " )" <<std::endl;
     //std::cout << "CURRENT VELOCITY( " << s_in.velocity.u << ", " << s_in.velocity.v << " )" <<std::endl;
