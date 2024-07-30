@@ -111,6 +111,7 @@ private:
             pid_param_h_angle_rate_max = loader->getParameter("PID_PARAM_H_ANGLE_RATE_MAX");
             pid_param_yaw_rpm_max = loader->getParameter("PID_PARAM_YAW_RPM_MAX");
             pid_param_yaw_angle_rate_max = loader->getParameter("PID_PARAM_YAW_ANGLE_RATE_MAX");
+            max_spd = loader->getParameter("PID_PARAM_MAX_SPD");
 
         } else {
             delta_time = SIMULATION_DELTA_TIME;
@@ -128,6 +129,7 @@ private:
             pid_param_h_angle_rate_max = PID_PARAM_H_ANGLE_RATE_MAX;
             pid_param_yaw_rpm_max = PID_PARAM_YAW_RPM_MAX;
             pid_param_yaw_angle_rate_max = PID_PARAM_YAW_ANGLE_RATE_MAX;
+            max_spd = PID_PARAM_MAX_SPD;
 
         }
     }
@@ -173,6 +175,7 @@ private:
     }
 
 public:
+    double max_spd = PID_PARAM_MAX_SPD;
     double delta_time;
     AltitudeController alt;
     RadioController(PidControl *roll, PidControl *pitch, PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt, double throttle_gain, double m, double g)
