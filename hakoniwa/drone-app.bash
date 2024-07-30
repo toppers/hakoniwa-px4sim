@@ -9,7 +9,6 @@ fi
 
 export HAKO_CUSTOM_JSON_PATH=${1}/custom.json
 export DRONE_CONFIG_PATH=${2}
-#export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param.txt
 
 if [ ! -f ${HAKO_CUSTOM_JSON_PATH} ]
 then
@@ -20,6 +19,17 @@ if [ ! -d ${DRONE_CONFIG_PATH} ]
 then
     echo "ERROR: can not find ${DRONE_CONFIG_PATH}"
     exit 1
+fi
+
+if [ -z "$HAKO_CONTROLLER_PARAM_FILE" ]
+then
+    grep moduleDirectory ${DRONE_CONFIG_PATH}/*.json | grep Flight > /dev/null
+    if [ $? -eq 0 ]
+    then
+        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api.txt
+    else
+        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc.txt
+    fi
 fi
 
 if [ -z $HAKO_MASTER_DISABLE ]
