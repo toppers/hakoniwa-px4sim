@@ -47,7 +47,7 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         target_pos_x = ms->r_pos_x;
         target_pos_y = ms->r_pos_y;
         target_pos_z = rc->r_altitude;
-        target_velocity = PID_PARAM_MAX_SPD;
+        target_velocity = ms->pos.max_spd;
         target_angle = ms->r_angle;
     }
 

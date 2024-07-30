@@ -7,9 +7,25 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <cstdlib> // for std::getenv
+#include "flight_controller_types.hpp"
 
 class HakoControllerParamLoader {
 public:
+    static bool is_exist_envpath() {
+        const char* env_p = std::getenv("HAKO_CONTROLLER_PARAM_FILE");
+        return env_p != nullptr && env_p[0] != '\0';
+    }
+
+    HakoControllerParamLoader() {
+        const char* env_p = std::getenv("HAKO_CONTROLLER_PARAM_FILE");
+        if (env_p == nullptr || env_p[0] == '\0') {
+            throw std::runtime_error("Environment variable HAKO_CONTROLLER_PARAM_FILE is not set or is empty");
+        }
+        std::cout << "controller param path: " << env_p << std::endl;
+        filename = std::string(env_p);
+    }
+
     HakoControllerParamLoader(const std::string& filename) : filename(filename) {}
 
     void loadParameters() {
@@ -39,6 +55,7 @@ public:
     double getParameter(const std::string& paramName) const {
         auto it = parameters.find(paramName);
         if (it != parameters.end()) {
+            std::cout << paramName << ": " << it->second << std::endl;
             return it->second;
         } else {
             throw std::runtime_error("Parameter not found: " + paramName);

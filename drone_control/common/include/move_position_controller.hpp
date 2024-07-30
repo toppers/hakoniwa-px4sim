@@ -15,7 +15,7 @@ public:
     double angle_time = 0;
     void update_target_angle(double v)
     {
-        if (angle_time >= HEAD_CONTROL_CYCLE) {
+        if (angle_time >= heading.head_control_cycle) {
             angle_time = 0;
             r_angle += v * HEAD_DELTA_VALUE_M;
         }
@@ -28,7 +28,7 @@ public:
     double pos_time = 0;
     void update_target_pos(double x, double y)
     {
-        if (pos_time >= ALT_CONTROL_CYCLE) {
+        if (pos_time >= rc->alt.alt_control_cycle) {
             pos_time = 0;
             r_pos_x += x * POS_DELTA_VALUE_M;
             if (r_pos_x >= POS_VALUE_MAX) {
@@ -52,6 +52,7 @@ public:
     {
         RadioControllerParamType param = get_radio_control_default_parameters();
         this->rc = create_radio_controller(param);
+        this->delta_time = rc->delta_time;
         if (rc == nullptr) {
             exit(1);
         }
