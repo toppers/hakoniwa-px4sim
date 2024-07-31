@@ -110,6 +110,8 @@ private:
             pid_param_yaw_rpm_max = loader->getParameter("PID_PARAM_YAW_RPM_MAX");
             pid_param_yaw_angle_rate_max = loader->getParameter("PID_PARAM_YAW_ANGLE_RATE_MAX");
             max_spd = loader->getParameter("PID_PARAM_MAX_SPD");
+            head_control_cycle = loader->getParameter("HEAD_CONTROL_CYCLE");
+            yaw_delta_value_deg = loader->getParameter("YAW_DELTA_VALUE_DEG");
             double v = loader->getParameter("RADIO_CONTROL_USE_SPD_CTRL");
             if (v == 0) {
                 use_spd_ctrl = false;
@@ -135,6 +137,8 @@ private:
             pid_param_yaw_rpm_max = PID_PARAM_YAW_RPM_MAX;
             pid_param_yaw_angle_rate_max = PID_PARAM_YAW_ANGLE_RATE_MAX;
             max_spd = PID_PARAM_MAX_SPD;
+            head_control_cycle = HEAD_CONTROL_CYCLE;
+            yaw_delta_value_deg = YAW_DELTA_VALUE_DEG;
 #ifdef RADIO_CONTROL_USE_SPD_CTRL
             use_spd_ctrl = false;
 #else
@@ -190,6 +194,7 @@ public:
     double max_spd = PID_PARAM_MAX_SPD;
     double delta_time;
     AltitudeController alt;
+    HeadingController heading;
     RadioController(PidControl *roll, PidControl *pitch, PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt, double throttle_gain, double m, double g)
         : angular_roll(roll), angular_pitch(pitch), angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt), throttle_gain(throttle_gain), mass(m), gravity(g) {
         if (HakoControllerParamLoader::is_exist_envpath()) {
@@ -241,7 +246,21 @@ public:
         }
         alt_time += this->delta_time;
     }
-
+    
+    // Define constants
+    double yaw_delta_value_deg = YAW_DELTA_VALUE_DEG;
+    double head_control_cycle = HEAD_CONTROL_CYCLE;
+    double yaw_time = 0;
+    double r_yaw = 0;
+    // Function to update target yaw
+    void update_target_yaw(double v) {
+        if (yaw_time >= head_control_cycle) {
+            yaw_time = 0;
+            r_yaw += v * yaw_delta_value_deg;
+        }
+        //std::cout << "r_yaw: " << r_yaw << std::endl;
+        yaw_time += this->delta_time;
+    }
     // speed control
     SpeedController spd;
 

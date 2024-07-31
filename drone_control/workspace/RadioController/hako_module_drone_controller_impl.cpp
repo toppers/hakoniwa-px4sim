@@ -1,4 +1,5 @@
 #include "hako_module_drone_controller_impl.h"
+#include "heading_controller.hpp"
 #include "radio_controller.hpp"
 #include <algorithm>
 #include <iostream>
@@ -72,12 +73,20 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     if (rc->use_spd_ctrl) {
         rin.target_roll = s_out.roll;
         rin.target_pitch = s_out.pitch;
+
+        //Heading control;
+        HeadingControlInputType h_in;
+        h_in.euler = rin.euler;
+        rc->update_target_yaw(in->target.direction_velocity.r);
+        h_in.target_angle_deg = rc->r_yaw;
+        HeadingControlPidControlOutputType h_out = rc->heading.run(h_in);
+        rin.target_angular_rate_r = h_out.angular_rate_r;        //TARGET: angular_rate
     }
     else {
         rin.target_roll = in->target.attitude.roll * rc->pid_param_max_roll;   //TARGET: angular.roll
         rin.target_pitch = in->target.attitude.pitch * rc->pid_param_max_pitch; //TARGET: angular.pitch
+        rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
     }
-    rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
 
     FlightControllerOutputType ret = rc->run(rin);
     out.thrust = ret.thrust;

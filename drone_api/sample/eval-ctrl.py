@@ -85,7 +85,7 @@ def almost_equal_deg(target_deg, real_deg, diff_deg):
 
 def angular_control(client, phi = 0, theta = 0, psi = 0):
     print("START ANGULAR CONTROL: ", phi)
-    diff_deg = 3
+    diff_deg = 0.1
     pose = client.simGetVehiclePose()
     roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
     while (almost_equal_deg(phi, math.degrees(roll), diff_deg) == False) or (almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False):
@@ -93,7 +93,8 @@ def angular_control(client, phi = 0, theta = 0, psi = 0):
         roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
         data = client.getGameJoystickData()
         data['axis'] = list(data['axis'])
-
+        data['axis'][0] = 0.0 #heading
+        data['axis'][1] = 0.0 #up/down
         data['axis'][2] = 0.0 #roll
         if almost_equal_deg(phi, math.degrees(roll), diff_deg) == False:
             if phi > 0:
@@ -137,8 +138,8 @@ def my_on_manual_timing_control(context):
     # takeoff
     takeoff(client, 3)
 
-    #angular_control(client, 20, -20, 0)
-    angular_control(client, 20, 0, 0)
+    angular_control(client, 20, -20, 0)
+    #angular_control(client, 20, 0, 0)
     #angular_control(client, 0, -20, 0)
 
     #for _ in range(0,3):

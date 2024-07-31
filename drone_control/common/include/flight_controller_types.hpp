@@ -18,7 +18,7 @@
 #define PID_PARAM_MAX_RRATE     10.0
 #define HEAD_CONTROL_CYCLE      (SIMULATION_DELTA_TIME * 10) //33.3Hz
 #define HEAD_DELTA_VALUE_M       1.0 /* deg */
-
+#define YAW_DELTA_VALUE_DEG     3.0
 /*
  * Position Control
  */
