@@ -7,6 +7,7 @@ import hakopy
 import hako_pdu
 import pdu_info
 import os
+import math
 
 config_path = ''
 
@@ -76,6 +77,54 @@ def takeoff(client, height):
     client.putGameJoystickData(data)
     print("DONE")
 
+def almost_equal_deg(target_deg, real_deg, diff_deg):
+    if abs(target_deg - real_deg) <= diff_deg:
+        return True
+    else:
+        return False
+
+def angular_control(client, phi = 0, theta = 0, psi = 0):
+    print("START ANGULAR CONTROL: ", phi)
+    diff_deg = 3
+    pose = client.simGetVehiclePose()
+    roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
+    while (almost_equal_deg(phi, math.degrees(roll), diff_deg) == False) or (almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False):
+        pose = client.simGetVehiclePose()
+        roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
+        data = client.getGameJoystickData()
+        data['axis'] = list(data['axis'])
+
+        data['axis'][2] = 0.0 #roll
+        if almost_equal_deg(phi, math.degrees(roll), diff_deg) == False:
+            if phi > 0:
+                data['axis'][2] = 1.0
+            else:
+                data['axis'][2] = -1.0
+            print(f"NONE phi: {phi}, roll: {math.degrees(roll)}")
+        else:
+            print(f"DONE phi: {phi}, roll: {math.degrees(roll)}")
+
+        data['axis'][3] = 0.0 #pitch
+        if almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False:
+            if theta > 0:
+                data['axis'][3] = -1.0
+            else:
+                data['axis'][3] = 1.0
+
+            print(f"NONE theta: {theta}, pitch: {math.degrees(pitch)}")
+        else:
+            print(f"DONE theta: {theta}, pitch: {math.degrees(pitch)}")
+
+
+        client.putGameJoystickData(data)
+        hakopy.usleep(30000)
+
+    data = client.getGameJoystickData()
+    data['axis'] = list(data['axis']) 
+    data['axis'][1] = 0
+    client.putGameJoystickData(data)
+    print("DONE")
+
 pdu_manager = None
 client = None
 def my_on_manual_timing_control(context):
@@ -88,9 +137,13 @@ def my_on_manual_timing_control(context):
     # takeoff
     takeoff(client, 3)
 
-    for _ in range(0,3):
-        # sleep 1sec
-        hakopy.usleep(1000000)
+    #angular_control(client, 20, -20, 0)
+    angular_control(client, 20, 0, 0)
+    #angular_control(client, 0, -20, 0)
+
+    #for _ in range(0,3):
+    #    # sleep 1sec
+    #    hakopy.usleep(1000000)
     print("INFO: on_manual_timing_control exit")
     return 0
 
