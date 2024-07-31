@@ -87,9 +87,6 @@ private:
     PidControl *angular_rate_yaw = nullptr;
 
     double alt_control_cycle;
-    double pid_param_max_roll;
-    double pid_param_max_pitch;
-
     double pid_param_h_rpm_max;
     double pid_param_h_angle_rate_max;
     double pid_param_yaw_rpm_max;
@@ -161,9 +158,9 @@ private:
     PidRateControlOutputType run_angular_rate_control(PidControlInputType roll, PidControlInputType pitch, PidControlInputType yaw) {
         PidRateControlOutputType out = prev_rate_out;
         if (angular_rate_simulation_time >= angular_rate_cycle) {
-            out.p = get_target_rate_value(this->angular_rate_roll, PID_PARAM_H_RPM_MAX, PID_PARAM_H_ANGLE_RATE_MAX, roll.target, roll.current);
-            out.q = get_target_rate_value(this->angular_rate_pitch, PID_PARAM_H_RPM_MAX, PID_PARAM_H_ANGLE_RATE_MAX, pitch.target, pitch.current);
-            out.r = get_target_rate_value(this->angular_rate_yaw, PID_PARAM_YAW_RPM_MAX, PID_PARAM_YAW_ANGLE_RATE_MAX, yaw.target, yaw.current);
+            out.p = get_target_rate_value(this->angular_rate_roll, pid_param_h_rpm_max, pid_param_h_angle_rate_max, roll.target, roll.current);
+            out.q = get_target_rate_value(this->angular_rate_pitch, pid_param_h_rpm_max, pid_param_h_angle_rate_max, pitch.target, pitch.current);
+            out.r = get_target_rate_value(this->angular_rate_yaw, pid_param_yaw_rpm_max, pid_param_yaw_angle_rate_max, yaw.target, yaw.current);
             angular_rate_simulation_time = 0;
             prev_rate_out = out;
         }
@@ -187,12 +184,22 @@ private:
     }
 
 public:
+    double pid_param_max_roll;
+    double pid_param_max_pitch;
     bool use_spd_ctrl = false;
     double max_spd = PID_PARAM_MAX_SPD;
     double delta_time;
     AltitudeController alt;
     RadioController(PidControl *roll, PidControl *pitch, PidControl *rate_roll, PidControl *rate_pitch, PidControl *rate_yaw, double dt, double throttle_gain, double m, double g)
-        : angular_roll(roll), angular_pitch(pitch), angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt), throttle_gain(throttle_gain), mass(m), gravity(g) {}
+        : angular_roll(roll), angular_pitch(pitch), angular_rate_roll(rate_roll), angular_rate_pitch(rate_pitch), angular_rate_yaw(rate_yaw), delta_time(dt), throttle_gain(throttle_gain), mass(m), gravity(g) {
+        if (HakoControllerParamLoader::is_exist_envpath()) {
+            HakoControllerParamLoader loader;
+            loader.loadParameters();
+            initializeFromLoader(&loader);
+        } else {
+            initializeFromLoader(nullptr);
+        }
+    }
 
     RadioController(const std::string& filename)
         : delta_time(0), throttle_gain(0), mass(0), gravity(0), angular_cycle(0), angular_rate_cycle(0), alt_control_cycle(0),
@@ -216,19 +223,6 @@ public:
 
     virtual ~RadioController() {}
 
-    void set_angular_rate_cycle(double cycle) {
-        angular_rate_cycle = cycle;
-        angular_rate_simulation_time = 0;
-    }
-
-    void set_angular_cycle(double cycle) {
-        angular_cycle = cycle;
-        angular_simulation_time = 0;
-    }
-
-    void set_alt_control_cycle(double cycle) {
-        alt_control_cycle = cycle;
-    }
 
     // altitude control
     bool r_altitude_initialized = false;
@@ -381,10 +375,6 @@ static inline RadioController* create_radio_controller(const RadioControllerPara
         std::cerr << "ERROR: can not allocate memory..." << std::endl;
         return nullptr;
     }
-    rc->set_angular_cycle(param.angular_cycle);
-    rc->set_angular_rate_cycle(param.angular_rate_cycle);
-    rc->set_alt_control_cycle(param.alt_control_cycle);
-    rc->use_spd_ctrl = param.use_spd_ctrl;
     return rc;
 }
 

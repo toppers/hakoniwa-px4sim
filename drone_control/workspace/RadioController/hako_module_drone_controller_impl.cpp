@@ -74,8 +74,8 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
         rin.target_pitch = s_out.pitch;
     }
     else {
-        rin.target_roll = in->target.attitude.roll * PID_PARM_ANGLE_BASE;   //TARGET: angular.roll
-        rin.target_pitch = in->target.attitude.pitch * PID_PARM_ANGLE_BASE; //TARGET: angular.pitch
+        rin.target_roll = in->target.attitude.roll * rc->pid_param_max_roll;   //TARGET: angular.roll
+        rin.target_pitch = in->target.attitude.pitch * rc->pid_param_max_pitch; //TARGET: angular.pitch
     }
     rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
 
