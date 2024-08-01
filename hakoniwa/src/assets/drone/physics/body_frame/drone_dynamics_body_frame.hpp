@@ -260,14 +260,16 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "X", "Y", "Z", "Rx", "Ry", "Rz" };
+        return { "timestamp", "X", "Y", "Z", "Rx", "Ry", "Rz", "Vx", "Vy", "Vz", "VRx", "VRy", "VRz" };
     }
     const std::vector<std::string> log_data() override
     {
         return {
             std::to_string(CsvLogger::get_time_usec()), 
             std::to_string(position.data.x), std::to_string(position.data.y), std::to_string(position.data.z),
-            std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z)
+            std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z),
+            std::to_string(velocity.data.x), std::to_string(velocity.data.y), std::to_string(velocity.data.z),
+            std::to_string(angularVelocity.data.x), std::to_string(angularVelocity.data.y), std::to_string(angularVelocity.data.z)
             };
     }
 
