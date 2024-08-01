@@ -19,7 +19,8 @@ default_params = {
     "TARGET_CV": 0.01,
     "AXIS": "Z",
     "INVERT_AXIS": True,
-    "EVALUATION_START_TIME": 0.0
+    "EVALUATION_START_TIME": 0.0,
+    "CONVERT_TO_DEGREE": False
 }
 
 def load_parameters(param_file):
@@ -45,19 +46,34 @@ def main(input_file, param_file=None):
     axis = params['AXIS']
     if params['INVERT_AXIS']:
         data[axis] = -1.0 * data[axis]
+
+    # Convert radians to degrees if specified
+    if params.get('CONVERT_TO_DEGREE', False):
+        data[axis] = np.degrees(data[axis])
+
+    # Debugging output for initial data
+    #print("Initial data length: ", len(data))
+    ##print("First few rows of data:\n", data.head())
+    #print("Last few rows of data:\n", data.tail())
     
     # Filter data starting from the evaluation start time
     evaluation_start_time = params['EVALUATION_START_TIME']
+    #print("evaluation_start_time (seconds): ", evaluation_start_time)
     data = data[data['timestamp'] >= evaluation_start_time].copy()
-    
     # Adjust timestamps to start from the evaluation start time
     data['timestamp'] -= evaluation_start_time
+
+    # Debugging output after filtering
+    #print("Data length after filtering: ", len(data))
+    #print("First few rows after filtering:\n", data.head())
+    #print("Last few rows after filtering:\n", data.tail())
     
-    # Calculate steady-state value (average of the last NUM_LAST_POINTS values)
+    # Check if sufficient data points are available
     if len(data) < params['NUM_LAST_POINTS']:
         print("Insufficient data points.")
         return
-    
+
+    # Calculate steady-state value (average of the last NUM_LAST_POINTS values)
     steady_state_data = data[axis][-params['NUM_LAST_POINTS']:]
     c = steady_state_data.mean()
     variance = steady_state_data.var()
@@ -85,8 +101,8 @@ def main(input_file, param_file=None):
     settled = np.abs(data[axis] - c) <= np.abs(c * params['SETTLING_TIME_PERCENT'])
     T_s = None
     for i in range(len(settled)):
-        if settled[i]:
-            others_settled = np.all(settled[i:])
+        if settled.iloc[i]:
+            others_settled = np.all(settled.iloc[i:])
             if others_settled:
                 T_s = data['timestamp'].iloc[i]
                 break
@@ -101,10 +117,10 @@ def main(input_file, param_file=None):
         T_s = 10000.0
 
     # Output results
-    print(f"{cs_result} c(Steady state value)  : {c:.3f} m (Target: {params['TARGET_VALUE']}±{params['TARGET_VALUE'] * params['TARGET_CV']:.3f} m)")
+    print(f"{cs_result} c(Steady state value)  : {c:.3f}   (Target: {params['TARGET_VALUE']}±{params['TARGET_VALUE'] * params['TARGET_CV']:.3f} m)")
     print(f"{tr_result} T_r(Rise time)         : {T_r:.3f} s (Target: ≤ {params['TARGET_TR']:.3f} s)")
     print(f"{td_result} T_d(Delay time)        : {T_d:.3f} s (Target: ≤ {params['TARGET_TD']:.3f} s)")
-    print(f"{os_result} O_s(Maximum overshoot) : {O_s:.3f} m (Target: ≤ {params['TARGET_OS']:.3f} m)")
+    print(f"{os_result} O_s(Maximum overshoot) : {O_s:.3f}   (Target: ≤ {params['TARGET_OS']:.3f} m)")
     print(f"{ts_result} T_s(5% settling time)  : {T_s:.3f} s (Target: ≤ {params['TARGET_TS']:.3f} s)")
 
 if __name__ == "__main__":
