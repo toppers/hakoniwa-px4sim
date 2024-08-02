@@ -84,53 +84,70 @@ def almost_equal_deg(target_deg, real_deg, diff_deg):
         return False
 
 def angular_control(client, phi = 0, theta = 0, psi = 0):
+    global target_values
     print("START ANGULAR CONTROL: ", phi)
     diff_deg = 0.1
     pose = client.simGetVehiclePose()
     roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
-    while (almost_equal_deg(phi, math.degrees(roll), diff_deg) == False) or (almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False):
+    while True:
+    #while (almost_equal_deg(phi, math.degrees(roll), diff_deg) == False) or (almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False):
         pose = client.simGetVehiclePose()
         roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
         data = client.getGameJoystickData()
         data['axis'] = list(data['axis'])
         data['axis'][0] = 0.0 #heading
         data['axis'][1] = 0.0 #up/down
-        data['axis'][2] = 0.0 #roll
-        if almost_equal_deg(phi, math.degrees(roll), diff_deg) == False:
-            if phi > 0:
-                data['axis'][2] = 1.0
-            else:
-                data['axis'][2] = -1.0
-            print(f"NONE phi: {phi}, roll: {math.degrees(roll)}")
+        #data['axis'][2] = 0.0 #roll
+        if phi > 0:
+            data['axis'][2] = target_values.get_ctrl_value('Rx')
+        elif phi < 0:
+            data['axis'][2] = -target_values.get_ctrl_value('Rx')
         else:
-            print(f"DONE phi: {phi}, roll: {math.degrees(roll)}")
+            data['axis'][2] = 0.0
 
-        data['axis'][3] = 0.0 #pitch
-        if almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False:
-            if theta > 0:
-                data['axis'][3] = -1.0
-            else:
-                data['axis'][3] = 1.0
-
-            print(f"NONE theta: {theta}, pitch: {math.degrees(pitch)}")
+        #data['axis'][3] = 0.0 #pitch
+        if theta > 0:
+            data['axis'][3] = -target_values.get_ctrl_value('Ry')
+        elif theta < 0:
+            data['axis'][3] = target_values.get_ctrl_value('Ry')
         else:
-            print(f"DONE theta: {theta}, pitch: {math.degrees(pitch)}")
-
-
+            data['axis'][3] = 0.0
+        #print("phi: ", data['axis'][2])
+        #print("theta: ", data['axis'][3])
         client.putGameJoystickData(data)
         hakopy.usleep(30000)
 
-    data = client.getGameJoystickData()
-    data['axis'] = list(data['axis']) 
-    data['axis'][1] = 0
-    client.putGameJoystickData(data)
-    print("DONE")
-
 pdu_manager = None
 client = None
+
+class TargetValues:
+    def __init__(self):
+        self.phi = 0
+        self.theta = 0
+        self.phi_max = 20
+        self.theta_max = 20
+    
+    def set_target(self, key, value):
+        if key == "Rx":
+            self.phi = float(value)
+            print("Target Rx:", self.phi)
+        elif key == "Ry":
+            self.theta = float(value)
+            print("Target Ry:", self.theta)
+
+    def get_ctrl_value(self, key):
+        if key == "Rx":
+            return self.phi / self.phi_max
+        elif key == "Ry":
+            return self.theta / self.theta_max
+
+
+target_values = TargetValues()
+
 def my_on_manual_timing_control(context):
     global pdu_manager
     global client
+    global target_values
     print("INFO: on_manual_timing_control enter")
 
     # start
@@ -138,9 +155,8 @@ def my_on_manual_timing_control(context):
     # takeoff
     takeoff(client, 3)
 
-    angular_control(client, 20, -20, 0)
-    #angular_control(client, 20, 0, 0)
-    #angular_control(client, 0, -20, 0)
+    print("EVALUATION_START_TIME: ", hakopy.simulation_time() * 1e-06)
+    angular_control(client, target_values.phi, -target_values.theta, 0)
 
     #for _ in range(0,3):
     #    # sleep 1sec
@@ -158,14 +174,18 @@ my_callback = {
 def main():
     global client
     global config_path
+    global target_values
 
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <config_path>")
+    if len(sys.argv) != 4:
+        print(f"Usage: {sys.argv[0]} <config_path> <key:value> <key:value>")
         return 1
 
     asset_name = 'DronePlantModel'
     config_path = sys.argv[1]
     delta_time_usec = 3000
+
+    target_values.set_target(sys.argv[2].split(':')[0], sys.argv[2].split(':')[1])
+    target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1])
 
     # connect to the HakoSim simulator
     client = hakosim.MultirotorClient(config_path)
