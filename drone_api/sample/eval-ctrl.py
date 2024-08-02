@@ -83,6 +83,17 @@ def almost_equal_deg(target_deg, real_deg, diff_deg):
     else:
         return False
 
+def stop_control(client):
+    while True:
+        data = client.getGameJoystickData()
+        data['axis'] = list(data['axis'])
+        data['axis'][0] = 0.0 #heading
+        data['axis'][1] = 0.0 #up/down
+        data['axis'][2] = 0.0
+        data['axis'][3] = 0.0
+        client.putGameJoystickData(data)
+        hakopy.usleep(30000)
+
 def angular_control(client, phi = 0, theta = 0, psi = 0):
     global target_values
     print("START ANGULAR CONTROL: ", phi)
@@ -117,6 +128,10 @@ def angular_control(client, phi = 0, theta = 0, psi = 0):
         client.putGameJoystickData(data)
         hakopy.usleep(30000)
 
+        stop_time = target_values.stop_time_usec
+        if (stop_time > 0) and (hakopy.simulation_time() >= stop_time):
+            break 
+
 pdu_manager = None
 client = None
 
@@ -126,6 +141,10 @@ class TargetValues:
         self.theta = 0
         self.phi_max = 20
         self.theta_max = 20
+        self.stop_time_usec = -1
+
+    def set_stop_time(self, value: int):
+        self.stop_time_usec = value
     
     def set_target(self, key, value):
         if key == "Rx":
@@ -155,8 +174,18 @@ def my_on_manual_timing_control(context):
     # takeoff
     takeoff(client, 3)
 
-    print("EVALUATION_START_TIME: ", hakopy.simulation_time() * 1e-06)
+    evaluation_start_time = hakopy.simulation_time() * 1e-06
+    print("EVALUATION_START_TIME: ", evaluation_start_time)
+    with open('/tmp/v.txt', 'w') as f:
+        f.write(str(evaluation_start_time))
     angular_control(client, target_values.phi, -target_values.theta, 0)
+
+    print("INFO: start stop control")
+    evaluation_start_time = hakopy.simulation_time() * 1e-06
+    print("EVALUATION_START_TIME: ", evaluation_start_time)
+    with open('/tmp/v.txt', 'w') as f:
+        f.write(str(evaluation_start_time))
+    stop_control(client)
 
     #for _ in range(0,3):
     #    # sleep 1sec
@@ -176,16 +205,19 @@ def main():
     global config_path
     global target_values
 
-    if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <config_path> <key:value> <key:value>")
+    if len(sys.argv) != 5:
+        print(f"Usage: {sys.argv[0]} <config_path> <stop_time> <key:value> <key:value>")
         return 1
 
     asset_name = 'DronePlantModel'
     config_path = sys.argv[1]
     delta_time_usec = 3000
 
-    target_values.set_target(sys.argv[2].split(':')[0], sys.argv[2].split(':')[1])
+    stop_time = int(sys.argv[2])
+    target_values.set_stop_time(stop_time)
+
     target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1])
+    target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1])
 
     # connect to the HakoSim simulator
     client = hakosim.MultirotorClient(config_path)

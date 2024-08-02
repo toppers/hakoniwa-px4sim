@@ -51,22 +51,11 @@ def main(input_file, param_file=None):
     if params.get('CONVERT_TO_DEGREE', False):
         data[axis] = np.degrees(data[axis])
 
-    # Debugging output for initial data
-    #print("Initial data length: ", len(data))
-    ##print("First few rows of data:\n", data.head())
-    #print("Last few rows of data:\n", data.tail())
-    
     # Filter data starting from the evaluation start time
     evaluation_start_time = params['EVALUATION_START_TIME']
-    #print("evaluation_start_time (seconds): ", evaluation_start_time)
     data = data[data['timestamp'] >= evaluation_start_time].copy()
     # Adjust timestamps to start from the evaluation start time
     data['timestamp'] -= evaluation_start_time
-
-    # Debugging output after filtering
-    #print("Data length after filtering: ", len(data))
-    #print("First few rows after filtering:\n", data.head())
-    #print("Last few rows after filtering:\n", data.tail())
     
     # Check if sufficient data points are available
     if len(data) < params['NUM_LAST_POINTS']:
@@ -83,18 +72,26 @@ def main(input_file, param_file=None):
         print("Variance is too high. Steady state value is unstable.")
         return
     
-    # Rise time T_r
+    # Check if the value is increasing or decreasing
+    is_increase = True
+    steady_value = c
+    target_value = params['TARGET_VALUE']
+    if data[axis].iloc[0] > c:
+        # Decreasing case
+        is_increase = False
+        initial_value = data[axis].iloc[0]
+        c = initial_value - steady_value
+        data[axis] = initial_value - data[axis]
+        target_value = 0
+    
+    # Now process as increasing case
     rise_time_start = data[data[axis] >= c * params['RISE_TIME_10_PERCENT']]['timestamp'].min()
     rise_time_end = data[data[axis] >= c * params['RISE_TIME_90_PERCENT']]['timestamp'].min()
-
-    T_r = rise_time_end - rise_time_start
-    
-    # Delay time T_d
     delay_time = data[data[axis] >= c * params['DELAY_TIME_PERCENT']]['timestamp'].min()
-    T_d = delay_time
-    
-    # Maximum overshoot O_s
     max_value = data[axis].max()
+    
+    T_r = rise_time_end - rise_time_start
+    T_d = delay_time
     O_s = max_value - c
     
     # Settling time T_s
@@ -106,6 +103,9 @@ def main(input_file, param_file=None):
             if others_settled:
                 T_s = data['timestamp'].iloc[i]
                 break
+
+    if T_s is None:
+        T_s = 10000.0
     
     # Determine results
     cs_result = "OK" if np.abs(c - params['TARGET_VALUE']) <= params['TARGET_VALUE'] * params['TARGET_CV'] else "NG"
@@ -113,11 +113,9 @@ def main(input_file, param_file=None):
     td_result = "OK" if T_d <= params['TARGET_TD'] else "NG"
     os_result = "OK" if O_s <= params['TARGET_OS'] else "NG"
     ts_result = "OK" if T_s is not None and T_s <= params['TARGET_TS'] else "NG"
-    if T_s is None:
-        T_s = 10000.0
 
     # Output results
-    print(f"{cs_result} c(Steady state value)  : {c:.3f}   (Target: {params['TARGET_VALUE']}±{params['TARGET_VALUE'] * params['TARGET_CV']:.3f} m)")
+    print(f"{cs_result} c(Steady state value)  : {steady_value:.3f}   (Target: {target_value}±{params['TARGET_VALUE'] * params['TARGET_CV']:.3f} m)")
     print(f"{tr_result} T_r(Rise time)         : {T_r:.3f} s (Target: ≤ {params['TARGET_TR']:.3f} s)")
     print(f"{td_result} T_d(Delay time)        : {T_d:.3f} s (Target: ≤ {params['TARGET_TD']:.3f} s)")
     print(f"{os_result} O_s(Maximum overshoot) : {O_s:.3f}   (Target: ≤ {params['TARGET_OS']:.3f} m)")
