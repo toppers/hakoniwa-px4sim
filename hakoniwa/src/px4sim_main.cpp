@@ -7,6 +7,7 @@
 #include "modules/hako_sim.hpp"
 #include "modules/hako_pid.hpp"
 #include "modules/hako_ext.hpp"
+#include "modules/hako_replay.hpp"
 #include "utils/hako_params.hpp"
 #include "config/drone_config.hpp"
 #ifndef WIN32
@@ -17,7 +18,7 @@ class DroneConfigManager drone_config_manager;
 int main(int argc, char* argv[]) 
 {
     if(argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid|ext}> " << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <server_ip> <server_port> <mode={sim|wsim|bypass|phys|pid|ext|replay}> " << std::endl;
         return -1;
     }
     const char* value = std::getenv("HAKO_MASTER_DISABLE");
@@ -47,6 +48,11 @@ int main(int argc, char* argv[])
     }
     if (strcmp("ext", arg_mode) == 0) {
         hako_ext_main(enable_master);
+        //not returned function.
+        //do not pass
+    }
+    else if (strcmp("replay", arg_mode) == 0) {
+        hako_replay_main(enable_master);
         //not returned function.
         //do not pass
     }

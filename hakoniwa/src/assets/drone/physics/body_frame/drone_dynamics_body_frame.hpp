@@ -38,7 +38,8 @@ private:
     DroneVelocityType velocity;
     DroneEulerType angle;
     DroneEulerRateType angularVelocity;
-
+    DroneTorqueType torque;
+    DroneThrustType thrust;
     /*
      * Ground position
      */
@@ -185,8 +186,8 @@ public:
     // Implementation for the run function is required
     void run(const DroneDynamicsInputType &input) override 
     {
-        DroneTorqueType torque = input.torque;
-        DroneThrustType thrust = input.thrust;
+        torque = input.torque;
+        thrust = input.thrust;
         this->cache = drone_phys_calc_cache(this->angle);
 
         DroneAccelerationBodyFrame acc = drone_physics::acceleration_in_body_frame(
@@ -260,7 +261,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "X", "Y", "Z", "Rx", "Ry", "Rz", "Vx", "Vy", "Vz", "VRx", "VRy", "VRz" };
+        return { "timestamp", "X", "Y", "Z", "Rx", "Ry", "Rz", "Vx", "Vy", "Vz", "VRx", "VRy", "VRz", "Thrust", "Tx", "Ty", "Tz" };
     }
     const std::vector<std::string> log_data() override
     {
@@ -269,7 +270,8 @@ public:
             std::to_string(position.data.x), std::to_string(position.data.y), std::to_string(position.data.z),
             std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z),
             std::to_string(velocity.data.x), std::to_string(velocity.data.y), std::to_string(velocity.data.z),
-            std::to_string(angularVelocity.data.x), std::to_string(angularVelocity.data.y), std::to_string(angularVelocity.data.z)
+            std::to_string(angularVelocity.data.x), std::to_string(angularVelocity.data.y), std::to_string(angularVelocity.data.z),
+            std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)
             };
     }
 

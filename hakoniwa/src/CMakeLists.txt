@@ -41,6 +41,7 @@ set(SOURCE_FILES
     modules/hako_sim.cpp
     modules/hako_pid.cpp
     modules/hako_ext.cpp
+    modules/hako_replay.cpp
     px4sim_main.cpp
 )
 if(WIN32)

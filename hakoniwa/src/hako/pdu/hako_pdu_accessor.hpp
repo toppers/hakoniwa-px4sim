@@ -234,4 +234,41 @@ static inline void do_io_write(hako::assets::drone::IAirCraft *drone, const doub
     }
 }
 
+static inline void do_io_write_replay_data(std::string &name, DronePositionType &dpos, DroneEulerType &dangle, double controls[hako::assets::drone::ROTOR_NUM])
+{
+    Hako_HakoHilActuatorControls hil_actuator_controls;
+    Hako_Twist pos;
+    char buffer_hil_actuator[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_HakoHilActuatorControls)];
+    char buffer_pos[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(Hako_Twist)];
+
+    memset(&hil_actuator_controls, 0, sizeof(hil_actuator_controls));
+    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+        hil_actuator_controls.controls[i] = controls[i];
+    }
+    if (hako_pdu_put_fixed_data(buffer_hil_actuator, reinterpret_cast<const char*>(&hil_actuator_controls), sizeof(Hako_HakoHilActuatorControls), sizeof(buffer_hil_actuator)) < 0) {
+        std::cerr << "ERROR: can not put pdu data: hil_actuator_controls" << std::endl;
+        return;
+    }
+    if (!hako_asset_runner_pdu_write(name.c_str(), HAKO_AVATOR_CHANNLE_ID_MOTOR, buffer_hil_actuator, sizeof(buffer_hil_actuator))) {
+        std::cerr << "ERROR: can not write pdu data: hil_actuator_controls" << std::endl;
+        return;
+    }
+
+    pos.linear.x = dpos.data.x;
+    pos.linear.y = -dpos.data.y;
+    pos.linear.z = -dpos.data.z;
+    pos.angular.x = dangle.data.x;
+    pos.angular.y = -dangle.data.y;
+    pos.angular.z = -dangle.data.z;
+
+    if (hako_pdu_put_fixed_data(buffer_pos, reinterpret_cast<const char*>(&pos), sizeof(Hako_Twist), sizeof(buffer_pos)) < 0) {
+        std::cerr << "ERROR: can not put pdu data: pos" << std::endl;
+        return;
+    }
+    if (!hako_asset_runner_pdu_write(name.c_str(), HAKO_AVATOR_CHANNLE_ID_POS, buffer_pos, sizeof(buffer_pos))) {
+        std::cerr << "ERROR: can not write pdu data: pos" << std::endl;
+        return;
+    }
+}
+
 #endif /* _HAKO_PDU_ACCESSOR_HPP_ */
