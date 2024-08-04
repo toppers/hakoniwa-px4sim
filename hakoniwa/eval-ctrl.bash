@@ -29,6 +29,15 @@ TVALUE=`echo ${TKEY_VALUE} | awk -F: '{print $2}'`
 KEY=`echo ${KEY_VALUE} | awk -F: '{print $1}'`
 VALUE=`echo ${KEY_VALUE} | awk -F: '{print $2}'`
 
+if [ "$TKEY" = "Rx" ] || [ "$TKEY" = "Ry" ]
+then
+    VAL=true
+else
+    VAL=false
+fi
+cp python/control_evaluate_sample.json python/tmp1.json
+jq --argjson value ${VAL} '.CONVERT_TO_DEGREE = $value' python/tmp1.json > python/control_evaluate_sample.json
+rm -f python/tmp1.json
 
 if [ -f ~/myenv/bin/activate ]
 then
