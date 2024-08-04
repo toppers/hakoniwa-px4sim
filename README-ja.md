@@ -51,6 +51,7 @@
   * Arm系Mac (M1Mac, M2Mac)
   * Windows 10/11
   * Windows WSL2
+  * Ubuntu 22.0.4
 * 利用する環境
   * Python 3.12
   * jq
