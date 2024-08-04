@@ -94,37 +94,44 @@ def stop_control(client):
         client.putGameJoystickData(data)
         hakopy.usleep(30000)
 
-def angular_control(client, phi = 0, theta = 0, psi = 0):
+def do_control(client, v1 = 0, v2 = 0, type = 'angular'):
     global target_values
-    print("START ANGULAR CONTROL: ", phi)
-    diff_deg = 0.1
-    pose = client.simGetVehiclePose()
-    roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
+    print(f"START CONTROL: v1({v1}) v2({v2})")
     while True:
-    #while (almost_equal_deg(phi, math.degrees(roll), diff_deg) == False) or (almost_equal_deg(theta, math.degrees(pitch), diff_deg) == False):
-        pose = client.simGetVehiclePose()
-        roll, pitch, yaw = hakosim.hakosim_types.Quaternionr.quaternion_to_euler(pose.orientation)
         data = client.getGameJoystickData()
         data['axis'] = list(data['axis'])
         data['axis'][0] = 0.0 #heading
         data['axis'][1] = 0.0 #up/down
         #data['axis'][2] = 0.0 #roll
-        if phi > 0:
-            data['axis'][2] = target_values.get_ctrl_value('Rx')
-        elif phi < 0:
-            data['axis'][2] = -target_values.get_ctrl_value('Rx')
-        else:
-            data['axis'][2] = 0.0
+        #print(f"v1: {v1}, v2: {v2}")
+        #print("vx: ",  target_values.get_ctrl_value('Vx'))
+        #print("vy: ",  target_values.get_ctrl_value('Vy'))
 
-        #data['axis'][3] = 0.0 #pitch
-        if theta > 0:
-            data['axis'][3] = -target_values.get_ctrl_value('Ry')
-        elif theta < 0:
-            data['axis'][3] = target_values.get_ctrl_value('Ry')
-        else:
-            data['axis'][3] = 0.0
-        #print("phi: ", data['axis'][2])
-        #print("theta: ", data['axis'][3])
+        data['axis'][2] = 0.0
+        data['axis'][3] = 0.0
+        if v1 > 0:
+            if type == 'angular':
+                data['axis'][2] = target_values.get_ctrl_value('Rx')
+            elif type == 'speed':
+                data['axis'][3] = -target_values.get_ctrl_value('Vx')
+        elif v1 < 0:
+            if type == 'angular':
+                data['axis'][2] = -target_values.get_ctrl_value('Rx')
+            elif type == 'speed':
+                data['axis'][3] = target_values.get_ctrl_value('Vx')
+
+        if v2 > 0:
+            if type == 'angular':
+                data['axis'][3] = -target_values.get_ctrl_value('Ry')
+            elif type == 'speed':
+                data['axis'][2] = target_values.get_ctrl_value('Vy')
+        elif v2 < 0:
+            if type == 'angular':
+                data['axis'][3] = target_values.get_ctrl_value('Ry')
+            elif type == 'speed':
+                data['axis'][2] = -target_values.get_ctrl_value('Vy')
+        #print("axis2: ", data['axis'][2])
+        #print("axis3: ", data['axis'][3])
         client.putGameJoystickData(data)
         hakopy.usleep(30000)
 
@@ -137,28 +144,31 @@ client = None
 
 class TargetValues:
     def __init__(self):
-        self.phi = 0
-        self.theta = 0
-        self.phi_max = 20
-        self.theta_max = 20
+        self.values = {}
+        self.max_values = {}
         self.stop_time_usec = -1
 
     def set_stop_time(self, value: int):
         self.stop_time_usec = value
     
-    def set_target(self, key, value):
-        if key == "Rx":
-            self.phi = float(value)
-            print("Target Rx:", self.phi)
-        elif key == "Ry":
-            self.theta = float(value)
-            print("Target Ry:", self.theta)
+    def set_target(self, key, value, max_value=None):
+        self.values[key] = float(value)
+        if max_value is not None:
+            self.max_values[key] = max_value[key]
+        print(f"Target {key}: {self.values[key]}")
 
     def get_ctrl_value(self, key):
-        if key == "Rx":
-            return self.phi / self.phi_max
-        elif key == "Ry":
-            return self.theta / self.theta_max
+        if key in self.values and key in self.max_values:
+            return self.values[key] / self.max_values[key]
+        else:
+            print(f"Invalid key or missing max value: {key}")
+            return None
+
+    def has_key(self, key):
+        if key in self.values:
+            return True
+        else:
+            return False
 
 
 target_values = TargetValues()
@@ -178,7 +188,11 @@ def my_on_manual_timing_control(context):
     print("EVALUATION_START_TIME: ", evaluation_start_time)
     with open('/tmp/v.txt', 'w') as f:
         f.write(str(evaluation_start_time))
-    angular_control(client, target_values.phi, -target_values.theta, 0)
+    
+    if (target_values.has_key('Rx')):
+        do_control(client, target_values.values['Rx'], -target_values.values['Ry'], 'angular')
+    elif (target_values.has_key('Vx')):
+        do_control(client, target_values.values['Vx'], target_values.values['Vy'], 'speed')
 
     print("INFO: start stop control")
     evaluation_start_time = hakopy.simulation_time() * 1e-06
@@ -216,8 +230,15 @@ def main():
     stop_time = int(sys.argv[2])
     target_values.set_stop_time(stop_time)
 
-    target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1])
-    target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1])
+    max_value = {}
+    if (sys.argv[3].split(':')[0] == 'Rx') or (sys.argv[3].split(':')[0] == 'Ry'):
+        max_value['Rx'] = 20
+        max_value['Ry'] = 20
+    else:
+        max_value['Vx'] = 6
+        max_value['Vy'] = 6
+    target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1], max_value)
+    target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1], max_value)
 
     # connect to the HakoSim simulator
     client = hakosim.MultirotorClient(config_path)
