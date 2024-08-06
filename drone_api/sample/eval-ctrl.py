@@ -235,8 +235,8 @@ def main():
         max_value['Rx'] = 20
         max_value['Ry'] = 20
     else:
-        max_value['Vx'] = 6.6924
-        max_value['Vy'] = 6.6924
+        max_value['Vx'] = 10
+        max_value['Vy'] = 10
     target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1], max_value)
     target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1], max_value)
 
