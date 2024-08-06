@@ -50,6 +50,7 @@ This repository is a simulation environment for drone plant models that can be i
   * Arm-based Macs (M1 Mac, M2 Mac)
   * Windows 10/11
   * Windows WSL2
+  * Ubuntu 22.0.4
 * Required Environment:
   * Python 3.12
   * jq
