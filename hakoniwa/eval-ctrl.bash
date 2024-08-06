@@ -2,16 +2,14 @@
 trap 'kill 0' EXIT
 
 export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/custom.json
-export DRONE_CONFIG_PATH=config/rc
-export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc.txt
 
 EXEC_SIM_TIME=5
 
 HAKO_PID=
 EVAL_PID=
-if [ $# -ne 3 ]
+if [ $# -ne 3 -a $# -ne 4 ]
 then
-    echo "Usage: $0 <stop_time> <tkey:tvalue> <key:value>"
+    echo "Usage: $0 <stop_time> <tkey:tvalue> <key:value> <S:targetSpeed>"
     exit 1
 fi
 if [ ${1} -gt 0 ]
@@ -19,6 +17,17 @@ then
     STOP_TIME=`expr ${1} \* 1000000`
 else
     STOP_TIME=-1
+fi
+
+SPEED_KEY_VALUE=
+if [ $# -eq 4 ]
+then
+    SPEED_KEY_VALUE=${4}
+    export DRONE_CONFIG_PATH=config/api_sample
+    export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api.txt
+else
+    export DRONE_CONFIG_PATH=config/rc
+    export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc.txt
 fi
 
 TKEY_VALUE=${2}
@@ -51,7 +60,7 @@ HAKO_PID=$!
 CURR_DIR=`pwd`
 # start eval-ctrl
 cd ../drone_api/sample
-python3.12 eval-ctrl.py ../../../hakoniwa-unity-drone-model/custom.json ${STOP_TIME} ${TKEY_VALUE} ${KEY_VALUE} &
+python3.12 eval-ctrl.py ../../../hakoniwa-unity-drone-model/custom.json ${STOP_TIME} ${TKEY_VALUE} ${KEY_VALUE} ${SPEED_KEY_VALUE} &
 EVAL_PID=$!
 
 cd ${CURR_DIR}
@@ -71,10 +80,6 @@ kill -s TERM ${HAKO_PID}
 # kill eval-ctrl
 kill -s TERM ${EVAL_PID}
 
-if [ $START_TIME -gt 0 ]
-then
-    TVALUE=0
-fi
 jq --arg axis "$TKEY" --argjson value "$TVALUE" '.AXIS = $axis | .TARGET_VALUE = $value' python/control_evaluate_sample.json > python/tmp.json
 
 START_TIME=`cat /tmp/v.txt`

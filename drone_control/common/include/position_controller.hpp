@@ -92,6 +92,13 @@ public:
 
             // convert ground frame to body frame
             VectorType val = body_vector_from_ground({ target_vx, target_vy, 0 }, { 0, 0, in.euler.z });
+
+            // Normalize val.x and val.y with in.target_spd
+            double magnitude = sqrt(val.x * val.x + val.y * val.y);
+            if (magnitude > in.target_spd) {
+                val.x = (val.x / magnitude) * in.target_spd;
+                val.y = (val.y / magnitude) * in.target_spd;
+            }
             out.target_vx = val.x;
             out.target_vy = val.y;
         }

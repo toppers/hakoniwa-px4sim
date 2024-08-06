@@ -77,6 +77,33 @@ def takeoff(client, height):
     client.putGameJoystickData(data)
     print("DONE")
 
+def reply_and_wait_res(command):
+    ret = command.write()
+    if ret == False:
+        print('"ERROR: hako_asset_pdu_write')
+        return False
+    while True:
+        pdu = command.read()
+        if pdu == None:
+            print('ERROR: hako_asset_pdu_read')
+            return 0
+        if pdu['header']['result'] == 1:
+            pdu['header']['result'] = 0
+            command.write()
+            print('DONE')
+            break
+        #print("result: ",  pdu['header']['result'])
+        hakopy.usleep(30000)
+    return True
+
+def takeoff_wait(client, height):
+    print("INFO: takeoff")
+    command, pdu_cmd = client.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, client.get_vehicle_name(client.default_drone_name))
+    pdu_cmd['height'] = height
+    pdu_cmd['speed'] = 5
+    pdu_cmd['yaw_deg'] = client._get_yaw_degree(client.default_drone_name)
+    return reply_and_wait_res(command)
+
 def almost_equal_deg(target_deg, real_deg, diff_deg):
     if abs(target_deg - real_deg) <= diff_deg:
         return True
@@ -157,6 +184,13 @@ class TargetValues:
             self.max_values[key] = max_value[key]
         print(f"Target {key}: {self.values[key]}")
 
+    def get_target_value(self, key):
+        if key in self.values and key in self.max_values:
+            return self.values[key]
+        else:
+            print(f"Invalid key or missing max value: {key}")
+            return None
+
     def get_ctrl_value(self, key):
         if key in self.values and key in self.max_values:
             return self.values[key] / self.max_values[key]
@@ -173,16 +207,39 @@ class TargetValues:
 
 target_values = TargetValues()
 
+def pos_control(client, X = 0, Y = 0, speed = 5):
+    global target_values
+    print(f"START CONTROL: X({X}) Y({Y}) S({speed})")
+    #call api
+    pose = client.simGetVehiclePose()
+    command, pdu_cmd = client.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, client.get_vehicle_name(client.default_drone_name))
+    pdu_cmd['x'] = X
+    pdu_cmd['y'] = Y
+    pdu_cmd['z'] = pose.position.z_val
+    pdu_cmd['speed'] = speed
+    pdu_cmd['yaw_deg'] = 0
+    reply_and_wait_res(command)
+    print("reply done")
+    while True:
+        hakopy.usleep(30000)
+
+        stop_time = target_values.stop_time_usec
+        if (stop_time > 0) and (hakopy.simulation_time() >= stop_time):
+            break 
+
 def my_on_manual_timing_control(context):
     global pdu_manager
     global client
     global target_values
     print("INFO: on_manual_timing_control enter")
 
-    # start
-    button_event(client, 0)
     # takeoff
-    takeoff(client, 3)
+    if (target_values.has_key('X')):
+        takeoff_wait(client, 3)
+    else:
+        # start
+        button_event(client, 0)
+        takeoff(client, 3)
 
     evaluation_start_time = hakopy.simulation_time() * 1e-06
     print("EVALUATION_START_TIME: ", evaluation_start_time)
@@ -193,13 +250,16 @@ def my_on_manual_timing_control(context):
         do_control(client, target_values.values['Rx'], -target_values.values['Ry'], 'angular')
     elif (target_values.has_key('Vx')):
         do_control(client, target_values.values['Vx'], target_values.values['Vy'], 'speed')
+    elif (target_values.has_key('X')):
+        pos_control(client, target_values.values['X'], target_values.values['Y'], target_values.values['S'])
 
-    print("INFO: start stop control")
-    evaluation_start_time = hakopy.simulation_time() * 1e-06
-    print("EVALUATION_START_TIME: ", evaluation_start_time)
-    with open('/tmp/v.txt', 'w') as f:
-        f.write(str(evaluation_start_time))
-    stop_control(client)
+    if (target_values.has_key('X')) == False:
+        print("INFO: start stop control")
+        evaluation_start_time = hakopy.simulation_time() * 1e-06
+        print("EVALUATION_START_TIME: ", evaluation_start_time)
+        with open('/tmp/v.txt', 'w') as f:
+            f.write(str(evaluation_start_time))
+        stop_control(client)
 
     #for _ in range(0,3):
     #    # sleep 1sec
@@ -219,8 +279,8 @@ def main():
     global config_path
     global target_values
 
-    if len(sys.argv) != 5:
-        print(f"Usage: {sys.argv[0]} <config_path> <stop_time> <key:value> <key:value>")
+    if len(sys.argv) != 5 and len(sys.argv) != 6:
+        print(f"Usage: {sys.argv[0]} <config_path> <stop_time> <key:value> <key:value> [S:TargetSpeed]")
         return 1
 
     asset_name = 'DronePlantModel'
@@ -234,11 +294,20 @@ def main():
     if (sys.argv[3].split(':')[0] == 'Rx') or (sys.argv[3].split(':')[0] == 'Ry'):
         max_value['Rx'] = 20
         max_value['Ry'] = 20
-    else:
+        target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1], max_value)
+        target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1], max_value)
+    elif (sys.argv[3].split(':')[0] == 'Vx') or (sys.argv[3].split(':')[0] == 'Vy'):
         max_value['Vx'] = 10
         max_value['Vy'] = 10
-    target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1], max_value)
-    target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1], max_value)
+        target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1], max_value)
+        target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1], max_value)
+    elif (sys.argv[3].split(':')[0] == 'X') or (sys.argv[3].split(':')[0] == 'Y'):
+        target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1])
+        target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1])
+        if len(sys.argv) == 6:
+            target_values.set_target(sys.argv[5].split(':')[0], sys.argv[5].split(':')[1])
+        else:
+            target_values.set_target('S', 5)
 
     # connect to the HakoSim simulator
     client = hakosim.MultirotorClient(config_path)

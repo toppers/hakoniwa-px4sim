@@ -9,16 +9,16 @@ import numpy
 import pprint
 
 def transport(client, baggage_pos, transfer_pos):
-    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 0, -90)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5, -90)
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5)
     client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5, 0)
-    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 0.7, 0.01, 0)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 0.7, 5, 0)
     client.grab_baggage(True)
-    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 0.01)
-    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.1)
-    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], transfer_pos['z'], 0.01)
+    client.moveToPosition(baggage_pos['x'], baggage_pos['y'], 3, 5)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 5)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], transfer_pos['z'], 5)
     client.grab_baggage(False)
-    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 0.01)
+    client.moveToPosition(transfer_pos['x'], transfer_pos['y'], 3, 5)
 
 def debug_pos(client):
     pose = client.simGetVehiclePose()
