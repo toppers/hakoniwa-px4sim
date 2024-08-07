@@ -102,7 +102,7 @@ python python/hako_TimelineAnalyzer.py --columns Rx --diff  drone_log0/drone_dyn
 To set the speed in the north direction to 5 m/sec, execute the following command:
 
 ```bash
-bash eval-ctrl.bash -1 Vx:50 Vy:0
+bash eval-ctrl.bash -1 Vx:5 Vy:0
 ```
 
 If successful, the following output will be displayed:
@@ -128,7 +128,7 @@ python python/hako_TimelineAnalyzer.py --columns Vx --diff  drone_log0/drone_dyn
 To move to a position 10m in the north direction at a speed of 5m/sec, execute the following command:
 
 ```bash
-bash eval-ctrl.bash -1 X:5 Y:0 S:5
+bash eval-ctrl.bash -1 X:10 Y:0 S:5
 ```
 
 If successful, the following output will be displayed:

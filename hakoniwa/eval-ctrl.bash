@@ -60,7 +60,19 @@ HAKO_PID=$!
 CURR_DIR=`pwd`
 # start eval-ctrl
 cd ../drone_api/sample
-python3.12 eval-ctrl.py ../../../hakoniwa-unity-drone-model/custom.json ${STOP_TIME} ${TKEY_VALUE} ${KEY_VALUE} ${SPEED_KEY_VALUE} &
+which python3.12
+if [ $? -eq 0 ]
+then
+	PYTHON_BIN=python3.12
+else
+	PYTHON_BIN=python
+	which python3
+	if [ $? -eq 0 ]
+	then
+		PYTHON_BIN=python3
+	fi
+fi
+${PYTHON_BIN} eval-ctrl.py ../../../hakoniwa-unity-drone-model/custom.json ${STOP_TIME} ${TKEY_VALUE} ${KEY_VALUE} ${SPEED_KEY_VALUE} &
 EVAL_PID=$!
 
 cd ${CURR_DIR}
@@ -88,7 +100,7 @@ jq --argjson value "$START_TIME" '.EVALUATION_START_TIME = $value' python/tmp1.j
 rm -f python/tmp1.json
 
 # evaluation
-python python/control_evaluate.py ./drone_log0/drone_dynamics.csv python/tmp.json
+${PYTHON_BIN} python/control_evaluate.py ./drone_log0/drone_dynamics.csv python/tmp.json
 
 wait ${HAKO_PID} ${EVAL_PID}
 

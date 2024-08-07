@@ -107,7 +107,7 @@ python python/hako_TimelineAnalyzer.py --columns Rx --diff  drone_log0/drone_dyn
 北方向の速度を5m/secにする場合は以下のように実行します。
 
 ```
-bash eval-ctrl.bash -1 Vx:50 Vy:0
+bash eval-ctrl.bash -1 Vx:5 Vy:0
 ```
 
 成功すると以下のように出力されます。
@@ -135,7 +135,7 @@ python python/hako_TimelineAnalyzer.py --columns Vx --diff  drone_log0/drone_dyn
 北方向に位置を10mまで、5m/secで移動させる場合は以下のように実行します。
 
 ```
-bash eval-ctrl.bash -1 X:5 Y:0 S:5
+bash eval-ctrl.bash -1 X:10 Y:0 S:5
 ```
 
 成功すると以下のように出力されます。
