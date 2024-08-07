@@ -16,6 +16,7 @@ This repository is a simulation environment for drone plant models that can be i
 - [Integration with MATLAB](#integration-with-matlab)
 - [Effects from the Environment](#effects-from-the-environment)
 - [Headless Simulation](#headless-simulation)
+- [Log Replay](#logreplay)
 - [Community and Support](#community-and-support)
 - [About This Repository and License](#about-this-repository-and-license)
 - [Contribution Guidelines](#contribution-guidelines)
@@ -41,6 +42,8 @@ This repository is a simulation environment for drone plant models that can be i
 9. **Multi-Aircraft Support:** By preparing multiple sets of drone airframe characteristic parameters, it is possible to simulate several aircraft simultaneously. For details, see [here](#Multi-Aircraft-Support).
 
 10. **Python API Support:** It's possible to control the aircraft via the Python API without using PX4 or QGC. For details, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README.md). Additionally, you can control the drone using a PS4 controller. For more details, please visit [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control/ps4).
+
+11. **Log Replay:** You can replay the flight trajectory of the drones from the log data recorded during the drone simulation execution. For more details, see [here](#logreplay).
 
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
@@ -479,6 +482,33 @@ Example: For the second aircraft
 bash ../sim/simstart.bash 1
 ```
 
+Sure, here is the English version for the GitHub README:
+
+# LogReplay
+
+In the Hakoniwa Drone Simulator, logs are recorded for each drone during simulation execution.
+
+The log file is located at `hakoniwa-px4sim/hakoniwa/drone_log0/drone_dynamics.csv`.
+
+Using this log information, you can replay the flight trajectory of the drones.
+
+The log replay should be executed in the same directory where the simulation was run (`hakoniwa-px4sim/hakoniwa`).
+
+Additionally, it is assumed that `hakoniwa-unity-drone-model` is in the same directory hierarchy as `hakoniwa-px4sim`.
+
+```
+.
+├── hakoniwa-unity-drone-model
+└── hakoniwa-px4sim
+```
+
+To execute the log replay, follow these steps:
+
+```
+bash replay.bash
+```
+
+Start Unity for `hakoniwa-unity-drone-model` and begin the simulation. The drones will replicate the movements from the original simulation.
 
 # Community and Support
 
