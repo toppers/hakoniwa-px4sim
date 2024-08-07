@@ -41,7 +41,7 @@ This repository is a simulation environment for drone plant models that can be i
 
 9. **Multi-Aircraft Support:** By preparing multiple sets of drone airframe characteristic parameters, it is possible to simulate several aircraft simultaneously. For details, see [here](#Multi-Aircraft-Support).
 
-10. **Python API Support:** It's possible to control the aircraft via the Python API without using PX4 or QGC. For details, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README.md). Additionally, you can control the drone using a PS4 controller. For more details, please visit [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control/ps4). For an explanation of the control program driven by the Python API, please refer to [this link](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control).
+10. **Python API Support:** It's possible to control the aircraft via the Python API without using PX4 or QGC. For details, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README.md). Additionally, you can control the drone using a PS4 controller. For more details, please visit [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control/ps4). For an explanation of the control program driven by the Python API, please refer to [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control).
 
 11. **Log Replay:** You can replay the flight trajectory of the drones from the log data recorded during the drone simulation execution. For more details, see [here](#logreplay).
 
