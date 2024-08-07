@@ -40,7 +40,7 @@
 
 9. **複数機体対応:** ドローンの機体特性パラメータを複数用意することで、機体を複数同時にシミュレーションすることができます。詳細は[こちら](#複数機体対応)
 
-10. **Python API対応:** PX4やQGCを利用せずに、Python API から機体操作することができます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README-ja.md)。また、PS4コントローラでドローンを操作することができます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control/ps4)
+10. **Python API対応:** PX4やQGCを利用せずに、Python API から機体操作することができます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README-ja.md)。また、PS4コントローラでドローンを操作することができます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control/ps4)。Python APIで駆動する制御プログラムの説明は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control)を参照ください。
 
 11. **ログリプレイ:** ドローンシミュレーション実行中に記録されているログデータから、ドローンの飛行軌跡をリプレイすることができます。詳細は[こちら](#ログリプレイ)。
 
