@@ -57,12 +57,12 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
             for event in pygame.event.get():
                 if event.type == pygame.JOYAXISMOTION:
                     if (event.axis < 4):
-                        print('GET AXIS VALUE:',event.axis)
+                        #print('GET AXIS VALUE:',event.axis)
                         avg_value = average_axis(axis_history[event.axis], event.value)
-                        print('AVG AXIS VALUE:',avg_value)
+                        #print('AVG AXIS VALUE:',avg_value)
                         data['axis'] = list(data['axis']) 
                         data['axis'][event.axis] = cubic_stick_response(discretize_value(avg_value))
-                        print('CUBIC AXIS VALUE:',data['axis'][event.axis])
+                        #print('CUBIC AXIS VALUE:',data['axis'][event.axis])
                     else:
                         print(f'ERROR: not supported axis index: {event.axis}')
                 elif event.type == pygame.JOYBUTTONDOWN:
