@@ -118,7 +118,7 @@ class RcConfig:
 class StickMonitor:
     def __init__(self, config: RcConfig):
         self.rc_config = config
-        self.stick_history = {0: [], 1: [], 2: [], 3: []}
+        self.stick_history = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
         self.history_len = 5
         self.switch_states = {}
     

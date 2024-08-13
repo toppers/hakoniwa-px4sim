@@ -23,7 +23,7 @@ def joystick_control(client: hakosim.MultirotorClient, joystick, stick_monitor: 
             data = client.getGameJoystickData()
             for event in pygame.event.get():
                 if event.type == pygame.JOYAXISMOTION:
-                    if event.axis < 4:
+                    if event.axis < 6:
                         op_index = stick_monitor.rc_config.get_op_index(event.axis)
                         stick_value = stick_monitor.stick_value(event.axis, event.value)
                         if (abs(stick_value) > 0.1):
