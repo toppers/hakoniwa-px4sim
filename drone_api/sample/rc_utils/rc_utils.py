@@ -64,7 +64,8 @@ class RcConfig:
             feature['off'] = feature.get('off', 'up')
             feature['on'] = feature.get('on', 'down')
         else:
-            raise ValueError(f"Feature for switch index {switch_index} not found.")
+            print(f"WARNING: Feature for switch index {switch_index} not found.")
+            return None
  
         return feature
 
@@ -149,6 +150,8 @@ class StickMonitor:
         For 'toggle': Toggles the state on each down event.
         """
         feature = self.rc_config.get_switch_feature(switch_index)
+        if feature is None:
+            return False
 
         # Determine the event_on state based on the feature's 'on' condition
         if feature['on'] == 'down':

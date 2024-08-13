@@ -1,15 +1,13 @@
 {
     "Os": [ "Darwin" ],
+    "mode": 2,
     "stick": {
         "Left": {
             "UD": {
-                "index": 1,
-                "average": true,
-                "valueInverse": false,
-                "conversion": {
-                    "paramA": 0.2,
-                    "paramB": 0.8
-                }
+                "index": 2,
+                "average": false,
+                "valueInverse": true,
+                "discretize": 0.1
             },
             "LR": {
                 "index": 3,
@@ -39,12 +37,30 @@
         },
         "Camera": {
             "index": 2,
-            "type": "toggle",
+            "type": "push",
             "off": "up",
             "on": "down"
         },
         "GrabBaggage": {
             "index": 5,
+            "type": "switch",
+            "off": "down",
+            "on": "up"
+        },
+        "NoUse1": {
+            "index": 1,
+            "type": "switch",
+            "off": "down",
+            "on": "up"
+        },
+        "NoUse2": {
+            "index": 2,
+            "type": "switch",
+            "off": "down",
+            "on": "up"
+        },
+        "NoUse4": {
+            "index": 4,
             "type": "switch",
             "off": "down",
             "on": "up"

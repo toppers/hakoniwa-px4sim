@@ -36,13 +36,14 @@ def joystick_control(client: hakosim.MultirotorClient, joystick, stick_monitor: 
                     if event.button < 16:
                         data['button'] = list(data['button'])
                         event_op_index = stick_monitor.rc_config.get_event_op_index(event.button)
-                        event_triggered = stick_monitor.switch_event(event.button, (event.type == pygame.JOYBUTTONDOWN))
-                        print(f"button event: switch_index={event.button} event_op_index={event_op_index} down: {(event.type == pygame.JOYBUTTONDOWN)} event_triggered={event_triggered}")
-                        data['button'][event_op_index] = event_triggered
-                        if event_triggered:
-                            if event_op_index == stick_monitor.rc_config.SWITCH_CAMERA_SHOT:
-                                time.sleep(0.5)
-                                saveCameraImage(client)
+                        if event_op_index is not None:
+                            event_triggered = stick_monitor.switch_event(event.button, (event.type == pygame.JOYBUTTONDOWN))
+                            print(f"button event: switch_index={event.button} event_op_index={event_op_index} down: {(event.type == pygame.JOYBUTTONDOWN)} event_triggered={event_triggered}")
+                            data['button'][event_op_index] = event_triggered
+                            if event_triggered:
+                                if event_op_index == stick_monitor.rc_config.SWITCH_CAMERA_SHOT:
+                                    time.sleep(0.5)
+                                    saveCameraImage(client)
                     else:
                         print(f'ERROR: not supported button index: {event.button}')
             client.putGameJoystickData(data)
@@ -69,6 +70,8 @@ def main():
 
     # RcConfigとStickMonitorの初期化
     rc_config = RcConfig(rc_config_path)
+    print("Controller: ", rc_config_path)
+    print("Mode: ", rc_config.config['mode'])
     stick_monitor = StickMonitor(rc_config)
 
     pygame.init()
