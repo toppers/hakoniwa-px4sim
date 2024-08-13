@@ -1,0 +1,53 @@
+{
+    "Os": [ "Darwin" ],
+    "stick": {
+        "Left": {
+            "UD": {
+                "index": 1,
+                "average": true,
+                "valueInverse": false,
+                "conversion": {
+                    "paramA": 0.2,
+                    "paramB": 0.8
+                }
+            },
+            "LR": {
+                "index": 3,
+                "average": false,
+                "valueInverse": false
+            }
+        },
+        "Right": {
+            "UD": {
+                "index": 1,
+                "average": false,
+                "valueInverse": true
+            },
+            "LR": {
+                "index": 0,
+                "average": false,
+                "valueInverse": false
+            }
+        }
+    },
+    "Event": {
+        "RadioControlEnable": {
+            "index": 0,
+            "type": "switch",
+            "off": "down",
+            "on": "up"
+        },
+        "Camera": {
+            "index": 2,
+            "type": "toggle",
+            "off": "up",
+            "on": "down"
+        },
+        "GrabBaggage": {
+            "index": 5,
+            "type": "switch",
+            "off": "down",
+            "on": "up"
+        }
+    }
+}
