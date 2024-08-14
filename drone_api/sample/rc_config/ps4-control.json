@@ -56,7 +56,7 @@
         },
         "Camera": {
             "index": 2,
-            "type": "push",
+            "type": "switch",
             "off": "up",
             "on": "down"
         },

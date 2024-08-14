@@ -32,12 +32,12 @@
         "RadioControlEnable": {
             "index": 0,
             "type": "switch",
-            "off": "down",
-            "on": "up"
+            "off": "up",
+            "on": "down"
         },
         "Camera": {
             "index": 2,
-            "type": "push",
+            "type": "switch",
             "off": "up",
             "on": "down"
         },
