@@ -53,13 +53,13 @@
             "off": "down",
             "on": "up"
         },
-        "NoUse2": {
-            "index": 2,
+        "CameraMoveUp": {
+            "index": 3,
             "type": "switch",
             "off": "down",
             "on": "up"
         },
-        "NoUse4": {
+        "CameraMoveDown": {
             "index": 4,
             "type": "switch",
             "off": "down",

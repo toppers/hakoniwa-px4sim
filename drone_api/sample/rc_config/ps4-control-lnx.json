@@ -65,6 +65,18 @@
             "type": "toggle",
             "off": "up",
             "on": "down"
+        },
+        "CameraMoveUp": {
+            "index": 11,
+            "type": "switch",
+            "off": "up",
+            "on": "down"
+        },
+        "CameraMoveDown": {
+            "index": 12,
+            "type": "switch",
+            "off": "up",
+            "on": "down"
         }
     }
 }
