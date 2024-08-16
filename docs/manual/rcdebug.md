@@ -3,7 +3,7 @@
     <div style="font-size:18pt;font-weight:bold;text-align:center;margin-top:150px"><span class="title">箱庭ドローンシミュレータ コントローラ設定</span></div>
     </p>
     <p>
-    <div style="font-size:14pt;font-weight:bold;text-align:center;margin-top:20px"><span class="sub-title">Linux環境でのコントローラ設定とデバッグ編</span></div>
+    <div style="font-size:14pt;font-weight:bold;text-align:center;margin-top:20px"><span class="sub-title">コントローラ設定とデバッグ編</span></div>
     </p>
     <p>
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
