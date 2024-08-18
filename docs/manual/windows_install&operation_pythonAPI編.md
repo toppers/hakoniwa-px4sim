@@ -9,7 +9,7 @@
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年07月22日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月18日</span></div>
     </p>
 </div>
 
@@ -67,6 +67,7 @@
 |3|2024/07/22|0.3|変更|PX4シミュレータ部分を分離|
 |4|2024/07/22|0.4|追加|環境変数の””追加時の注釈を追加|
 |5|2024/07/23|0.5|追加|Pythonサンプルプログラム手順の追加|
+|6|2024/08/18|0.6|変更|api2用の設定に変更|
 ||||||
 
 <!-- 改ページ -->
@@ -118,8 +119,8 @@ Windowsのスタートメニューを開いて、設定アイコンをクリッ�
 |No|環境変数名|設定内容(例)|
 |:---|:---|:---|
 |1|HAKO_BINARY_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\py\hako_binary\offset|
-|2|HAKO_CONFIG_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\config\cpp_core_config.json|
-|3|PYTHONPATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\py
+|2|HAKO_CONFIG_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\config_api2\cpp_core_config.json|
+|3|PYTHONPATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\py|
 
 ![箱庭ドローンシミュレータWindows版5](./hakowin/hakowin15.png)
 
@@ -181,9 +182,9 @@ PX4シミュレーションでのコンフィグファイルをPythonシミレ�
 
 |No|環境変数名|設定内容(例)|
 |:---|:---|:---|
-|1|HAKO_CONFIG_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\config_api\cpp_core_config.json|
+|1|HAKO_CONFIG_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\config_api2\cpp_core_config.json|
 
-![環境変数画面1](./hakowin/hakowin22.png)
+![環境変数画面1](./hakowin/hakowin221.png)
 
 ※注：環境変数の設定時に、上記の部分からコピー＆ペーストすると、””が追加される可能性があるので、””は削除して設定してください。
 
@@ -207,13 +208,13 @@ PS C:\Windows\System32> pip install opencv-python
 
 ### 1.5.1. Pythonシミュレータの起動
 
-Pythonシミュレータを起動します。Pythonシミュレータは、Windows上で動作させるためのバッチファイルが用意されていますので、バッチファイルで起動します。hakoniwa-px4-win内の以下のパスにエクスプローラで移動して、run-api.batをダブルクリックして起動します。
+Pythonシミュレータを起動します。Pythonシミュレータは、Windows上で動作させるためのバッチファイルが用意されていますので、バッチファイルで起動します。hakoniwa-px4-win内の以下のパスにエクスプローラで移動して、run-api2.batをダブルクリックして起動します。
 
 ```txt
 Python：\hakoniwa-px4-win\hakoniwa\bin
 ```
 
-![Pythonシミュレータ起動](./hakowin/hakowin24.png)
+![Pythonシミュレータ起動](./hakowin/hakowin241.png)
 
 正常に起動できるとコマンドプロンプトが表示されます。
 
