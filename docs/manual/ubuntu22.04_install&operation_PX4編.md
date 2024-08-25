@@ -9,7 +9,7 @@
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月16日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月25日</span></div>
     </p>
 </div>
 
@@ -36,6 +36,7 @@
 |1|2024/08/09|0.1|新規|新規作成|
 |2|2024/08/14|0.2|追加|ログリプレイ機能の操作方法を追加|
 |3|2024/08/16|0.3|追加|PC環境の推奨環境を追加|
+|4|2024/08/25|0.4|変更|箱庭コア機能のインストール手順見直し|
 ||||||
 
 <!-- 改ページ -->
@@ -64,7 +65,7 @@ Ubuntu上でのインストールと操作にあたっては、コマンドラ�
 
 箱庭ドローンシミュレータを動作させるために必要なソフトウェアをTOPPERS 箱庭WGのGithubから入手して、コンパイルやインストールやUbuntu側のシステム設定などを実施します。
 
-### 1.2.1. bash→bashへの切り替え
+### 1.2.1. dash→bashへの切り替え
 
 Ubuntuは、デフォルトシェルがdashになっているので、bashをデフォルトシェルとして利用できるようにしておきます。
 
@@ -113,7 +114,57 @@ $ git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
 $ git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
 ```
 
-### 1.3.1. 箱庭コア機能のインストール
+### 1.3.1. 箱庭コア機能用のコマンドインストール
+
+最初に箱庭ドローンシミュレータ環境を利用できるようにするために、箱庭用のコマンドセットをインストールします。
+
+- 該当ディレクトリに移動
+
+```bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ cd hakoniwa/third-party/hakoniwa-core-cpp-client
+```
+
+- ビルド手順
+
+```bash
+$ bash build.bash
+```
+
+- インストール手順
+
+```bash
+$ bash build.bash
+```
+
+### 1.3.2. 箱庭コア機能のビルド
+
+ビルド方法には２種類あります。MATLABで生成したコードを利用しない場合と利用する場合で箱庭コア機能のビルドがことなります。MATLABを利用しない場合が多いと思いますので、通常はMATLABなしのパターンでビルドを実行してください。
+
+- MATLAB生成コードを利用しない場合 ← 通常はこちら
+
+``` bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ bash build.bash
+```
+
+- MATLAB生成コードを利用する場合
+
+``` bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ bash build.bash HAKONIWA_MATLAB_BUILD=true
+```
+
+#### 1.3.2.1. 箱庭コア機能のビルド確認
+
+ビルドが完了して成功すると、以下のディレクトリが作成されますので、確認します。
+
+``` bash
+$ ls cmake-build/src/hako-px4sim 
+cmake-build/src/hako-px4sim
+```
+
+### 1.3.3. 箱庭コア機能のインストール
 
 最初に箱庭コア機能のインストールを実行します。
 
@@ -129,39 +180,6 @@ $ bash third-party/hakoniwa-core-cpp-client/hako-setup-check.bash
 ```
 
 ![箱庭コア機能のインストール結果](./ubuntu/hako1.png)
-
-### 1.3.2. 箱庭コア機能のビルド
-
-ビルド方法には２種類あります。MATLABで生成したコードを利用しない場合と利用する場合で箱庭コア機能のビルドがことなります。MATLABを利用しない場合が多いと思いますので、通常はMATLABなしのパターンでビルドを実行してください。
-
-
-- MATLAB生成コードを利用しない場合 ← 通常はこちら
-
-``` bash
-$ bash build.bash
-```
-
-- MATLAB生成コードを利用する場合
-
-``` bash
-$ bash build.bash HAKONIWA_MATLAB_BUILD=true
-```
-
-#### 1.3.2.1. 箱庭コア機能のビルド確認
-
-ビルドが完了して成功すると、以下のディレクトリが作成されますので、確認します。
-
-``` bash
-$ ls cmake-build/src/hako-px4sim 
-cmake-build/src/hako-px4sim
-```
-### 1.3.3. Python用のAPIインストール
-
-箱庭ドローンシミュレータの動作確認のためにPython用のAPIライブラリをインストールします。
-
-```bash
-$ bash drone_api/install.bash
-```
 
 ### 1.3.4. 環境変数の設定
 
@@ -198,11 +216,11 @@ $ ~/work/hakoniwa-unity-drone-model
 $ unzip ~/Downlods/DroneAppLinux.zip
 ```
 
-### フライトコントローラ PX4のビルド
+### 1.3.6. フライトコントローラ PX4のビルド
 
 ドローンのフライトコントローラ PX4ファームウェアのビルドを実行します。
 
-#### 機体情報の書き換え
+#### 1.3.6.1. 機体情報の書き換え
 
 箱庭ドローンシミュレータ用の機体に合わせた設定に変更します。以下の手順にて機体情報を書き換えてください。
 
@@ -212,7 +230,7 @@ $ cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posi
 $ cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
 ```
 
-### PX4のビルド
+### 1.3.7. PX4のビルド
 
 以下の手順でビルドを実行します。
 
@@ -222,7 +240,7 @@ $ bash Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
 $ make px4_sitl_default
 ```
 
-### QGC(QGroundContorl)ソフトウェアのインストール
+### 1.3.8. QGC(QGroundContorl)ソフトウェアのインストール
 
 QGC(QGroundControl)は、地上からドローンを操作するための運行管理用のソフトウェアになります。箱庭ドローンシミュレータでは、PX4とQGCを連携させて、QGCから箱庭上のドローンを操作することをできるようにします。
 
@@ -273,7 +291,7 @@ $ ./QGroundControl.AppImage
 
 ここからは、Unbuntu上での箱庭ドローンシミュレータのPX4とQGCを連携させた動作確認をしていきます。
 
-### PX4の起動
+### 1.4.1. PX4の起動
 
 ドローンフライトコントローラのPX4ファームウェアを起動します。
 
@@ -287,7 +305,7 @@ $ bash ../sim/simstart.bash
 ![PX4起動](./ubuntu/hako13.png)
 
 
-### 1.4.1. 箱庭コア機能の起動
+### 1.4.2. 箱庭コア機能の起動
 
 最初に箱庭コア機能を起動します。
 
@@ -299,7 +317,7 @@ $ bash run.bash
 ![箱庭コア機能起動](./ubuntu/hako4.png)
 
 
-### 1.4.2. Unityアプリの起動
+### 1.4.3. Unityアプリの起動
 
 箱庭ドローンシミュレータのビジュアライズするUnityアプリを起動します。
 
@@ -312,7 +330,7 @@ Unityアプリが起動したら、STARTボタンを押して、待機します�
 
 ![Unityアプリの起動1](./ubuntu/hako3.png)
 
-### PX4 ドローン操作
+### 1.4.4. PX4 ドローン操作
 
 PX4の起動画面に戻って、以下のコマンドを入力します。
 
@@ -326,18 +344,18 @@ pxh> commander takeoff
 
 ![PX4の操作2](./ubuntu/hako15.png)
 
-## QGCとPX4の接続と動作確認
+## 1.5. QGCとPX4の接続と動作確認
 
 QGCからPX4に指示を出して、箱庭ドローンシミュレータ上のドローンの飛行をさせることができます。
 
-### IPアドレスの確認
+### 1.5.1. IPアドレスの確認
 
 QGCとPX4は、UDPを使って通信をします。通信にはIPアドレスが必要のため、環境上のIPアドレスを確認します。
 
 
 ![QGCの操作1](./ubuntu/hako16.png)
 
-### QGCの事前設定
+### 1.5.2. QGCの事前設定
 
 以下のコマンドを使って、QGCを立ち上げます。
 
@@ -360,7 +378,7 @@ QGCが立ち上がったら、画面向かって左側のアイコンをクリ�
 |3|ポート|18570|
 |4|サーバアドレス(オプション)|IPアドレス確認手順で確認したIPアドレス|
 
-### QGCとPX4の動作確認
+### 1.5.3. QGCとPX4の動作確認
 
 PX4起動→箱庭コア機能起動→Unityアプリ起動の各手順に従って、各機能を起動します。起動後に、QGCを起動します。
 

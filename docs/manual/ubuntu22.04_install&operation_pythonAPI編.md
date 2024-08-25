@@ -9,7 +9,7 @@
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月16日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月25日</span></div>
     </p>
 </div>
 
@@ -23,16 +23,17 @@
 - [1. 本ドキュメントについて](#1-本ドキュメントについて)
   - [1.1. Unbunt環境上での箱庭ドローンシミュレータ環境構築の事前知識](#11-unbunt環境上での箱庭ドローンシミュレータ環境構築の事前知識)
   - [1.2. Ubuntu環境のセットアップ](#12-ubuntu環境のセットアップ)
-    - [1.2.1. bash→bashへの切り替え](#121-bashbashへの切り替え)
+    - [1.2.1. dash→bashへの切り替え](#121-dashbashへの切り替え)
     - [1.2.2. Ubuntu環境の事前セットアップ](#122-ubuntu環境の事前セットアップ)
     - [1.2.3. gitの設定](#123-gitの設定)
   - [1.3. 箱庭ドローンシミュレータのセットアップ](#13-箱庭ドローンシミュレータのセットアップ)
-    - [1.3.1. 箱庭コア機能のインストール](#131-箱庭コア機能のインストール)
+    - [1.3.1. 箱庭コア機能用のコマンドインストール](#131-箱庭コア機能用のコマンドインストール)
     - [1.3.2. 箱庭コア機能のビルド](#132-箱庭コア機能のビルド)
       - [1.3.2.1. 箱庭コア機能のビルド確認](#1321-箱庭コア機能のビルド確認)
-    - [1.3.3. Python用のAPIインストール](#133-python用のapiインストール)
-    - [1.3.4. 環境変数の設定](#134-環境変数の設定)
-    - [1.3.5. 箱庭ドローン Unityアプリのセットアップ](#135-箱庭ドローン-unityアプリのセットアップ)
+    - [1.3.3. 箱庭コア機能のインストール](#133-箱庭コア機能のインストール)
+    - [1.3.4. Python用のAPIインストール](#134-python用のapiインストール)
+    - [1.3.5. 環境変数の設定](#135-環境変数の設定)
+    - [1.3.6. 箱庭ドローン Unityアプリのセットアップ](#136-箱庭ドローン-unityアプリのセットアップ)
   - [1.4. 箱庭ドローンシミュレータでの動作確認](#14-箱庭ドローンシミュレータでの動作確認)
     - [1.4.1. 箱庭コア機能の起動](#141-箱庭コア機能の起動)
     - [1.4.2. Unityアプリの起動](#142-unityアプリの起動)
@@ -61,6 +62,7 @@
 |1|2024/08/09|0.1|新規|新規作成|
 |2|2024/08/14|0.2|追加|ログリプレイ機能の操作方法を追加|
 |3|2024/08/16|0.3|追加|PC環境の推奨環境を追加|
+|4|2024/08/25|0.4|変更|箱庭コア機能のインストール手順見直し|
 ||||||
 
 <!-- 改ページ -->
@@ -90,7 +92,7 @@ Ubuntu上でのインストールと操作にあたっては、コマンドラ�
 
 箱庭ドローンシミュレータを動作させるために必要なソフトウェアをTOPPERS 箱庭WGのGithubから入手して、コンパイルやインストールやUbuntu側のシステム設定などを実施します。
 
-### 1.2.1. bash→bashへの切り替え
+### 1.2.1. dash→bashへの切り替え
 
 Ubuntuは、デフォルトシェルがdashになっているので、bashをデフォルトシェルとして利用できるようにしておきます。
 
@@ -116,7 +118,7 @@ $ sudo apt upgrade
 
 ``` bash
 $ sudo apt install gcc g++ make cmake
-$ sudo apt install git jq libgtest-dev
+$ sudo apt install git jq libgtest-dev net-tools
 ```
 
 ### 1.2.3. gitの設定
@@ -139,7 +141,57 @@ $ git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
 $ git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
 ```
 
-### 1.3.1. 箱庭コア機能のインストール
+### 1.3.1. 箱庭コア機能用のコマンドインストール
+
+最初に箱庭ドローンシミュレータ環境を利用できるようにするために、箱庭用のコマンドセットをインストールします。
+
+- 該当ディレクトリに移動
+
+```bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ cd hakoniwa/third-party/hakoniwa-core-cpp-client
+```
+
+- ビルド手順
+
+```bash
+$ bash build.bash
+```
+
+- インストール手順
+
+```bash
+$ bash build.bash
+```
+
+### 1.3.2. 箱庭コア機能のビルド
+
+ビルド方法には２種類あります。MATLABで生成したコードを利用しない場合と利用する場合で箱庭コア機能のビルドがことなります。MATLABを利用しない場合が多いと思いますので、通常はMATLABなしのパターンでビルドを実行してください。
+
+- MATLAB生成コードを利用しない場合 ← 通常はこちら
+
+``` bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ bash build.bash
+```
+
+- MATLAB生成コードを利用する場合
+
+``` bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ bash build.bash HAKONIWA_MATLAB_BUILD=true
+```
+
+#### 1.3.2.1. 箱庭コア機能のビルド確認
+
+ビルドが完了して成功すると、以下のディレクトリが作成されますので、確認します。
+
+``` bash
+$ ls cmake-build/src/hako-px4sim 
+cmake-build/src/hako-px4sim
+```
+
+### 1.3.3. 箱庭コア機能のインストール
 
 最初に箱庭コア機能のインストールを実行します。
 
@@ -156,45 +208,21 @@ $ bash third-party/hakoniwa-core-cpp-client/hako-setup-check.bash
 
 ![箱庭コア機能のインストール結果](./ubuntu/hako1.png)
 
-### 1.3.2. 箱庭コア機能のビルド
-
-ビルド方法には２種類あります。MATLABで生成したコードを利用しない場合と利用する場合で箱庭コア機能のビルドがことなります。MATLABを利用しない場合が多いと思いますので、通常はMATLABなしのパターンでビルドを実行してください。
-
-
-- MATLAB生成コードを利用しない場合 ← 通常はこちら
-
-``` bash
-$ bash build.bash
-```
-
-- MATLAB生成コードを利用する場合
-
-``` bash
-$ bash build.bash HAKONIWA_MATLAB_BUILD=true
-```
-
-#### 1.3.2.1. 箱庭コア機能のビルド確認
-
-ビルドが完了して成功すると、以下のディレクトリが作成されますので、確認します。
-
-``` bash
-$ ls cmake-build/src/hako-px4sim 
-cmake-build/src/hako-px4sim
-```
-### 1.3.3. Python用のAPIインストール
+### 1.3.4. Python用のAPIインストール
 
 箱庭ドローンシミュレータの動作確認のためにPython用のAPIライブラリをインストールします。
 
 ```bash
+$ cd ~/work/hakoniwa-px4sim
 $ bash drone_api/install.bash
 ```
 
-### 1.3.4. 環境変数の設定
+### 1.3.5. 環境変数の設定
 
 各インストールした結果を反映させるため、環境変数の設定を実施します。
 
 ``` bash
-$ vi .bashrc
+$ vi ~/.bashrc
 ```
 
 - 環境変数の設定内容
@@ -207,7 +235,7 @@ export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 
 設定後、設定内容を反映させるため、シェル画面を再起動してください。
 
-### 1.3.5. 箱庭ドローン Unityアプリのセットアップ
+### 1.3.6. 箱庭ドローン Unityアプリのセットアップ
 
 箱庭ドローンシミュレータでのビジュアライズするためのUnityアプリをセットアップします。箱庭ドローンシミュレータ用の各OS対応のUnityアプリを入手します。
 
@@ -261,7 +289,7 @@ Unityアプリが起動したら、STARTボタンを押して、待機します�
 環境の動作を確認するため、ドローンが飛行して荷物を運ぶsampleアプリを起動します。
 
 ```bash
-$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ cd ~/work/hakoniwa-px4sim
 $ cd drone_api/sample
 $ python3 sample.py ../../../hakoniwa-unity-drone-model/DroneAppLinux/custom.json
 ```
@@ -327,7 +355,6 @@ $ vi ~/work/hakoniwa-px4sim/hakoniwa/replay.bash
 -export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/custom.json
 +export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/DroneAppLinux/custom.json
 ```
-
 
 編集後、以下の手順にてを実行します。
 
