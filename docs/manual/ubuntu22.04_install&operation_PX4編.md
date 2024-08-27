@@ -9,7 +9,7 @@
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月25日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月27日</span></div>
     </p>
 </div>
 
@@ -17,7 +17,36 @@
 <div style="page-break-before:always"></div>
 
 <div style="font-size:18pt;font-weight:bold;text-align:left;"><span class="contents">目次</span></div>
+<!-- TOC -->
 
+- [1. 本ドキュメントについて](#1-本ドキュメントについて)
+  - [1.1. Unbunt環境上での箱庭ドローンシミュレータ環境構築の事前知識](#11-unbunt環境上での箱庭ドローンシミュレータ環境構築の事前知識)
+  - [1.2. Ubuntu環境のセットアップ](#12-ubuntu環境のセットアップ)
+    - [1.2.1. dash→bashへの切り替え](#121-dashbashへの切り替え)
+    - [1.2.2. Ubuntu環境の事前セットアップ](#122-ubuntu環境の事前セットアップ)
+    - [1.2.3. gitの設定](#123-gitの設定)
+  - [1.3. 箱庭ドローンシミュレータのセットアップ](#13-箱庭ドローンシミュレータのセットアップ)
+    - [1.3.1. 箱庭コア機能用のコマンドインストール](#131-箱庭コア機能用のコマンドインストール)
+    - [1.3.2. 箱庭コア機能のビルド](#132-箱庭コア機能のビルド)
+      - [1.3.2.1. 箱庭コア機能のビルド確認](#1321-箱庭コア機能のビルド確認)
+    - [1.3.3. 箱庭コア機能のインストール](#133-箱庭コア機能のインストール)
+    - [1.3.4. 環境変数の設定](#134-環境変数の設定)
+    - [1.3.5. 箱庭ドローン Unityアプリのセットアップ](#135-箱庭ドローン-unityアプリのセットアップ)
+    - [1.3.6. フライトコントローラ PX4のビルド](#136-フライトコントローラ-px4のビルド)
+      - [1.3.6.1. 機体情報の書き換え](#1361-機体情報の書き換え)
+    - [1.3.7. PX4のビルド](#137-px4のビルド)
+    - [1.3.8. QGC(QGroundContorl)ソフトウェアのインストール](#138-qgcqgroundcontorlソフトウェアのインストール)
+  - [1.4. 箱庭ドローンシミュレータの動作確認](#14-箱庭ドローンシミュレータの動作確認)
+    - [1.4.1. PX4の起動](#141-px4の起動)
+    - [1.4.2. 箱庭コア機能の起動](#142-箱庭コア機能の起動)
+    - [1.4.3. Unityアプリの起動](#143-unityアプリの起動)
+    - [1.4.4. PX4 ドローン操作](#144-px4-ドローン操作)
+  - [1.5. QGCとPX4の接続と動作確認](#15-qgcとpx4の接続と動作確認)
+    - [1.5.1. IPアドレスの確認](#151-ipアドレスの確認)
+    - [1.5.2. QGCの事前設定](#152-qgcの事前設定)
+    - [1.5.3. QGCとPX4の動作確認](#153-qgcとpx4の動作確認)
+
+<!-- /TOC -->
 
 <!-- 改ページ -->
 <div style="page-break-before:always"></div>
@@ -37,6 +66,7 @@
 |2|2024/08/14|0.2|追加|ログリプレイ機能の操作方法を追加|
 |3|2024/08/16|0.3|追加|PC環境の推奨環境を追加|
 |4|2024/08/25|0.4|変更|箱庭コア機能のインストール手順見直し|
+|5|2024/08/27|0.5|変更|インストール手順追加、誤記修正|
 ||||||
 
 <!-- 改ページ -->
@@ -134,7 +164,7 @@ $ bash build.bash
 - インストール手順
 
 ```bash
-$ bash build.bash
+$ bash install.bash
 ```
 
 ### 1.3.2. 箱庭コア機能のビルド
@@ -186,7 +216,7 @@ $ bash third-party/hakoniwa-core-cpp-client/hako-setup-check.bash
 各インストールした結果を反映させるため、環境変数の設定を実施します。
 
 ``` bash
-$ vi .bashrc
+$ vi ~/.bashrc
 ```
 
 - 環境変数の設定内容
@@ -296,7 +326,7 @@ $ ./QGroundControl.AppImage
 ドローンフライトコントローラのPX4ファームウェアを起動します。
 
 ```bash
-$ cd ~/work/hakoniwa-px4sim/hakoniwa/px4/PX4-Autopilot
+$ cd ~/work/hakoniwa-px4sim/px4/PX4-Autopilot
 $ bash ../sim/simstart.bash
 ```
 
@@ -316,13 +346,14 @@ $ bash run.bash
 
 ![箱庭コア機能起動](./ubuntu/hako4.png)
 
+PX4の起動画面に”ERROR [simulator_mavlink] poll timeout 0, 22”が表示されますが、現時点では気にしなくて大丈夫です。次のUnityアプリ手順を実施すればERRORは解消されます。
 
 ### 1.4.3. Unityアプリの起動
 
 箱庭ドローンシミュレータのビジュアライズするUnityアプリを起動します。
 
 ``` bash
-$ ~/work/hakoniwa-unity-drone-model
+$ cd ~/work/hakoniwa-unity-drone-model
 $ bash ./plugin/activate_app.bash DroneAppLinux
 ```
 
@@ -366,10 +397,11 @@ $ ./QGroundControl.AppImage
 
 QGCが立ち上がったら、画面向かって左側のアイコンをクリックします。クリックするとメニューが表示されるので、アプリケーション設定をクリックします。
 
-アプリケーション設定の通信リンクをクリックして、設定内容を設定します。設定が完了したら一旦、QGCを終了させておきます。
-
+アプリケーション設定の通信リンクをクリックして、以下の設定内容を設定します。新規に設定する場合は、下の追加ボタンを押して設定をします。設定が完了したら一旦、QGCを終了させておきます。
 
 ![QGCの操作2](./ubuntu/hako17.png)
+
+- 通信リンクの設定内容
 
 |No|設定名|設定値|
 |:---|:---|:---|
@@ -381,6 +413,7 @@ QGCが立ち上がったら、画面向かって左側のアイコンをクリ�
 ### 1.5.3. QGCとPX4の動作確認
 
 PX4起動→箱庭コア機能起動→Unityアプリ起動の各手順に従って、各機能を起動します。起動後に、QGCを起動します。
+立ち上げていたPX4/箱庭コア/Unityを終了せずにQGCのみを起動し直すとtakeoffした状態でQGCにUnityが接続されて、QGC画面左のメニューではLandを実行できるはずです。
 
 ```bash
 $ cd ~/work/qgc

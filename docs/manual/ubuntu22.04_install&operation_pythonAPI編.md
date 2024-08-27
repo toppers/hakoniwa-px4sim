@@ -9,7 +9,7 @@
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月25日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月27日</span></div>
     </p>
 </div>
 
@@ -63,6 +63,7 @@
 |2|2024/08/14|0.2|追加|ログリプレイ機能の操作方法を追加|
 |3|2024/08/16|0.3|追加|PC環境の推奨環境を追加|
 |4|2024/08/25|0.4|変更|箱庭コア機能のインストール手順見直し|
+|5|2024/08/27|0.5|変更|インストール手順追加、誤記修正|
 ||||||
 
 <!-- 改ページ -->
@@ -161,7 +162,7 @@ $ bash build.bash
 - インストール手順
 
 ```bash
-$ bash build.bash
+$ bash install.bash
 ```
 
 ### 1.3.2. 箱庭コア機能のビルド
@@ -214,6 +215,13 @@ $ bash third-party/hakoniwa-core-cpp-client/hako-setup-check.bash
 
 ```bash
 $ cd ~/work/hakoniwa-px4sim
+$ cd drone_control
+$ bash build.bash
+$ cd
+```
+
+```bash
+$ cd ~/work/hakoniwa-px4sim
 $ bash drone_api/install.bash
 ```
 
@@ -228,7 +236,7 @@ $ vi ~/.bashrc
 - 環境変数の設定内容
 
 ``` txt
-export LD_LIBRARY_PATH=/usr/local/lib/hakoniwa:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/lib/hakoniwa:${LD_LIBRARY_PATH}
 export PATH=/usr/local/bin/hakoniwa:$PATH
 export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 ```
@@ -326,17 +334,30 @@ PS4コントローラでの操作は、以下のようになります。
 Ubuntuなど、Linux系のOSでは、ゲームパッド毎に設定が違うため、利用するゲームパッドの設定を調査する必要があります。ゲームパッドの操作の調査については、USB接続でゲームパッドを接続したの後に以下のpythonスクリプトを利用することで対応ができます。
 
 ```bash
-$ cd  ~/work/hakoniwa-px4sim/drone_api/sample
+$ cd  ~/work/hakoniwa-px4sim/drone_api/sample/rc_debug
 $ python3 rc_control.py
 ```
+[ゲームパッドのデバッグ方法](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/manual/rcdebug.md)
 
-上記の調査した結果は、以下のフォルダのjsonファイルに設定することで対応が可能となります。以下のサンプルのjsonファイルをコピーして、利用するゲームパッドに合わせた設定をして、PS4コントローラの起動をするようにしてください。
+
+上記の調査した結果は、以下のフォルダのjsonファイルに設定することで対応が可能となります。以下のサンプルのjsonファイルをコピーして、利用するゲームパッドに合わせた設定をして、コントローラの起動をするようにしてください。
 
 ```bash
 $ ~/work/hakoniwa-px4sim/drone_api/sample/rc_config
 $ ls
 FS-i6S.json  hori4mini-control-lnx.json  ps4-control-lnx.json  ps4-control.json
 ```
+
+- 現在対応できているコントローラのコンフィグファイル(json形式)
+
+|No|名前|内容|
+|:---|:---|:---|
+|1|ps4-control.json|PS4用のゲームコントローラ(Windows/Mac OS)|
+|2|ps4-control-lnx.json|PS4用のゲームコントローラ(Linux OS)|
+|3|hori4mini-control-lnx.json|PS4互換HORI4 miniゲームコントローラ(Linux OS)|
+|4|FS-i6S.json|FLY SKY社製 FS-i6Sプロポ(送信機)|
+
+
 ## 1.5. 箱庭ドローンシミュレータのログリプレイ機能
 
 V2.6.0以降より、箱庭ドローンシミュレータで動かした結果がログとして残るようになってます。このログを使って、リプレイすることが可能となっています。
@@ -349,7 +370,7 @@ V2.6.0以降より、箱庭ドローンシミュレータで動かした結果�
 $ vi ~/work/hakoniwa-px4sim/hakoniwa/replay.bash
 ```
 
-以下の⁺になっているような内容に変更します。
+replay.bashの以下の部分を+になっているような内容に変更します。
 
 ```diff
 -export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/custom.json
