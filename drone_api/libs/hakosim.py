@@ -158,29 +158,45 @@ class MultirotorClient:
         else:
             return False
 
-    def wait_grab(self, grab, vehicle_name):
+
+    def wait_grab(self, grab, timeout_sec, vehicle_name):
+        start_time = time.time()  # 現在の時刻を記録
+        ret = False
         while True:
             command = self.pdu_manager.get_pdu(self.get_vehicle_name(vehicle_name), pdu_info.HAKO_AVATOR_CHANNEL_ID_STAT_MAG)
             pdu_cmd = command.read()
-            #print("magnet_on: ", pdu_cmd['magnet_on'])
+            
             if grab:
                 if pdu_cmd['magnet_on'] == 1 and pdu_cmd['contact_on'] == 1:
+                    ret = True
                     break
             else:
                 if pdu_cmd['magnet_on'] == 0 and pdu_cmd['contact_on'] == 0:
+                    ret = True
                     break
 
-    def grab_baggage(self, grab, vehicle_name=None):
+            # タイムアウトチェック (timeout_secが正の値の場合のみ)
+            if timeout_sec >= 0 and time.time() - start_time > timeout_sec:
+                print(f"Timeout reached: {timeout_sec} seconds")
+                break
+            
+            time.sleep(0.1)
+        return ret
+
+    def grab_baggage(self, grab, timeout_sec=-1, vehicle_name=None):
         if self.get_vehicle_name(vehicle_name) != None:
             print("INFO: grab baggage: ", grab)
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_MAG, self.get_vehicle_name(vehicle_name))
             pdu_cmd['magnet_on'] = grab
             command.write()
-            self.wait_grab(grab, vehicle_name)
+            ret = self.wait_grab(grab, timeout_sec, vehicle_name)
+            if ret == False:
+                pdu_cmd['magnet_on'] = False
+                command.write()
             pdu_cmd['header']['request'] = 0
             pdu_cmd['header']['result'] = 0
             command.write()
-            return True
+            return ret
         else:
             return False
 
