@@ -92,24 +92,53 @@ class MultirotorClient:
         cmd['header']['result_code'] = 0
         return command, cmd
 
-    def reply_and_wait_res(self, command):
+
+    def reply_and_wait_res(self, command, timeout_sec=-1):
         ret = command.write()
-        if ret == False:
-            print('"ERROR: hako_asset_pdu_write')
+        if not ret:
+            print('ERROR: hako_asset_pdu_write')
             return False
+
+        start_time = time.time()  # 現在の時刻を記録
         while True:
             pdu = command.read()
-            if pdu == None:
+            if pdu is None:
                 print('ERROR: hako_asset_pdu_read')
-                return 0
+                return False
+
             if pdu['header']['result'] == 1:
                 pdu['header']['result'] = 0
                 command.write()
                 print('DONE')
-                break
-            #print("result: ",  pdu['header']['result'])
-            time.sleep(1)
-        return True
+                return True
+
+            # タイムアウトチェック (timeout_secが正の値の場合のみ)
+            if timeout_sec >= 0 and time.time() - start_time > timeout_sec:
+                print(f"Timeout reached: {timeout_sec} seconds")
+                return False
+            
+            time.sleep(1)  # 1秒ごとに再確認
+
+    def reply_and_wait_cancel(self, command):
+        ret = command.write()
+        if not ret:
+            print('ERROR: hako_asset_pdu_write')
+            return False
+
+        while True:
+            pdu = command.read()
+            if pdu is None:
+                print('ERROR: hako_asset_pdu_read')
+                return False
+
+            if pdu['header']['result_code'] == -1:
+                pdu['header']['result'] = 0
+                pdu['header']['result_code'] = 0
+                command.write()
+                print('DONE')
+                return True
+
+            time.sleep(1)  # 1秒ごとに再確認
 
     def get_vehicle_name(self, vehicle_name):
         if vehicle_name is None:
@@ -131,7 +160,7 @@ class MultirotorClient:
         else:
             return False
         
-    def moveToPosition(self, x, y, z, speed, yaw_deg=None, vehicle_name=None):
+    def moveToPosition(self, x, y, z, speed, yaw_deg=None, timeout_sec=-1, vehicle_name=None):
         if self.get_vehicle_name(vehicle_name) != None:
             print("INFO: moveToPosition")
             command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, self.get_vehicle_name(vehicle_name))
@@ -143,7 +172,15 @@ class MultirotorClient:
                 yaw_deg = self._get_yaw_degree(vehicle_name)
             pdu_cmd['yaw_deg'] = yaw_deg
             #print(f'yaw_deg: {yaw_deg}')
-            return self.reply_and_wait_res(command)
+            ret = self.reply_and_wait_res(command, timeout_sec)
+            print("wait_res: result=", ret)
+            if ret == False:
+                command, pdu_cmd = self.get_packet(pdu_info.HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, self.get_vehicle_name(vehicle_name))
+                print("cancel request...")
+                pdu_cmd['header']['request'] = 0
+                self.reply_and_wait_cancel(command)
+                print("cancel request done")
+            return ret
         else:
             return False
 
