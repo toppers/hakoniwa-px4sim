@@ -48,6 +48,7 @@ private:
     double home_pos_y = 0;
     double home_pos_z = 0;
     MainStatus state;
+    MainStatusType prev_status;
     Hako_HakoDroneCmdTakeoff cmd_takeoff = {};
     Hako_HakoDroneCmdLand cmd_land = {};
     Hako_HakoDroneCmdMove cmd_move = {};
@@ -66,14 +67,15 @@ private:
         return do_io_write_cmd(drone, channel_id, packet);
     }
 
-    void do_reply()
+    void do_reply(MainStatusType status,  int err_code)
     {
-        switch (state.get_status())
+        std::cout << "status: " << status << " err: " << err_code << std::endl;
+        switch (status)
         {
             case MAIN_STATUS_TAKINGOFF:
                 cmd_takeoff.header.request = false;
                 cmd_takeoff.header.result = true;
-                cmd_takeoff.header.result_code = 0;
+                cmd_takeoff.header.result_code = err_code;
                 write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff);
 
                 //for test
@@ -86,13 +88,14 @@ private:
             case MAIN_STATUS_LANDING:
                 cmd_land.header.request = false;
                 cmd_land.header.result = true;
-                cmd_land.header.result_code = 0;
+                cmd_land.header.result_code = err_code;
                 write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land);
                 break;
             case MAIN_STATUS_MOVING:
+                //std::cout << "move err_code: " << err_code << std::endl;
                 cmd_move.header.request = false;
                 cmd_move.header.result = true;
-                cmd_move.header.result_code = 0;
+                cmd_move.header.result_code = err_code;
                 write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
                 break;
             default:
@@ -145,6 +148,7 @@ public:
         if (state.get_status() == MAIN_STATUS_LANDED) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_TAKEOFF, cmd_takeoff) && cmd_takeoff.header.request) {
                 state.takeoff();
+                prev_status = state.get_status();
                 in.target_pos_z = -cmd_takeoff.height;
                 in.target_pos_x = home_pos_x;
                 in.target_pos_y = home_pos_y;
@@ -158,6 +162,7 @@ public:
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land) && cmd_land.header.request) {
                 state.land();
+                prev_status = state.get_status();
                 in.target_pos_z = -cmd_land.height;
                 in.target_pos_x = this->drone->get_drone_dynamics().get_pos().data.x;
                 in.target_pos_y = this->drone->get_drone_dynamics().get_pos().data.y;
@@ -171,6 +176,7 @@ public:
             else if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && cmd_move.header.request) {
                 std::cout << "START MOVE" << std::endl;
                 state.move();
+                prev_status = state.get_status();
                 in.target_pos_x = cmd_move.x;
                 in.target_pos_y = cmd_move.y;
                 in.target_pos_z = -cmd_move.z;
@@ -184,6 +190,17 @@ public:
                 // nothing to do
             }
         }
+        else if (state.get_status() == MAIN_STATUS_MOVING) {
+            if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && !cmd_move.header.request) {
+                std::cout << "Move event is canceled" << std::endl;
+                in.target_pos_x = drone_pos.linear.x;
+                in.target_pos_y = drone_pos.linear.y;
+                in.target_pos_z = -drone_pos.linear.z;
+                in.target_velocity = 0;
+                in.target_yaw_deg = drone_pos.angular.z;
+                state.cancel();
+            }
+        } 
         else {
             // nothing to do
         }
@@ -229,18 +246,21 @@ public:
     }
     void do_control()
     {
-        switch (state.get_status())
+        auto status = state.get_status();
+        switch (status)
         {
             case MAIN_STATUS_TAKINGOFF:
             case MAIN_STATUS_LANDING:
             case MAIN_STATUS_MOVING:
                 if (is_operation_done()) {
-                    do_reply();
+                    do_reply(status, 0);
                     state.done();
                 }
                 break;
             case MAIN_STATUS_CANCELING:
-                //TODO not supported
+                //cancel event is done.
+                do_reply(prev_status, -1);
+                state.done();
                 break;
             case MAIN_STATUS_LANDED:
             case MAIN_STATUS_HOVERING:
