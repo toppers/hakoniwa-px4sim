@@ -53,5 +53,5 @@ if (NOT DEFINED HAKONIWA_BUILD)
     add_test(NAME ltest COMMAND ./ltest)
 
 
-    add_custom_target(vtest COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
+    add_custom_target(mtest COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
 endif()
