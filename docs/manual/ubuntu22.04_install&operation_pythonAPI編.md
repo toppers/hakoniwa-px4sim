@@ -119,7 +119,7 @@ $ sudo apt upgrade
 
 ``` bash
 $ sudo apt install gcc g++ make cmake
-$ sudo apt install git jq libgtest-dev net-tools
+$ sudo apt install git jq libgtest-dev net-tools python3-dev
 ```
 
 ### 1.2.3. gitの設定
@@ -256,7 +256,7 @@ export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 DroneAppLinux.zipを入手します。入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
 
 ``` bash
-$ ~/work/hakoniwa-unity-drone-model
+$ cd ~/work/hakoniwa-unity-drone-model
 $ unzip ~/Downlods/DroneAppLinux.zip
 ```
 
@@ -281,7 +281,7 @@ $ bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppLinux ./config/ap
 箱庭ドローンシミュレータのビジュアライズするUnityアプリを起動します。
 
 ``` bash
-$ ~/work/hakoniwa-unity-drone-model
+$ cd ~/work/hakoniwa-unity-drone-model
 $ bash ./plugin/activate_app.bash DroneAppLinux
 ```
 
@@ -343,7 +343,7 @@ $ python3 rc_control.py
 上記の調査した結果は、以下のフォルダのjsonファイルに設定することで対応が可能となります。以下のサンプルのjsonファイルをコピーして、利用するゲームパッドに合わせた設定をして、コントローラの起動をするようにしてください。
 
 ```bash
-$ ~/work/hakoniwa-px4sim/drone_api/sample/rc_config
+$ cd ~/work/hakoniwa-px4sim/drone_api/sample/rc_config
 $ ls
 FS-i6S.json  hori4mini-control-lnx.json  ps4-control-lnx.json  ps4-control.json
 ```
