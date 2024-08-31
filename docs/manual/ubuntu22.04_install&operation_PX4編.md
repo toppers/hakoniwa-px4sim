@@ -121,7 +121,7 @@ $ sudo apt upgrade
 
 ``` bash
 $ sudo apt install gcc g++ make cmake
-$ sudo apt install git jq libgtest-dev net-tools
+$ sudo apt install git jq libgtest-dev net-tools python3-dev
 ```
 
 ### 1.2.3. gitの設定
@@ -151,7 +151,7 @@ $ git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.gi
 - 該当ディレクトリに移動
 
 ```bash
-$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ cd ~/work/hakoniwa-px4sim
 $ cd hakoniwa/third-party/hakoniwa-core-cpp-client
 ```
 
@@ -242,7 +242,7 @@ export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 DroneAppLinux.zipを入手します。入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
 
 ``` bash
-$ ~/work/hakoniwa-unity-drone-model
+$ cd ~/work/hakoniwa-unity-drone-model
 $ unzip ~/Downlods/DroneAppLinux.zip
 ```
 
@@ -255,7 +255,7 @@ $ unzip ~/Downlods/DroneAppLinux.zip
 箱庭ドローンシミュレータ用の機体に合わせた設定に変更します。以下の手順にて機体情報を書き換えてください。
 
 ```bash
-$ ~/work/hakoniwa-px4sim/px4
+$ cd ~/work/hakoniwa-px4sim/px4
 $ cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/airframes/10016_none_iris 
 $ cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
 ```

@@ -63,22 +63,30 @@ def main():
         print(filtered_points)
 
     client.takeoff(3)
-    baggage_pos = { "x": 0, "y": 3 }
-    transfer_pos = { "x": 0, "y": -1, "z": 0.7 }
+
+    # cancel test
+    #pose = client.simGetVehiclePose()
+    #debug_pos(client)
+    #ret = client.moveToPosition(5, -100, 3, 5, timeout_sec=5)
+    #while ret == False:
+    #    time.sleep(1)
+
+    baggage_pos = { "x": 0, "y": -3 }
+    transfer_pos = { "x": 0, "y": 1, "z": 0.7 }
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
 
     client.simSetCameraOrientation("0",15)
 
-    baggage_pos = { "x": 0, "y": 4 }
-    transfer_pos = { "x": 0, "y": -1, "z": 1.2 }
+    baggage_pos = { "x": 0, "y": -4 }
+    transfer_pos = { "x": 0, "y": 1, "z": 1.2 }
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
 
-    client.moveToPosition(-2, -1, 3, 5)
+    client.moveToPosition(-2, 1, 3, 5)
     debug_pos(client)
     time.sleep(3)
-    client.moveToPosition(-2, -1, 0.3, 5)
+    client.moveToPosition(-2, 1, 0.3, 5)
     debug_pos(client)
     time.sleep(3)
 

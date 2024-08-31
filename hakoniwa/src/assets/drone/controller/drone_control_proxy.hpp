@@ -178,7 +178,7 @@ public:
                 state.move();
                 prev_status = state.get_status();
                 in.target_pos_x = cmd_move.x;
-                in.target_pos_y = cmd_move.y;
+                in.target_pos_y = -cmd_move.y;
                 in.target_pos_z = -cmd_move.z;
                 in.target_velocity = cmd_move.speed;
                 in.target_yaw_deg = -cmd_move.yaw_deg;
@@ -194,8 +194,11 @@ public:
             if (read_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move) && !cmd_move.header.request) {
                 std::cout << "Move event is canceled" << std::endl;
                 in.target_pos_x = drone_pos.linear.x;
-                in.target_pos_y = drone_pos.linear.y;
+                in.target_pos_y = -drone_pos.linear.y;
                 in.target_pos_z = -drone_pos.linear.z;
+                std::cout << "cancel: z = " << in.target_pos_z << std::endl;
+                std::cout << "cancel: x = " << in.target_pos_x << std::endl;
+                std::cout << "cancel: y = " << in.target_pos_y << std::endl;
                 in.target_velocity = 0;
                 in.target_yaw_deg = drone_pos.angular.z;
                 state.cancel();
