@@ -52,7 +52,7 @@ def main():
     client.takeoff(1)
     robo_pos = get_robot_pos(client, "TB3RoboAvatar", 0)
     print(f'robo_pos({robo_pos['linear']['x']}, {robo_pos['linear']['y']}, {robo_pos['linear']['z']})')
-    baggage_pos = { "x": 0.0, "y": -4 }
+    baggage_pos = { "x": 0.0, "y": 4 }
     transfer_pos = { "x": robo_pos['linear']['x'], "y": robo_pos['linear']['y'], "z": 0.1 }
     transport(client, baggage_pos, transfer_pos)
     debug_pos(client)
