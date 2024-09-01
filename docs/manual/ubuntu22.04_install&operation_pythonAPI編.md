@@ -149,7 +149,7 @@ $ git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.gi
 - 該当ディレクトリに移動
 
 ```bash
-$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ cd ~/work/hakoniwa-px4sim
 $ cd hakoniwa/third-party/hakoniwa-core-cpp-client
 ```
 
@@ -257,7 +257,7 @@ DroneAppLinux.zipを入手します。入手後、解凍します。解凍は、
 
 ``` bash
 $ cd ~/work/hakoniwa-unity-drone-model
-$ unzip ~/Downlods/DroneAppLinux.zip
+$ unzip ~/Downloads/DroneAppLinux.zip
 ```
 
 ## 1.4. 箱庭ドローンシミュレータでの動作確認
