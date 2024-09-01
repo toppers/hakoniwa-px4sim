@@ -243,7 +243,7 @@ DroneAppLinux.zipを入手します。入手後、解凍します。解凍は、
 
 ``` bash
 $ cd ~/work/hakoniwa-unity-drone-model
-$ unzip ~/Downlods/DroneAppLinux.zip
+$ unzip ~/Downloads/DroneAppLinux.zip
 ```
 
 ### 1.3.6. フライトコントローラ PX4のビルド
