@@ -79,7 +79,7 @@ function activate_vreal()
 function adjust_initial_pos()
 {
     CONFIG_PATH=`pwd`/demo/xr_config.json
-    AR_DEVICE_IPADDR=`jq -r '.server_url' digital/config/ar/xr_config.json | awk -F: '{print $1}'`
+    AR_DEVICE_IPADDR=`jq -r '.server_url' ${CONFIG_PATH} | awk -F: '{print $1}'`
     CURR_DIR=`pwd`
     cd $HAKONIWA_VREAL_PATH
     echo "access: ${AR_DEVICE_IPADDR}:38528"
