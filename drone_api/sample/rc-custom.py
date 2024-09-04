@@ -57,7 +57,7 @@ def main():
         return 1
     
     config_path = sys.argv[1]
-    rc_config_path = 'rc_config/ps4-control.json'
+    rc_config_path = os.getenv("RC_CONFIG_PATH", DEFAULT_CONFIG_PATH)
     if (len(sys.argv) == 3):
         rc_config_path = sys.argv[2]
     
