@@ -84,6 +84,20 @@ class MultirotorClient:
         #print(f"yaw: {pdu_data['angular']['z']}")
         return hakosim_types.Pose(pos, orientation)
 
+    def simGetVehiclePoseUnityFrame(self, vehicle_name=None):
+        name = self.get_vehicle_name(vehicle_name)
+        pdu = self.pdu_manager.get_pdu(name, pdu_info.HAKO_AVATOR_CHANNLE_ID_POS)
+        pdu_data = pdu.read()
+        pos = hakosim_types.Vector3r(
+            -pdu_data['linear']['y'], 
+            pdu_data['linear']['z'], 
+            pdu_data['linear']['x'])
+        orientation = hakosim_types.Quaternionr.euler_to_quaternion(
+            pdu_data['angular']['y'], 
+            -pdu_data['angular']['z'], 
+            -pdu_data['angular']['x'])
+        return hakosim_types.Pose(pos, orientation)
+
     def get_packet(self, channel, vehicle_name):
         command = self.pdu_manager.get_pdu(vehicle_name, channel)
         cmd = command.get()
@@ -159,7 +173,14 @@ class MultirotorClient:
             return self.reply_and_wait_res(command)
         else:
             return False
-        
+
+    def moveToPositionUnityFrame(self, x, y, z, speed, yaw_deg=None, timeout_sec=-1, vehicle_name=None):
+        ros_x = z
+        ros_y = -x
+        ros_z = y
+        ros_yaw_deg = -yaw_deg
+        self.moveToPosition(ros_x, ros_y, ros_z, ros_yaw_deg, timeout_sec, vehicle_name)
+
     def moveToPosition(self, x, y, z, speed, yaw_deg=None, timeout_sec=-1, vehicle_name=None):
         if self.get_vehicle_name(vehicle_name) != None:
             print("INFO: moveToPosition")
