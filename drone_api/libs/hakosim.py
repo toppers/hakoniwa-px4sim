@@ -179,7 +179,7 @@ class MultirotorClient:
         ros_y = -x
         ros_z = y
         if yaw_deg == None:
-            ros_yaw_deg = -self._get_yaw_degree(vehicle_name)
+            ros_yaw_deg = None
         else:
             ros_yaw_deg = -yaw_deg
         self.moveToPosition(ros_x, ros_y, ros_z, speed, ros_yaw_deg, timeout_sec, vehicle_name)
