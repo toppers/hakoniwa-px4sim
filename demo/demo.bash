@@ -29,10 +29,16 @@ HAKONIWA_VREAL_PATH=../hakoniwa-unity-drone-model
 
 HAKO_PX4SIM_PID=
 HAKO_VREAL_PID=
+HAKO_CAMER_PID=
 function kill_process()
 {
     echo "trapped"
 
+    if [ ! -z "$HAKO_CAMER_PID" ]
+    then
+        echo "KILLING: camera $HAKO_CAMER_PID"
+        kill -s TERM "$HAKO_CAMER_PID" || echo "Failed to kill vreal"
+    fi
     if [ ! -z "$HAKO_VREAL_PID" ]
     then
         echo "KILLING: vreal $HAKO_VREAL_PID"
@@ -101,7 +107,21 @@ function radio_control()
     ${PYTHON_BIN} rc.py ../../../hakoniwa-unity-drone-model/${ACT_MODE}/custom.json
     cd $CURR_DIR
 }
-
+function camera_control()
+{
+    CURR_DIR=`pwd`
+    cd $HAKONIWA_RADIO_CTRL_PATH
+    if [ -f ~/myenv/bin/activate  ]
+    then
+        source ~/myenv/bin/activate
+        PYTHON_BIN=python3.12
+    else
+        PYTHON_BIN=python
+    fi
+    ${PYTHON_BIN} camera.py ../../../hakoniwa-unity-drone-model/${ACT_MODE}/custom.json &
+    HAKO_CAMER_PID=$!
+    cd $CURR_DIR
+}
 activate_px4sim
 
 sleep 1
@@ -113,11 +133,14 @@ sleep 1
 echo "Pleaser Enter key after clicking START button..."
 read
 
+sleep 1
 if [ ${ACT_MODE} = "ar-demo" ]
 then
-    sleep 1
     echo "START ADJUST INITIAL POSITION"
     adjust_initial_pos
+else
+    echo "START CAMERA"
+    camera_control
 fi
 
 sleep 1
