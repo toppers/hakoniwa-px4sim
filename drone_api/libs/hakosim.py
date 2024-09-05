@@ -179,7 +179,7 @@ class MultirotorClient:
         ros_y = -x
         ros_z = y
         ros_yaw_deg = -yaw_deg
-        self.moveToPosition(ros_x, ros_y, ros_z, ros_yaw_deg, timeout_sec, vehicle_name)
+        self.moveToPosition(ros_x, ros_y, ros_z, speed, ros_yaw_deg, timeout_sec, vehicle_name)
 
     def moveToPosition(self, x, y, z, speed, yaw_deg=None, timeout_sec=-1, vehicle_name=None):
         if self.get_vehicle_name(vehicle_name) != None:
