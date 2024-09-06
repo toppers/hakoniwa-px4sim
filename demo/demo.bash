@@ -128,17 +128,16 @@ sleep 1
 
 activate_vreal
 
-sleep 1
-
-echo "Pleaser Enter key after clicking START button..."
-read
-
-sleep 1
 if [ ${ACT_MODE} = "ar-demo" ]
 then
+    echo "Pleaser Enter key after clicking START button..."
+    read
     echo "START ADJUST INITIAL POSITION"
     adjust_initial_pos
 else
+    sleep 5
+    hako-cmd start
+    sleep 1
     echo "START CAMERA"
     camera_control
 fi
@@ -147,12 +146,5 @@ sleep 1
 echo "START RADIO CONTROL"
 radio_control
 
-echo "START"
-while true; do
-    echo "Press ENTER to stop..."
-    read input
-    if [ -z "$input" ]; then
-        kill_process
-        break
-    fi
-done
+kill_process
+
