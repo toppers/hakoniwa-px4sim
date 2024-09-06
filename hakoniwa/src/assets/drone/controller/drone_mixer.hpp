@@ -87,6 +87,53 @@ namespace hako::assets::drone {
             }
             return duty;
         }
+        // linearized version
+        PwmDuty run_linear(double mass, double thrust, double torque_x, double torque_y, double torque_z)
+        {
+            const double m = mass; // pass through mass from caller
+            const int N = ROTOR_NUM;
+            const double g = GRAVITY;
+            const double A = param_A;
+            const double T0 = m*g; // equibilium
+            const double omega0 = std::sqrt(T0/(N*A)); // equibilium
+            const double delta_T = thrust - T0;
+            const double Kr = param_Kr;
+            
+            glm::dvec4 delta_U = glm::dvec4(delta_T, torque_x, torque_y, torque_z);
+            glm::dvec4 delta_omega_times_omega0 = 0.5 * MA_inv * delta_U;
+            glm::dvec4 delta_omega = delta_omega_times_omega0/omega0;
+
+            for (int i = 0; i < ROTOR_NUM; i++) {
+                double ratio = delta_omega[i]/omega0; 
+                if (std::fabs(ratio) >  0.8) {
+                    if (debugEnabled) {
+                            std::cout << "WARNING: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
+                            std::cout << "WARNING: delta_omega("<< i << ") is too big(" << delta_omega[i]/omega0 << "%)...limited to 80%." << std::endl;
+                    }
+                    delta_omega[i] = delta_omega[i]/ratio  * 0.8; // keep the sign and make omega0 * 0.8
+                }
+            }
+
+            glm::dvec4 omega = omega0 + delta_omega;
+
+            PwmDuty duty = {};
+            for (int i = 0; i < ROTOR_NUM; i++) {
+                if (omega[i] < 0) {
+                    if (debugEnabled) {
+                        std::cout << "ERROR: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
+                        std::cout << "ERROR: Invalid caluculation of Omega to duty because of omega("<< i << ") is minus value(" << omega[i] << ")..." << std::endl;
+                    }
+                    omega[i] = 0.0;
+                }
+                else {
+                    duty.d[i] = omega[i] / Kr;
+                }
+                if (debugEnabled) {
+                    std::cout << "Motor " << i << ": Omega = " << omega[i] << ", PWM Duty = " << duty.d[i] << std::endl;
+                }                
+            }
+            return duty;
+        }
         glm::vec4 reconstructControlInput(const PwmDuty& duty) {
             glm::dvec4 Omega2;
             for (int i = 0; i < ROTOR_NUM; i++) {
