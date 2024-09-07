@@ -1,0 +1,82 @@
+{
+    "Os": [ "Darwin" ],
+    "mode": 2,
+    "stick": {
+        "Left": {
+            "UD": {
+                "index": 1,
+                "average": true,
+                "valueInverse": false,
+                "conversion": {
+                    "paramA": 0.9,
+                    "paramB": 0.1,
+                    "paramC": 0.0
+                }
+            },
+            "LR": {
+                "index": 0,
+                "average": true,
+                "valueInverse": false,
+                "conversion": {
+                    "paramA": 0.9,
+                    "paramB": 0.1,
+                    "paramC": 0.0
+                }
+            }
+        },
+        "Right": {
+            "UD": {
+                "index": 3,
+                "average": true,
+                "valueInverse": false,
+                "conversion": {
+                    "paramA": 0.9,
+                    "paramB": 0.1,
+                    "paramC": 0.0
+                }
+            },
+            "LR": {
+                "index": 2,
+                "average": true,
+                "valueInverse": false,
+                "conversion": {
+                    "paramA": 0.9,
+                    "paramB": 0.1,
+                    "paramC": 0.0
+                }
+            }
+        }
+    },
+    "Event": {
+        "RadioControlEnable": {
+            "index": 0,
+            "type": "switch",
+            "off": "up",
+            "on": "down"
+        },
+        "Camera": {
+            "index": 3,
+            "type": "push",
+            "off": "up",
+            "on": "down"
+        },
+        "GrabBaggage": {
+            "index": 1,
+            "type": "toggle",
+            "off": "up",
+            "on": "down"
+        },
+        "CameraMoveUp": {
+            "index": 5,
+            "type": "switch",
+            "off": "up",
+            "on": "down"
+        },
+        "CameraMoveDown": {
+            "index": 6,
+            "type": "switch",
+            "off": "up",
+            "on": "down"
+        }
+    }
+}
