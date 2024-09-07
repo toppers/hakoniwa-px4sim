@@ -1,0 +1,13 @@
+{
+    "numerator": [
+        "Kr"
+    ],
+    "denominator": [
+        "Tr", 
+        "1"
+    ],
+    "constants": {
+        "Tr": 1,
+        "Kr": 10
+    }
+}
