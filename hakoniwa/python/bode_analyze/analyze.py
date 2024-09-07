@@ -79,11 +79,59 @@ def plot_bode_and_margins(transfer_function_data):
 
     plt.show()
 
+# ステップ応答をプロットする関数
+def plot_step_response(transfer_function_data):
+    parser = Parser(transfer_function_data)
+    num, den = parser.get_transfer_function_coefficients()
+
+    # 伝達関数を生成
+    system = signal.TransferFunction(num, den)
+
+    # ステップ応答を計算
+    t, step_response = signal.step(system)
+
+    # ステップ応答をプロット
+    plt.figure()
+    plt.plot(t, step_response)
+    plt.title('Step Response')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
+    plt.grid()
+    plt.show()
+
+# インパルス応答をプロットする関数
+def plot_impulse_response(transfer_function_data):
+    parser = Parser(transfer_function_data)
+    num, den = parser.get_transfer_function_coefficients()
+
+    # 伝達関数を生成
+    system = signal.TransferFunction(num, den)
+
+    # インパルス応答を計算
+    t, impulse_response = signal.impulse(system)
+
+    # インパルス応答をプロット
+    plt.figure()
+    plt.plot(t, impulse_response)
+    plt.title('Impulse Response')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
+    plt.grid()
+    plt.show()
+
 # メイン処理
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Bode plot from transfer function JSON file")
+    parser = argparse.ArgumentParser(description="Bode, Step, and Impulse Response Plotter from transfer function JSON file")
     parser.add_argument('file_path', type=str, help="Path to the transfer function JSON file")
+    parser.add_argument('--response', type=str, choices=['bode', 'step', 'impulse'], default='bode', help="Type of response to plot (bode, step, impulse)")
     args = parser.parse_args()
 
     transfer_function_data = args.file_path
-    plot_bode_and_margins(transfer_function_data)
+
+    # ボード線図、ステップ応答、インパルス応答のいずれかをプロット
+    if args.response == 'bode':
+        plot_bode_and_margins(transfer_function_data)
+    elif args.response == 'step':
+        plot_step_response(transfer_function_data)
+    elif args.response == 'impulse':
+        plot_impulse_response(transfer_function_data)

@@ -1,5 +1,5 @@
 import json
-import sympy as sp
+import re
 
 class Parser:
     def __init__(self, json_file):
@@ -20,8 +20,10 @@ class Parser:
         evaluated_terms = []
         for term in terms:
             for const, value in self.constants.items():
-                term = term.replace(const, str(value))
-            evaluated_terms.append(eval(term))
+                # 正規表現で変数名の前後が他の文字と一致しない場合のみ置き換え
+                pattern = r'\b' + re.escape(const) + r'\b'
+                term = re.sub(pattern, str(value), term)
+            evaluated_terms.append(eval(term))  # 式を計算
         return evaluated_terms
 
 
@@ -30,7 +32,7 @@ class Parser:
         evaluated_numerator = self.evaluate_terms(self.numerator)
         evaluated_denominator = self.evaluate_terms(self.denominator)
 
-        #print("evaluated_numerator: ", evaluated_numerator)
-        #print("evaluated_denominator: ", evaluated_denominator)
+        print("evaluated_numerator: ", evaluated_numerator)
+        print("evaluated_denominator: ", evaluated_denominator)
 
         return evaluated_numerator, evaluated_denominator

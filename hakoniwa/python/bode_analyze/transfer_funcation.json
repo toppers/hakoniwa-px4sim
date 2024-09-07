@@ -1,13 +1,14 @@
 {
     "numerator": [
-        "Kr"
+        "omega_n^2"
     ],
     "denominator": [
-        "Tr", 
-        "1"
+        "1",
+        "2 * zeta * omega_n",
+        "omega_n^2"
     ],
     "constants": {
-        "Tr": 1,
-        "Kr": 10
+        "omega_n": 1,
+        "zeta": 0.5
     }
 }
