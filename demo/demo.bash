@@ -85,6 +85,7 @@ function activate_vreal()
 function adjust_initial_pos()
 {
     CONFIG_PATH=`pwd`/demo/xr_config.json
+    cp ${CONFIG_PATH} ${HAKONIWA_VREAL_PATH}/ar-demo/
     AR_DEVICE_IPADDR=`jq -r '.server_url' ${CONFIG_PATH} | awk -F: '{print $1}'`
     CURR_DIR=`pwd`
     cd $HAKONIWA_VREAL_PATH
@@ -128,17 +129,16 @@ sleep 1
 
 activate_vreal
 
-sleep 1
+sleep 5
+hako-cmd start
 
-echo "Pleaser Enter key after clicking START button..."
-read
-
-sleep 1
 if [ ${ACT_MODE} = "ar-demo" ]
 then
+    sleep 1
     echo "START ADJUST INITIAL POSITION"
     adjust_initial_pos
 else
+    sleep 1
     echo "START CAMERA"
     camera_control
 fi
@@ -147,12 +147,5 @@ sleep 1
 echo "START RADIO CONTROL"
 radio_control
 
-echo "START"
-while true; do
-    echo "Press ENTER to stop..."
-    read input
-    if [ -z "$input" ]; then
-        kill_process
-        break
-    fi
-done
+kill_process
+
