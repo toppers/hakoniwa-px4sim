@@ -1,8 +1,7 @@
 {
     "numerator": [
-        "Kd",
-        "Kp",
-        "Ki"
+        "1",
+        "0"
     ],
     "denominator": [
         "Ts * Ix",
