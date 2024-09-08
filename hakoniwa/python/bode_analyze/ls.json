@@ -1,0 +1,20 @@
+{
+    "numerator": [
+        "Kd",
+        "Kp",
+        "Ki"
+    ],
+    "denominator": [
+        "Tr * Ixx",
+        "Ixx",
+        "0",
+        "0"
+    ],
+    "constants": {
+        "Kd":  1,
+        "Ki": 0.1,
+        "Kp": 0.01,
+        "Tr": 0.2,
+        "Ixx": 0.0000625
+    }
+}

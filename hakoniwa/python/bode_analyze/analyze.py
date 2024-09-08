@@ -33,6 +33,26 @@ def calculate_margins(w, mag, phase):
 
     return gain_margin, phase_margin, gain_cross_freq, phase_cross_freq
 
+# 極をプロットする関数
+def plot_poles(transfer_function_data):
+    parser = Parser(transfer_function_data)
+    num, den = parser.get_transfer_function_coefficients()
+
+    system = signal.TransferFunction(num, den)
+    poles = system.poles
+    print(f"システムの極: {poles}")
+
+    # 極をプロット
+    plt.figure()
+    plt.scatter(poles.real, poles.imag, color='red', marker='x')
+    plt.axhline(0, color='black',linewidth=0.5)
+    plt.axvline(0, color='black',linewidth=0.5)
+    plt.grid(True)
+    plt.title('Pole-Zero Plot')
+    plt.xlabel('Real')
+    plt.ylabel('Imaginary')
+    plt.show()
+
 # ボード線図を表示する関数
 def plot_bode_and_margins(transfer_function_data):
     parser = Parser(transfer_function_data)
@@ -121,17 +141,19 @@ def plot_impulse_response(transfer_function_data):
 
 # メイン処理
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Bode, Step, and Impulse Response Plotter from transfer function JSON file")
+    parser = argparse.ArgumentParser(description="Bode, Step, Impulse, and Pole-Zero Plotter from transfer function JSON file")
     parser.add_argument('file_path', type=str, help="Path to the transfer function JSON file")
-    parser.add_argument('--response', type=str, choices=['bode', 'step', 'impulse'], default='bode', help="Type of response to plot (bode, step, impulse)")
+    parser.add_argument('--response', type=str, choices=['bode', 'step', 'impulse', 'poles'], default='bode', help="Type of response to plot (bode, step, impulse, poles)")
     args = parser.parse_args()
 
     transfer_function_data = args.file_path
 
-    # ボード線図、ステップ応答、インパルス応答のいずれかをプロット
+    # ボード線図、ステップ応答、インパルス応答、極のプロットのいずれかをプロット
     if args.response == 'bode':
         plot_bode_and_margins(transfer_function_data)
     elif args.response == 'step':
         plot_step_response(transfer_function_data)
     elif args.response == 'impulse':
         plot_impulse_response(transfer_function_data)
+    elif args.response == 'poles':
+        plot_poles(transfer_function_data)

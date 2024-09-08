@@ -32,7 +32,7 @@ class Parser:
         evaluated_numerator = self.evaluate_terms(self.numerator)
         evaluated_denominator = self.evaluate_terms(self.denominator)
 
-        print("evaluated_numerator: ", evaluated_numerator)
-        print("evaluated_denominator: ", evaluated_denominator)
+        #print("evaluated_numerator: ", evaluated_numerator)
+        #print("evaluated_denominator: ", evaluated_denominator)
 
         return evaluated_numerator, evaluated_denominator
