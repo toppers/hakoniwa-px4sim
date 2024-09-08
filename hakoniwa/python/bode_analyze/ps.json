@@ -1,0 +1,14 @@
+{
+    "numerator": [
+        "1"
+    ],
+    "denominator": [
+        "Ts * Ix",
+        "Ix",
+        "0"
+    ],
+    "constants": {
+        "Ts": 0.2,
+        "Ix": 0.0000625
+    }
+}

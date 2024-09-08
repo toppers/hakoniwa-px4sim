@@ -313,7 +313,7 @@ Unityアプリ上のドローンをPS4のコントローラで操作させるた
 
 
 ```bash
-$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ cd ~/work/hakoniwa-px4sim
 $ cd drone_api/sample
 $ python3 rc-custom.py ../../../hakoniwa-unity-drone-model/DroneAppLinux/custom.json rc_config/ps4-control-lnx.json
 ```

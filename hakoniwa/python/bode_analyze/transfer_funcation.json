@@ -1,0 +1,14 @@
+{
+    "numerator": [
+        "omega_n^2"
+    ],
+    "denominator": [
+        "1",
+        "2 * zeta * omega_n",
+        "omega_n^2"
+    ],
+    "constants": {
+        "omega_n": 1,
+        "zeta": 0.5
+    }
+}
