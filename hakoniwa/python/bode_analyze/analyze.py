@@ -59,8 +59,8 @@ def plot_bode_and_margins(transfer_function_data):
     num, den = parser.get_transfer_function_coefficients()
 
     system = signal.TransferFunction(num, den)
-    w, mag, phase = signal.bode(system)
-
+    w = np.logspace(-2, 4, num=1000)  # 10^0 から 10^4 の範囲で解析
+    w, mag, phase = signal.bode(system, w=w)
     # ゲイン余裕と位相余裕を計算
     gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = calculate_margins(w, mag, phase)
 
