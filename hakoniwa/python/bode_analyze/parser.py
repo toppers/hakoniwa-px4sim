@@ -9,6 +9,13 @@ class Parser:
         self.denominator = self.data['denominator']
         self.constants = self.data['constants']
 
+    def update_constant(self, const_name, new_value):
+        if const_name in self.constants:
+            self.constants[const_name] = new_value
+            #print(f"{const_name} has been updated to {new_value}")
+        else:
+            print(f"{const_name} is not found in constants")
+
     # JSONファイルの読み込み
     def load_transfer_function(self):
         with open(self.json_file, 'r') as file:
