@@ -1,101 +1,73 @@
 import argparse
 import matplotlib.pyplot as plt
-from scipy import signal
 from parser import Parser
 import numpy as np
-
-# ゲイン余裕と位相余裕の計算関数
-def calculate_margins(w, mag, phase):
-    gain_cross_freq = None
-    phase_at_gain_cross = None
-    phase_cross_freq = None
-    gain_at_phase_cross = None
-
-    # 位相 -180度を探す
-    for i in range(len(phase) - 1):
-        if phase[i] > -180 and phase[i + 1] <= -180:
-            phase_cross_freq = w[i] + (w[i + 1] - w[i]) * (-180 - phase[i]) / (phase[i + 1] - phase[i])
-            gain_at_phase_cross = mag[i]
-    
-    # ゲイン 0 dBを探す
-    for i in range(len(mag) - 1):
-        if mag[i] > 0 and mag[i + 1] <= 0:
-            gain_cross_freq = w[i] + (w[i + 1] - w[i]) * (0 - mag[i]) / (mag[i + 1] - mag[i])
-            phase_at_gain_cross = phase[i]
-    
-    gain_margin = None
-    if gain_at_phase_cross is not None:
-        gain_margin = -gain_at_phase_cross
-    
-    phase_margin = None
-    if phase_at_gain_cross is not None:
-        phase_margin = phase_at_gain_cross + 180
-
-    return gain_margin, phase_margin, gain_cross_freq, phase_cross_freq
+import control as ctrl
 
 # 極をプロットする関数
 def plot_poles(transfer_function_data):
     parser = Parser(transfer_function_data)
     num, den = parser.get_transfer_function_coefficients()
 
-    system = signal.TransferFunction(num, den)
-    poles = system.poles
+    system = ctrl.TransferFunction(num, den)
+    poles = system.poles()
     print(f"システムの極: {poles}")
 
     # 極をプロット
     plt.figure()
     plt.scatter(poles.real, poles.imag, color='red', marker='x')
-    plt.axhline(0, color='black',linewidth=0.5)
-    plt.axvline(0, color='black',linewidth=0.5)
+    plt.axhline(0, color='black', linewidth=0.5)
+    plt.axvline(0, color='black', linewidth=0.5)
     plt.grid(True)
     plt.title('Pole-Zero Plot')
     plt.xlabel('Real')
     plt.ylabel('Imaginary')
     plt.show()
 
+
 # ボード線図を表示する関数
 def plot_bode_and_margins(transfer_function_data):
     parser = Parser(transfer_function_data)
     num, den = parser.get_transfer_function_coefficients()
-
-    system = signal.TransferFunction(num, den)
-    w = np.logspace(-2, 4, num=1000)  # 10^0 から 10^4 の範囲で解析
-    w, mag, phase = signal.bode(system, w=w)
-    # ゲイン余裕と位相余裕を計算
-    gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = calculate_margins(w, mag, phase)
-
-    # ゲイン余裕と位相余裕の結果を表示
-    print(f"ゲイン余裕: {gain_margin} dB")
-    print(f"位相余裕: {phase_margin} degrees")
-    print(f"ゲイン余裕発生周波数: {gain_cross_freq} rad/s")
-    print(f"位相余裕発生周波数: {phase_cross_freq} rad/s")
-
-    # ボード線図の描画
+    system = ctrl.TransferFunction(num, den)
+    
+    # Bodeプロットと位相余裕・ゲイン余裕の計算
+    mag, phase, omega = ctrl.bode(system, dB=True, Hz=False, omega_limits=(1e-2, 1e4), plot=False)
+    gm, pm, wg, wp = ctrl.margin(system)
+    
+    # ゲイン余裕と位相余裕を表示
+    print(f"ゲイン余裕 (Gain Margin): {20 * np.log10(gm) if gm else '∞'} dB")
+    print(f"位相余裕 (Phase Margin): {pm} degrees")
+    print(f"ゲイン余裕発生周波数: {wg} rad/s")
+    print(f"位相余裕発生周波数: {wp} rad/s")
+    
+    # Bodeプロットを描画
     plt.figure()
-
+    
     # ゲイン線図
     plt.subplot(2, 1, 1)
-    plt.semilogx(w, mag)
+    plt.semilogx(omega, 20 * np.log10(mag))
     plt.title('Bode Plot')
     plt.ylabel('Magnitude (dB)')
-    plt.grid(which='both', linestyle='--', linewidth=0.7)  # 縦軸・横軸に波線を表示
+    plt.grid(True, which="both", linestyle='--')
     
     # ゲイン交差周波数に縦線を追加
-    if gain_cross_freq:
-        plt.axvline(x=gain_cross_freq, color='r', linestyle='--', label='Gain Cross Freq')
-        plt.axhline(y=0, color='k', linestyle='--')  # ゲイン0dBのライン
+    if wg:
+        plt.axvline(wg, color='r', linestyle='--', label=f'Gain Cross @ {wg:.2f} rad/s')
+    plt.axhline(0, color='k', linestyle='--')
 
     # 位相線図
+    phase = np.rad2deg(phase) 
     plt.subplot(2, 1, 2)
-    plt.semilogx(w, phase)
+    plt.semilogx(omega, phase)
     plt.ylabel('Phase (degrees)')
     plt.xlabel('Frequency (rad/s)')
-    plt.grid(which='both', linestyle='--', linewidth=0.7)  # 縦軸・横軸に波線を表示
+    plt.grid(True, which="both", linestyle='--')
 
-    # 位相交差周波数に縦線と位相余裕に横線を追加
-    if phase_cross_freq:
-        plt.axvline(x=phase_cross_freq, color='r', linestyle='--', label='Phase Cross Freq')
-        plt.axhline(y=-180, color='k', linestyle='--')  # 位相-180度のライン
+    # 位相交差周波数に縦線を追加
+    if wp:
+        plt.axvline(wp, color='r', linestyle='--', label=f'Phase Cross @ {wp:.2f} rad/s')
+    plt.axhline(-180, color='k', linestyle='--')
 
     plt.show()
 
@@ -104,19 +76,16 @@ def plot_step_response(transfer_function_data):
     parser = Parser(transfer_function_data)
     num, den = parser.get_transfer_function_coefficients()
 
-    # 伝達関数を生成
-    system = signal.TransferFunction(num, den)
-
-    # ステップ応答を計算
-    t, step_response = signal.step(system)
-
-    # ステップ応答をプロット
+    system = ctrl.TransferFunction(num, den)
+    
+    # ステップ応答の計算とプロット
+    t, y = ctrl.step_response(system)
     plt.figure()
-    plt.plot(t, step_response)
+    plt.plot(t, y)
     plt.title('Step Response')
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude')
-    plt.grid()
+    plt.grid(True)
     plt.show()
 
 # インパルス応答をプロットする関数
@@ -124,19 +93,16 @@ def plot_impulse_response(transfer_function_data):
     parser = Parser(transfer_function_data)
     num, den = parser.get_transfer_function_coefficients()
 
-    # 伝達関数を生成
-    system = signal.TransferFunction(num, den)
-
-    # インパルス応答を計算
-    t, impulse_response = signal.impulse(system)
-
-    # インパルス応答をプロット
+    system = ctrl.TransferFunction(num, den)
+    
+    # インパルス応答の計算とプロット
+    t, y = ctrl.impulse_response(system)
     plt.figure()
-    plt.plot(t, impulse_response)
+    plt.plot(t, y)
     plt.title('Impulse Response')
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude')
-    plt.grid()
+    plt.grid(True)
     plt.show()
 
 # メイン処理
