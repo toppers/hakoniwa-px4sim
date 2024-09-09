@@ -41,7 +41,7 @@ def optimize_pid_for_transfer_function(file_path, Kp, Ki, Kd):
     num, den = parser.get_transfer_function_coefficients()
 
     system = ctrl.TransferFunction(num, den)
-    gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = ctrl.margin(system)
+    gain_margin, phase_margin, phase_cross_freq, gain_cross_freq  = ctrl.margin(system)
     
     return gain_margin, phase_margin, gain_cross_freq, phase_cross_freq
 
@@ -53,8 +53,8 @@ def main(file_path, Kd, output_csv):
         writer.writerow(['Ki', 'Kp', 'Kd', 'PM', 'Wc'])
 
         # Kp, Ki をループで変化させる
-        Ki_values = [0] + [10**i for i in np.arange(-4, 1, 0.5)]
-        Kp_values = [10**i for i in np.arange(-4, 1, 0.1)]
+        Ki_values = [0] + [10**i for i in np.arange(-6, -5, 0.1)]
+        Kp_values = [10**i for i in np.arange(-5, -2, 0.1)]
         for Ki in Ki_values:
             for Kp in Kp_values:
                 gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = optimize_pid_for_transfer_function(file_path, Kp, Ki, Kd)

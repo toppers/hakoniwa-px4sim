@@ -57,6 +57,7 @@ def plot_bode_and_margins(transfer_function_data):
     plt.axhline(0, color='k', linestyle='--')
 
     # 位相線図
+    phase = np.rad2deg(phase) 
     plt.subplot(2, 1, 2)
     plt.semilogx(omega, phase)
     plt.ylabel('Phase (degrees)')
