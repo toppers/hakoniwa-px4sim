@@ -2,9 +2,36 @@ import argparse
 import json
 import numpy as np
 from parser import Parser
-from scipy import signal
+import control as ctrl
 import csv
-from analyze import calculate_margins
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def plot(csv_path):
+    # CSVデータを読み込む
+    df = pd.read_csv(csv_path)
+
+    # グラフを描くために、Kiごとにデータを分割する
+    unique_ki_values = df['Ki'].unique()
+
+    # グラフの初期設定
+    plt.figure(figsize=(8,6))
+
+    # Kiごとに異なるプロットを作成
+    for ki in unique_ki_values:
+        ki_data = df[df['Ki'] == ki]
+        plt.plot(ki_data['Kp'], ki_data['PM'], label=f'Ki = {ki}', marker='o')
+
+    # グラフの装飾
+    plt.xlabel('Kp')
+    plt.xscale('log')  # 横軸を対数スケールに設定
+    plt.ylabel('PM (Phase Margin)')
+    plt.title('Kp vs PM for Different Ki Values')
+    plt.legend()
+    plt.grid(True)
+
+    # グラフを表示
+    plt.show()
 
 def optimize_pid_for_transfer_function(file_path, Kp, Ki, Kd):
     parser = Parser(file_path)
@@ -13,29 +40,29 @@ def optimize_pid_for_transfer_function(file_path, Kp, Ki, Kd):
     parser.update_constant('Kd', Kd)
     num, den = parser.get_transfer_function_coefficients()
 
-    system = signal.TransferFunction(num, den)
-    w = np.logspace(-2, 4, num=1000)  # 10^-2 から 10^4 の範囲で解析
-    w, mag, phase = signal.bode(system, w=w)
-    
-    # ゲイン余裕と位相余裕を計算
-    gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = calculate_margins(w, mag, phase)
+    system = ctrl.TransferFunction(num, den)
+    gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = ctrl.margin(system)
     
     return gain_margin, phase_margin, gain_cross_freq, phase_cross_freq
 
-def main(file_path, Ki, Kd, output_csv):
+def main(file_path, Kd, output_csv):
     # CSVファイルの準備
     with open(output_csv, mode='w', newline='') as file:
         writer = csv.writer(file)
         # メタ行を出力
-        writer.writerow(['Kp', 'Ki', 'Kd', 'Gain Margin (dB)', 'Phase Margin (deg)', 'Gain Crossover Frequency (rad/s)', 'Phase Crossover Frequency (rad/s)'])
+        writer.writerow(['Ki', 'Kp', 'Kd', 'PM', 'Wc'])
 
-        # Kp をループで変化させる (10^-4 から 10^3 まで、0.5倍ずつ)
-        Kp_values = [10**i for i in np.arange(-4, 3.5, 0.5)]  # 10^-4 から 0.5倍ずつ 10^3 まで
-        for Kp in Kp_values:
-            gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = optimize_pid_for_transfer_function(file_path, Kp, Ki, Kd)
-            # 結果をCSVに出力
-            writer.writerow([Kp, Ki, Kd, gain_margin, phase_margin, gain_cross_freq, phase_cross_freq])
-            print(f"Kp: {Kp}, Ki: {Ki}, Kd: {Kd}, Gm: {gain_margin}, Pm: {phase_margin}, Wc: {gain_cross_freq}, Wpi: {phase_cross_freq}")
+        # Kp, Ki をループで変化させる
+        Ki_values = [0] + [10**i for i in np.arange(-4, 1, 0.5)]
+        Kp_values = [10**i for i in np.arange(-4, 1, 0.1)]
+        for Ki in Ki_values:
+            for Kp in Kp_values:
+                gain_margin, phase_margin, gain_cross_freq, phase_cross_freq = optimize_pid_for_transfer_function(file_path, Kp, Ki, Kd)
+                # 結果をCSVに出力
+                writer.writerow([Ki, Kp, Kd, phase_margin, gain_cross_freq])
+                print(f"Kp: {Kp}, Ki: {Ki}, Kd: {Kd}, Gm: {gain_margin}, Pm: {phase_margin}, Wc: {gain_cross_freq}, Wpi: {phase_cross_freq}")
+
+    plot(output_csv)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Optimize PID parameters for the given transfer function JSON file and output results to CSV")
@@ -43,8 +70,7 @@ if __name__ == "__main__":
     # Transfer function JSON fileのパスを引数として追加
     parser.add_argument('file_path', type=str, help="Path to the transfer function JSON file")
     
-    # Ki, Kd を引数として追加
-    parser.add_argument('--Ki', type=float, required=True, help="Integral gain (Ki) for the PID controller")
+    # Kd を引数として追加
     parser.add_argument('--Kd', type=float, required=True, help="Derivative gain (Kd) for the PID controller")
     
     # CSV出力ファイルのパス
@@ -53,4 +79,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # メイン処理を実行
-    main(args.file_path, args.Ki, args.Kd, args.output_csv)
+    main(args.file_path, args.Kd, args.output_csv)
