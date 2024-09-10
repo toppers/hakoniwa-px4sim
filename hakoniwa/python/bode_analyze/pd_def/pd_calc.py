@@ -76,7 +76,7 @@ class PDEvaluator:
         phi_m = self.calc_phi_m()
         numerator = self.u * math.sin(phi_m) - self.v * math.cos(phi_m)
         denominator = self.Wc * (self.u**2 + self.v**2)
-        kd = ((self.Ki / self.Wc**2) - (numerator / denominator))
+        kd = ((self.Ki / self.Wc**2) + (numerator / denominator))
         return kd
 
 if __name__ == "__main__":
