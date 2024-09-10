@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from parser import Parser
 import numpy as np
 import control as ctrl
+from sympy import symbols, Poly
+from sympy.abc import s
 
 # 極をプロットする関数
 def plot_poles(transfer_function_data):
@@ -105,11 +107,24 @@ def plot_impulse_response(transfer_function_data):
     plt.grid(True)
     plt.show()
 
+def show_expr(transfer_function_data):
+    parser = Parser(transfer_function_data)
+    num, den = parser.get_transfer_function_coefficients()
+
+    # 分子と分母の係数から多項式を生成
+    num_poly = Poly(num, s)
+    den_poly = Poly(den, s)
+    
+    # 伝達関数の数式を表示
+    transfer_function_expr = num_poly / den_poly
+
+    print(transfer_function_expr)
+
 # メイン処理
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Bode, Step, Impulse, and Pole-Zero Plotter from transfer function JSON file")
     parser.add_argument('file_path', type=str, help="Path to the transfer function JSON file")
-    parser.add_argument('--response', type=str, choices=['bode', 'step', 'impulse', 'poles'], default='bode', help="Type of response to plot (bode, step, impulse, poles)")
+    parser.add_argument('--response', type=str, choices=['bode', 'step', 'impulse', 'poles', 'expr'], default='bode', help="Type of response to plot (bode, step, impulse, poles, expr)")
     args = parser.parse_args()
 
     transfer_function_data = args.file_path
@@ -123,3 +138,5 @@ if __name__ == "__main__":
         plot_impulse_response(transfer_function_data)
     elif args.response == 'poles':
         plot_poles(transfer_function_data)
+    elif args.response == 'expr':
+        show_expr(transfer_function_data)
