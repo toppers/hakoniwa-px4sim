@@ -89,5 +89,6 @@ if __name__ == "__main__":
 
     Kp = evaluator.getKp()
     Kd = evaluator.getKd()
-    print("Kp: ", Kp)
-    print("Kd: ", Kd)
+    print(f"\"Kp\": {Kp},")
+    print(f"\"Ki\": {evaluator.Ki},")
+    print(f"\"Kd\": {Kd},")
