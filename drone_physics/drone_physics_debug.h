@@ -20,7 +20,7 @@ inline double diff(const hako::drone_physics::EulerType& a, const hako::drone_ph
 static int AssertCount = 0;
 
 #define assert_almost_equal(a, b) \
-    assert(++AssertCount && diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << "<-?->" #b "=" << (b) << " ----> see next line Assert "<< std::endl, 0))
+    assert(++AssertCount && (diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << "<-?->" #b "=" << (b) << " ----> see next line Assert "<< std::endl, 0)))
 
 #define print_vec(v) std::cerr << #v "=" << v << std::endl
 

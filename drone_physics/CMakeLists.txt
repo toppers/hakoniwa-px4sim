@@ -40,9 +40,13 @@ target_link_libraries(examples drone_physics)
 add_executable(cexamples cexamples.c)
 target_link_libraries(cexamples drone_physics_c)
 
+add_executable(glmtest glmtest.cpp)
+target_include_directories(glmtest PRIVATE ../hakoniwa/third-party/glm)
+
 enable_testing()
 add_test(NAME utest COMMAND ./utest)
 add_test(NAME ctest COMMAND ./ctest)
+add_test(NAME glmtest COMMAND ./glmtest)
 
 add_custom_target(vtest COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
 
