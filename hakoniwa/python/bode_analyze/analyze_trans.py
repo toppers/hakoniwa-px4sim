@@ -289,7 +289,7 @@ def calc_pd(tfd):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Bode, Step, Impulse, and Pole-Zero Plotter from transfer function JSON file")
     parser.add_argument('file_path', type=str, help="Path to the transfer function JSON file")
-    parser.add_argument('func_type', type=str, choices=['ws', 'ls', 'eds'], default='ls', help="Type of transfer function type")
+    parser.add_argument('func_type', type=str, choices=['ps', 'ws', 'ls', 'eds'], default='ls', help="Type of transfer function type")
     parser.add_argument('--mode', type=str, choices=['bode', 'step', 'impulse', 'poles', 'pd' ], default='bode', help="Type of response to plot (bode, step, impulse, poles)")
     args = parser.parse_args()
 
@@ -310,6 +310,11 @@ if __name__ == "__main__":
         L_num, L_den = tfd.calculate_l()
         num = tfd.get_coefficients(L_num)
         den = tfd.get_coefficients(L_den)
+    elif args.func_type == 'ps':
+        # L(s) の計算
+        P_num, P_den = tfd.get_plants()
+        num = tfd.get_coefficients(P_num)
+        den = tfd.get_coefficients(P_den)
     else:
         Ed_num, Ed_den = tfd.calculate_ed()
         num = tfd.get_coefficients(Ed_num)
