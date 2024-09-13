@@ -2,6 +2,7 @@ import argparse
 import matplotlib.pyplot as plt
 import control as ctrl
 import numpy as np
+import math
 
 import json
 import re
@@ -11,7 +12,7 @@ class TransParser:
     def __init__(self, json_file):
         self.json_file = json_file
         self.data = self.load_transfer_function()
-        self.constants = self.data['constants']
+        self.constants = self.evaluate_constants(self.data['constants'])
 
     def update_constant(self, const_name, new_value):
         if const_name in self.constants:
@@ -36,6 +37,40 @@ class TransParser:
             evaluated_terms.append(eval(term))  # 式を計算
         return evaluated_terms
 
+    # 定数を評価するメソッド
+    def evaluate_constants(self, constants):
+        evaluated_constants = {}
+        pending = constants.copy()  # 評価待ちの定数
+
+        # 評価ループ: すべての定数が解決されるまで繰り返す
+        while pending:
+            unresolved = {}  # 未解決の定数を保存
+            for const, value in pending.items():
+                #print("key: ", const)
+                if isinstance(value, str):
+                    # 数式として評価を試みる
+                    try:
+                        #print("evaluated_consts: ", evaluated_constants)
+                        evaluated_constants[const] = eval(value, {"__builtins__": None}, {**evaluated_constants, "math": math})
+                        print("evaluated_value: ", evaluated_constants[const])
+                    except NameError:
+                        # 評価できない場合は未解決のまま保留
+                        unresolved[const] = value
+                        print("unsolved value: ", value)
+                    except Exception as e:
+                        print(f"Failed to evaluate {const}: {e}")
+                else:
+                    # 数値はそのまま評価
+                    evaluated_constants[const] = value
+                    #print("value: ", value)
+
+            # もし未解決の定数が減っていなければループを終了
+            if len(unresolved) == len(pending):
+                raise ValueError("Circular dependency or undefined variables detected.")
+            
+            pending = unresolved  # 未解決の定数を再度評価
+        return evaluated_constants
+        
     # C(s) の取得
     def get_controller(self):
         controller_data = self.data['controller']
@@ -192,12 +227,70 @@ def plot_impulse_response(num, den):
     plt.grid(True)
     plt.show()
 
+class PDEvaluator:
+    def __init__(self, PM, Ki, Wc):
+        self.PM = PM
+        self.Ki = Ki
+        self.Wc = Wc
+    
+    def calc(self, plant_num, plant_den):
+        # s = 1j * Wc の値を代入する
+        s_value = 1j * self.Wc
+        
+        # np.polyval を使用して、多項式の評価を行う
+        # 分子と分母にそれぞれ s_value を代入して評価
+        p_s_num = np.polyval(plant_num, s_value)
+        p_s_den = np.polyval(plant_den, s_value)
+        
+        # 分子/分母で伝達関数を計算
+        p_s = p_s_num / p_s_den
+        
+        # 実部と虚部を表示
+        print("real: ", p_s.real)
+        print("im: ", p_s.imag)
+
+        # 実部と虚部を保存
+        self.u = p_s.real
+        self.v = p_s.imag
+
+    def calc_phi_m(self):
+        """PMからφmを計算"""
+        pm = math.radians(self.PM)
+        return pm - math.pi
+    
+    def getKp(self):
+        """Kpを計算"""
+        phi_m = self.calc_phi_m()
+        print("phi_m", phi_m)
+        numerator = self.u * math.cos(phi_m) + self.v * math.sin(phi_m)
+        denominator = self.u**2 + self.v**2
+        kp = numerator / denominator
+        return kp
+
+    def getKd(self):
+        """Kdを計算"""
+        phi_m = self.calc_phi_m()
+        numerator = self.u * math.sin(phi_m) - self.v * math.cos(phi_m)
+        denominator = self.Wc * (self.u**2 + self.v**2)
+        kd = ((self.Ki / self.Wc**2) + (numerator / denominator))
+        return kd
+
+def calc_pd(tfd):
+    e = PDEvaluator(tfd.constants['PM'], tfd.constants['Ki'], tfd.constants['Wc'])
+    P_num, P_den = tfd.get_plants()
+    e.calc(tfd.get_coefficients(P_num), tfd.get_coefficients(P_den))
+    Kp = e.getKp()
+    Kd = e.getKd()
+    print(f"\"Kp\": {Kp},")
+    print(f"\"Ki\": {tfd.constants['Ki']},")
+    print(f"\"Kd\": {Kd},")
+
 # メイン処理
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Bode, Step, Impulse, and Pole-Zero Plotter from transfer function JSON file")
     parser.add_argument('file_path', type=str, help="Path to the transfer function JSON file")
     parser.add_argument('func_type', type=str, choices=['ws', 'ls', 'eds'], default='ls', help="Type of transfer function type")
-    parser.add_argument('--mode', type=str, choices=['bode', 'step', 'impulse', 'poles' ], default='bode', help="Type of response to plot (bode, step, impulse, poles)")
+    parser.add_argument('--mode', type=str, choices=['bode', 'step', 'impulse', 'poles', 'pd' ], default='bode', help="Type of response to plot (bode, step, impulse, poles)")
     args = parser.parse_args()
 
     transfer_function_data = args.file_path
@@ -234,4 +327,6 @@ if __name__ == "__main__":
         plot_impulse_response(num, den)
     elif args.mode == 'poles':
         plot_poles(num, den)
+    elif args.mode == 'pd':
+        calc_pd(tfd)
 
