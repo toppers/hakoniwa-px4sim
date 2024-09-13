@@ -7,7 +7,7 @@ import hakopy
 import hako_pdu
 import pdu_info
 import os
-import math
+import time
 
 config_path = ''
 
@@ -235,13 +235,20 @@ def my_on_manual_timing_control(context):
 
     # takeoff
     if (target_values.has_key('X')):
-        takeoff_wait(client, 3)
+        height = 3
+        if (target_values.has_key('Z')):
+            evaluation_start_time = hakopy.simulation_time() * 1e-06
+            height = -target_values.values['Z']
+        takeoff_wait(client, height)
+        if (target_values.has_key('Z')):
+            hakopy.usleep(100000000)
     else:
         # start
         button_event(client, 0)
         takeoff(client, 3)
 
-    evaluation_start_time = hakopy.simulation_time() * 1e-06
+    if (target_values.has_key('Z')) == False:
+        evaluation_start_time = hakopy.simulation_time() * 1e-06
     print("EVALUATION_START_TIME: ", evaluation_start_time)
     with open('/tmp/v.txt', 'w') as f:
         f.write(str(evaluation_start_time))
@@ -250,6 +257,8 @@ def my_on_manual_timing_control(context):
         do_control(client, target_values.values['Rx'], -target_values.values['Ry'], 'angular')
     elif (target_values.has_key('Vx')):
         do_control(client, target_values.values['Vx'], target_values.values['Vy'], 'speed')
+    elif (target_values.has_key('Z')):
+        pass
     elif (target_values.has_key('X')):
         pos_control(client, target_values.values['X'], target_values.values['Y'], target_values.values['S'])
 
@@ -301,6 +310,10 @@ def main():
         max_value['Vy'] = 10
         target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1], max_value)
         target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1], max_value)
+    elif (sys.argv[3].split(':')[0] == 'Z'):
+        target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1])
+        target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1])
+        target_values.set_target(sys.argv[5].split(':')[0], sys.argv[5].split(':')[1])
     elif (sys.argv[3].split(':')[0] == 'X') or (sys.argv[3].split(':')[0] == 'Y'):
         target_values.set_target(sys.argv[3].split(':')[0], sys.argv[3].split(':')[1])
         target_values.set_target(sys.argv[4].split(':')[0], sys.argv[4].split(':')[1])
@@ -323,7 +336,6 @@ def main():
 
     ret = hakopy.start()
     print(f"INFO: hako_asset_start() returns {ret}")
-
 
     return 0
 
