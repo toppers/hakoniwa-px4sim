@@ -20,14 +20,27 @@ else
 fi
 
 SPEED_KEY_VALUE=
-if [ $# -eq 4 ]
+if [ -z "$MIXER_ENABLED" ]
 then
-    SPEED_KEY_VALUE=${4}
-    export DRONE_CONFIG_PATH=config/api_sample
-    export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api.txt
+    if [ $# -eq 4 ]
+    then
+        SPEED_KEY_VALUE=${4}
+        export DRONE_CONFIG_PATH=config/api_sample
+        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api.txt
+    else
+        export DRONE_CONFIG_PATH=config/rc
+        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc.txt
+    fi
 else
-    export DRONE_CONFIG_PATH=config/rc
-    export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc.txt
+    if [ $# -eq 4 ]
+    then
+        SPEED_KEY_VALUE=${4}
+        export DRONE_CONFIG_PATH=config/mixer-api
+        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api-mixer.txt
+    else
+        export DRONE_CONFIG_PATH=config/mixer-rc
+        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc-mixer.txt
+    fi
 fi
 
 TKEY_VALUE=${2}
