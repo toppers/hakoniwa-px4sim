@@ -43,6 +43,10 @@ private:
 
     double delta_time_sec;
     double total_time_sec;
+    /*
+     * Ground position
+     */
+    double ground_height;
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
@@ -147,6 +151,7 @@ public:
         this->param_size_z = 0.1;
         this->param_collision_detection = false;
         this->param_manual_control = false;
+        this->ground_height = 0;
     }
     virtual ~DroneDynamicsBodyFrameRK4() {}
     void reset() override
@@ -251,20 +256,55 @@ public:
 
         this->velocity = this->convert(this->velocityBodyFrame);
         this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
+
+
+        //collision detection
+        if (param_collision_detection) {
+            if (input.collision.collision) {
+                hako::drone_physics::VectorType velocity_before_contact = this->velocity;
+                hako::drone_physics::VectorType center_position = this->position;
+                hako::drone_physics::VectorType contact_position = { 
+                    input.collision.contact_position[0].x,
+                    input.collision.contact_position[0].y,
+                    input.collision.contact_position[0].z
+                };
+                double restitution_coefficient = input.collision.restitution_coefficient;
+                if (restitution_coefficient <= 0.0) {
+                    this->ground_height = this->position.data.z;
+                }
+                else {
+                    //std::cout << "velocity_before_contact.x: " << velocity_before_contact.x << std::endl;
+                    //std::cout << "velocity_before_contact.y: " << velocity_before_contact.y << std::endl;
+                    //std::cout << "velocity_before_contact.z: " << velocity_before_contact.z << std::endl;
+                    hako::drone_physics::VectorType col_vel = hako::drone_physics::velocity_after_contact_with_wall(
+                            velocity_before_contact, center_position, contact_position, restitution_coefficient);
+                    //std::cout << "velocity_after_contact.x: " << col_vel.x << std::endl;
+                    //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
+                    //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
+                    this->velocity = col_vel;
+                    this->velocityBodyFrame = drone_physics::body_vector_from_ground(this->velocity, angle);
+                }
+            }
+        }
+
         this->integral(this->velocity);
         this->integral(this->angularVelocity);
 
         //boundary condition
-        if (this->position.data.z > 0) {
-            this->position.data.z = 0;
+        if (this->position.data.z > this->ground_height) {
+            this->position.data.z = this->ground_height;
             this->velocity.data.z = 0;
             this->velocityBodyFrame.data.x = 0;
-            //this->velocityBodyFrame.data.y = 0;
+            this->velocityBodyFrame.data.y = 0;
             this->velocityBodyFrame.data.z = 0;
             //this->angularVelocityBodyFrame.data.x = 0;
             //this->angularVelocityBodyFrame.data.y = 0;
-            //this->angularVelocityBodyFrame.data.z = 0;
-        }        
+            this->angularVelocityBodyFrame.data.z = 0;
+        }
+        else {
+            this->ground_height = 0;
+        }
+
         this->total_time_sec += this->delta_time_sec;
     }
     const std::vector<std::string> log_head() override
