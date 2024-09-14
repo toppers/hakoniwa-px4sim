@@ -343,19 +343,20 @@ public:
             torque.data.y = out.torque_y;
             torque.data.z = out.torque_z;
 
-#ifdef DRONE_ENABLE_MIXER
             auto mixer = module.drone->get_mixer();
-            PwmDuty duty = {};
-            //duty = mixer.run_linear(proxy.in.mass, thrust.data, torque.data.x, torque.data.y, torque.data.z);
-            duty = mixer.run(thrust.data, torque.data.x, torque.data.y, torque.data.z);
-            for (int i = 0; i < ROTOR_NUM; i++) {
-                drone_input.controls[i] = duty.d[i];
-                module.controls[i] = duty.d[i];
+            if (mixer != nullptr) {
+                PwmDuty duty = {};
+                duty = mixer->run(proxy.in.mass, thrust.data, torque.data.x, torque.data.y, torque.data.z);
+                for (int i = 0; i < ROTOR_NUM; i++) {
+                    drone_input.controls[i] = duty.d[i];
+                    module.controls[i] = duty.d[i];
+                }
+                drone_input.no_use_actuator = false;
             }
-            drone_input.no_use_actuator = false;
-#else
-            drone_input.no_use_actuator = true;
-#endif
+            else {
+                drone_input.no_use_actuator = true;
+            }
+
             drone_input.manual.control = false;
             drone_input.thrust = thrust;
             drone_input.torque = torque;
@@ -366,10 +367,9 @@ public:
                 do_io_read_disturb(module.drone, drone_input.disturbance);
             }
             module.drone->run(drone_input);
-#ifdef DRONE_ENABLE_MIXER
-#else
-            calculate_simple_controls(module, thrust);
-#endif
+            if (mixer == nullptr) {
+                calculate_simple_controls(module, thrust);
+            }
             do_io_write(module.drone, module.controls);
             index++;
         }

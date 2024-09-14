@@ -19,9 +19,9 @@ public:
     {
         this->mixer = obj;
     }
-    DroneMixer& get_mixer() override
+    DroneMixer *get_mixer() override
     {
-        return *this->mixer;
+        return this->mixer;
     }
     void reset() override
     {

@@ -1,6 +1,7 @@
 #ifndef _DRONE_MIXER_HPP_
 #define _DRONE_MIXER_HPP_
 #include "drone_primitive_types.hpp"
+#include "config/drone_config.hpp"
 #include "ithrust_dynamics.hpp"
 #include <vector>
 #include <glm/glm.hpp>
@@ -22,7 +23,7 @@ namespace hako::assets::drone {
         glm::dmat4 A;
         glm::dmat4 A_inv;
         glm::dmat4 MA_inv;
-        bool debugEnabled = false;
+        DroneConfig::MixerInfo mixer_info {};
     public: 
         virtual ~DroneMixer() {}
         DroneMixer(double Kr, double a, double b, RotorConfigType rotor[ROTOR_NUM])
@@ -45,6 +46,10 @@ namespace hako::assets::drone {
             this->A = glm::transpose(this->A);
             this->A_inv = glm::inverse(A);
         }
+        void setMixerInfo(DroneConfig::MixerInfo& info)
+        {
+            mixer_info = info;
+        }
         static void printMatrix(const glm::dmat4& mat) {
             for (int i = 0; i < 4; i++) { 
                 for (int j = 0; j < 4; j++) {
@@ -64,15 +69,29 @@ namespace hako::assets::drone {
             this->MA_inv= M_inv * A_inv;
             return true;
         }
-        PwmDuty run(double thrust, double torque_x, double torque_y, double torque_z)
+        PwmDuty run(double mass, double thrust, double torque_x, double torque_y, double torque_z)
         {
+            PwmDuty duty = {};
+            if (mixer_info.enable) {
+                if (mixer_info.vendor == "linear") {
+                    return run_linear(mass, thrust, torque_x, torque_y, torque_z);
+                }
+                else {
+                    return run_default(mass, thrust, torque_x, torque_y, torque_z);
+                }
+            }
+            return duty;
+        }
+        PwmDuty run_default(double mass, double thrust, double torque_x, double torque_y, double torque_z)
+        {
+            (void)mass;
             glm::dvec4 U = glm::dvec4(thrust, torque_x, torque_y, torque_z);
             
             glm::dvec4 Omega2 = MA_inv * U;
             PwmDuty duty = {};
             for (int i = 0; i < ROTOR_NUM; i++) {
                 if (Omega2[i] < 0) {
-                    if (debugEnabled) {
+                    if (mixer_info.enableErrorLog) {
                         std::cout << "ERROR: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
                         std::cout << "ERROR: Invalid caluculation of Omega to duty because of omega^2("<< i << ") is minus value(" << Omega2[i] << ")..." << std::endl;
                     }
@@ -81,7 +100,7 @@ namespace hako::assets::drone {
                 else {
                     duty.d[i] = std::sqrt(Omega2[i]) / this->param_Kr;
                 }
-                if (debugEnabled) {
+                if (mixer_info.enableDebugLog) {
                     std::cout << "Motor " << i << ": Omega^2 = " << Omega2[i] << ", PWM Duty = " << duty.d[i] << std::endl;
                 }                
             }
@@ -120,7 +139,7 @@ namespace hako::assets::drone {
             PwmDuty duty = {};
             for (int i = 0; i < ROTOR_NUM; i++) {
                 if (omega[i] < 0) {
-                    if (debugEnabled) {
+                    if (mixer_info.enableErrorLog) {
                         std::cout << "ERROR: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
                         std::cout << "ERROR: Invalid caluculation of Omega to duty because of omega("<< i << ") is minus value(" << omega[i] << ")..." << std::endl;
                     }
@@ -129,7 +148,7 @@ namespace hako::assets::drone {
                 else {
                     duty.d[i] = omega[i] / Kr;
                 }
-                if (debugEnabled) {
+                if (mixer_info.enableDebugLog) {
                     std::cout << "Motor " << i << ": Omega = " << omega[i] << ", PWM Duty = " << duty.d[i] << std::endl;
                 }                
             }
@@ -144,7 +163,7 @@ namespace hako::assets::drone {
         }
         bool testReconstruction(double thrust, double torque_x, double torque_y, double torque_z) {
             glm::dvec4 U_original = glm::dvec4(thrust, torque_x, torque_y, torque_z);
-            PwmDuty duty = run(thrust, torque_x, torque_y, torque_z);
+            PwmDuty duty = run_default(0, thrust, torque_x, torque_y, torque_z);
             glm::dvec4 U_reconstructed = reconstructControlInput(duty);
 
             const double epsilon = 1e-5;

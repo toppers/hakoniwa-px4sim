@@ -88,6 +88,11 @@
   },
   "controller": {
     "moduleDirectory": "../drone_control/cmake-build/workspace/FlightController",
-    "moduleName": "FlightController"
+    "moduleName": "FlightController",
+    "mixer": {
+      "vendor": "None",
+      "enableDebugLog": false,
+      "enableErrorLog": false
+    }
   }
 }
