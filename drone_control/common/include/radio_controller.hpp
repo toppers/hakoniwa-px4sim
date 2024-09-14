@@ -91,6 +91,7 @@ private:
     double pid_param_h_angle_rate_max;
     double pid_param_yaw_rpm_max;
     double pid_param_yaw_angle_rate_max;
+    double alt_delta_value_m = ALT_DELTA_VALUE_M;
 
     void initializeFromLoader(HakoControllerParamLoader* loader) {
         if (loader) {
@@ -112,6 +113,7 @@ private:
             max_spd = loader->getParameter("PID_PARAM_MAX_SPD");
             head_control_cycle = loader->getParameter("HEAD_CONTROL_CYCLE");
             yaw_delta_value_deg = loader->getParameter("YAW_DELTA_VALUE_DEG");
+            alt_delta_value_m = loader->getParameter("ALT_DELTA_VALUE_M");
             double v = loader->getParameter("RADIO_CONTROL_USE_SPD_CTRL");
             if (v == 0) {
                 use_spd_ctrl = false;
@@ -237,7 +239,8 @@ public:
     void update_target_altitude(double v) {
         if (alt_time >= alt_control_cycle) {
             alt_time = 0;
-            r_altitude += v * ALT_DELTA_VALUE_M;
+            r_altitude += v * alt_delta_value_m;
+            //std::cout << "v: " << v << "r_altitude: " << r_altitude << "alt_delta_value_m: " << alt_delta_value_m << std::endl;
             if (r_altitude >= ALT_VALUE_MAX) {
                 r_altitude = ALT_VALUE_MAX;
             } else if (r_altitude < 0) {
