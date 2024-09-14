@@ -305,7 +305,6 @@ public:
     {
         module_simulator.do_task();
     }
-
     void run()
     {
         int index = 0;
@@ -346,7 +345,9 @@ public:
 
 #ifdef DRONE_ENABLE_MIXER
             auto mixer = module.drone->get_mixer();
-            PwmDuty duty = mixer.run(thrust.data, torque.data.x, torque.data.y, torque.data.z);
+            PwmDuty duty = {};
+            //duty = mixer.run_linear(proxy.in.mass, thrust.data, torque.data.x, torque.data.y, torque.data.z);
+            duty = mixer.run(thrust.data, torque.data.x, torque.data.y, torque.data.z);
             for (int i = 0; i < ROTOR_NUM; i++) {
                 drone_input.controls[i] = duty.d[i];
                 module.controls[i] = duty.d[i];

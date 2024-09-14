@@ -103,6 +103,7 @@ namespace hako::assets::drone {
             glm::dvec4 delta_omega_times_omega0 = 0.5 * MA_inv * delta_U;
             glm::dvec4 delta_omega = delta_omega_times_omega0/omega0;
 
+#if 0
             for (int i = 0; i < ROTOR_NUM; i++) {
                 double ratio = delta_omega[i]/omega0; 
                 if (std::fabs(ratio) >  0.8) {
@@ -113,7 +114,7 @@ namespace hako::assets::drone {
                     delta_omega[i] = delta_omega[i]/ratio  * 0.8; // keep the sign and make omega0 * 0.8
                 }
             }
-
+#endif
             glm::dvec4 omega = omega0 + delta_omega;
 
             PwmDuty duty = {};
