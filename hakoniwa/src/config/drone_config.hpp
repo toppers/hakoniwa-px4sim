@@ -351,6 +351,26 @@ public:
             return "";
         }
     }
+    struct MixerInfo {
+        bool enable;
+        std::string vendor;
+        bool enableDebugLog;
+        bool enableErrorLog;
+    };
+    bool getControllerMixerInfo(MixerInfo& info) const
+    {
+        if (configJson["controller"].contains("mixer")) {
+            info.vendor = configJson["controller"]["mixer"]["vendor"];
+            info.enableDebugLog = configJson["controller"]["mixer"]["enableDebugLog"];
+            info.enableErrorLog = configJson["controller"]["mixer"]["enableErrorLog"];
+            info.enable = true;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 };
 
 #include <filesystem>

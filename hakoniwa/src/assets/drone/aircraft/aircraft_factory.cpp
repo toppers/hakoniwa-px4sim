@@ -182,16 +182,21 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     }    
 
     thrust->set_rotor_config(rotor_config);
-#ifdef DRONE_ENABLE_MIXER
-    std::cout << "INFO: mixer is enabled" << std::endl;
-#else
-    std::cout << "INFO: mixer is not enabled" << std::endl;
-#endif
-    DroneMixer *mixer = new DroneMixer(ROTOR_K, param_A, param_B, rotor_config);
-    HAKO_ASSERT(mixer != nullptr);
-    bool inv_m = mixer->calculate_M_inv();
-    HAKO_ASSERT(inv_m == true);
-    drone->set_mixer(mixer);
+
+    // mixer
+    DroneConfig::MixerInfo mixer_info;
+    if (drone_config.getControllerMixerInfo(mixer_info)) {
+        std::cout << "INFO: mixer is enabled" << std::endl;
+        DroneMixer *mixer = new DroneMixer(ROTOR_K, param_A, param_B, rotor_config);
+        HAKO_ASSERT(mixer != nullptr);
+        bool inv_m = mixer->calculate_M_inv();
+        HAKO_ASSERT(inv_m == true);
+        mixer->setMixerInfo(mixer_info);
+        drone->set_mixer(mixer);
+    }
+    else {
+        std::cout << "INFO: mixer is not enabled" << std::endl;
+    }
 
     //sensor acc
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
