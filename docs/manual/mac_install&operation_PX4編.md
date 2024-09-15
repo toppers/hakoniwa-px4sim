@@ -286,13 +286,13 @@ export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 
 ![Unityアプリの入手1](./mac/hako2.png)
 
-DroneAppSilicon.zipを入手します。入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
+DroneAppAppleSilicon.zipを入手します。入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
 
 ``` bash
 cd ~/work/hakoniwa-unity-drone-model
 ```
 ``` bash
-unzip ~/Downloads/DroneAppSilicon.zip
+unzip ~/Downloads/DroneAppAppleSilicon.zip
 ```
 
 ### 1.3.6. フライトコントローラ PX4のビルド
