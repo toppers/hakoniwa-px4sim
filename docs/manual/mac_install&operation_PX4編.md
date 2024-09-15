@@ -472,7 +472,7 @@ PX4の起動画面に”ERROR [simulator_mavlink] poll timeout 0, 22”が表示
 cd ~/work/hakoniwa-unity-drone-model
 ```
 ``` bash
-bash ./plugin/activate_app.bash DroneAppLinux
+bash ./plugin/activate_app.bash DroneAppAppleSilicon
 ```
 
 Unityアプリが起動したら、STARTボタンを押して、待機します。
