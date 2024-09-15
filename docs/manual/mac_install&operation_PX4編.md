@@ -113,19 +113,19 @@ brew install git jq googletest pyenv
 
 環境変数の設定
 ```bash
-$ echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
 ```
 ```bash
-$ echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
 ```
 ```bash
-$ echo 'eval "$(pyenv init --path)"' >> ~/.zshrc
+echo 'eval "$(pyenv init --path)"' >> ~/.zshrc
 ```
 ```bash
-$ echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 ```
 ```bash
-$ source ~/.zshrc
+source ~/.zshrc
 ```
 
 Pythonのインストール
