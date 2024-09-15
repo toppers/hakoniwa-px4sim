@@ -286,13 +286,20 @@ export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 
 ![Unityアプリの入手1](./mac/hako2.png)
 
-DroneAppAppleSilicon.zipを入手します。入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
+AppleSiliconの場合は、DroneAppAppleSilicon.zipを入手します。
+AppleIntelの場合は、DroneAppAppleIntel.zipを入手します。
+入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
 
 ``` bash
 cd ~/work/hakoniwa-unity-drone-model
 ```
+AppleSilicon:
 ``` bash
 unzip ~/Downloads/DroneAppAppleSilicon.zip
+```
+AppleIntel:
+``` bash
+unzip ~/Downloads/DroneAppAppleIntel.zip
 ```
 
 ### 1.3.6. フライトコントローラ PX4のビルド
@@ -471,8 +478,13 @@ PX4の起動画面に”ERROR [simulator_mavlink] poll timeout 0, 22”が表示
 ``` bash
 cd ~/work/hakoniwa-unity-drone-model
 ```
+AppleSilicon:
 ``` bash
 bash ./plugin/activate_app.bash DroneAppAppleSilicon
+```
+AppleIntel:
+``` bash
+bash ./plugin/activate_app.bash DroneAppAppleIntel
 ```
 
 Unityアプリが起動したら、STARTボタンを押して、待機します。

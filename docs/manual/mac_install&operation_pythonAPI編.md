@@ -306,13 +306,23 @@ export PYTHONPATH=/usr/local/lib/hakoniwa/py:${PYTHONPATH}
 
 ![Unityアプリの入手1](./mac/hako2.png)
 
-DroneAppAppleSilicon.zipを入手します。入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
+AppleSiliconの場合は、DroneAppAppleSilicon.zipを入手します。
+AppleIntelの場合は、DroneAppAppleIntel.zipを入手します。
+
+入手後、解凍します。解凍は、`hakoniwa-unity-drone-model`のディレクトリ配下に解凍してください。
+
+
 
 ``` bash
 cd ~/work/hakoniwa-unity-drone-model
 ```
+AppleSilicon:
 ``` bash
 unzip ~/Downloads/DroneAppAppleSilicon.zip
+```
+AppleIntel:
+``` bash
+unzip ~/Downloads/DroneAppAppleIntel.zip
 ```
 
 ## 1.4. 箱庭ドローンシミュレータでの動作確認
@@ -326,8 +336,13 @@ unzip ~/Downloads/DroneAppAppleSilicon.zip
 ``` bash
 cd ~/work/hakoniwa-px4sim/hakoniwa
 ```
+AppleSilicon:
 ``` bash
 bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppAppleSilicon ./config/api_sample
+```
+AppleIntel:
+``` bash
+bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppAppleIntel ./config/api_sample
 ```
 
 ![箱庭コア機能起動](./ubuntu/hako4.png)
@@ -340,8 +355,13 @@ bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppAppleSilicon ./conf
 ``` bash
 cd ~/work/hakoniwa-unity-drone-model
 ```
+AppleSilicon:
 ``` bash
 bash ./plugin/activate_app.bash DroneAppAppleSilicon
+```
+AppleIntel:
+``` bash
+bash ./plugin/activate_app.bash DroneAppAppleIntel
 ```
 
 Unityアプリが起動したら、STARTボタンを押して、待機します。
@@ -361,8 +381,13 @@ cd ~/work/hakoniwa-px4sim
 ```bash
 cd drone_api/sample
 ```
+AppleSilicon:
 ```bash
 python sample.py ../../../hakoniwa-unity-drone-model/DroneAppAppleSilicon/custom.json
+```
+AppleIntel:
+```bash
+python sample.py ../../../hakoniwa-unity-drone-model/DroneAppAppleIntel/custom.json
 ```
 
 ![Pythonアプリの起動1](./ubuntu/hako6.png)
@@ -381,8 +406,13 @@ cd ~/work/hakoniwa-px4sim
 ```bash
 cd drone_api/sample
 ```
+AppleSilicon:
 ```bash
 python3 rc-custom.py ../../../hakoniwa-unity-drone-model/DroneAppAppleSilicon/custom.json rc_config/ps4-control-lnx.json
+```
+AppleIntel:
+```bash
+python3 rc-custom.py ../../../hakoniwa-unity-drone-model/DroneAppAppleIntel/custom.json rc_config/ps4-control-lnx.json
 ```
 
 ![Pythonアプリの起動2](./ubuntu/hako7.png)
@@ -443,9 +473,15 @@ vi ~/work/hakoniwa-px4sim/hakoniwa/replay.bash
 
 replay.bashの以下の部分を+になっているような内容に変更します。
 
+AppleSilicon:
 ```diff
 -export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/custom.json
 +export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/DroneAppAppleSilicon/custom.json
+```
+AppleIntel:
+```diff
+-export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/custom.json
++export HAKO_CUSTOM_JSON_PATH=../../hakoniwa-unity-drone-model/DroneAppAppleIntel/custom.json
 ```
 
 編集後、以下の手順にてを実行します。
