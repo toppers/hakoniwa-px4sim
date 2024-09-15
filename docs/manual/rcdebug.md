@@ -80,16 +80,42 @@
 # 2. 箱庭ドローンシミュレータでのコントローラ設定
 
 箱庭ドローンシミュレータでは、多種多様なコントローラを利用できるように設定をJSON形式のファイルとして提供しています。
-以降の解説では、ubuntu環境のホームディレクトリ配下のworkディレクトリに箱庭ドローンシミュレータ環境を構築していることを前提として解説をします。
+以降の解説では、ubuntuの場合は、ubuntu環境のホームディレクトリ配下のworkディレクトリに箱庭ドローンシミュレータ環境を構築していることを前提として解説をします。Windowsの場合は、`c:\Users\”User名”\source\repo`に箱庭ドローンシミュレータ環境を構築していることを前提としています。
 
 ## 2.1. JSON形式の設定ファイルの場所
 
 以下のディレクトリにJSONファイル形式の設定ファイルがあります。
 
+- Ubuntuの場合
+
+bashを起動してください。
+
 ```bash
 $ ls work/hakoniwa-px4sim/drone_api/sample/rc_config/
-FS-i6S.json  hori4mini-control-lnx.json  ps4-control-lnx.json  ps4-control.json
+FS-i6S.json Nintendo-ProControl-win.json  hori4mini-control-win.json  ps4-control.json Nintendo-ProControl-lnx.json hori4mini-control-lnx.json    ps4-control-lnx.json ps5-control-lnx.json
 ```
+
+― Windows10/11の場合
+
+Powershellを起動してください。
+
+```pwoershell
+PS C:\Users\buildman\source\repos\hakoniwa-px4sim > ls .\drone_api\sample\rc_config\
+
+    Directory: C:\Users\buildman\source\repos\hakoniwa-px4sim\drone_api\sample\rc_config
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a---          2024/09/08    15:00           1554 FS-i6S.json
+-a---          2024/09/08    15:00           2002 hori4mini-control-lnx.json
+-a---          2024/09/08    16:02           2004 hori4mini-control-win.json
+-a---          2024/09/08    15:00           2001 Nintendo-ProControl-lnx.json
+-a---          2024/09/08    16:02           2003 Nintendo-ProControl-win.json
+-a---          2024/09/08    15:00           2005 ps4-control-lnx.json
+-a---          2024/09/08    15:00           2004 ps4-control.json
+-a---          2024/09/08    16:02           2005 ps5-control-lnx.json
+```
+
 
 ## 2.2. JSON形式の設定ファイルの内容
 
@@ -282,10 +308,23 @@ OSによって、十字キーの割り当てが変わるため、注意が必要
 
 コントローラのデバッグ用のpythonコードを利用して、コントローラから取れる値を確認することができます。
 
+― Ubuntuの場合
+
+bashを起動してください。
+
 ```bash
 $ cd ~/work/hakoniwa-px4sim/drone_api/sample/rc_debug
 $ python3 rc_control.py
 ```
+
+― Windows10/11
+
+pwoershellを起動してください。
+
+```pwoershell
+PS C:\Users\buildman\source\repos\hakoniwa-px4sim\drone_api\sample\rc_debug> python .\rc_control.py
+```
+
 
 起動すると以下のようにコントローラを認識してくれます。コントローラの名前、コントローラ上のボタン数が確認できます。
 
