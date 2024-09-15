@@ -281,7 +281,7 @@ bash drone_api/install.bash
 各インストールした結果を反映させるため、環境変数の設定を実施します。
 
 ``` bash
-$ vi ~/.bashrc
+vi ~/.bashrc
 ```
 
 - 環境変数の設定内容
@@ -312,7 +312,7 @@ DroneAppSilicon.zipを入手します。入手後、解凍します。解凍は�
 cd ~/work/hakoniwa-unity-drone-model
 ```
 ``` bash
-$ unzip ~/Downloads/DroneAppSilicon.zip
+unzip ~/Downloads/DroneAppSilicon.zip
 ```
 
 ## 1.4. 箱庭ドローンシミュレータでの動作確認
@@ -327,7 +327,7 @@ $ unzip ~/Downloads/DroneAppSilicon.zip
 cd ~/work/hakoniwa-px4sim/hakoniwa
 ```
 ``` bash
-bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppLinux ./config/api_sample
+bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppAppleSilicon ./config/api_sample
 ```
 
 ![箱庭コア機能起動](./ubuntu/hako4.png)
@@ -338,8 +338,10 @@ bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppLinux ./config/api_
 箱庭ドローンシミュレータのビジュアライズするUnityアプリを起動します。
 
 ``` bash
-$ cd ~/work/hakoniwa-unity-drone-model
-$ bash ./plugin/activate_app.bash DroneAppLinux
+cd ~/work/hakoniwa-unity-drone-model
+```
+``` bash
+bash ./plugin/activate_app.bash DroneAppSilicon
 ```
 
 Unityアプリが起動したら、STARTボタンを押して、待機します。
@@ -360,7 +362,7 @@ cd ~/work/hakoniwa-px4sim
 cd drone_api/sample
 ```
 ```bash
-python sample.py ../../../hakoniwa-unity-drone-model/DroneAppLinux/custom.json
+python sample.py ../../../hakoniwa-unity-drone-model/DroneAppAppleSilicon/custom.json
 ```
 
 ![Pythonアプリの起動1](./ubuntu/hako6.png)
@@ -380,7 +382,7 @@ cd ~/work/hakoniwa-px4sim
 cd drone_api/sample
 ```
 ```bash
-python3 rc-custom.py ../../../hakoniwa-unity-drone-model/DroneAppLinux/custom.json rc_config/ps4-control-lnx.json
+python3 rc-custom.py ../../../hakoniwa-unity-drone-model/DroneAppAppleSilicon/custom.json rc_config/ps4-control-lnx.json
 ```
 
 ![Pythonアプリの起動2](./ubuntu/hako7.png)

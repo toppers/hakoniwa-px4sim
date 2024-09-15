@@ -292,7 +292,7 @@ DroneAppSilicon.zipを入手します。入手後、解凍します。解凍は�
 cd ~/work/hakoniwa-unity-drone-model
 ```
 ``` bash
-$ unzip ~/Downloads/DroneAppSilicon.zip
+unzip ~/Downloads/DroneAppSilicon.zip
 ```
 
 ### 1.3.6. フライトコントローラ PX4のビルド
