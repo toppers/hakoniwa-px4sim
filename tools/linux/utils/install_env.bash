@@ -60,13 +60,13 @@ else
 fi
 
 # Google Test のインストール (失敗時はエラーメッセージ表示)
-if ! apt install -y libgtest-dev; then
+if ! ${SUDO} apt install -y libgtest-dev; then
   echo "Failed to install Google Test."
   exit 1
 fi
 
 # jq のインストール (失敗時はエラーメッセージ表示)
-if ! apt install -y jq; then
+if ! ${SUDO} apt install -y jq; then
   echo "Failed to install jq."
   exit 1
 fi

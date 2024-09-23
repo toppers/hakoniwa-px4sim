@@ -3,6 +3,14 @@
 script_path=$(realpath "$0")
 echo "Script path: $script_path"
 
+which sudo
+if [ $? -eq 0 ]
+then
+    export SUDO=`which sudo`
+else
+    export SUDO=
+fi
+
 DIR_PATH=`(cd "$(dirname $script_path)" && pwd)`
 UTILS_PATH=${DIR_PATH}/utils
 
