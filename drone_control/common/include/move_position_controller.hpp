@@ -82,6 +82,7 @@ public:
         //altitude control
         AltitudeControlInputType a_in;
         a_in.pos = pos;
+        a_in.spd = velocity;
         a_in.target_altitude = target_altitude;
         AltitudeControlPidControlOutputType a_out = rc->alt.run(a_in);
 

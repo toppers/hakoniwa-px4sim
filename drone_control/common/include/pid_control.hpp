@@ -27,6 +27,7 @@ public:
         double error = target - input;
         integral += error * delta_time;
 
+        //double derivative = (first_time) ? 0.0 : (error - prev_error) / delta_time;
         double derivative = (first_time) ? 0.0 : error - prev_error;
         first_time = false;
         prev_error = error;
