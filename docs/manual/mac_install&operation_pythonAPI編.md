@@ -448,7 +448,12 @@ cd ~/work/hakoniwa-px4sim/drone_api/sample/rc_config
 ls
 FS-i6S.json  hori4mini-control-lnx.json  ps4-control-lnx.json  ps4-control.json
 ```
-
+環境変数にjsonファイルを指定することもできます。コントローラの起動例です。
+```bash
+echo 'export RC_CONFIG_PATH=rc_config/hori4mini-control-lnx.json' >> ~/.zshrc
+source ~/.zshrc
+python rc-custom.py ../../../hakoniwa-unity-drone-model/custom.json
+```
 - 現在対応できているコントローラのコンフィグファイル(json形式)
 
 |No|名前|内容|
