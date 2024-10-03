@@ -211,10 +211,11 @@ public:
             out_of_bounds_reset.position = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["position"].get<std::vector<bool>>();
             out_of_bounds_reset.velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["velocity"].get<std::vector<bool>>();
             out_of_bounds_reset.angular_velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["angular_velocity"].get<std::vector<bool>>();
-            return out_of_bounds_reset;
+            return std::make_optional(out_of_bounds_reset);  // std::optional にラップして返す
         }
-        return std::nullopt;
+        return std::nullopt;  // 未設定時
     }
+
 
     std::string getCompRotorVendor() const {
         if (configJson["components"]["rotor"].contains("vendor")) {
