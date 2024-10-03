@@ -123,8 +123,8 @@ Windows環境で、箱庭ドローンシミュレータを利用するにあた�
 ## 2.1. WSLの準備
 
 
-本手順は、箱庭ドローンシミュレータのPX4シミュレータ環境(windows_install&operation_PX4環境ドキュメント)利用時に必要になる手順です。
-Pythonシミュレータ環境(windows_install&operation_python環境のドキュメント)を利用する場合には不要な手順ですので、読み飛ばしてください。
+本手順は、箱庭ドローンシミュレータのPX4シミュレータ環境([windows_install&operation_PX4環境ドキュメント](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/manual/windows_install%26operation_PX4%E7%92%B0%E5%A2%83_WSL2%E7%89%88.md))利用時に必要になる手順です。
+Pythonシミュレータ環境([windows_install&operation_python環境のドキュメント](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/manual/windows_install%26operation_pythonAPI%E7%B7%A8.md))を利用する場合には不要な手順ですので、読み飛ばしてください。
 
 インターネット上で検索すれば、インストール方法は出てきますが、ここではポイントを絞ってインストール方法を解説します。
 
