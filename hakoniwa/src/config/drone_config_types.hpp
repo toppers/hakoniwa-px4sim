@@ -2,6 +2,7 @@
 #define _DRONE_CONFIG_TYPES_HPP_
 
 #include <vector>
+#include <optional>
 
 namespace hako::assets::drone {
     struct OutOfBoundsReset {
