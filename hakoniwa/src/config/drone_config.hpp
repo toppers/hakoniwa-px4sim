@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <optional>
+#include "drone_config_types.hpp"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -202,6 +204,18 @@ public:
     double getCompDroneDynamicsMass() const {
         return configJson["components"]["droneDynamics"]["mass_kg"].get<double>();
     }
+    std::optional<hako::assets::drone::OutOfBoundsReset> getCompDroneDynamicsOutOfBoundsReset() const {
+        if (configJson["components"]["droneDynamics"].contains("out_of_bounds_reset")) {
+            std::cout << "out_of_bounds_reset values are enabled." << std::endl;
+            hako::assets::drone::OutOfBoundsReset out_of_bounds_reset;
+            out_of_bounds_reset.position = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["position"].get<std::vector<bool>>();
+            out_of_bounds_reset.velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["velocity"].get<std::vector<bool>>();
+            out_of_bounds_reset.angular_velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["angular_velocity"].get<std::vector<bool>>();
+            return out_of_bounds_reset;
+        }
+        return std::nullopt;
+    }
+
     std::string getCompRotorVendor() const {
         if (configJson["components"]["rotor"].contains("vendor")) {
             return configJson["components"]["rotor"]["vendor"].get<std::string>();
@@ -209,8 +223,6 @@ public:
             return "None";
         }
     }
-
-    // Rotor parameters
     double getCompRotorTr() const {
         return configJson["components"]["rotor"]["Tr"].get<double>();
     }

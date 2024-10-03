@@ -2,6 +2,7 @@
 #define _DRON_DYNAMICS_GROUND_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
+#include "config/drone_config_types.hpp"
 
 namespace hako::assets::drone {
 
@@ -22,11 +23,17 @@ private:
     double param_size_z;
     bool param_collision_detection;
     bool param_manual_control;
+    std::optional<OutOfBoundsReset> param_out_of_bounds_reset;
+
     /*
      * initial state
      */
     DronePositionType initial_position;
     DroneEulerType initial_angle;
+    /*
+     * Ground position
+     */
+    double ground_height;
 
     /*
      * internal state
@@ -47,6 +54,32 @@ private:
         return r;
     }
 
+    void set_out_of_bounds_values()
+    {
+        const OutOfBoundsReset& reset_value = param_out_of_bounds_reset.value();
+        if (reset_value.position[2]) {
+            this->position.data.z = this->ground_height;
+        }
+        if (reset_value.velocity[2]) {
+            this->velocity.data.z = 0;
+        }
+        if (reset_value.velocity[0]) {
+            this->velocity.data.x = 0;
+        }
+        if (reset_value.velocity[1]) {
+            this->velocity.data.y = 0;
+        }
+        if (reset_value.angular_velocity[0]) {
+            this->angularVelocity.data.x = 0;
+        }
+        if (reset_value.angular_velocity[1]) {
+            this->angularVelocity.data.y = 0;
+        }
+        if (reset_value.angular_velocity[2]) {
+            this->angularVelocity.data.z = 0;
+        }
+    }
+
 public:
     // Constructor with zero initialization
     DroneDynamicsGroundFrame(double dt)
@@ -64,12 +97,16 @@ public:
         this->param_size_z = 0.1;
         this->param_collision_detection = false;
         this->param_manual_control = false;
+        this->ground_height = 0;
     }
     virtual ~DroneDynamicsGroundFrame() {}
     void reset() override
     {
         position = initial_position;
         angle = initial_angle;
+    }
+    void set_out_of_bounds_reset(const std::optional<OutOfBoundsReset>& reset_options) override {
+        param_out_of_bounds_reset = reset_options;
     }
     void set_collision_detection(bool enable) override {
         this->param_collision_detection = enable;
@@ -182,14 +219,52 @@ public:
         this->angularVelocity.data = integral(this->angularVelocity.data, 
                                     {acc_angular_body.phi, acc_angular_body.theta, acc_angular_body.psi});
 
+        //collision detection
+        if (param_collision_detection) {
+            if (input.collision.collision) {
+                hako::drone_physics::VectorType velocity_before_contact = this->velocity;
+                hako::drone_physics::VectorType center_position = this->position;
+                hako::drone_physics::VectorType contact_position = { 
+                    input.collision.contact_position[0].x,
+                    input.collision.contact_position[0].y,
+                    input.collision.contact_position[0].z
+                };
+                double restitution_coefficient = input.collision.restitution_coefficient;
+                if (restitution_coefficient <= 0.0) {
+                    this->ground_height = this->position.data.z;
+                }
+                else {
+                    //std::cout << "velocity_before_contact.x: " << velocity_before_contact.x << std::endl;
+                    //std::cout << "velocity_before_contact.y: " << velocity_before_contact.y << std::endl;
+                    //std::cout << "velocity_before_contact.z: " << velocity_before_contact.z << std::endl;
+                    hako::drone_physics::VectorType col_vel = hako::drone_physics::velocity_after_contact_with_wall(
+                            velocity_before_contact, center_position, contact_position, restitution_coefficient);
+                    //std::cout << "velocity_after_contact.x: " << col_vel.x << std::endl;
+                    //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
+                    //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
+                    this->velocity = col_vel;
+                }
+            }
+        }
+
         //integral to pos, angle on ground frame
         this->position.data = integral(this->position.data, this->velocity.data);
         this->angle.data = integral(this->angle.data, this->angularVelocity.data);
         //boundary condition
-        if (this->position.data.z > 0) {
-            this->position.data.z = 0;
-            this->velocity.data.z = 0;
-        }        
+        if (this->position.data.z > this->ground_height) {
+            if (param_out_of_bounds_reset) {
+                set_out_of_bounds_values();
+            } else {
+                // オプション未設定時の元の処理
+                this->position.data.z = this->ground_height;
+                this->velocity.data.x = 0;
+                this->velocity.data.y = 0;
+                this->velocity.data.z = 0;
+                this->angularVelocity.data.z = 0;
+            }
+        } else {
+            this->ground_height = 0;
+        }
         this->total_time_sec += this->delta_time_sec;
     }
     const std::vector<std::string> log_head() override
