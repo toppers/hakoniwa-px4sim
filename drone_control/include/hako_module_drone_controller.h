@@ -65,6 +65,7 @@ typedef struct {
      */
     double mass;
     double drag;
+    double max_rpm;
     //position
     double pos_x;
     double pos_y;

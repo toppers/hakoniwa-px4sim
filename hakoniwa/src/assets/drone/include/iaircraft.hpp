@@ -80,6 +80,15 @@ public:
             this->rotor_dynamics[i] = src[i];
         }
     }
+    double get_rpm_max(int rotor_index)
+    {
+        if (rotor_index < ROTOR_NUM) {
+            return this->rotor_dynamics[rotor_index]->get_rpm_max();
+        }
+        else {
+            return -1;
+        }
+    }
     void set_thrus_dynamics(IThrustDynamics *src)
     {
         this->thrust_dynamis = src;

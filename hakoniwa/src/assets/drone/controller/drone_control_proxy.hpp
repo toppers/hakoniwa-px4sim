@@ -317,6 +317,7 @@ public:
             hako::assets::drone::DroneVelocityBodyFrameType velocity = module.drone->get_drone_dynamics().get_vel_body_frame();
             hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = module.drone->get_gyro().sensor_value();
             proxy.do_event();
+            proxy.in.max_rpm = module.drone->get_rpm_max(0);
             proxy.in.pos_x = pos.data.x;
             proxy.in.pos_y = pos.data.y;
             proxy.in.pos_z = pos.data.z;
