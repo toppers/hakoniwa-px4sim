@@ -200,6 +200,10 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     else {
         std::cout << "INFO: mixer is not enabled" << std::endl;
     }
+    // rotor control
+    if (drone_config.getControllerDirectRotorControl()) {
+        drone->set_rotor_control_enabled();
+    }
 
     //sensor acc
     auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);

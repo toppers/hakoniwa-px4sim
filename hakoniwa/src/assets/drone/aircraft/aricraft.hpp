@@ -10,6 +10,7 @@ class AirCraft : public hako::assets::drone::IAirCraft {
 private:
     CsvLogger logger;
     DroneMixer *mixer = nullptr;
+    bool enable_rotor_control = false;
 public:
     virtual ~AirCraft() 
     {
@@ -22,6 +23,15 @@ public:
     DroneMixer *get_mixer() override
     {
         return this->mixer;
+    }
+    void set_rotor_control_enabled()
+    {
+        enable_rotor_control = true;
+    }
+
+    bool is_rotor_control_enabled()
+    {
+        return enable_rotor_control;
     }
     void reset() override
     {

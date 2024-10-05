@@ -354,7 +354,16 @@ public:
                 drone_input.no_use_actuator = false;
             }
             else {
-                drone_input.no_use_actuator = true;
+                if (module.drone->is_rotor_control_enabled()) {
+                    for (int i = 0; i < ROTOR_NUM; i++) {
+                        drone_input.controls[i] = out.rotor.controls[i];
+                        module.controls[i] = out.rotor.controls[i];
+                    }
+                    drone_input.no_use_actuator = false;
+                }
+                else {
+                    drone_input.no_use_actuator = true;
+                }
             }
 
             drone_input.manual.control = false;
@@ -367,7 +376,7 @@ public:
                 do_io_read_disturb(module.drone, drone_input.disturbance);
             }
             module.drone->run(drone_input);
-            if (mixer == nullptr) {
+            if ((mixer == nullptr) && (module.drone->is_rotor_control_enabled() == false)) {
                 calculate_simple_controls(module, thrust);
             }
             do_io_write(module.drone, module.controls);

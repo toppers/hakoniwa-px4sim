@@ -383,7 +383,15 @@ public:
             return false;
         }
     }
-
+    bool getControllerDirectRotorControl() const
+    {
+        if (configJson["controller"].contains("direct_rotor_control")) {
+            return configJson["controller"]["direct_rotor_control"];
+        }
+        else {
+            return false;
+        }
+    }
 };
 
 #include <filesystem>
