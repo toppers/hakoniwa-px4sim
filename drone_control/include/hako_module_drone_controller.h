@@ -20,6 +20,12 @@ typedef struct {
     double height;
 } mi_drone_control_in_altitude_t;
 
+#define HAKO_DRONE_MAX_ROTOR_NUM    16
+typedef struct {
+    int num;
+    double controls[HAKO_DRONE_MAX_ROTOR_NUM];
+} mi_drone_control_rotor_t;
+
 typedef struct {
     int radio_control; /* 0: off, 1: on */
     /*
@@ -82,6 +88,10 @@ typedef struct {
     double torque_x;
     double torque_y;
     double torque_z;
+    /*
+     * Rotor control
+     */
+    mi_drone_control_rotor_t rotor;
 } mi_drone_control_out_t;
 
 #define HAKO_MODULE_DRONE_CONTROLLER_SYMBOLE_NAME   "hako_module_drone_controller"
