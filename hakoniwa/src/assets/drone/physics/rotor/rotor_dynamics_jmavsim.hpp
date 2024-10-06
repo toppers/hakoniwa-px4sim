@@ -43,6 +43,10 @@ public:
         value.data = this->w * this->param_kr;
         return value;
     }
+    double get_rpm_max() const override
+    {
+        return this->param_kr;
+    }
 
     void run(double control) override
     {

@@ -2,6 +2,7 @@
 #define _DRON_DYNAMICS_BODY_FRAME_MATLAB_HPP_
 
 #include "idrone_dynamics.hpp"
+#include "config/drone_config_types.hpp"
 #include <math.h>
 #include <iostream>
 #include "utils/csv_logger.hpp"
@@ -26,6 +27,8 @@ private:
     double param_size_z;
     bool param_collision_detection;
     bool param_manual_control;
+    std::optional<OutOfBoundsReset> param_out_of_bounds_reset;
+
     /*
      * initial state
      */
@@ -45,6 +48,10 @@ private:
 
     double delta_time_sec;
     double total_time_sec;
+    /*
+     * Ground position
+     */
+    double ground_height;
 
     DroneVelocityType convert(const DroneVelocityBodyFrameType& src)
     {
@@ -65,6 +72,32 @@ private:
         r.z = p.z + (v.z * this->delta_time_sec);
         return r;
     }
+    void set_out_of_bounds_values()
+    {
+        const OutOfBoundsReset& reset_value = param_out_of_bounds_reset.value();
+        if (reset_value.position[2]) {
+            this->position.data.z = this->ground_height;
+        }
+        if (reset_value.velocity[2]) {
+            this->velocity.data.z = 0;
+            this->velocityBodyFrame.data.z = 0;
+        }
+        if (reset_value.velocity[0]) {
+            this->velocityBodyFrame.data.x = 0;
+        }
+        if (reset_value.velocity[1]) {
+            this->velocityBodyFrame.data.y = 0;
+        }
+        if (reset_value.angular_velocity[0]) {
+            this->angularVelocityBodyFrame.data.x = 0;
+        }
+        if (reset_value.angular_velocity[1]) {
+            this->angularVelocityBodyFrame.data.y = 0;
+        }
+        if (reset_value.angular_velocity[2]) {
+            this->angularVelocityBodyFrame.data.z = 0;
+        }
+    }
 
 public:
     // Constructor with zero initialization
@@ -83,6 +116,7 @@ public:
         this->param_size_z = 0.1;
         this->param_collision_detection = false;
         this->param_manual_control = false;
+        this->ground_height = 0;
         mi_drone_acceleration_initialize();
     }
     virtual ~DroneDynamicsBodyFrameMatlab() {}
@@ -146,6 +180,9 @@ public:
     }
     void set_collision_detection(bool enable) override {
         this->param_collision_detection = enable;
+    }
+    void set_out_of_bounds_reset(const std::optional<OutOfBoundsReset>& reset_options) override {
+        param_out_of_bounds_reset = reset_options;
     }
     bool has_collision_detection() override {
         return this->param_collision_detection;
@@ -234,16 +271,21 @@ public:
                     input.collision.contact_position[0].z
                 };
                 double restitution_coefficient = input.collision.restitution_coefficient;
-                //std::cout << "velocity_before_contact.x: " << velocity_before_contact.x << std::endl;
-                //std::cout << "velocity_before_contact.y: " << velocity_before_contact.y << std::endl;
-                //std::cout << "velocity_before_contact.z: " << velocity_before_contact.z << std::endl;
-                hako::drone_physics::VectorType col_vel = hako::drone_physics::velocity_after_contact_with_wall(
-                        velocity_before_contact, center_position, contact_position, restitution_coefficient);
-                //std::cout << "velocity_after_contact.x: " << col_vel.x << std::endl;
-                //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
-                //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
-                this->velocity = col_vel;
-                this->velocityBodyFrame = drone_physics::body_vector_from_ground(this->velocity, angle);
+                if (restitution_coefficient <= 0.0) {
+                    this->ground_height = this->position.data.z;
+                }
+                else {
+                    //std::cout << "velocity_before_contact.x: " << velocity_before_contact.x << std::endl;
+                    //std::cout << "velocity_before_contact.y: " << velocity_before_contact.y << std::endl;
+                    //std::cout << "velocity_before_contact.z: " << velocity_before_contact.z << std::endl;
+                    hako::drone_physics::VectorType col_vel = hako::drone_physics::velocity_after_contact_with_wall(
+                            velocity_before_contact, center_position, contact_position, restitution_coefficient);
+                    //std::cout << "velocity_after_contact.x: " << col_vel.x << std::endl;
+                    //std::cout << "velocity_after_contact.y: " << col_vel.y << std::endl;
+                    //std::cout << "velocity_after_contact.z: " << col_vel.z << std::endl;
+                    this->velocity = col_vel;
+                    this->velocityBodyFrame = drone_physics::body_vector_from_ground(this->velocity, angle);
+                }
             }
         }
 
@@ -252,15 +294,22 @@ public:
         this->angle.data = integral(this->angle.data, this->angularVelocity.data);
 
         //boundary condition
-        if (this->position.data.z > 0) {
-            this->position.data.z = 0;
-            this->velocity.data.z = 0;
-            this->velocityBodyFrame.data.x = 0;
-            this->velocityBodyFrame.data.y = 0;
-            this->velocityBodyFrame.data.z = 0;
-            //this->angularVelocityBodyFrame.data.x = 0;
-            //this->angularVelocityBodyFrame.data.y = 0;
-            //this->angularVelocityBodyFrame.data.z = 0;
+        if (this->position.data.z > this->ground_height) {
+            if (param_out_of_bounds_reset) {
+                set_out_of_bounds_values();
+            } else {
+                // オプション未設定時の元の処理
+                this->position.data.z = this->ground_height;
+                this->velocity.data.z = 0;
+                this->velocityBodyFrame.data.x = 0;
+                this->velocityBodyFrame.data.y = 0;
+                this->velocityBodyFrame.data.z = 0;
+                //this->angularVelocityBodyFrame.data.x = 0;
+                //this->angularVelocityBodyFrame.data.y = 0;
+                this->angularVelocityBodyFrame.data.z = 0;
+            }
+        } else {
+            this->ground_height = 0;
         }
         this->total_time_sec += this->delta_time_sec;
     }

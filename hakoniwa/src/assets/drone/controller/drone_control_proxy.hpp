@@ -317,6 +317,7 @@ public:
             hako::assets::drone::DroneVelocityBodyFrameType velocity = module.drone->get_drone_dynamics().get_vel_body_frame();
             hako::assets::drone::DroneAngularVelocityBodyFrameType angular_velocity = module.drone->get_gyro().sensor_value();
             proxy.do_event();
+            proxy.in.max_rpm = module.drone->get_rpm_max(0);
             proxy.in.pos_x = pos.data.x;
             proxy.in.pos_y = pos.data.y;
             proxy.in.pos_z = pos.data.z;
@@ -354,7 +355,16 @@ public:
                 drone_input.no_use_actuator = false;
             }
             else {
-                drone_input.no_use_actuator = true;
+                if (module.drone->is_rotor_control_enabled()) {
+                    for (int i = 0; i < ROTOR_NUM; i++) {
+                        drone_input.controls[i] = out.rotor.controls[i];
+                        module.controls[i] = out.rotor.controls[i];
+                    }
+                    drone_input.no_use_actuator = false;
+                }
+                else {
+                    drone_input.no_use_actuator = true;
+                }
             }
 
             drone_input.manual.control = false;
@@ -367,7 +377,7 @@ public:
                 do_io_read_disturb(module.drone, drone_input.disturbance);
             }
             module.drone->run(drone_input);
-            if (mixer == nullptr) {
+            if ((mixer == nullptr) && (module.drone->is_rotor_control_enabled() == false)) {
                 calculate_simple_controls(module, thrust);
             }
             do_io_write(module.drone, module.controls);

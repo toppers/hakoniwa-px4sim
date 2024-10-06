@@ -2,6 +2,7 @@
 #define _DRON_DYNAMICS_BODY_FRAME_HPP_
 
 #include "idrone_dynamics.hpp"
+#include "config/drone_config_types.hpp"
 #include <math.h>
 #include <iostream>
 #include "utils/csv_logger.hpp"
@@ -25,6 +26,8 @@ private:
     double param_size_z;
     bool param_collision_detection;
     bool param_manual_control;
+    std::optional<OutOfBoundsReset> param_out_of_bounds_reset;
+
     /*
      * initial state
      */
@@ -70,6 +73,32 @@ private:
         r.z = p.z + (v.z * this->delta_time_sec);
         return r;
     }
+    void set_out_of_bounds_values()
+    {
+        const OutOfBoundsReset& reset_value = param_out_of_bounds_reset.value();
+        if (reset_value.position[2]) {
+            this->position.data.z = this->ground_height;
+        }
+        if (reset_value.velocity[2]) {
+            this->velocity.data.z = 0;
+            this->velocityBodyFrame.data.z = 0;
+        }
+        if (reset_value.velocity[0]) {
+            this->velocityBodyFrame.data.x = 0;
+        }
+        if (reset_value.velocity[1]) {
+            this->velocityBodyFrame.data.y = 0;
+        }
+        if (reset_value.angular_velocity[0]) {
+            this->angularVelocityBodyFrame.data.x = 0;
+        }
+        if (reset_value.angular_velocity[1]) {
+            this->angularVelocityBodyFrame.data.y = 0;
+        }
+        if (reset_value.angular_velocity[2]) {
+            this->angularVelocityBodyFrame.data.z = 0;
+        }
+    }
 
 public:
     // Constructor with zero initialization
@@ -99,6 +128,9 @@ public:
         angularVelocity = {0, 0, 0};
         velocityBodyFrame = {0, 0, 0};
         angularVelocityBodyFrame = {0, 0, 0};
+    }
+    void set_out_of_bounds_reset(const std::optional<OutOfBoundsReset>& reset_options) override {
+        param_out_of_bounds_reset = reset_options;
     }
     void set_body_size(double x, double y, double z) override
     {
@@ -245,14 +277,18 @@ public:
 
         //boundary condition
         if (this->position.data.z > this->ground_height) {
-            this->position.data.z = this->ground_height;
-            this->velocity.data.z = 0;
-            this->velocityBodyFrame.data.x = 0;
-            this->velocityBodyFrame.data.y = 0;
-            this->velocityBodyFrame.data.z = 0;
-            //this->angularVelocityBodyFrame.data.x = 0;
-            //this->angularVelocityBodyFrame.data.y = 0;
-            this->angularVelocityBodyFrame.data.z = 0;
+            if (param_out_of_bounds_reset) {
+                set_out_of_bounds_values();
+            } else {
+                this->position.data.z = this->ground_height;
+                this->velocity.data.z = 0;
+                this->velocityBodyFrame.data.x = 0;
+                this->velocityBodyFrame.data.y = 0;
+                this->velocityBodyFrame.data.z = 0;
+                //this->angularVelocityBodyFrame.data.x = 0;
+                //this->angularVelocityBodyFrame.data.y = 0;
+                this->angularVelocityBodyFrame.data.z = 0;
+            }
         }
         else {
             this->ground_height = 0;

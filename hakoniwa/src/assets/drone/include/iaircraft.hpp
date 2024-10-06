@@ -27,6 +27,7 @@ protected:
     ISensorMag *mag;
     std::string robo_name;
     int index = 0;
+    bool enable_rotor_control = false;
 public:
     virtual ~IAirCraft() {}
     virtual void run(DroneDynamicsInputType& input) = 0;
@@ -39,6 +40,15 @@ public:
     bool is_enabled_disturbance()
     {
         return this->enable_disturbance;
+    }
+    void set_rotor_control_enabled()
+    {
+        enable_rotor_control = true;
+    }
+
+    bool is_rotor_control_enabled()
+    {
+        return enable_rotor_control;
     }
     void set_name(const std::string& name)
     {
@@ -68,6 +78,15 @@ public:
     {
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->rotor_dynamics[i] = src[i];
+        }
+    }
+    double get_rpm_max(int rotor_index)
+    {
+        if (rotor_index < ROTOR_NUM) {
+            return this->rotor_dynamics[rotor_index]->get_rpm_max();
+        }
+        else {
+            return -1;
         }
     }
     void set_thrus_dynamics(IThrustDynamics *src)

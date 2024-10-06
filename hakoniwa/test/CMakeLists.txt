@@ -32,6 +32,7 @@ target_include_directories(
     PRIVATE ${PROJECT_SOURCE_DIR}/../src
     PRIVATE ${HAKONIWA_PDU_SOURCE_DIR}
     PRIVATE ${HAKONIWA_SOURCE_DIR}
+    PRIVATE ${PROJECT_SOURCE_DIR}/../src/config
     PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone
     PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone/physics
     PRIVATE ${PROJECT_SOURCE_DIR}/../src/assets/drone/include

@@ -14,6 +14,8 @@ public:
 
     virtual DroneRotorSpeedType get_rotor_speed() const = 0;
 
+    virtual double get_rpm_max() const = 0;
+
     virtual void run(double control) = 0;
 };
 

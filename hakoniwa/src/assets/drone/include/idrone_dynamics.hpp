@@ -4,6 +4,7 @@
 #include "drone_primitive_types.hpp"
 #include "utils/icsv_log.hpp"
 #include "hako_module_drone_sensor.h"
+#include "config/drone_config_types.hpp"
 
 namespace hako::assets::drone {
 
@@ -53,6 +54,7 @@ public:
     virtual void set_manual_control(bool enable) = 0;
     virtual void set_body_size(double x, double y, double z) = 0;
     virtual void set_torque_constants(double cx, double cy, double cz) = 0;
+    virtual void set_out_of_bounds_reset(const std::optional<OutOfBoundsReset>& reset_options) = 0;
     virtual void set_pos(const DronePositionType &pos) = 0;
     virtual void set_vel(const DroneVelocityType &vel) = 0;
     virtual void set_angle(const DroneEulerType &angle) = 0;

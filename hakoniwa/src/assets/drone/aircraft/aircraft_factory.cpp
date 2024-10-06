@@ -102,6 +102,9 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     DroneEulerType rot;
     rot.data = { DEGREE2RADIAN(angle[0]), DEGREE2RADIAN(angle[1]), DEGREE2RADIAN(angle[2]) };
     drone_dynamics->set_angle(rot);
+    //out of bounds reset option
+    auto out_of_bounds_reset = drone_config.getCompDroneDynamicsOutOfBoundsReset();
+    drone_dynamics->set_out_of_bounds_reset(out_of_bounds_reset);
     drone->set_drone_dynamics(drone_dynamics);
     std::cout << "INFO: logpath: " << LOGPATH(drone->get_index(), "drone_dynamics.csv") << std::endl;
     drone->get_logger().add_entry(*drone_dynamics, LOGPATH(drone->get_index(), "drone_dynamics.csv"));
@@ -196,6 +199,10 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     }
     else {
         std::cout << "INFO: mixer is not enabled" << std::endl;
+    }
+    // rotor control
+    if (drone_config.getControllerDirectRotorControl()) {
+        drone->set_rotor_control_enabled();
     }
 
     //sensor acc
