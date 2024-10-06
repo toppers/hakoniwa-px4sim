@@ -163,6 +163,10 @@ static inline void do_io_read_disturb(hako::assets::drone::IAirCraft *drone, hak
     }
     //temperature
     drone_disturb.values.d_temp.value = hako_disturb.d_temp.value;
+    //wind
+    drone_disturb.values.d_wind.x = hako_disturb.d_wind.value.x;
+    drone_disturb.values.d_wind.y = hako_disturb.d_wind.value.y;
+    drone_disturb.values.d_wind.z = hako_disturb.d_wind.value.z;
 }
 #include <iomanip>  // for std::hex and std::setfill
 
