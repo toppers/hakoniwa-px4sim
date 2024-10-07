@@ -254,8 +254,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         auto v = gyro_model->init(context);
         HAKO_ASSERT(v == 0);
         gyro->set_vendor(gyro_model, (void*)context);
-        drone->enable_disturb();
     }
+    drone->enable_disturb();
     drone->set_gyro(gyro);
     drone->get_logger().add_entry(*gyro, LOGPATH(drone->get_index(), "log_gyro.csv"));
 

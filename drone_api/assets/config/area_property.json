@@ -1,0 +1,32 @@
+{
+    "area_properties": [
+      {
+        "area_id": "area_1",
+        "properties": {
+          "wind_velocity": [1.0, 1.0, 0.0],
+          "temperature": 22.5
+        }
+      },
+      {
+        "area_id": "area_2",
+        "properties": {
+          "wind_velocity": [2.5, 1.0, 0.0],
+          "temperature": 19.0
+        }
+      },
+      {
+        "area_id": "area_3",
+        "properties": {
+          "wind_velocity": [0.0, 0.0, 0.0],
+          "temperature": 25.0
+        }
+      },
+      {
+        "area_id": "area_4",
+        "properties": {
+          "temperature": null
+        }
+      }
+    ]
+  }
+  
