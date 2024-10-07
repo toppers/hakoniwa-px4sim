@@ -43,10 +43,19 @@ typedef struct DronePosition {
  */
 typedef struct DroneVelocity {
     glm::dvec3 data;
-    DroneVelocity(){ data.x = 0; data.y = 0; data.z = 0; }
-    DroneVelocity(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {} 
+    DroneVelocity() : data(0.0, 0.0, 0.0) {}
+    DroneVelocity(const hako::drone_physics::VectorType& rhs) : data(rhs.x, rhs.y, rhs.z) {}
     DroneVelocity& operator=(const hako::drone_physics::VectorType& rhs) {
         this->data = {rhs.x, rhs.y, rhs.z};
+        return *this;
+    }
+    DroneVelocity operator+(const hako::drone_physics::VectorType& rhs) const {
+        return DroneVelocity({data.x + rhs.x, data.y + rhs.y, data.z + rhs.z});
+    }
+    DroneVelocity& operator+=(const hako::drone_physics::VectorType& rhs) {
+        this->data.x += rhs.x;
+        this->data.y += rhs.y;
+        this->data.z += rhs.z;
         return *this;
     }
     operator hako::drone_physics::VectorType() const {

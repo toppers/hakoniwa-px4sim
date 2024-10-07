@@ -238,7 +238,10 @@ public:
         this->velocity = this->convert(this->velocityBodyFrame);
 
         // ADD WIND CONDITION HERE. (wind vector, in ground frame)
-        // this->velocity += (wind_x, wind_y, wind_z);
+        hako::drone_physics::VectorType wind_disturbance = {input.disturbance.values.d_wind.x, 
+                                                            input.disturbance.values.d_wind.y, 
+                                                            input.disturbance.values.d_wind.z};
+        this->velocity += wind_disturbance;
 
         this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
 
