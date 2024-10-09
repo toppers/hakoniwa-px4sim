@@ -166,6 +166,21 @@ The settings for each item are as follows:
   - **sampleCount**: The number of samples.
   - **noise**: Noise level (standard deviation). If noise is not set, it is 0.
 
+## Controller Settings
+
+The **controller** section configures parameters related to the drone's flight controller module. The following parameters can be set:
+
+- **moduleDirectory**: Specifies the directory path where the flight controller module is stored. For example, you would specify a path like `"../src/drone_control/cmake-build/workspace/FlightController"`.
+
+- **moduleName**: Specifies the name of the flight controller module to be used. This determines which flight controller module will be utilized in the simulation. Example: `"FlightController"`.
+
+- **direct_rotor_control**: Specifies whether direct rotor control is enabled. When set to `true`, direct control of the rotors is allowed. Typically, this is set to `false`.
+
+- **mixer**: Configures the drone's mixer settings. If this section is not set, thrust and torque are directly input into the physical model.
+  - **vendor**: Specifies the vendor name of the mixer. Currently, `"None"` and `"linear"` can be specified.
+  - **enableDebugLog**: Specifies whether to enable debug logging. Setting this to `true` enables the debug log.
+  - **enableErrorLog**: Specifies whether to enable error logging. Setting this to `true` enables the error log.
+
 # Hakoniwa Command and Library Installation Instructions(WSL2/Mac/Ubuntu）
 
 Hakoniwa includes a command (`hako-cmd`) and a shared library (`libshakoc.[so|dylib]`). These are used when running simulations without Unity.
