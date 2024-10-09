@@ -17,6 +17,7 @@ This repository is a simulation environment for drone plant models that can be i
 - [Effects from the Environment](#effects-from-the-environment)
 - [Headless Simulation](#headless-simulation)
 - [Log Replay](#logreplay)
+- [Support for AR Devices](#Support-for-AR-Devices)
 - [Community and Support](#community-and-support)
 - [About This Repository and License](#about-this-repository-and-license)
 - [Contribution Guidelines](#contribution-guidelines)
@@ -44,6 +45,13 @@ This repository is a simulation environment for drone plant models that can be i
 10. **Python API Support:** It's possible to control the aircraft via the Python API without using PX4 or QGC. For details, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_api/README.md). Additionally, you can control the drone using a PS4 controller. For more details, please visit [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control/ps4). For an explanation of the control program driven by the Python API, please refer to [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/docs/drone_control).
 
 11. **Log Replay:** You can replay the flight trajectory of the drones from the log data recorded during the drone simulation execution. For more details, see [here](#logreplay).
+
+Here’s the English version for both sections:
+
+12. **Support for Environmental Factors:** The drone simulation includes environmental factors such as wind, temperature, and humidity. These factors can be externally defined, allowing disturbances like wind to affect the drone's trajectory. Environmental factors can be configured according to the simulation scenario. For sample implementations and configuration files for the environmental models, refer to [this document](docs/drone_environment/README.md).
+
+13. **Support for AR Devices:** By wearing an AR device, you can experience the drone being simulated in Hakoniwa in real-time right in front of you. For more details, see [here](#Support-for-AR-Devices).
+
 
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
@@ -509,6 +517,22 @@ bash replay.bash
 ```
 
 Start Unity for `hakoniwa-unity-drone-model` and begin the simulation. The drones will replicate the movements from the original simulation.
+
+
+# Support for AR Devices
+
+Using an AR device, you can visualize the drone being simulated in real-time, allowing you to experience its behavior in the physical space right in front of you. This enables users to directly observe the simulation results, creating a unique interaction between the simulated and real-world environments.
+
+## Required Equipment
+- **Oculus Quest 3** or another supported AR device
+- **PC** (with Unity development environment installed)
+- **Hakoniwa Drone Simulator** (AR-supported version)
+
+## Detailed Steps
+To experience the drone simulation using an AR device, you will need to create a dedicated app. For instructions and required settings, please refer to the links below:
+
+- [Steps for creating a Quest 3 app](https://github.com/toppers/hakoniwa-unity-drone-model/blob/main/README-quest3.md)
+- [How to link the Hakoniwa Drone Simulator with an AR app](https://github.com/toppers/hakoniwa-unity-drone-model/blob/main/README-quest3-drone.md)
 
 # Community and Support
 
