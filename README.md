@@ -46,8 +46,6 @@ This repository is a simulation environment for drone plant models that can be i
 
 11. **Log Replay:** You can replay the flight trajectory of the drones from the log data recorded during the drone simulation execution. For more details, see [here](#logreplay).
 
-Here’s the English version for both sections:
-
 12. **Support for Environmental Factors:** The drone simulation includes environmental factors such as wind, temperature, and humidity. These factors can be externally defined, allowing disturbances like wind to affect the drone's trajectory. Environmental factors can be configured according to the simulation scenario. For sample implementations and configuration files for the environmental models, refer to [this document](docs/drone_environment/README.md).
 
 13. **Support for AR Devices:** By wearing an AR device, you can experience the drone being simulated in Hakoniwa in real-time right in front of you. For more details, see [here](#Support-for-AR-Devices).
@@ -490,8 +488,6 @@ Example: For the second aircraft
 ```
 bash ../sim/simstart.bash 1
 ```
-
-Sure, here is the English version for the GitHub README:
 
 # LogReplay
 
