@@ -52,6 +52,7 @@ Here’s the English version for both sections:
 
 13. **Support for AR Devices:** By wearing an AR device, you can experience the drone being simulated in Hakoniwa in real-time right in front of you. For more details, see [here](#Support-for-AR-Devices).
 
+14. **Web Browser Support:** You can visualize the Hakoniwa Drone Simulation in a web browser. The visualization is made possible by registering the Hakoniwa Web Server as a Hakoniwa asset. The Hakoniwa Web Server shares Hakoniwa PDU data (such as the drone’s position information) through WebSocket, allowing real-time visualization of the data in a web browser. For setup and usage instructions for the Hakoniwa Web Server, see [here](https://github.com/toppers/hakoniwa-webserver).
 
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
