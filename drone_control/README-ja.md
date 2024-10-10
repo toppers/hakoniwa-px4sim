@@ -39,3 +39,13 @@ cmake-build/workspace/FlightController/libFlightController.so
 cmake-build/workspace/RadioController/libRadioController.so 
 ```
 
+# 制御パラメータファイル
+
+ドローンの動作は、さまざまな制御パラメータで構成されています。これらのパラメータはテキストファイルとして定義され、ユーザーはそれをカスタマイズすることが可能です。
+
+もしドローンの動きに調整が必要な場合、このパラメータファイルの値を変更することで、動作の微調整を行うことができます。
+
+現在のデフォルト設定は、こちらで確認できます：
+[ドローン制御パラメータ設定ファイル](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control/config/param-api.txt)
+
+また、パラメータファイルを正しく読み込むためには、環境変数 `HAKO_CONTROLLER_PARAM_FILE` にそのファイルのパスを設定する必要があります。
