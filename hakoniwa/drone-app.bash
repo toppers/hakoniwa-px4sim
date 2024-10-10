@@ -24,12 +24,7 @@ fi
 if [ -z "$HAKO_CONTROLLER_PARAM_FILE" ]
 then
     grep moduleDirectory ${DRONE_CONFIG_PATH}/*.json | grep Flight > /dev/null
-    if [ $? -eq 0 ]
-    then
-        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api.txt
-    else
-        export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-rc.txt
-    fi
+    export HAKO_CONTROLLER_PARAM_FILE=../drone_control/config/param-api.txt
 fi
 
 if [ -z $HAKO_MASTER_DISABLE ]

@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 
-class PidControl {
+class DronePidControl {
 private:
     double Kp;
     double Ki;
@@ -17,18 +17,18 @@ private:
     double delta_time;
 
 public:
-    PidControl(double Kp, double Ki, double Kd, double sp, double dt)
+    DronePidControl(double Kp, double Ki, double Kd, double sp, double dt)
         : Kp(Kp), Ki(Ki), Kd(Kd), target(sp), integral(0.0), prev_error(0.0), first_time(true), delta_time(dt)
     {
     }
+    ~DronePidControl() {}
 
     double calculate(double sp, double input) {
         target = sp;
         double error = target - input;
         integral += error * delta_time;
 
-        //double derivative = (first_time) ? 0.0 : (error - prev_error) / delta_time;
-        double derivative = (first_time) ? 0.0 : error - prev_error;
+        double derivative = (first_time) ? 0.0 : (error - prev_error) / delta_time;
         first_time = false;
         prev_error = error;
         return Kp * error + Ki * integral + Kd * derivative;

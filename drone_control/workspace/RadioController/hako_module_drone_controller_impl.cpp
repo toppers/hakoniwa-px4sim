@@ -1,6 +1,5 @@
 #include "hako_module_drone_controller_impl.h"
-#include "heading_controller.hpp"
-#include "radio_controller.hpp"
+#include "drone_radio_controller.hpp"
 #include <algorithm>
 #include <iostream>
 
@@ -12,12 +11,7 @@ const char* hako_module_drone_controller_impl_get_name(void)
 
 void* hako_module_drone_controller_impl_create_context(void*)
 {
-    RadioControllerParamType param = get_radio_control_default_parameters();
-    auto rc = create_radio_controller(param);
-    if (rc == nullptr) {
-        exit(1);
-    }
-    return (void*)rc;
+    return (void*)new DroneRadioController();
 }
 
 int hako_module_drone_controller_impl_is_operation_doing(void *context)
@@ -31,68 +25,53 @@ int hako_module_drone_controller_impl_init(void*)
 }
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
 {
-    RadioController *rc = (RadioController*)in->context;
+    DroneRadioController* ctrl = (DroneRadioController*)in->context;
     mi_drone_control_out_t out = {};
-    if (rc->r_altitude_initialized == false) {
-        rc->r_altitude = -in->pos_z;
-        rc->r_altitude_initialized = true;
-        std::cout << "r_altitude: " << rc->r_altitude << std::endl;
-    }
+    /*
+     * 入力
+     * 補足：z軸は、わかりやすさを重視しして符号を反転する。
+     */
+    FlightControllerInputEulerType euler = {in->euler_x, in->euler_y, in->euler_z};
+    FlightControllerInputPositionType pos = {in->pos_x, in->pos_y, -in->pos_z};
+    FlightControllerInputVelocityType velocity = {in->u, in->v, -in->w};
+    FlightControllerInputAngularRateType angular_rate = {in->p, in->q, in->r};
 
-    //altitude control
-    double throttle_value = -in->target.throttle.power;
-    rc->update_target_altitude(throttle_value);
-    AltitudeControlInputType a_in;
-    a_in.pos = { in->pos_x, in->pos_y, in->pos_z };
-    a_in.target_altitude = rc->r_altitude;
-    AltitudeControlPidControlOutputType a_out = rc->alt.run(a_in);
-    //std::cout << "TARGET ALTITUDE : " << a_in.target_altitude <<std::endl;
-    //std::cout << "CURRENT ALTITUDE: " << -a_in.pos.z <<std::endl;
-
-    SpeedControlInputType s_in = {};
-    s_in.velocity = { in->u, in->v, in->w };
-    SpeedControlPidControlOutputType s_out = {};
-    if (rc->use_spd_ctrl) {
-        //speed control
-        s_in.target_vx = in->target.attitude.pitch * -rc->max_spd; /* -20m/s to 20m/s */
-        s_in.target_vy = in->target.attitude.roll * rc->max_spd;  /* -20m/s to 20m/s */
-        s_out = rc->spd.run(s_in);
-        //std::cout << "TARGET VELOCITY ( " << s_in.target_vx << ", " << s_in.target_vy << " )" <<std::endl;
-        //std::cout << "CURRENT VELOCITY( " << s_in.velocity.u << ", " << s_in.velocity.v << " )" <<std::endl;
-        //std::cout << "TARGET  ANGLE   ( " << s_out.pitch << ", " << s_out.roll << " )" <<std::endl;
-        //std::cout << "CURRENT ANGLE   ( " << in->euler_y << ", " << in->euler_x << " )" <<std::endl;
-    }
-
-    //radio control
-    RadioControlInputType rin;
-    rin.euler = {in->euler_x, in->euler_y, in->euler_z};                //STATE: euler
-    rin.angular_rate = {in->p, in->q, in->r};                           //STATE: angular_rate
-    //rin.target_thrust = -in->target.throttle.power;                   //TARGET: thrust
-    rin.target_thrust = a_out.throttle_power;                           //TARGET: thrust
-
-    if (rc->use_spd_ctrl) {
-        rin.target_roll = s_out.roll;
-        rin.target_pitch = s_out.pitch;
-
-        //Heading control;
-        HeadingControlInputType h_in;
-        h_in.euler = rin.euler;
-        rc->update_target_yaw(in->target.direction_velocity.r);
-        h_in.target_angle_deg = rc->r_yaw;
-        HeadingControlPidControlOutputType h_out = rc->heading.run(h_in);
-        rin.target_angular_rate_r = h_out.angular_rate_r;        //TARGET: angular_rate
-    }
-    else {
-        rin.target_roll = in->target.attitude.roll * rc->pid_param_max_roll;   //TARGET: angular.roll
-        rin.target_pitch = in->target.attitude.pitch * rc->pid_param_max_pitch; //TARGET: angular.pitch
-        rin.target_angular_rate_r = in->target.direction_velocity.r;        //TARGET: angular_rate
-    }
-
-    FlightControllerOutputType ret = rc->run(rin);
-    out.thrust = ret.thrust;
-    out.torque_x = ret.torque_x;
-    out.torque_y = ret.torque_y;
-    out.torque_z = ret.torque_z;
+    /*
+     * 目標値は、NED座標系で入る。
+     * Z軸だけ、わかりやすさのため符号を反転している
+     */
+    ctrl->save_for_initial_position(pos.z);
+    double target_yaw      =  ctrl->update_target_yaw(in->target.direction_velocity.r);
+    double target_pos_z    =  ctrl->update_target_altitude(-in->target.throttle.power);
+    double target_vx       =  -in->target.attitude.pitch * ctrl->get_pos_max_spd();
+    double target_vy       =  in->target.attitude.roll  * ctrl->get_pos_max_spd();
+    /*
+     * 高度制御
+     */
+    DroneAltInputType alt_in(pos, velocity, target_pos_z);
+    DroneAltOutputType alt_out = ctrl->alt->run(alt_in);
+    /*
+     * 機首方向制御
+     */
+    DroneHeadingControlInputType head_in(euler, target_yaw);
+    DroneHeadingControlOutputType head_out = ctrl->head->run(head_in);
+    /*
+     * 水平制御
+     */
+    DroneVelInputType spd_in(velocity, target_vx, target_vy);
+    DronePosOutputType pos_out = ctrl->pos->run_spd(spd_in);
+    /*
+     * 姿勢角度制御
+     */
+    DroneAngleInputType angle_in(euler, angular_rate, pos_out.target_roll, pos_out.target_pitch, head_out.target_yaw_rate);
+    DroneAngleOutputType angle_out = ctrl->angle->run(angle_in);
+    /*
+     * 出力
+     */
+    out.thrust = alt_out.thrust;
+    out.torque_x = angle_out.p;
+    out.torque_y = angle_out.q;
+    out.torque_z = angle_out.r;
     return out;
 }
 
