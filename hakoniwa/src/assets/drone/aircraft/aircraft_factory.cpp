@@ -89,6 +89,9 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     drone_dynamics->set_drag(drags[0], drags[1]);
     drone_dynamics->set_mass(drone_config.getCompDroneDynamicsMass());
     drone_dynamics->set_collision_detection(drone_config.getCompDroneDynamicsCollisionDetection());
+    if (drone_config.getCompDroneDynamicsEnableDisturbance()) {
+        drone->enable_disturb();
+    }
     drone_dynamics->set_manual_control(drone_config.getCompDroneDynamicsManualControl());
     auto body_size = drone_config.getCompDroneDynamicsBodySize();
     drone_dynamics->set_body_size(body_size[0], body_size[1], body_size[2]);
@@ -255,7 +258,6 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         HAKO_ASSERT(v == 0);
         gyro->set_vendor(gyro_model, (void*)context);
     }
-    drone->enable_disturb();
     drone->set_gyro(gyro);
     drone->get_logger().add_entry(*gyro, LOGPATH(drone->get_index(), "log_gyro.csv"));
 
