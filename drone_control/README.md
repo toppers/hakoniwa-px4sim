@@ -38,3 +38,14 @@ Example: The file `lib<directory_name>.so` will be generated
 cmake-build/workspace/FlightController/libFlightController.so 
 cmake-build/workspace/RadioController/libRadioController.so 
 ```
+
+# Control Parameter File
+
+The movement of the drone is configured through various control parameters. These parameters are defined in a text file, which you can customize as needed.
+
+If you notice any issues with the drone's movement, you can fine-tune its behavior by adjusting the values in the parameter file.
+
+The current default settings can be found here:
+[Drone Control Parameter File](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control/config/param-api.txt)
+
+Additionally, to ensure the parameter file is loaded correctly, make sure to specify the file path in the environment variable `HAKO_CONTROLLER_PARAM_FILE`.
