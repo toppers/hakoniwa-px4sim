@@ -37,6 +37,7 @@
     "droneDynamics": {
       "physicsEquation": "BodyFrame",
       "collision_detection": true,
+      "enable_disturbance": false,
       "manual_control": false,
       "airFrictionCoefficient": [
         0.05,

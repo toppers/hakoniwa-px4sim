@@ -153,6 +153,7 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
     - BodyFrame: 箱庭のデフォルト物理モデルを利用する場合は、この値を設定してください。
     - BodyFrameMatlab: MATLABで生成した物理モデルのコードを利用する場合は、この値を設定してください。
   - **collision_detection**: 障害物との衝突を検出して物理式にフィードバックする場合は`true`。非検出とする場合は、`false`。
+  - **collision_detection**: 風や温度などの外乱を物理/センサモデルにフィードバックする場合は`true`。非検出とする場合は、`false`。
   - **manual_control**:　センサキャリブレーションで機体を手動で操作した場合に利用します。`true`にすると、外部操作が可能になります。通常は`false`として下さい。
   - **airFrictionCoefficient**: 空気抵抗係数。空気抵抗の１次項と２次項を配列で指定します。
   - **inertia**: 慣性モーメントのリスト。単位はキログラム・メートル二乗(`kg*m^2`)。

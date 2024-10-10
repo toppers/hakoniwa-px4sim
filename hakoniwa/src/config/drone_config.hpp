@@ -170,6 +170,14 @@ public:
     bool getCompDroneDynamicsCollisionDetection() const {
         return configJson["components"]["droneDynamics"]["collision_detection"].get<bool>();
     }
+    bool getCompDroneDynamicsEnableDisturbance() const {
+         if (configJson["components"]["droneDynamics"].contains("enable_disturbance")) {
+            return configJson["components"]["droneDynamics"]["enable_disturbance"].get<bool>();
+         }
+         else {
+            return false;
+         }
+    }
     bool getCompDroneDynamicsManualControl() const {
         return configJson["components"]["droneDynamics"]["manual_control"].get<bool>();
     }
