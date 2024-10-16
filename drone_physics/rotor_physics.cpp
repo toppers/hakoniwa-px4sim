@@ -26,6 +26,10 @@ namespace hako::drone_physics {
  *        and it is the maximum rpm as time equals infinity.
  *  Tr ... time constant of the rotor.
  * 
+ *  Note that the above first-order lag model is originally not for raw Omega,
+ *  but for Delta-Omega, the difference from the Omega0 (the hover equiblium omega).
+ *  But this model usually works fare. Possibliy make a non-linear model in the future.
+ * 
  *  MAKE SURE that the unit of the simulation delta time be smaller than Tr.
  *  Otherwise, the simulation will be unstable. 
  *  (The target Kr*(duty rate) == Omega is reached in one iteration)
@@ -36,7 +40,7 @@ namespace hako::drone_physics {
  *     d(Omega)/dt = ( Kr * (duty rate) - (Omega) ) / Tr
  * 
  *  If the input duty rate is a constant, the analytical solution for
- *  the above equation is as follows(step response).);
+ *  the above equation is as follows(step response).;
  * 
  *     Omega = Kr * (1 - exp(-t/Tr) * (duty rate))
  */
