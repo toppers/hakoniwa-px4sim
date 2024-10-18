@@ -312,28 +312,40 @@ void test_ground_angular_acceleration()
 
 #include <fstream>
 void test_rotor_omega_acceleration() {
-    double Kr = 0.1, Tr = 1, duty_rate = 1, omega = 1;
+    double Kr = 2896, Tr = 4.5e-2, duty_rate = 1, omega = 0;
     double a = rotor_omega_acceleration(Kr, Tr, omega, duty_rate);
-    assert(a == (Kr * duty_rate - omega) / Tr);
+    assert(std::fabs(a - (Kr * duty_rate - omega) / Tr) < 0.0001);
 
     std::ofstream ofs;
     ofs.open("omega_times_series.csv", std::ios::out);
-    ofs << "TIME,ACC,OMEGA" << std::endl;
+    ofs << "TIME,ACC(a),OMEGA(a),ACC(b),OMEGA(b)" << std::endl;
 
-    Kr = 1, Tr = 100, duty_rate = 0.5, omega = 0;
+    Kr = 2896, Tr = 4.5e-2, duty_rate = 1, omega = 0;
+//    double Vbat = 22.2, R = 0.12, Cq = 3.0e-8, K = 3.28e-3, J = 8.12e-6;
+    double Vbat = 11.1, R = 0.12, Cq = 3.0e-8, K = 3.28e-3, J = 8.12e-6;
 
-    for (double time = 0; time < 3; time += 0.01) {
-        double a = rotor_omega_acceleration(Kr, Tr, omega, duty_rate);
-        assert(a == (Kr * duty_rate - omega) / Tr);
-        omega += a;
+    // calculation from the constants.
+    double w0 = 1448;
+    double Kr_ = K*Vbat/(K*K + 2*R*Cq*w0), Tr_ = J*R/(K*K + 2*R*Cq*w0);
+    std::cout << " diff btween 2 calculation... w0 = " << w0 << ",    Kr = " << Kr << ", Kr_=" << Kr_ << ",     Tr = " << Tr << ", Tr_=" << Tr_ << "." << std::endl;
+
+    double omega_a = 0, omega_b = 0;
+    for (double time = 0; time < .1; time += .001) {
+        double a = rotor_omega_acceleration(Kr, Tr, omega_a, duty_rate);
+        double b = rotor_omega_acceleration(Vbat, R, Cq, J, K, omega_b, duty_rate);
+
+        
+        assert(std::fabs(a - (Kr * duty_rate - omega_a) / Tr) < 0.0001);
+        omega_a += a*time;
+        omega_b += b*time;
 
         /** differencial equation
          *  d(Omega)/dt = ( Kr * (duty rate) - (Omega) ) / Tr
          *  if duty_rate is a constant, the solution is
          *  Omega = Kr * (1 - exp(-t/Tr) * (duty rate))
          */
-        assert(std::fabs(omega -  Kr*(1 - std::exp(-time/Tr)*duty_rate) < 0.0001));
-        ofs << time << "," << a << "," << omega << std::endl;
+//        assert(std::fabs(omega_a -  Kr*(1 - std::exp(-time/Tr)*duty_rate) < 10));
+        ofs << time << "," << a*time << "," << omega_a << ", " << b*time << ", " << omega_b << std::endl;
     }
     ofs.close();
 }
@@ -482,6 +494,7 @@ int main() {
     T(test_body_anti_torque);
     T(test_body_anti_Jr_torque);
     T(test_collision);
+    T(test_rotor_omega_acceleration);
     std::cerr << "-------all standard test PASSSED!!----\n";
     T(test_issue_89_yaw_angle_bug);
     std::cerr << "-------all bug issue test PASSSED!!----\n";

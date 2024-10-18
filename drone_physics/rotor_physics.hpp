@@ -15,8 +15,17 @@ double rotor_omega_acceleration(
     double Kr, /* gain constant */
     double Tr, /* time constant */
     double omega, /* in radian/sec */
-    double duty_rate /* 0-1 of PWM */
-    );
+    double duty_rate /* 0-1 of PWM */ );
+
+/* realistic model for rotor */
+double rotor_omega_acceleration(
+    double Vbat, /* battery voltage in volt [V]*/
+    double R, /* resistance in ohm [V/A] */
+    double Cq, /* torque coeff (= B param in anti-torque) [N ms^2/rad^2] */
+    double J, /* propeller inertia in [kg m^2] */
+    double K, /* back electromotive force coeff in [N m/A] */
+    double omega, /* in radian/sec */
+    double duty_rate /* 0-1 of PWM */);
 
 /* thrust from omega in radian/sec eq.(2.50)*/
 double rotor_thrust(

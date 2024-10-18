@@ -1,5 +1,6 @@
 #include "rotor_physics.hpp"
 #include <cmath>
+#include <cassert>
 
 namespace hako::drone_physics {
 
@@ -7,6 +8,8 @@ namespace hako::drone_physics {
  * All the equations are from the references below.
  * Nonami's book "Introduction to Drone Engineering" from Corona Publishing Co., Ltd.
  * Some of the them can be found in the following links, too.
+ * 
+ * https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2
  * https://mtkbirdman.com/flight-dynamics-body-axes-system
  * https://www.jstage.jst.go.jp/article/sicejl/56/1/56_3/_pdf
  * https://www.sky-engin.jp/blog/eulers-equations-of-motion/
@@ -48,13 +51,38 @@ double rotor_omega_acceleration(
     double Kr /* gain constant */,
     double Tr /* time constant */,
     double omega, /* in radian/sec */
-    double duty_rate /* 0-1 of PWM */)
+    double duty_rate /* 0.0-1.0 (ratio) of PWM */)
 {
     /**
      * See Nonami's book (2.48)
      * G(s) = Kr/(Tr s + 1). 
      */
     return (Kr * duty_rate - omega) / Tr;
+}
+
+/**
+ * Realistic modeling of the rotor, using battery voltage, intertia and etc.
+ */
+double rotor_omega_acceleration(
+    double Vbat, /* battery voltage in volt [V]*/
+    double R, /* resistance in ohm [V/A] */
+    double Cq, /* torque coeff (= B param in anti-torque) [N ms^2/rad^2] */
+    double J, /* propeller inertia in [kg m^2] */
+    double K, /* back electromotive force coeff in [N m/A] */
+    double omega, /* in radian/sec */
+    double duty_rate /* 0-1 of PWM */)
+{
+    assert(R != 0.0);
+    assert(J != 0.0);
+    /**
+     * See. Kohoei model of motor/propeller(= roter)
+     * https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2 eq (3)
+     * where, e = duty_rate * Vbat.
+     * 
+     * Later: add 'Qf' and 'D' to the parameter and subtract the two anti-forces,
+    *  return ... -(D/J)*omega - Qf/J;
+     */
+    return ( K*Vbat*duty_rate - (Cq*R*omega + K*K)*omega )  /  (J*R);
 }
 
 /* thrust from omega in radian/sec eq.(2.50)*/
@@ -65,6 +93,7 @@ double rotor_thrust(
     /**
      * Nonami's book (2.50)
      * T = A * (Omega)^2
+     * A is referred to as Ct in Kohei's doc.
      */
     return A * (omega * omega);
 }
@@ -76,6 +105,7 @@ double rotor_anti_torque(double B,
     /**
      * See Nonami's book eq.(2.56)
      * Ta = B * (Omega)^2 + Jr * (d(Omega)/dt)
+     * B is referred to as Cq in Kohei's doc.
      */
    return ccw * ( B * omega * omega + Jr * omega_acceleratoin );
 }
