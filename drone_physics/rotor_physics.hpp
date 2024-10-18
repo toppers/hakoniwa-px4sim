@@ -14,22 +14,22 @@ namespace hako::drone_physics {
 double rotor_omega_acceleration(
     double Kr, /* gain constant */
     double Tr, /* time constant */
-    double omega, /* in rpm */
+    double omega, /* in radian/sec */
     double duty_rate /* 0-1 of PWM */
     );
 
-/* thrust from omega in rpm eq.(2.50)*/
+/* thrust from omega in radian/sec eq.(2.50)*/
 double rotor_thrust(
     double A, /* parameter A in Trust = A*(Omega)^2 */
-    double omega /* in rpm */ );
+    double omega /* in radian/sec */ );
 
 /* this makes z-axis rotation eq.(2.56) */
 /* Ta = B*(Omega)^2 + Jr* (d(Omega)/dt) */
 double rotor_anti_torque(
     double B,
     double Jr,
-    double omega, /* in rpm */
-    double omega_acceleratoin, /* in rpm/s */
+    double omega, /* in radian/sec */
+    double omega_acceleratoin, /* in radian/s^2 */
     double ccw /* 1 or -1 */ );
 
 /**
@@ -41,7 +41,7 @@ double rotor_anti_torque(
 double body_thrust(
     double A, /* parameter A in Trust = A*(Omega)^2 in each motor */
     unsigned n, /* number of rotors */
-    double omega[] /* in rpm */ );
+    double omega[] /* in radian/sec */ );
 
 /* the sum of the n torques from the rotors including anti-torque */
 /* eq.(2.60)-(2.62)*/
@@ -52,13 +52,13 @@ TorqueType body_torque(
     unsigned n, /* number of rotors */
     VectorType position[], /* position of each rotor */
     double ccw[], /* 1 or -1 */
-    double omega[], /* in rpm */
-    double omega_acceleration[] /* in rpm/s */ );
+    double omega[], /* in radian/sec */
+    double omega_acceleration[] /* in radian/s^2 */ );
 
 
 double rotor_thrust_linear(
     double A, /* the A parameter in Trust = A*(Omega) */
-    double omega /* in rpm */ );
+    double omega /* in radian/sec */ );
 double rotor_anti_torque_linear(double B2, double omega, double ccw);
 TorqueType body_torque_linear(double A2, double B2, unsigned n,
     VectorType position[], double ccw[], double omega[]);

@@ -17,13 +17,13 @@ namespace hako::drone_physics {
  *  The rotor dynamics is modeled as a first-order lag system.
  * 
  *  Input(s) ...  duty rate(0..1)
- *  Output(s) ... Omega in rpm
+ *  Output(s) ... Omega in radian/sec
  *  Output(s)/Input(s) = G(s), G(s) = Kr/(Tr s + 1). 
  * 
  *  See: Nonami's book eq.(2.48)
  * 
- *  Kr ... gain constant, which is the coefficient of the duty rate to the rpm.
- *        and it is the maximum rpm as time equals infinity.
+ *  Kr ... gain constant, which is the coefficient of the duty rate to the radian/sec.
+ *        and it is the maximum radian/sec of duty 1.0 as time equals infinity.
  *  Tr ... time constant of the rotor.
  * 
  *  Note that the above first-order lag model is originally not for raw Omega,
@@ -47,7 +47,7 @@ namespace hako::drone_physics {
 double rotor_omega_acceleration(
     double Kr /* gain constant */,
     double Tr /* time constant */,
-    double omega, /* in rpm */
+    double omega, /* in radian/sec */
     double duty_rate /* 0-1 of PWM */)
 {
     /**
@@ -57,10 +57,10 @@ double rotor_omega_acceleration(
     return (Kr * duty_rate - omega) / Tr;
 }
 
-/* thrust from omega in rpm eq.(2.50)*/
+/* thrust from omega in radian/sec eq.(2.50)*/
 double rotor_thrust(
     double A, /* the A parameter in Trust = A*(Omega)^2 */
-    double omega /* in rpm */ )
+    double omega /* in radian/sec */ )
 {
     /**
      * Nonami's book (2.50)
@@ -127,7 +127,7 @@ TorqueType body_torque(double A, double B, double Jr, unsigned n,
  */
 double rotor_thrust_linear(
     double A2, /* the A parameter in Trust = A*(Omega) */
-    double omega /* in rpm */ )
+    double omega /* in radian/sec */ )
 {
     return A2 * omega;
 }
