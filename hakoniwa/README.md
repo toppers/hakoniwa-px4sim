@@ -116,7 +116,7 @@ Upon success, a file named `cmake-build/src/hako-px4sim` will be created.
 
 # Aircraft Parameter Description
 
-Aircraft parameters can be set in [drone_config.json](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json).
+Aircraft parameters can be set in [drone_config.json](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/api_sample/drone_config_0.json).
 
 The settings for each item are as follows:
 

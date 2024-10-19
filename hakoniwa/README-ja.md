@@ -125,7 +125,7 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
 
 # 機体のパラメータ説明
 
-機体のパラメータは、[drone_config.json](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json)で設定できます。
+機体のパラメータは、[drone_config.json](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/api_sample/drone_config_0.json)で設定できます。
 
 各項目の設定内容は以下のとおりです。
 

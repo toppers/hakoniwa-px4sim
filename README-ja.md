@@ -37,7 +37,7 @@
 
 7. **自動テストのサポート:** テストシナリオベースでの自動テストが可能です。これにより、繰り返しのテストや連続したテストの自動化が実現可能になり、開発プロセスの効率化が図れます。詳細は[こちら](https://github.com/toppers/hakoniwa-px4sim/tree/main/px4/auto-test)を参照ください。
 
-8. **機体特性の外部パラメータ化:** ドローンの機体特性は外部からの[パラメータ化](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa#機体のパラメータ説明)が可能です。これにより、さまざまな機体の特性に合わせたシミュレーションが実現でき、より幅広いテストシナリオへの対応が可能になります。パラメータ設定例は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json)。
+8. **機体特性の外部パラメータ化:** ドローンの機体特性は外部からの[パラメータ化](https://github.com/toppers/hakoniwa-px4sim/tree/main/hakoniwa#機体のパラメータ説明)が可能です。これにより、さまざまな機体の特性に合わせたシミュレーションが実現でき、より幅広いテストシナリオへの対応が可能になります。パラメータ設定例は[こちら](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/api_sample/drone_config_0.json)。
 
 9. **複数機体対応:** ドローンの機体特性パラメータを複数用意することで、機体を複数同時にシミュレーションすることができます。詳細は[こちら](#複数機体対応)
 

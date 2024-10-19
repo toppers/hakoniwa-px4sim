@@ -38,7 +38,7 @@ This repository is a simulation environment for drone plant models that can be i
 
 7. **Support for Automated Testing:** Enables test scenario-based automated testing. This makes it possible to automate repeated and consecutive tests, thereby streamlining the development process. For more details, please refer [here](https://github.com/toppers/hakoniwa-px4sim/tree/main/px4/auto-test).
 
-8. **External Parameterization of Aircraft Characteristics:** The characteristics of the drone can be parameterized externally. This allows for simulations tailored to various aircraft characteristics, enabling support for a wider range of test scenarios. For an example of parameter settings, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/drone_config.json).
+8. **External Parameterization of Aircraft Characteristics:** The characteristics of the drone can be parameterized externally. This allows for simulations tailored to various aircraft characteristics, enabling support for a wider range of test scenarios. For an example of parameter settings, see [here](https://github.com/toppers/hakoniwa-px4sim/blob/main/hakoniwa/config/api_sample/drone_config_0.json).
 
 9. **Multi-Aircraft Support:** By preparing multiple sets of drone airframe characteristic parameters, it is possible to simulate several aircraft simultaneously. For details, see [here](#Multi-Aircraft-Support).
 
