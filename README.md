@@ -5,6 +5,10 @@ English ｜ [日本語](README-ja.md)
 This repository is a simulation environment for drone plant models that can be integrated with PX4. This simulation environment accurately models drone behavior based on physical equations and is implemented in C language.
 
 
+## 📚 Click Here for the Manual 📚
+
+[▶️ **View the Manual**](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/manual/README.md)
+
 # Table of Contents
 
 - [Features](#features)
