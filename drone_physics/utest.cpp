@@ -321,8 +321,7 @@ void test_rotor_omega_acceleration() {
     ofs << "TIME,ACC(a),OMEGA(a),ACC(b),OMEGA(b)" << std::endl;
 
     Kr = 2896, Tr = 4.5e-2, duty_rate = 1, omega = 0;
-//    double Vbat = 22.2, R = 0.12, Cq = 3.0e-8, K = 3.28e-3, J = 8.12e-6;
-    double Vbat = 11.1, R = 0.12, Cq = 3.0e-8, K = 3.28e-3, J = 8.12e-6;
+    double Vbat = 11.1, R = 0.12, Cq = 3.0e-8, K = 3.28e-3, D = 0, J = 8.12e-6;
 
     // calculation from the constants.
     double w0 = 1448;
@@ -332,7 +331,7 @@ void test_rotor_omega_acceleration() {
     double omega_a = 0, omega_b = 0;
     for (double time = 0; time < .1; time += .001) {
         double a = rotor_omega_acceleration(Kr, Tr, omega_a, duty_rate);
-        double b = rotor_omega_acceleration(Vbat, R, Cq, J, K, omega_b, duty_rate);
+        double b = rotor_omega_acceleration(Vbat, R, Cq, J, K, D, omega_b, duty_rate);
 
         
         assert(std::fabs(a - (Kr * duty_rate - omega_a) / Tr) < 0.0001);

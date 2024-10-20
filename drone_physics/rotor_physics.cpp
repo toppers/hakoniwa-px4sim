@@ -69,6 +69,7 @@ double rotor_omega_acceleration(
     double Cq, /* torque coeff (= B param in anti-torque) [N ms^2/rad^2] */
     double J, /* propeller inertia in [kg m^2] */
     double K, /* back electromotive force coeff in [N m/A] */
+    double D, /* Kinematic viscosity coefficient [Nms/rad] */
     double omega, /* in radian/sec */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
@@ -78,11 +79,9 @@ double rotor_omega_acceleration(
      * See. Kohoei model of motor/propeller(= roter)
      * https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2 eq (3)
      * where, e = duty_rate * Vbat.
-     * 
-     * Later: add 'Qf' and 'D' to the parameter and subtract the two anti-forces,
-    *  return ... -(D/J)*omega - Qf/J;
+     * Assuming inductance L and Qf is very small(zero).
      */
-    return ( K*Vbat*duty_rate - (Cq*R*omega + K*K)*omega )  /  (J*R);
+    return ( K*Vbat*duty_rate - (Cq*R*omega + K*K + D*R)*omega)  /  (J*R);
 }
 
 /* thrust from omega in radian/sec eq.(2.50)*/

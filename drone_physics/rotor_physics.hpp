@@ -24,6 +24,7 @@ double rotor_omega_acceleration(
     double Cq, /* torque coeff (= B param in anti-torque) [N ms^2/rad^2] */
     double J, /* propeller inertia in [kg m^2] */
     double K, /* back electromotive force coeff in [N m/A] */
+    double D, /* Kinematic viscosity coefficient [Nms/rad] */
     double omega, /* in radian/sec */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */);
 
