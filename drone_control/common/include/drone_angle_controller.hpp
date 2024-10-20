@@ -59,7 +59,7 @@ private:
     /*
      * rate control
      */
-    double angular_rate_simulation_time;
+    double angular_rate_simulation_time = 0;
     double angular_rate_control_cycle;
     double roll_torque_max;
     double pitch_torque_max;
@@ -137,7 +137,7 @@ public:
         /*
          * rate control
          */
-        angular_control_cycle = loader.getParameter("ANGULAR_RATE_CONTROL_CYCLE");
+        angular_rate_control_cycle = loader.getParameter("ANGULAR_RATE_CONTROL_CYCLE");
         roll_torque_max = loader.getParameter("PID_ROLL_TORQUE_MAX");
         pitch_torque_max = loader.getParameter("PID_PITCH_TORQUE_MAX");
         yaw_torque_max = loader.getParameter("PID_YAW_TORQUE_MAX");
