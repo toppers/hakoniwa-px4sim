@@ -1,27 +1,27 @@
 #include <iostream>
-// #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <cmath>
 
-void out(const char* msg, const glm::dvec4& v) {
-    std::cout << msg << "(" << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << ")" << std::endl;
+#define assert_almost_equal_dvec4(u, v) assert(std::fabs(u[0]-v[0]) < 0.001 && std::fabs(u[1]-v[1]) < 0.001 && std::fabs(u[2]-v[2]) < 0.001 && std::fabs(u[3]-v[3]) < 0.001 || (out("dvec4 different! u=", u, " "), out("v=", v), false))
+
+void out(const char* msg, const glm::dvec4& v, const char* cont = "\n") {
+    std::cout << msg << "(" << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << ")" << cont;
 }
-void out(const char* msg, double d) {
-    std::cout << msg << "(" << d << ")" << std::endl;
+void out(const char* msg, double d, const char* cont = "\n") {
+    std::cout << msg << "(" << d << ")" << cont;
 }
 
 void simple_test() {
     using namespace glm;
 
     dvec4 v1(1, 1, 1, 1);
-    out("v1=", v1);
     dvec4 v2 = v1 * 2.0;
-    out("v2=", v2);
+    assert_almost_equal_dvec4(v2, dvec4(2, 2, 2, 2));
 
     dmat4 I(1.0);
     dvec4 v3 = I*v2;
-    out("v3=(identity)*2.0=",v3);
+    assert_almost_equal_dvec4(v3, v2);
 }
 
 const int ROTOR_NUM = 4;
@@ -68,8 +68,6 @@ void mixer_test() {
     glm::dmat4 M_inv = glm::inverse(M);
     glm::dmat4 MA_inv= M_inv * A_inv;
 
-
-    
     glm::dvec4 delta_U = glm::dvec4(delta_T, torque_x, torque_y, torque_z);
     glm::dvec4 delta_omega_times_omega0 = 0.5 * MA_inv * delta_U;
     glm::dvec4 delta_omega = delta_omega_times_omega0/omega0;
