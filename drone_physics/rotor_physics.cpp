@@ -51,7 +51,7 @@ double rotor_omega_acceleration(
     double Kr /* gain constant */,
     double Tr /* time constant */,
     double omega, /* in radian/sec */
-    double duty_rate /* 0.0-1.0 (ratio) of PWM */)
+    double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
     /**
      * See Nonami's book (2.48)
@@ -70,7 +70,7 @@ double rotor_omega_acceleration(
     double J, /* propeller inertia in [kg m^2] */
     double K, /* back electromotive force coeff in [N m/A] */
     double omega, /* in radian/sec */
-    double duty_rate /* 0-1 of PWM */)
+    double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
     assert(R != 0.0);
     assert(J != 0.0);
