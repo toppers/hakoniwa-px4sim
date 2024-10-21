@@ -284,13 +284,13 @@ The PS4 controller is used to control the drone in the Python simulator. The con
 | 4   | □ Button        | Operates camera for taking photos         |                                                    |
 | 5   | ○ Button        | Picks up/drops off cargo in the simulator |                                                    |
 
-![PS4コントローラを使ったドローン操作](./hakoinst/hakowin210-en.png)
+![Drone operation using a PS4 controller](./hakoinst/hakowin210-en.png)
 
 ### 5.3.2. Starting the Hakoniwa Core Functionality
 
 First, start the core function of Hakoniwa by double-clicking the shortcut to "run-api2.bat" in the hakowin folder.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認1](./hakoinst/inst7-en.png)
+![Hakoniwa Drone Simulator sample app operation check 1](./hakoinst/inst7-en.png)
 
 Verify that it is in the "WAIT START" state.
 
@@ -298,7 +298,7 @@ Verify that it is in the "WAIT START" state.
 
 Next, start the Unity application for visualization in the Hakoniwa Drone Simulator by double-clicking the "drone_model.exe" shortcut.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認2](./hakoinst/inst8-en.png)
+![Hakoniwa Drone Simulator sample app operation check 2](./hakoinst/inst8-en.png)
 
 Once the Unity application starts, click the "START" button and wait.
 
@@ -306,7 +306,7 @@ Once the Unity application starts, click the "START" button and wait.
 
 Finally, run the drone control app by double-clicking the "run-rc.bat" shortcut.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認3](./hakoinst/inst10-en.png)
+![Hakoniwa Drone Simulator sample app operation check 3](./hakoinst/inst10-en.png)
 
 #### 5.3.4.1. Actual Operations
 
@@ -314,7 +314,7 @@ Use the PS4 controller to operate the drone. First, press the × button to start
 
 Try transporting cargo or taking photos using the Python simulator.
 
-![Pythonシミュレータを使ったドローン荷物搬送例](./hakoinst/hakowin211_1-en.png)
+![Example of drone cargo transport using a Python simulator](./hakoinst/hakowin211_1-en.png)
 
 # 6. Troubleshooting
 
@@ -324,7 +324,7 @@ The Hakoniwa Drone Simulator environment installed by the installer may encounte
 
 If the installation is not performed with administrative privileges, environment variables may not be set. This can cause errors as shown below.
 
-![箱庭ドローンシミュレータサンプルトラブルシュート1](./hakoinst/troubleshooting1-en.png)
+![Hakoniwa Drone Simulator sample troubleshooting 1](./hakoinst/troubleshooting1-en.png)
 
 In this case, uninstall the Hakoniwa Drone Simulator and reinstall it with administrative privileges.
 
@@ -332,7 +332,7 @@ In this case, uninstall the Hakoniwa Drone Simulator and reinstall it with admin
 
 If the RAM Disk is not configured correctly, errors as shown below may occur.
 
-![箱庭ドローンシミュレータサンプルトラブルシュート2](./hakoinst/troubleshooting2-en.png)
+![Hakoniwa Drone Simulator sample troubleshooting 2](./hakoinst/troubleshooting2-en.png)
 
 In this case, review the pre-installation steps carefully and verify the RAM Disk settings.
 
