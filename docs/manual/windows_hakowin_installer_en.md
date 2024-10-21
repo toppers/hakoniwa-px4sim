@@ -138,11 +138,11 @@ Access the official Python page to obtain the Python environment for Windows.
 
 [Official Python page](https://www.python.org/)
 
-![Python環境の入手](./python/Python11.png)
+![Download Python](./python/Python11-en.png)
 
 Click to start the download automatically. After downloading, run the installer and follow the on-screen instructions to complete the installation.
 
-![Python環境のインストール](./python/Python12.png)
+![Install Python](./python/Python12-en.png)
 
 [Reference URL: Installing Python 3.10 on Windows (Path Setup)](https://qiita.com/youichi_io/items/3111e1cf696a87673b23)
 
@@ -169,11 +169,11 @@ Move to the folder where the zip file was extracted. The files "setup.exe" and "
 
 Once these files are extracted, right-click on "setup.exe" and click "Run as administrator."
 
-![箱庭ドローンシミュレータインストーラ1](./hakoinst/inst1.png)
+![Hakoniwa Drone Simulator Installer 1](./hakoinst/inst1-en.png)
 
 The Hakowin Setup Wizard will start. Click "Next."
 
-![箱庭ドローンシミュレータインストーラ2](./hakoinst/inst2.png)
+![Hakoniwa Drone Simulator Installer 2](./hakoinst/inst2-en.png)
 
 In the installation folder selection screen, click "Next."
 
@@ -181,11 +181,11 @@ In the installation folder selection screen, click "Next."
 
 In the hakoniwa drone config file screen, leave the radio button for the config file at the default setting, then click "Next."
 
-![箱庭ドローンシミュレータインストーラ3](./hakoinst/inst3.png)
+![Hakoniwa Drone Simulator Installer 3](./hakoinst/inst3-en.png)
 
 Click "Next" in the installation confirmation screen, and wait for the progress bar to complete. Once completed, click "Next" and then click "Finish" to close.
 
-![箱庭ドローンシミュレータインストーラ4](./hakoinst/inst4.png)
+![Hakoniwa Drone Simulator Installer 4](./hakoinst/inst4-en.png)
 
 The Hakoniwa Drone Simulator environment is now installed.
 
@@ -203,7 +203,7 @@ To run simulations using Python, it is necessary to install the required librari
 
 Start PowerShell in administrator mode from the Windows Start menu.
 
-![Powershell起動](./hakoinst/hakowin23.png)
+![Launch Powershell](./hakoinst/hakowin23-en.png)
 
 Use the pip command to install the following libraries:
 
@@ -217,13 +217,13 @@ PS C:\Windows\System32> pip install opencv-python
 
 Once installation is complete, a "hakowin" folder will be created on the desktop. This folder contains shortcuts for the Hakoniwa Drone Simulator environment and sample apps for Python API.
 
-![箱庭ドローンシミュレータサンプルアプリ1](./hakoinst/inst5.png)
+![Hakoniwa Drone Sim Sample App 1](./hakoinst/inst5-en.png)
 
 ## 5.1. Contents of the hakowin Folder
 
 The "hakowin" folder contains core functions, Unity drone models, and sample applications for Hakoniwa Drone Simulator.
 
-![箱庭ドローンシミュレータサンプルアプリ2](./hakoinst/inst6.png)
+![Hakoniwa Drone Sim Sample App 2](./hakoinst/inst6-en.png)
 
 | No  | File Name                   | Type          | Purpose                                                    |
 | --- | --------------------------- | ------------- | ---------------------------------------------------------- |
@@ -244,7 +244,7 @@ To confirm that the installation is successful, run the sample app using the Pyt
 
 First, start the core function of Hakoniwa. Double-click the shortcut to "run-api2.bat" in the hakowin folder.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認1](./hakoinst/inst7.png)
+![Hakoniwa Drone Sim Sample App Operation Check 1](./hakoinst/inst7-en.png)
 
 Verify that it is in the "WAIT START" state.
 
@@ -252,7 +252,7 @@ Verify that it is in the "WAIT START" state.
 
 Next, start the Unity application for visualization in the Hakoniwa Drone Simulator. Double-click the "drone_model.exe" shortcut.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認2](./hakoinst/inst8.png)
+![Hakoniwa Drone Sim Sample App Operation Check 2](./hakoinst/inst8-en.png)
 
 Once the Unity application starts, click the "START" button and wait.
 
@@ -260,7 +260,7 @@ Once the Unity application starts, click the "START" button and wait.
 
 Finally, to verify the Python API functionality, run the sample app by double-clicking the "run-sample.bat" shortcut.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認3](./hakoinst/inst9.png)
+![Hakoniwa Drone Sim Sample App Operation Check 3](./hakoinst/inst9-en.png)
 
 If the drone flies correctly in the Unity application after launching the sample app, the installation was successful.
 
@@ -284,13 +284,13 @@ The PS4 controller is used to control the drone in the Python simulator. The con
 | 4   | □ Button        | Operates camera for taking photos         |                                                    |
 | 5   | ○ Button        | Picks up/drops off cargo in the simulator |                                                    |
 
-![PS4コントローラを使ったドローン操作](./hakoinst/hakowin210.png)
+![PS4コントローラを使ったドローン操作](./hakoinst/hakowin210-en.png)
 
 ### 5.3.2. Starting the Hakoniwa Core Functionality
 
 First, start the core function of Hakoniwa by double-clicking the shortcut to "run-api2.bat" in the hakowin folder.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認1](./hakoinst/inst7.png)
+![箱庭ドローンシミュレータサンプルアプリ動作確認1](./hakoinst/inst7-en.png)
 
 Verify that it is in the "WAIT START" state.
 
@@ -298,7 +298,7 @@ Verify that it is in the "WAIT START" state.
 
 Next, start the Unity application for visualization in the Hakoniwa Drone Simulator by double-clicking the "drone_model.exe" shortcut.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認2](./hakoinst/inst8.png)
+![箱庭ドローンシミュレータサンプルアプリ動作確認2](./hakoinst/inst8-en.png)
 
 Once the Unity application starts, click the "START" button and wait.
 
@@ -306,7 +306,7 @@ Once the Unity application starts, click the "START" button and wait.
 
 Finally, run the drone control app by double-clicking the "run-rc.bat" shortcut.
 
-![箱庭ドローンシミュレータサンプルアプリ動作確認3](./hakoinst/inst10.png)
+![箱庭ドローンシミュレータサンプルアプリ動作確認3](./hakoinst/inst10-en.png)
 
 #### 5.3.4.1. Actual Operations
 
@@ -314,7 +314,7 @@ Use the PS4 controller to operate the drone. First, press the × button to start
 
 Try transporting cargo or taking photos using the Python simulator.
 
-![Pythonシミュレータを使ったドローン荷物搬送例](./hakoinst/hakowin211_1.png)
+![Pythonシミュレータを使ったドローン荷物搬送例](./hakoinst/hakowin211_1-en.png)
 
 # 6. Troubleshooting
 
@@ -324,7 +324,7 @@ The Hakoniwa Drone Simulator environment installed by the installer may encounte
 
 If the installation is not performed with administrative privileges, environment variables may not be set. This can cause errors as shown below.
 
-![箱庭ドローンシミュレータサンプルトラブルシュート1](./hakoinst/troubleshooting1.png)
+![箱庭ドローンシミュレータサンプルトラブルシュート1](./hakoinst/troubleshooting1-en.png)
 
 In this case, uninstall the Hakoniwa Drone Simulator and reinstall it with administrative privileges.
 
@@ -332,7 +332,7 @@ In this case, uninstall the Hakoniwa Drone Simulator and reinstall it with admin
 
 If the RAM Disk is not configured correctly, errors as shown below may occur.
 
-![箱庭ドローンシミュレータサンプルトラブルシュート2](./hakoinst/troubleshooting2.png)
+![箱庭ドローンシミュレータサンプルトラブルシュート2](./hakoinst/troubleshooting2-en.png)
 
 In this case, review the pre-installation steps carefully and verify the RAM Disk settings.
 
