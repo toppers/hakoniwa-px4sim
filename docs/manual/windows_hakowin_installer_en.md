@@ -89,11 +89,11 @@ Access the official ImDisk page to obtain the ImDisk environment.
 
 [Official ImDisk Toolkit page (SourceForge)](https://sourceforge.net/projects/imdisk-toolkit/)
 
-![How to get ImDisk Toolkit](./ramdisk/rd11.png)
+![How to get ImDisk Toolkit](./ramdisk/rd11-en.png)
 
 Download the ImDisk Toolkit, extract the "ImDiskTk-x64.zip" file, and double-click "install.bat" to start the installer. Follow the GUI instructions to complete the installation.
 
-![ImDisk Toolkitのインストール](./ramdisk/rd12.png)
+![How to install ImDisk Toolkit](./ramdisk/rd12-en.png)
 
 Once the installation is complete, icons related to ImDisk Toolkit will appear on the desktop. Double-click the "RamDisk Configuration" icon to open the configuration screen. Set the following values and click the OK button to complete.
 
@@ -103,7 +103,7 @@ Once the installation is complete, icons related to ImDisk Toolkit will appear o
 | 2   | Drive Letter | Specify Z:   |
 | 3   | File System  | Specify NTFS |
 
-![RamDisk Configurationの設定内容](./ramdisk/rd13.png)
+![RamDisk Configuration Settings](./ramdisk/rd13-en.png)
 
 After the configuration is complete, a warning regarding Windows power settings may appear. In this case, uncheck the "Fast startup" checkbox in the power settings and restart Windows.
 
@@ -111,7 +111,7 @@ After the configuration is complete, a warning regarding Windows power settings 
 
 After the restart, a RAM Disk will be created.
 
-![RamDisk設定完了](./ramdisk/rd15.png)
+![RamDisk Settings Done](./ramdisk/rd15.png)
 
 [Reference site for ImDisk setup: Building an ultra-comfortable environment with RAM Disk](https://avalon-studio.work/blog/windows/ram-disk-configration/)
 
@@ -130,7 +130,7 @@ Save the "mmap.bat" file in an appropriate location. Then double-click "RamDisk 
 
 When the RamDisk Configuration screen appears, click the "Advanced" tab. In the "Run after mounting" section, specify the previously created "mmap.bat" file. Click the OK button to complete.
 
-![mmapフォルダ作成用のバッチファイル指定](./ramdisk/rd16.png)
+![Set a batchfile path for mmap folder creating](./ramdisk/rd16-en.png)
 
 ### 1.2.2 Installing Python Environment
 
