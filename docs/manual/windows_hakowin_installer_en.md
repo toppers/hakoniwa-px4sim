@@ -285,7 +285,7 @@ The PS4 controller is used to control the drone in the Python simulator. The con
 | 5   | ○ Button        | Picks up/drops off cargo in the simulator |                                                    |
 
 ![PS4コントローラを使ったドローン操作](./hakoinst/hakowin210.png)
-![LowPitchYow](./drone/drone1.png)
+![LowPitchYow](./drone/drone1-en.png)
 
 ### 5.3.2. Starting the Hakoniwa Core Functionality
 
