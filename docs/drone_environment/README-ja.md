@@ -2,8 +2,7 @@
 
 # これは何？
 
-このドキュメントは、箱庭ドローンシミュレータでの環境要因に基づくシミュレーション機能について説明します。
-例えば、風の影響をシミュレーション環境内で再現し、ドローンの飛行挙動にリアルな風力を適用することを目的としています。
+このドキュメントは、箱庭ドローンシミュレータにおける環境シミュレーション機能（例：風の影響）について説明します。リアルな外乱要因を適用し、ドローンの飛行挙動に反映させることが目的です。
 
 # 箱庭の環境の考え方
 
@@ -144,9 +143,83 @@
 
 このサンプル実装に基づいて、必要に応じて環境を構築し、シミュレーションを試してみることができます。
 
+# サンプル実行方法
+
+## 前提条件
+
+- Python 3.12 がインストールされていること
+- Unityアプリケーションがインストールされていること
+- `bash`が使用できる環境であること
+- 現時点のサポートOS：MacOS, Ubuntu22.0.4
+- 本サンプルは、ラジコン操作で行います
+- 本サンプルを実行するには、4個の端末を用意する必要があります
+
+## 概要
+
+本サンプルでは、ラジコンを使って箱庭ドローンシミュレーションを操作します。4つの端末を使い、以下の手順でシステムをセットアップします。
+1. 端末A: シミュレーションを起動
+2. 端末B: 環境イベントを管理
+3. 端末C: Unityアプリを起動
+4. 端末D: ラジコン操作
+
+## 端末A 
+
+端末 A では、箱庭シミュレーションを起動します。このコマンドにより、ドローンのシミュレーションが準備状態になります。
+
+```
+cd hakoniwa-px4sim/hakoniwa
+```
+
+```
+bash drone-app.bash ../../hakoniwa-unity-drone-model/simple-demo config/rc
+```
+
+## 端末B
+
+端末 B では、箱庭アセット HakoEnvEventを起動します。このアセットは、環境イベント（風や障害物など）をイベントを発生させます。
+
+
+```
+cd hakoniwa-px4sim/drone_api/assets
+```
+
+この際、PYTHONPATHを追加します。
+
+```
+export PYTHONPATH=${PYTHONPATH}:`pwd`:`pwd`/lib
+```
+
+```
+python hako_env_event.py ../../../hakoniwa-unity-drone-model/DroneAppAppleSilicon/custom.json 3 config
+```
+
+## 端末C
+
+Unityアプリを起動し、`START`ボタンを押下します。
+
+```
+cd hakoniwa-unity-drone-model
+```
+
+```
+bash plugin/activate_app.bash DroneAppAppleSilicon
+```
+
+## 端末D
+
+ラジコン操作アプリを起動します。
+
+```
+cd hakoniwa-px4sim/drone_api/sample
+```
+
+```
+python rc.py ../../../hakoniwa-unity-drone-model/simple-demo/custom.json
+```
+
 # デモ
 
-箱庭ドローンシミュレータに環境モデルとして、風を追加できるようにしたデモです。斜め方向に1m/secの風が来るので、ドローンが流されている様子です。
+下記のデモ動画では、風速1m/secの外乱がドローンに適用され、風に流される様子を確認できます。
 
 [デモ動画](https://www.youtube.com/watch?v=KBPrrA1XC4U)
 
