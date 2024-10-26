@@ -1,4 +1,4 @@
 
 
-python rc.py ..\config_api\custom.json
+python rc.py ..\config_rc\custom.json
 

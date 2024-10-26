@@ -1,4 +1,4 @@
 
 
-python sample.py ..\config\custom.json
+python sample.py ..\config_fc\custom.json
 

@@ -1,4 +1,4 @@
 
 
-python camera.py ..\config_api\custom.json
+python camera.py ..\config_rc\custom.json
 

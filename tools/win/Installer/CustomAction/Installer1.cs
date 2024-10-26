@@ -56,15 +56,15 @@ namespace CustomAction
 
             if (hako_config == 1)
             {
-                configpath = installPath + @"\hakoniwa-px4-win\hakoniwa\config\cpp_core_config.json";
+                configpath = installPath + @"\hakoniwa-px4-win\hakoniwa\config_px4\cpp_core_config.json";
             }
             else if (hako_config == 2)
             {
-                configpath = installPath + @"\hakoniwa-px4-win\hakoniwa\config_api\cpp_core_config.json";
+                configpath = installPath + @"\hakoniwa-px4-win\hakoniwa\config_rc\cpp_core_config.json";
             }
             else if (hako_config == 3)
             {
-                configpath = installPath + @"\hakoniwa-px4-win\hakoniwa\config_api2\cpp_core_config.json";
+                configpath = installPath + @"\hakoniwa-px4-win\hakoniwa\config_fc\cpp_core_config.json";
             }
             else
             {

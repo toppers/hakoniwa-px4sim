@@ -1,6 +1,6 @@
-# これは何？
+# Windows環境のリリース手順
 
-このドキュメントは、ネイティブWindows向けの箱庭ドローンシミュレータのリリースファイル(hakoniwa-px4-win.zip)を作成する方法を説明します。
+このドキュメントは、Windows向けの箱庭ドローンシミュレータのリリースファイル(hakoniwa-px4-win)を作成する手順んとなります。
 
 リリースファイルの作成手順は以下のとおりです。
 
@@ -18,43 +18,59 @@ WSL2のUbuntuを起動します。Ubuntuが起動したら、Windowsのドライ
 * [hakoniwa-unity-drone-model](https://github.com/toppers/hakoniwa-unity-drone-model)
 
 作成例（同じ階層に作成してください）：
-```
-ls /mnt/e/project
-hakoniwa-px4sim
-hakoniwa-unity-drone-model
+
+```bash
+$ ls /mnt/e/project
+hakoniwa-px4sim hakoniwa-unity-drone-model
 ```
 
 ## hakoniwa-px4simのクローン
 
-```
-git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
+```bash
+$ git clone --recursive https://github.com/toppers/hakoniwa-px4sim.git
 ```
 
 ## hakoniwa-unity-drone-modelのクローン
 
-```
-git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
+```bash
+$ git clone --recursive https://github.com/toppers/hakoniwa-unity-drone-model.git
 ```
 
-# hakoniwa-px4simのビルド
+# hakoniwa-px4simのCMakeビルド
 
-Visual Studio を起動して、`Open a local folder`を選択し、hakoniwa-px4simを開きます。
+CMakeのビルドをするためにx64-Releaseの構成を追加する必要があります。クローンしたhakoniwa-px4simディレクトリにある`tools\win`ディレクトリの`CMakeSettings.json`をhakoniwa-px4simディレクトリ直下にコピーします。
+
+![事前準備](./images/visual_studio_pre.png)
+
+
+
+# hakoniwa-px4simのCMakeビルド
+
+Visual Studio2022 Community版を起動して、`Open a local folder`を選択し、hakoniwa-px4simを開きます。
 
 ![image](images/visual_studio_open.png)
 
-成功するとこうなります。
+正常に開くと以下のような画面が出ます。
 
 ![image](images/visual_studio_editor.png)
 
-ビルドする際には、`x64-Release`としてください。
+
+ビルドを開始するためにソリューションエクスプローラの`hakoniwa-px4sim`になっている部分を右クリックして、`Cmakeターゲットビューに切り替える`をクリックします。
+
+
+![image](images/visual_studio_editor1.png)
+
+
+
+構成情報の選択部分で、`x64-Release`を選択してください。
 
 ![image](images/visual_studio_release.png)
 
-メニューのBuild/Build All をクリック。
+ソリューションエクスプローラの`hakoniwa-px4sim-rootプロジェクト`となっている部分を右クリックして、`すべてリビルド`をクリックします。
 
 ![image](images/visual_studio_build.png)
 
-成功すると、以下のディレクトリが作成され、さまざまなexeやdllファイルが作成されます。
+ビルドが完了すると、以下のhakoniwa-px4simの直下にoutディレクトリが作成され、さまざまなexeやdllファイルが作成されます。
 
 ```
 out/build/x64-Release/
@@ -64,46 +80,68 @@ out/build/x64-Release/
 
 WSL2 で、hakoniwa-unity-drone-modelのディレクトリへ移動し、インストールツールを実行します。
 
-```
-bash install.bash win
+```bash
+$ cd hakoniwa-unity-drone-model
+$ bash install.bash win
 ```
 
+![WSL_INSTALL](./images/unit_install.bash.png)
 
-この状態で Unity Hub で当該プロジェクトを開きましょう。
+成功すると上記のような画面になります。
+
+
+箱庭用の必要な環境がインストールできたら、Unity Hub で当該プロジェクトを開きます。
 
 注意：Unityエディタは、当該CPUアーキテクチャに対応したものをインストールしてご利用ください。
 
-対象フォルダ：hakoniwa-unity-drone-model\plugin\plugin-srcs
+```txt
+当該プロジェクトのフォルダ：hakoniwa-unity-drone-model\plugin\plugin-srcs
+```
+
+![PROJECT](./images/unity_project.png)
+
+プロジェクトが追加されると、以下のようになりますので、クリックしてプロジェクトを起動します。
+
+![PROJECT](./images/unity_project1.png)
+
+
+プロジェクトの起動画面で、UnityのVersionが違う旨の警告が出ますので、インストールしているversionを選択して起動します。
+
+![PROJECT](./images/unity_project2.png)
 
 Unityのバージョン違いに起因するメッセージ（"Opening Project in Non-Matching Editor Installation"）が出る場合は、「Continue」として問題ありません。
 
 以下のダイアログが出ますが、`Continue` してください。
 
-![image](https://github.com/toppers/hakoniwa-unity-drone-model/assets/164193/e1fbc477-4edc-4e39-ab15-ccd6f0707f33)
+![image](./images/unity_version1.png)
 
 
-次に、以下のダイアログが出ますので、`Ignore` してください。
+次に、Unityのバージョン違いにより、`Safe Mode`で開くか？のダイアログが出ますので、`Ignore` してください。
 
-![image](https://github.com/toppers/hakoniwa-unity-drone-model/assets/164193/7c03ae41-f988-44cb-9ac1-2263507d254d)
+![image](./images/unity_version3.png)
 
 
-成功するとこうなります。
+ダイアログを閉じると以下の画面になります。
 
-![image](https://github.com/toppers/hakoniwa-unity-drone-model/assets/164193/50398cfa-f6fc-4eef-9679-5442bbd9de76)
+![image](./images/unity_apidemo_scene.png)
 
-起動直後の状態ですと、コンソール上にたくさんエラーが出ています。原因は以下の２点です。
+起動直後の状態ですと、コンソール上にたくさんエラーが出ています。原因は以下の２点になります。
+
 リンク先を参照して、順番に対応してください。
 
 * [Newtonsoft.Json が不足している](https://github.com/toppers/hakoniwa-document/tree/main/troubleshooting/unity#unity%E8%B5%B7%E5%8B%95%E6%99%82%E3%81%ABnewtonsoftjson%E3%81%8C%E3%81%AA%E3%81%84%E3%81%A8%E3%81%84%E3%81%86%E3%82%A8%E3%83%A9%E3%83%BC%E3%81%8C%E5%87%BA%E3%82%8B)
-* [gRPC のライブラリ利用箇所がエラー出力している](https://github.com/toppers/hakoniwa-document/blob/main/troubleshooting/unity/README.md#grpc-%E3%81%AE%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E5%88%A9%E7%94%A8%E7%AE%87%E6%89%80%E3%81%8C%E3%82%A8%E3%83%A9%E3%83%BC%E5%87%BA%E5%8A%9B%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B)(Mac版のみ)
+
+* [gRPC のライブラリ利用箇所がエラー出力している](https://github.com/toppers/hakoniwa-document/blob/main/troubleshooting/unity/README.md#grpc-%E3%81%AE%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E5%88%A9%E7%94%A8%E7%AE%87%E6%89%80%E3%81%8C%E3%82%A8%E3%83%A9%E3%83%BC%E5%87%BA%E5%8A%9B%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B)
 
 
-エラーが消えたら、下図のように、Unity のシーン（`Assets/Scenes/ApiDemo`）をダブルクリックします。
+gRPC設定をしないとエラーが消えないので必ず対応するようにしてください。
 
-![image](images/unity_apidemo_scene.png)
+![image](./images/unity_gRPC.png)
 
 
-ここまで出来たら、あとは、箱庭のUnityアプリケーション作成します。以下の手順です。
+エラーが消えたら、箱庭のUnityアプリケーション作成します。
+
+下記が手順となります。
 
 1. Unity の Editor/Project Settings/Quality でアプリケーションの設定をする
 2. Unity の Editor/Project Settings/Player でアプリケーションの設定をする
@@ -112,41 +150,50 @@ Unityのバージョン違いに起因するメッセージ（"Opening Project i
 
 ## 前提
 
-事前に、Unityエディタの箱庭シーンから、箱庭のコンフィグファイルを `Generate` してください。
+最初に、Unityエディタの箱庭シーンから、箱庭のコンフィグファイルを `Generate` します。Unityメニューの`Window`→`hakoniwa`→`generate`をクリックします。
+
+![image](./images/unity_generate.png)
+
+
 
 Generateすると、`plugin-srcs` 直下に、以下のファイルが出力されます。
 
-```
+```jsonファイル
 HakoniwaSimTime.json
-LoginRobot.json
-RosTopics.json
-core_config.json
 custom.json
-hakoniwa_path.json
-inside_assets.json
-pdu_channel_connector.json
-pdu_configs.json
+lidar2d_spec.json
 pdu_readers.json
-pdu_writers.json
-reader_connector.json
-rpc_methods.json
 shm_methods.json
+LoginRobot.json
+drone_config.json
+lidar2d_tb3_spec.json
+pdu_writers.json
 writer_connector.json
+RosTopics.json
+hakoniwa_path.json
+pdu_channel_connector.json
+reader_connector.json
+core_config.json
+inside_assets.json
+pdu_configs.json
+rpc_methods.json
 ```
 
-## Unity の Editor/Project Settings/Quality でアプリケーションの設定をする
+## UnityのQualityでUnityアプリケーションの画像品質を設定
 
-Quality の設定は、デフォルトですと、`Ultra` になっています。
+Unityのメニューから、`Editor`→`Project Settings`→`Quality`を選択します。
+Qualityの設定は、デフォルトですと、`Ultra` になっています。
 
 ![image](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/ac3fef95-2c93-4c97-839b-73dea55d2f98)
 
-パソコンの性能が気になる方は、`Very Low` だけ残して、その他は削除することをお勧めします。
+パソコンの性能が気になる方は、`Very Low` だけ残して、ゴミ箱のアイコンをクリックして、`Very Low`以外を削除することをお勧めします。
 
 ![image](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/1d46619a-2819-4d1c-83ea-d5389fcf3318)
 
-## Unity の Editor/Project Settings/Player でアプリケーションの設定をする
+## UnityのPlayerでアプリケーションの解像度を設定
+Unityのメニューから`Editor`→`Project Settings`→`Player`→`Resolution and Presentation`を選択します。
 
-Player の設定は、デフォルトですと、下図のようになっています。
+Resolution and Presentationの設定は、デフォルトですと、下図のようになっています。
 
 ![image](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/097d8559-a666-479a-a6b5-3e9eb657e65e)
 
@@ -162,13 +209,23 @@ Player の設定は、デフォルトですと、下図のようになってい�
 
 ## Unity アプリケーションをビルドする
 
-File/Build Settings を開き、Add Open Scenes でアプリケーション化したいシーンを選択します。
+Unityメニューの`File`→`Build Settings`を開きます。
 
-デフォルトですと、TB3Workが選択されていますので、削除して、ApiDemoを選択します。
+![image](./images/unity_build1.png)
 
-その後、Build ボタンをクリックします。
+デフォルトの状態ですと、TB3が選択されているので、選択してdelキーで削除します。
 
-下図のようにダイアログがポップアップされますので、ビルドした結果を格納するディレクトリを選択します。ディレクトリ名は、DroneAppWinとしてください。
+![image](./images/unity_build2.png)
+
+次に、Add Open Scenes でアプリケーション化したいシーンを選択します。今回はApiDemoを追加します。
+
+
+![image](./images/unity_build3.png)
+
+
+Sceneが追加できたら、Build ボタンをクリックします。Buildボタンをクリックするとビルド結果を格納するためのダイアログがポップアップされます。右クリックして、新規フォルダ作成をして、DroneAppWinを作成して、選択します。
+
+![image](./images/unity_build4.png)
 
 成功すると、下図のようにアプリケーションの実行ファイルが生成されます。
 
@@ -176,9 +233,12 @@ File/Build Settings を開き、Add Open Scenes でアプリケーション化�
 
 ## 箱庭の各種設定ファイルをコピーする
 
-前提とする操作で `Generate` した各種設定ファイル（jsonファイル）一式を、ビルドした結果を格納しているディレクトリにコピー配置しましょう。
+前提とする操作で `Generate` した各種設定ファイル（jsonファイル）一式と`plugin-srcs` 配下にある `ros_types` ディレクトリをDronwAppWinディレクトリにコピーします。
 
-次に、`plugin-srcs` 配下にある `ros_types` ディレクトリを同様にコピー配置しましょう。
+```bash
+$ hakoniwa-unity-drone-model/
+$ bash update_configs_for_native.bash plugin/plugin-srcs/DroneAppWin/
+```
 
 ![image](https://github.com/toppers/hakoniwa-unity-simasset-plugin/assets/164193/a19b60a7-7ab9-4b8d-97c0-be50ee895864)
 
@@ -187,19 +247,22 @@ File/Build Settings を開き、Add Open Scenes でアプリケーション化�
 
 WSLで、hakoniwa-px4simのディレクトリに移動します。
 
-ここで、リリーリスファイルの作成先は、Eドライブ(`/mnt/e`)直下に配置する前提で説明します。
-
-以下のコマンドを実行して、リリースファイルを作成します。
-
+```bash
+$ cd hakoniwa-px4sim
 ```
-bash tools/win/create_release.bash  /mnt/e out ../ha
-koniwa-unity-drone-model/DroneAppWin
+
+ここで、Windows用のリリース環境は作成する場所を指定する必要がありまｓ。本ドキュメントでは、Cドライブ ユーザのドキュメントフォルダのReleaseに配置(`/mnt/c/Users/buildman/Documents/Release`)することを前提としています。
+
+WSL上でリリース用のコマンドを実行して、リリース環境を作成します。
+
+```bash
+$ bash tools/win/create_release.bash /mnt/c/Users/buildman/Documents/Release out ../hakoniwa-unity-drone-model/plugin/plugin-srcs/DroneAppWin/
 ```
 
 成功すると、以下のファイルが作成されます。
 
-```
-$ ls /mnt/e/hakoniwa-px4-win
+```bash
+$ ls /mnt/c/Users/buildman/Documents/Release/hakoniwa-px4-win
 README-ja.txt  README.txt  hakoniwa
 ```
 
