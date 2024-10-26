@@ -9,7 +9,7 @@
     <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月27日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年10月26日</span></div>
     </p>
 </div>
 
@@ -39,6 +39,7 @@
     - [1.4.2. Unityアプリの起動](#142-unityアプリの起動)
     - [1.4.3. sampleアプリの起動](#143-sampleアプリの起動)
     - [1.4.4. PS4のコントローラでのドローン操作](#144-ps4のコントローラでのドローン操作)
+    - [1.4.5. カメラ操作について](#145-カメラ操作について)
   - [1.5. 箱庭ドローンシミュレータのログリプレイ機能](#15-箱庭ドローンシミュレータのログリプレイ機能)
     - [1.5.1. ログリプレイの動作確認確認](#151-ログリプレイの動作確認確認)
     - [1.5.2. ログの記録場所](#152-ログの記録場所)
@@ -64,6 +65,7 @@
 |3|2024/08/16|0.3|追加|PC環境の推奨環境を追加|
 |4|2024/08/25|0.4|変更|箱庭コア機能のインストール手順見直し|
 |5|2024/08/27|0.5|変更|インストール手順追加、誤記修正|
+|6|2024/10/26|0.6|追加|カメラ操作の追加|
 ||||||
 
 <!-- 改ページ -->
@@ -328,7 +330,7 @@ $ python3 rc-custom.py ../../../hakoniwa-unity-drone-model/DroneAppLinux/custom.
 
 PS4コントローラでの操作は、以下のようになります。
 
-![Pythonアプリの起動2](./ubuntu/hako8.png)
+![Pythonアプリの起動3](./ubuntu/hako8.png)
 
 
 Ubuntuなど、Linux系のOSでは、ゲームパッド毎に設定が違うため、利用するゲームパッドの設定を調査する必要があります。ゲームパッドの操作の調査については、USB接続でゲームパッドを接続したの後に以下のpythonスクリプトを利用することで対応ができます。
@@ -337,6 +339,9 @@ Ubuntuなど、Linux系のOSでは、ゲームパッド毎に設定が違うた�
 $ cd  ~/work/hakoniwa-px4sim/drone_api/sample/rc_debug
 $ python3 rc_control.py
 ```
+
+- ゲームパットの設定方法は以下を参照して対応します。
+
 [ゲームパッドのデバッグ方法](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/manual/rcdebug.md)
 
 
@@ -345,9 +350,11 @@ $ python3 rc_control.py
 ```bash
 $ cd ~/work/hakoniwa-px4sim/drone_api/sample/rc_config
 $ ls
-FS-i6S.json  hori4mini-control-lnx.json  ps4-control-lnx.json  ps4-control.json
+FS-i6S.json Nintendo-ProControl-win.json hori4mini-control-win.json  ps4-control.json Nintendo-ProControl-lnx.json hori4mini-control-lnx.json    ps4-control-lnx.json ps5-control-lnx.json
 ```
+
 環境変数にjsonファイルを指定することもできます。コントローラの起動例です。
+
 ```bash
 $ echo 'export RC_CONFIG_PATH=rc_config/hori4mini-control-lnx.json' >> ~/.bashrc
 $ source ~/.bashrc
@@ -361,8 +368,19 @@ $ python rc-custom.py ../../../hakoniwa-unity-drone-model/custom.json
 |1|ps4-control.json|PS4用のゲームコントローラ(Windows/Mac OS)|
 |2|ps4-control-lnx.json|PS4用のゲームコントローラ(Linux OS)|
 |3|hori4mini-control-lnx.json|PS4互換HORI4 miniゲームコントローラ(Linux OS)|
-|4|FS-i6S.json|FLY SKY社製 FS-i6Sプロポ(送信機)|
+|4|hori4mini-control-win.json|PS4互換HORI4 miniゲームコントローラ(Windows)|
+|5|FS-i6S.json|FLY SKY社製 FS-i6Sプロポ(送信機)|
+|6|Nintendo-ProControl-win.json|Nintendo SwitchのProコントローラ(Windows)|
+|7|Nintendo-ProControl-lnx.json|Nintendo SwitchのProコントローラ(Linux OS)|
+|8|ps5-control-lnx.json|P5用のゲームコントローラ(Linux OS)|
 
+### 1.4.5. カメラ操作について
+
+Linux環境では、十字キーでのカメラ操作ができないため、[ゲームパッドのデバッグ方法](https://github.com/toppers/hakoniwa-px4sim/blob/main/docs/manual/rcdebug.md)の手順にてカメラ操作をするボタンを割り当てをしてください。
+
+以下は、LRボタンに割り当てた場合の例となります。コントローラのコンフィグファイルに好みの`ボタン`を割り当て操作するようにしてください。
+
+![Linux環境でのカメラ操作](./ubuntu/hako81.png)
 
 ## 1.5. 箱庭ドローンシミュレータのログリプレイ機能
 

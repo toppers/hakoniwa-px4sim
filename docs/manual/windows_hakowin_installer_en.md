@@ -23,9 +23,9 @@
   - [1.1. Target Environment](#11-target-environment)
   - [1.2. Prerequisites](#12-prerequisites)
     - [1.2.1. About the RAM Disk Environment](#121-about-the-ram-disk-environment)
-    - [1.2.1.1. Installing ImDisk Toolkit](#1211-installing-imdisk-toolkit)
-    - [1.2.1.1.1. Setting Up for Hakoniwa Simulator](#12111-setting-up-for-hakoniwa-simulator)
-    - [1.2.2 Installing Python Environment](#122-installing-python-environment)
+    - [1.2.2. Installing ImDisk Toolkit](#122-installing-imdisk-toolkit)
+    - [1.2.3. Setting Up for Hakoniwa Simulator](#123-setting-up-for-hakoniwa-simulator)
+    - [1.2.4. Installing Python Environment](#124-installing-python-environment)
 - [2. About the Hakoniwa Drone Simulator Windows Installer](#2-about-the-hakoniwa-drone-simulator-windows-installer)
 - [3. Hakoniwa Drone Simulator Windows Installation Procedure](#3-hakoniwa-drone-simulator-windows-installation-procedure)
   - [3.1. Running the Installer](#31-running-the-installer)
@@ -83,7 +83,7 @@ Among the various RAM Disk tools for Windows, we will use "ImDisk" for Windows 1
 
 We will use "ImDisk" due to licensing and usage restrictions.
 
-### 1.2.1.1. Installing ImDisk Toolkit
+### 1.2.2. Installing ImDisk Toolkit
 
 Access the official ImDisk page to obtain the ImDisk environment.
 
@@ -115,7 +115,7 @@ After the restart, a RAM Disk will be created.
 
 [Reference site for ImDisk setup: Building an ultra-comfortable environment with RAM Disk](https://avalon-studio.work/blog/windows/ram-disk-configration/)
 
-### 1.2.1.1.1. Setting Up for Hakoniwa Simulator
+### 1.2.3. Setting Up for Hakoniwa Simulator
 
 Hakoniwa Simulator uses a folder called "mmap" on the RAM Disk. Since the "mmap" folder disappears after a Windows restart or shutdown, it is necessary to set up ImDisk Toolkit to create the folder during startup.
 
@@ -132,7 +132,7 @@ When the RamDisk Configuration screen appears, click the "Advanced" tab. In the 
 
 ![Set a batchfile path for mmap folder creating](./ramdisk/rd16-en.png)
 
-### 1.2.2 Installing Python Environment
+### 1.2.4. Installing Python Environment
 
 Access the official Python page to obtain the Python environment for Windows.
 

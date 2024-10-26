@@ -6,10 +6,10 @@
     <div style="font-size:14pt;font-weight:bold;text-align:center;margin-top:20px"><span class="sub-title">Windows環境の利用セットアップと動作検証</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">組込みシステム技術協会 ドローンWG</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:500px"><span class="author">ドローンWG</span></div>
     </p>
     <p>
-    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年08月14日</span></div>
+    <div style="font-size:12pt;font-weight:bold;text-align:center;margin-top:10px"><span class="date">2024年10月26日</span></div>
     </p>
 </div>
 
@@ -62,6 +62,7 @@
 |1|2024/05/02|0.1|新規|新規作成|
 |2|2024/05/05|0.2|追加|Pythonシミュレータ部分の追加|
 |3|2024/08/14|0.3|削除|Pythonシミュレータ部分の分離|
+|4|2024/10/26|0.4|変更・追加|v2.7.0リリースに合わせた追加・変更|
 ||||||
 
 <!-- 改ページ -->
@@ -155,7 +156,7 @@ $ make px4_sitl_default
 
 [箱庭ドローンシミュレータ公式githubリリースページ](https://github.com/toppers/hakoniwa-px4sim/releases)
 
-現状の最新版は、V2.3.0になっています。最新版がリリースされていれば最新版を利用してください。
+現状の最新版は、V2.5.0になっています。最新版がリリースされていれば最新版を利用してください。
 
 ![箱庭ドローンシミュレータWindows版1](./hakowin/hakowin11.png)
 
@@ -183,7 +184,7 @@ Windowsのスタートメニューを開いて、設定アイコンをクリッ�
 |No|環境変数名|設定内容(例)|
 |:---|:---|:---|
 |1|HAKO_BINARY_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\py\hako_binary\offset|
-|2|HAKO_CONFIG_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\config\cpp_core_config.json|
+|2|HAKO_CONFIG_PATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\config_rc\cpp_core_config.json|
 |3|PYTHONPATH|C:\Users\buildman\Documents\hakoniwa-px4-win\hakoniwa\py
 
 ![箱庭ドローンシミュレータWindows版5](./hakowin/hakowin15.png)
@@ -210,7 +211,7 @@ hako-px4sim.exeが登録されていない or プライベート/パブリック
 |1|PX4シミュレーション|実際のフライトコントローラのPX4とQGC(地上での機体制御)を組み合わせたUnity上でのドローン飛行のシミュレーション|
 |2|Pythonシミュレーション|Pythonで作成したドローンパーツを組み合わせて、PS4(Play Station4)のコントローラなどでの飛行シミュレーション|
 
-それぞれの動作に関して、実際にやってみることにしましょう。
+本マニュアルでは、1 PX4シミュレータを確認できる手順を取り扱います。
 
 ### 1.3.1. 箱庭のおさらい
 
@@ -248,7 +249,7 @@ $ ifconfig
 
 ![IPアドレスの確認](./hakowin/hakowin18.png)
 
-図の赤枠になっている部分が、IPアドレスです。どこかにメモをしておいてください。
+図の赤枠になっている部分が、IPアドレスになります。QGCのセットアップ時に利用するので、どこかにメモしておいてください。
 
 #### 1.4.1.2. PX4フライトコントローラのソフトウェア起動
 
@@ -267,7 +268,7 @@ $ bash ../sim/win-simstart.bash
 
 ### 1.4.2. 箱庭ドローンシミュレータの起動
 
-箱庭ドローンシミュレータを起動します。箱庭シミュレータは、Windows上で動作させるためのバッチファイルが用意されていますので、バッチファイルで起動します。hakoniwa-px4-win内の以下のパスにエクスプローラで移動して、run-win.batをダブルクリックして起動します。
+箱庭ドローンシミュレータを起動します。箱庭シミュレータは、Windows上で動作させるためのバッチファイルが用意されていますので、バッチファイルで起動します。hakoniwa-px4-win内の以下のパスにエクスプローラで移動して、run-PX4Control.batをダブルクリックして起動します。
 
 ```txt
 箱庭ドローンシミュレータの場所：\hakoniwa-px4-win\hakoniwa\bin
@@ -295,7 +296,7 @@ Windows上で初めて起動すると、以下のようにWindowsで保護され
 
 #### 1.4.2.2. 箱庭ドローンシミュレータ起動時のトラブル2
 
-Windows Updateや環境設定などによって、WSL2の表記が違っており、箱庭ドローンシミュレータ起動用のrun-win.batが正常に動作しない場合があります。
+Windows Updateや環境設定などによって、WSL2の表記が違っており、箱庭ドローンシミュレータ起動用のrun-PX4Control.batが正常に動作しない場合があります。
 この場合、動作させる環境に合わせて、バッチファイルを編集する必要があります。
 
 コマンドプロンプトを開いて、WSL2のイーサーネットデバイス名を確認します。
@@ -304,10 +305,10 @@ Windows Updateや環境設定などによって、WSL2の表記が違ってお�
 C:\Users\buildman> ipconfig
 ```
 
-WSL2で使っているイーサネットデバイス名が表示されます。使っている環境に合わせて、run-win.batの内容を変更します。
+WSL2で使っているイーサネットデバイス名が表示されます。使っている環境に合わせて、run-PX4Control.batの内容を変更します。
 
 
-変更箇所としては、run-win.bat内の:: WSL IPアドレスの取得となっている下の行にある"vEthernet (WSL (Hyper-V firewall))"のダブルクオートで括られているWSL2のイーサネットデバイス名をipconfigで表示された名前に変更します。
+変更箇所としては、run-PX4Control.bat内の:: WSL IPアドレスの取得となっている下の行にある"vEthernet (WSL (Hyper-V firewall))"のダブルクオートで括られているWSL2のイーサネットデバイス名をipconfigで表示された名前に変更します。
 
 ![箱庭ドローンシミュレータ起動時のトラブル2](./hakowin/hakowin114.png)
 
