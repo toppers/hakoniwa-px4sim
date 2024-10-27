@@ -5,7 +5,7 @@ import sys
 import hakosim
 import pygame
 import time
-import math
+from return_to_home import DroneController
 
 def average_axis(history, new_value, history_length=5):
     history.append(new_value)
@@ -51,6 +51,7 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
     magnet_on = False
     magnet_button_index = 1
     camera_button_index = 2
+    home_button_index = 3
     try:
         while True:
             data = client.getGameJoystickData()
@@ -81,6 +82,9 @@ def joystick_control(client: hakosim.MultirotorClient, joysitck):
                         if event.button == camera_button_index:
                             time.sleep(0.5)
                             saveCameraImage(client)
+                        if event.button == home_button_index:
+                            controller = DroneController(client, default_drone_name=client.default_drone_name, height=2.0, power=0.5, yaw_power=0.8)
+                            controller.return_to_home()   
                     else:
                         print(f'ERROR: not supported button index: {event.button}')
                 elif event.type == pygame.JOYBUTTONUP:

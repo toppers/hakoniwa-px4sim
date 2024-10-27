@@ -129,7 +129,7 @@ sleep 1
 
 activate_vreal
 
-sleep 5
+sleep 3
 hako-cmd start
 
 if [ ${ACT_MODE} = "ar-demo" ]
@@ -137,13 +137,14 @@ then
     sleep 1
     echo "START ADJUST INITIAL POSITION"
     adjust_initial_pos
-else
     sleep 1
-    echo "START CAMERA"
-    camera_control
+else
+    :
+    #sleep 1
+    #echo "START CAMERA"
+    #camera_control
 fi
 
-sleep 1
 echo "START RADIO CONTROL"
 radio_control
 
