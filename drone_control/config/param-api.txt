@@ -7,10 +7,10 @@ GRAVITY                 9.81
 PID_ALT_CONTROL_CYCLE   0.0
 PID_ALT_MAX_POWER       9.81
 PID_ALT_THROTTLE_GAIN   1.0
-PID_ALT_MAX_SPD         2.0
+PID_ALT_MAX_SPD         10.0
 
 ## 高度制御のPIDパラメータ
-PID_ALT_Kp              30.0
+PID_ALT_Kp              10.0
 PID_ALT_Ki              0.1
 PID_ALT_Kd              1.5
 PID_ALT_SPD_Kp          5.0
@@ -20,7 +20,7 @@ PID_ALT_SPD_Kd          0.1
 # 水平制御
 POS_CONTROL_CYCLE       0.0
 SPD_CONTROL_CYCLE       0.0
-PID_POS_MAX_SPD         10.0
+PID_POS_MAX_SPD         20.0
 
 ## 水平位置制御のPIDパラメータ
 PID_POS_X_Kp            1.0
@@ -31,12 +31,12 @@ PID_POS_Y_Ki            0.0
 PID_POS_Y_Kd            0.6
 
 # 水平速度制御のPIDパラメータ
-PID_POS_VX_Kp           5.0
-PID_POS_VX_Ki           0.1
-PID_POS_VX_Kd           1.0
-PID_POS_VY_Kp           10.0
-PID_POS_VY_Ki           0.1
-PID_POS_VY_Kd           1.0
+PID_POS_VX_Kp           20.0
+PID_POS_VX_Ki           0.0
+PID_POS_VX_Kd           0.1
+PID_POS_VY_Kp           20.0
+PID_POS_VY_Ki           0.0
+PID_POS_VY_Kd           0.1
 
 # 姿勢角制御
 HEAD_CONTROL_CYCLE          0.0
@@ -77,4 +77,4 @@ PID_YAW_RATE_Kd         0.1
 
 # ラジオコントロール
 YAW_DELTA_VALUE_DEG     0.2
-ALT_DELTA_VALUE_M       0.006
+ALT_DELTA_VALUE_M       0.01
