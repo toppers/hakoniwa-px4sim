@@ -67,8 +67,8 @@
     "rotor": {
       "vendor": "None",
       "Tr": 0.0193,
-      "Kr": 2896,
-      "rpmMax": 2896
+      "Kr": 272941.5697,
+      "rpmMax": 272941.5697
     },
     "thruster": {
       "vendor": "None",
@@ -106,7 +106,7 @@
           "rotationDirection": -1.0
         }
       ],
-      "HoveringRpm": 1448,
+      "HoveringRpm": 136470.7849,
       "parameterB": 3.0E-8,
       "parameterJr": 0.0
     },
