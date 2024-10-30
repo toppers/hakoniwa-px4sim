@@ -12,7 +12,7 @@ namespace hako::assets::drone {
 
 class RotorDynamicsJmavsim : public hako::assets::drone::IRotorDynamics, public ICsvLog {
 private:
-    double param_rpm_max = 6000.0;
+    double param_rad_per_sec_max = 6000.0;
     double param_tr = 1.0;
     double param_kr = 1.0;
     double w;
@@ -27,9 +27,9 @@ public:
         this->total_time_sec = 0;
         this->w = 0;
     }
-    void set_params(double rpm_max, double tr, double kr)
+    void set_params(double rad_per_sec_max, double tr, double kr)
     {
-        this->param_rpm_max = rpm_max;
+        this->param_rad_per_sec_max = rad_per_sec_max;
         this->param_tr = tr;
         this->param_kr = kr;
     }
@@ -43,7 +43,7 @@ public:
         value.data = this->w * this->param_kr;
         return value;
     }
-    double get_rpm_max() const override
+    double get_rad_per_sec_max() const override
     {
         return this->param_kr;
     }
@@ -56,7 +56,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "RPM" };
+        return { "timestamp", "RadPerSec" };
     }
     const std::vector<std::string> log_data() override
     {

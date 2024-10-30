@@ -28,6 +28,9 @@ protected:
     std::string robo_name;
     int index = 0;
     bool enable_rotor_control = false;
+    double radPerSecToRPM(double rad_per_sec) {
+        return rad_per_sec * (60.0 / (2 * M_PI));
+    }
 public:
     virtual ~IAirCraft() {}
     virtual void run(DroneDynamicsInputType& input) = 0;
@@ -83,7 +86,7 @@ public:
     double get_rpm_max(int rotor_index)
     {
         if (rotor_index < ROTOR_NUM) {
-            return this->rotor_dynamics[rotor_index]->get_rpm_max();
+            return radPerSecToRPM(this->rotor_dynamics[rotor_index]->get_rad_per_sec_max());
         }
         else {
             return -1;

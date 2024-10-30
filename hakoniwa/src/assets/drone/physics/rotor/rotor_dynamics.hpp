@@ -12,7 +12,7 @@ namespace hako::assets::drone {
 
 class RotorDynamics : public hako::assets::drone::IRotorDynamics, public ICsvLog {
 private:
-    double param_rpm_max = 6000.0;
+    double param_rad_per_sec_max = 6000.0;
     double param_tr = 1.0;
     double param_kr = 1.0;
     DroneRotorSpeedType speed;
@@ -28,9 +28,9 @@ public:
         this->total_time_sec = 0;
         this->speed.data = 0;
     }
-    void set_params(double rpm_max, double tr, double kr)
+    void set_params(double rad_per_sec_max, double tr, double kr)
     {
-        this->param_rpm_max = rpm_max;
+        this->param_rad_per_sec_max = rad_per_sec_max;
         this->param_tr = tr;
         this->param_kr = kr;
     }
@@ -38,7 +38,7 @@ public:
     {
         this->speed = rotor_speed;
     }
-    double get_rpm_max() const override
+    double get_rad_per_sec_max() const override
     {
         return this->param_kr;
     }
@@ -55,11 +55,11 @@ public:
                                     drone_physics::rotor_omega_acceleration(param_kr, param_tr, speed.data, control)
                                   ) * this->delta_time_sec
                                 + this->speed.data;
-        // Cap the next speed at the maximum RPM if it exceeds it
-        if (this->next_speed.data > this->param_rpm_max) {
-            this->next_speed.data = this->param_rpm_max;
+        // Cap the next speed at the maximum RPS if it exceeds it
+        if (this->next_speed.data > this->param_rad_per_sec_max) {
+            this->next_speed.data = this->param_rad_per_sec_max;
         }
-        // Ensure the next speed does not fall below the minimum RPM (assuming 0 for this example)
+        // Ensure the next speed does not fall below the minimum RPS (assuming 0 for this example)
         else if (this->next_speed.data < 0) {
             this->next_speed.data = 0;
         }
@@ -68,7 +68,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "RPM" };
+        return { "timestamp", "RadPerSec" };
     }
     const std::vector<std::string> log_data() override
     {
