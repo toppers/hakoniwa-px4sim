@@ -132,6 +132,7 @@ AccelerationType acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
     double gravity, /* usually 9.8 > 0*/
+    const VectorType& wind, /* wind vector in frame */
     const VectorType& drag1,   /* air friction of 1-st order(-d1*v) counter to velocity */
     const VectorType& drag2  /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
 
