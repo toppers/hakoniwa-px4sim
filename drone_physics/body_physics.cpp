@@ -236,7 +236,7 @@ AccelerationType acceleration_in_body_frame(
     const auto g = gravity;
     const auto d1 = drag1;
     const auto d2 = drag2;
-    const auto [wx, wy, wz] = wind;
+    const auto [wind_u, wind_v, wind_w] = wind;
 
     /*
      * See nonami's book eq.(1.136).(2.31)
@@ -246,12 +246,19 @@ AccelerationType acceleration_in_body_frame(
      * (1) 'g' is broken down to x, y, z components.
      * (2) T is only relavant to z-axis.
      * (3) Coriolis force(using uvw,pqr) IS needed(because the body frame is rotating!)
-
+     * 
+     * 10/31/2024: added wind effect to 1-st, 2-nd order drag.
+     * Note: ma = T - colioris - d1 v - d2 sing(v) (v*v)
+     * the air friction is always counter to the velocity vs wind, in the 1st and sencond order.
      */
-    /*****************************************************************/  
-    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (u - wx) - d2.x/m * u * u;
-    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (v - wy) - d2.y/m * v * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (w - wz) - d2.z/m * w * w;
+    /*****************************************************************/
+    double air_u = u - wind_u;
+    double air_v = v - wind_v;
+    double air_w = w - wind_w;
+
+    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (air_u) - d2.x/m * air_u * std::fabs(air_u);
+    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (air_v) - d2.y/m * air_v * std::fabs(air_v);
+    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (air_w) - d2.z/m * air_w * std::fabs(air_w);
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
@@ -261,6 +268,9 @@ AccelerationType acceleration_in_body_frame(
 /**
  * Acceleration in body frame based on eq.(2.46), (2.47) in Nonami's book.
  * A mistake in the book: (2.46) z-axis should be inverted (and also psi is inverted) in (2.47).
+ * 
+ * This is OBSOLETE because not considering wind, 3-dimentional drag coefficient.
+ * Used in the old ground coordinate system drone to check the correctness of the new one.
  */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,
