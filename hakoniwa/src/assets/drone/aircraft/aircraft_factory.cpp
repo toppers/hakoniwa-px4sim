@@ -34,6 +34,10 @@ using hako::assets::drone::ThrustDynamicsLinear;
 using hako::assets::drone::ThrustDynamicsNonLinear;
 using hako::assets::drone::SensorNoise;
 
+static inline double rpmToRadPerSec(double rpm) {
+    return rpm * (2 * M_PI / 60.0);
+}
+
 #define DELTA_TIME_SEC              drone_config.getSimTimeStep()
 #define REFERENCE_LATITUDE          drone_config.getSimLatitude()
 #define REFERENCE_LONGTITUDE        drone_config.getSimLongitude()
@@ -48,9 +52,9 @@ using hako::assets::drone::SensorNoise;
 #define GPS_SAMPLE_NUM              drone_config.getCompSensorSampleCount("gps")
 #define MAG_SAMPLE_NUM              drone_config.getCompSensorSampleCount("mag")
 
-#define RPM_MAX                     drone_config.getCompRotorRpmMax()
+#define RAD_PER_SEC_MAX             rpmToRadPerSec(drone_config.getCompRotorRpmMax())
 #define ROTOR_TAU                   drone_config.getCompRotorTr()
-#define ROTOR_K                     drone_config.getCompRotorKr()
+#define ROTOR_K                     rpmToRadPerSec(drone_config.getCompRotorKr())
 
 #define THRUST_PARAM_B              drone_config.getCompThrusterParameter("parameterB")
 #define THRUST_PARAM_JR             drone_config.getCompThrusterParameter("parameterJr")
@@ -122,13 +126,13 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         if (rotor_vendor == "jmavsim") {
             rotor = new RotorDynamicsJmavsim(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
-            static_cast<RotorDynamicsJmavsim*>(rotor)->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
+            static_cast<RotorDynamicsJmavsim*>(rotor)->set_params(RAD_PER_SEC_MAX, ROTOR_TAU, ROTOR_K);
             drone->get_logger().add_entry(*static_cast<RotorDynamicsJmavsim*>(rotor), LOGPATH(drone->get_index(), logfilename));
         }
         else {
             rotor = new RotorDynamics(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
-            static_cast<RotorDynamics*>(rotor)->set_params(RPM_MAX, ROTOR_TAU, ROTOR_K);
+            static_cast<RotorDynamics*>(rotor)->set_params(RAD_PER_SEC_MAX, ROTOR_TAU, ROTOR_K);
             drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(drone->get_index(), logfilename));
         }
         rotors[i] = rotor;
@@ -147,7 +151,7 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         double HoveringRpm = drone_config.getCompThrusterParameter("HoveringRpm");
         HAKO_ASSERT(HoveringRpm != 0);
         double mass = drone_dynamics->get_mass();
-        param_A = (mass * GRAVITY / (HoveringRpm * ROTOR_NUM));
+        param_A = (mass * GRAVITY / (rpmToRadPerSec(HoveringRpm) * ROTOR_NUM));
         param_B = drone_config.getCompThrusterParameter("parameterB_linear");
         static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
             param_A,
@@ -166,7 +170,7 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         param_A = ( 
                             mass * GRAVITY / 
                             (
-                                pow(HoveringRpm, 2) * ROTOR_NUM
+                                pow(rpmToRadPerSec(HoveringRpm), 2) * ROTOR_NUM
                             )
                         );
         std::cout << "param_A: " << param_A << std::endl;

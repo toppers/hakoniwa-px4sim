@@ -125,16 +125,6 @@ AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
     double thrust, double mass, /* 0 is not allowed */
     double gravity, double drag);
 
-/* The translation dynamics. drags are the same in the three directions */
-AccelerationType acceleration_in_body_frame(
-    const VelocityType& body_velocity,
-    const EulerType& angle,
-    const AngularVelocityType& body_angular_velocity, /* for Coriolis */
-    double thrust, double mass, /* 0 is not allowed */
-    double gravity, /* usually 9.8 > 0*/
-    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity(assumed same in 3 directions) */
-    double drag2 = 0 /* air friction of 2-nd order(-d2*v*v) counter to velocity(assumed same in 3 directions) */);
-
 /* The translation dynamics. drags are vectors in the three directions */
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
@@ -142,6 +132,7 @@ AccelerationType acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity, /* for Coriolis */
     double thrust, double mass, /* 0 is not allowed */
     double gravity, /* usually 9.8 > 0*/
+    const VectorType& wind, /* wind vector in frame */
     const VectorType& drag1,   /* air friction of 1-st order(-d1*v) counter to velocity */
     const VectorType& drag2  /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
 

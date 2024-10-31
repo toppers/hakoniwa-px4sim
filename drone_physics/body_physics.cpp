@@ -219,6 +219,7 @@ AccelerationType acceleration_in_body_frame(
     const AngularVelocityType& body_angular_velocity,
     double thrust, double mass /* 0 is not allowed */,
     double gravity, /* usually 9.8 > 0*/
+    const VectorType& wind, /* wind vector in frame */
     const VectorType& drag1,  /* air friction of 1-st order(-d1*v) counter to velocity */
     const VectorType& drag2 /* air friction of 2-nd order(-d2*v*v) counter to velocity */)
 {
@@ -235,6 +236,7 @@ AccelerationType acceleration_in_body_frame(
     const auto g = gravity;
     const auto d1 = drag1;
     const auto d2 = drag2;
+    const auto [wx, wy, wz] = wind;
 
     /*
      * See nonami's book eq.(1.136).(2.31)
@@ -247,28 +249,13 @@ AccelerationType acceleration_in_body_frame(
 
      */
     /*****************************************************************/  
-    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * u - d2.x/m * u * u;
-    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * v - d2.y/m * v * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * w - d2.z/m * w * w;
+    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (u - wx) - d2.x/m * u * u;
+    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (v - wy) - d2.y/m * v * v;
+    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (w - wz) - d2.z/m * w * w;
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
 }
-
-AccelerationType acceleration_in_body_frame(
-    const VelocityType& body_velocity,
-    const EulerType& angle,
-    const AngularVelocityType& body_angular_velocity,
-    double thrust, double mass /* 0 is not allowed */,
-    double gravity, /* usually 9.8 > 0*/
-    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity(assumed same in 3 directions) */
-    double drag2 /* air friction of 2-nd order(-d2*v*v) counter to velocity(assumed same in 3 directions) */)
-{
-    return acceleration_in_body_frame(
-        body_velocity, angle, body_angular_velocity, thrust, mass, gravity,
-            {drag1, drag1, drag1}, {drag2, drag2, drag2});
-}
-
 
 
 /* Obsolete. for testing only. */

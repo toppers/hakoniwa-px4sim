@@ -222,10 +222,19 @@ public:
         thrust = input.thrust;
         this->cache = drone_phys_calc_cache(this->angle);
 
+        // ADD WIND CONDITION HERE. (wind vector, in ground frame)
+        hako::drone_physics::VectorType wind_disturbance = {input.disturbance.values.d_wind.x, 
+                                                            input.disturbance.values.d_wind.y, 
+                                                            input.disturbance.values.d_wind.z};
+        auto body_wind_disturbance = drone_physics::body_vector_from_ground(wind_disturbance, angle);
+
         DroneAccelerationBodyFrame acc = drone_physics::acceleration_in_body_frame(
                                                             this->velocityBodyFrame, this->angle, 
                                                             this->angularVelocityBodyFrame,
-                                                            thrust.data, this->param_mass, GRAVITY, this->param_drag1, this->param_drag2);
+                                                            thrust.data, this->param_mass, GRAVITY, 
+                                                            body_wind_disturbance,
+                                                            {this->param_drag1, this->param_drag1, this->param_drag1}, 
+                                                            {this->param_drag2, this->param_drag2, this->param_drag2});
         DroneAngularAccelerationBodyFrame acc_angular = drone_physics::angular_acceleration_in_body_frame(
                                                             this->angularVelocityBodyFrame,
                                                             torque,
@@ -237,11 +246,6 @@ public:
         //convert to ground frame
         this->velocity = this->convert(this->velocityBodyFrame);
 
-        // ADD WIND CONDITION HERE. (wind vector, in ground frame)
-        hako::drone_physics::VectorType wind_disturbance = {input.disturbance.values.d_wind.x, 
-                                                            input.disturbance.values.d_wind.y, 
-                                                            input.disturbance.values.d_wind.z};
-        this->velocity += wind_disturbance;
 
         this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
 

@@ -45,6 +45,7 @@ private:
 
     DroneVelocityBodyFrameType velocityBodyFrame;
     DroneAngularVelocityBodyFrameType angularVelocityBodyFrame;
+    drone_physics::VectorType body_wind_disturbance;
 
     double delta_time_sec;
     double total_time_sec;
@@ -91,7 +92,9 @@ private:
                         v_vel, 
                         this->angle, 
                         v_rate, 
-                        thrust.data, this->param_mass, GRAVITY, this->param_drag1, this->param_drag2);
+                        thrust.data, this->param_mass, GRAVITY,  
+                        body_wind_disturbance,
+                        {this->param_drag1, this->param_drag1, this->param_drag1}, {this->param_drag2, this->param_drag2, this->param_drag2});
     }
     DroneAngularAccelerationBodyFrame rungeKutta4_acc_angular(const DroneAngularVelocityBodyFrame& v_rate, const DroneTorqueType& torque)
     {
@@ -287,6 +290,11 @@ public:
     {
         torque = input.torque;
         thrust = input.thrust;
+        // ADD WIND CONDITION HERE. (wind vector, in ground frame)
+        hako::drone_physics::VectorType wind_disturbance = {input.disturbance.values.d_wind.x, 
+                                                            input.disturbance.values.d_wind.y, 
+                                                            input.disturbance.values.d_wind.z};
+        body_wind_disturbance = drone_physics::body_vector_from_ground(wind_disturbance, angle);
         this->rungeKutta4(input.thrust, input.torque);
 
         this->velocity = this->convert(this->velocityBodyFrame);
