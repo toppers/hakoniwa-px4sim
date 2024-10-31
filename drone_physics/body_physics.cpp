@@ -258,34 +258,6 @@ AccelerationType acceleration_in_body_frame(
 }
 
 
-/* Obsolete. for testing only. */
-AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
-    const VelocityType& body,
-    const EulerType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
-{
-    assert(!is_zero(mass));
-    using std::sin; using std::cos;
-
-    const auto
-        c_phi   = cos(angle.phi),   s_phi   = sin(angle.phi),
-        c_theta = cos(angle.theta), s_theta = sin(angle.theta);
-    const auto [u, v, w]  = body;
-    const auto g = gravity;
-    const auto m = mass;
-    const auto d = drag;
-    const auto T = thrust;
-
-    /*****************************************************************/  
-    double dot_u =       - g * s_theta            - d/m * u;
-    double dot_v =         g * c_theta * s_phi    - d/m * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - d/m * w;
-    /*****************************************************************/  
-
-    return {dot_u, dot_v, dot_w};
-}
-
-
 /**
  * Acceleration in body frame based on eq.(2.46), (2.47) in Nonami's book.
  * A mistake in the book: (2.46) z-axis should be inverted (and also psi is inverted) in (2.47).

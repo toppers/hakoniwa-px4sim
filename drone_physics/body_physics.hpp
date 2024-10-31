@@ -117,14 +117,6 @@ AccelerationType acceleration_in_ground_frame(
     double drag1,   /* air friction of 1-st order(-d1*v) counter to velocity */
     double drag2 = 0.0 /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
 
-
-/* physics for Force/Mass(F= ma) and Torque/Inertia(I dw/dt = T - w x Iw) */
-AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
-    const VelocityType& body,
-    const EulerType& angle,
-    double thrust, double mass, /* 0 is not allowed */
-    double gravity, double drag);
-
 /* The translation dynamics. drags are vectors in the three directions */
 AccelerationType acceleration_in_body_frame(
     const VelocityType& body_velocity,
