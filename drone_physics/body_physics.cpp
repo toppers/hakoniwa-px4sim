@@ -236,7 +236,6 @@ AccelerationType acceleration_in_body_frame(
     const auto g = gravity;
     const auto d1 = drag1;
     const auto d2 = drag2;
-    const auto [wind_u, wind_v, wind_w] = wind;
 
     /*
      * See nonami's book eq.(1.136).(2.31)
@@ -248,13 +247,13 @@ AccelerationType acceleration_in_body_frame(
      * (3) Coriolis force(using uvw,pqr) IS needed(because the body frame is rotating!)
      * 
      * 10/31/2024: added wind effect to 1-st, 2-nd order drag.
-     * Note: ma = T - colioris - d1 v - d2 sing(v) (v*v)
+     * Note: ma = T - colioris - d1 v - d2 sign(v) (v*v), where v = v - wind = air_v.
      * the air friction is always counter to the velocity vs wind, in the 1st and sencond order.
      */
     /*****************************************************************/
-    double air_u = u - wind_u;
-    double air_v = v - wind_v;
-    double air_w = w - wind_w;
+    double air_u = u - wind.x;
+    double air_v = v - wind.y;
+    double air_w = w - wind.z;
 
     double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (air_u) - d2.x/m * air_u * std::fabs(air_u);
     double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (air_v) - d2.y/m * air_v * std::fabs(air_v);
@@ -263,6 +262,22 @@ AccelerationType acceleration_in_body_frame(
 
     return {dot_u, dot_v, dot_w};
 }
+
+/* simplified version of the above */
+AccelerationType acceleration_in_body_frame(
+    const VelocityType& body_velocity,
+    const EulerType& angle,
+    const AngularVelocityType& body_angular_velocity,
+    double thrust, double mass /* 0 is not allowed */,
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 /* air friction of 2-nd order(-d2*v*v) counter to velocity */)
+{
+    return acceleration_in_body_frame(
+        body_velocity, angle, body_angular_velocity,
+        thrust, mass, gravity, {0, 0, 0}, {drag1, drag1, drag1}, {drag2, drag2, drag2});
+}
+
 
 
 /**

@@ -73,7 +73,7 @@ dp_acceleration_t dp_acceleration_in_body_frame(
             to_Vector(body_velocity),
             to_Euler(angle),
             to_Vector(body_angular_velocity), 
-            thrust, mass, gravity, {0, 0, 0},{drag, drag, drag},{0, 0, 0}
+            thrust, mass, gravity, drag
             )
         );
 }

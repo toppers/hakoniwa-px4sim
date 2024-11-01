@@ -128,6 +128,16 @@ AccelerationType acceleration_in_body_frame(
     const VectorType& drag1,   /* air friction of 1-st order(-d1*v) counter to velocity */
     const VectorType& drag2  /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
 
+/* simplified version of the above */
+AccelerationType acceleration_in_body_frame(
+    const VelocityType& body_velocity,
+    const EulerType& angle,
+    const AngularVelocityType& body_angular_velocity,
+    double thrust, double mass /* 0 is not allowed */,
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 = 0 /* air friction of 2-nd order(-d2*v*v) counter to velocity */);
+
 
 /* angular acceleration in body frame based on JW' = W x JW =Tb ...eq.(1.137),(2.31) */
 AngularAccelerationType angular_acceleration_in_body_frame(
