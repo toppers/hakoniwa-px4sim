@@ -311,9 +311,17 @@ $ python3 sample.py ../../../hakoniwa-unity-drone-model/DroneAppLinux/custom.jso
 
 Unityアプリ上のドローンをPS4のコントローラで操作させるためのプロポ用のアプリを起動します。PC本体にPS4のコントローラをUSBに接続します。
 
-1.4.1 箱庭コア機能の起動、1.4.2 Unityアプリの起動手順を実施後に、以下のプロポ用のアプリを起動します。
+箱庭コア機能、Unityアプリの起動手順、プロポ用のアプリの順番で起動します。
 
+- 箱庭コア機能の起動(プロポ用のアプリを起動の場合)
+``` bash
+$ cd ~/work/hakoniwa-px4sim/hakoniwa
+$ bash drone-app.bash ../../hakoniwa-unity-drone-model/DroneAppLinux ./config/rc
+```
 
+- 1.4.2 Unityアプリの起動手順
+
+- プロポ用のアプリを起動
 ```bash
 $ cd ~/work/hakoniwa-px4sim
 $ cd drone_api/sample
