@@ -240,6 +240,29 @@ public:
         return configJson["components"]["rotor"]["Kr"].get<double>();
     }
 
+    hako::assets::drone::RotorBatteryModelConstants getCompDroneDynamicsRotorDynamicsConstants() const {
+        hako::assets::drone::RotorBatteryModelConstants constants = {};
+        try {
+            // 必要な全てのキーが存在するかを確認
+            if (configJson.contains("components") &&
+                configJson["components"].contains("rotor") &&
+                configJson["components"]["rotor"].contains("dynamics_constants")) {
+                
+                // 各定数を取得し、エラーハンドリングも考慮
+                constants.R  = configJson["components"]["rotor"]["dynamics_constants"]["R"].get<double>();
+                constants.Cq = configJson["components"]["rotor"]["dynamics_constants"]["Cq"].get<double>();
+                constants.K  = configJson["components"]["rotor"]["dynamics_constants"]["K"].get<double>();
+                constants.D  = configJson["components"]["rotor"]["dynamics_constants"]["D"].get<double>();
+                constants.J  = configJson["components"]["rotor"]["dynamics_constants"]["J"].get<double>();
+                std::cout << "Rotor battery model is enabled." << std::endl;
+                return constants;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error retrieving rotor dynamics constants: " << e.what() << std::endl;
+        }
+        std::cout << "ERROR: Rotor battery model config is invalid." << std::endl;
+        return constants;
+    }
     int getCompRotorRpmMax() const {
         return configJson["components"]["rotor"]["rpmMax"].get<int>();
     }

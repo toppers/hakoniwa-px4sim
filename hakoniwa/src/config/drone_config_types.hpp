@@ -10,6 +10,13 @@ namespace hako::assets::drone {
         std::vector<bool> velocity; // X, Y, Z
         std::vector<bool> angular_velocity; // X, Y, Z
     };
+    struct RotorBatteryModelConstants {
+        double R;
+        double Cq;
+        double K;
+        double D;
+        double J;
+    };
 }
 
 #endif /* _DRONE_CONFIG_TYPES_HPP_ */

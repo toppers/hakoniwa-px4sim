@@ -15,6 +15,8 @@ private:
     double param_rad_per_sec_max = 6000.0;
     double param_tr = 1.0;
     double param_kr = 1.0;
+    bool battery_dynamics = false;
+    RotorBatteryModelConstants constants;
     DroneRotorSpeedType speed;
     DroneRotorSpeedType next_speed;
     double delta_time_sec;
@@ -28,6 +30,16 @@ public:
         this->total_time_sec = 0;
         this->speed.data = 0;
     }
+    void set_battery_dynamics_constants(const RotorBatteryModelConstants &c) override
+    {
+        battery_dynamics = true;
+        this->constants = c;
+    }
+    bool has_battery_dynamics() override
+    {
+        return battery_dynamics;
+    }
+
     void set_params(double rad_per_sec_max, double tr, double kr)
     {
         this->param_rad_per_sec_max = rad_per_sec_max;
@@ -66,6 +78,23 @@ public:
         this->speed.data = this->next_speed.data;
         this->total_time_sec += this->delta_time_sec;
     }
+    void run(double control, double vbat) override
+    {
+        this->next_speed.data =   (
+                                    drone_physics::rotor_omega_acceleration(vbat, constants.R, constants.Cq, constants.J, constants.K, constants.D, speed.data, control)
+                                  ) * this->delta_time_sec
+                                + this->speed.data;
+        // Cap the next speed at the maximum RPS if it exceeds it
+        if (this->next_speed.data > this->param_rad_per_sec_max) {
+            this->next_speed.data = this->param_rad_per_sec_max;
+        }
+        // Ensure the next speed does not fall below the minimum RPS (assuming 0 for this example)
+        else if (this->next_speed.data < 0) {
+            this->next_speed.data = 0;
+        }
+        this->speed.data = this->next_speed.data;
+        this->total_time_sec += this->delta_time_sec;
+    }    
     const std::vector<std::string> log_head() override
     {
         return { "timestamp", "RadPerSec" };

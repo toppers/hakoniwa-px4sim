@@ -34,7 +34,12 @@ public:
         if (input.no_use_actuator == false) {
             DroneRotorSpeedType rotor_speed[ROTOR_NUM];
             for (int i = 0; i < ROTOR_NUM; i++) {
-                rotor_dynamics[i]->run(input.controls[i]);
+                if (rotor_dynamics[i]->has_battery_dynamics()) {
+                    rotor_dynamics[i]->run(input.controls[i], 11.1 /* TODO need battery model */);
+                }
+                else {
+                    rotor_dynamics[i]->run(input.controls[i]);
+                }
                 rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
             }
             thrust_dynamis->run(rotor_speed);

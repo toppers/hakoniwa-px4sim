@@ -129,6 +129,14 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
             static_cast<RotorDynamicsJmavsim*>(rotor)->set_params(RAD_PER_SEC_MAX, ROTOR_TAU, ROTOR_K);
             drone->get_logger().add_entry(*static_cast<RotorDynamicsJmavsim*>(rotor), LOGPATH(drone->get_index(), logfilename));
         }
+        else if (rotor_vendor == "BatteryModel") {
+            rotor = new RotorDynamics(DELTA_TIME_SEC);
+            HAKO_ASSERT(rotor != nullptr);
+            auto constants = drone_config.getCompDroneDynamicsRotorDynamicsConstants();
+            rotor->set_battery_dynamics_constants(constants);
+            static_cast<RotorDynamics*>(rotor)->set_params(RAD_PER_SEC_MAX, 0, ROTOR_K);
+            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(drone->get_index(), logfilename));
+        }
         else {
             rotor = new RotorDynamics(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
