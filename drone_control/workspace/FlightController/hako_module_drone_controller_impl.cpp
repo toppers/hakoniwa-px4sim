@@ -14,7 +14,7 @@ void* hako_module_drone_controller_impl_create_context(void*)
     return (void*)new DroneController();
 }
 
-int hako_module_drone_controller_impl_is_operation_doing(void *context)
+int hako_module_drone_controller_impl_is_operation_doing(void *)
 {
     return true;
 }
