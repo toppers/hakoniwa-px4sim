@@ -179,7 +179,7 @@ void test_angular_frame_roundtrip() {
 
 
 void test_body_acceleration() {
-    const VelocityType v{1, 2, 3};
+    VelocityType v{1, 2, 3};
 
     double trust = 1, mass = 1, gravity = 1, drag = 0;
     AccelerationType a = acceleration_in_body_frame(v, EulerType{0, 0, 0}, AngularVelocityType{0, 0, 0},
@@ -225,6 +225,21 @@ void test_body_acceleration() {
     a = acceleration_in_body_frame(v, EulerType{0, 0, 0}, AngularVelocityType{1, 1, 1},
         trust, mass, gravity, drag);
     assert_almost_equal(a, (AccelerationType{-1, 2, -trust/mass+gravity-1}));
+}
+
+void test_wind() {
+    VelocityType v{3, 6, 9};
+    VelocityType wind{1, 2, 3};
+    double trust = 0, mass = 1, gravity = 0; // no gravity to test wind.
+    VectorType a = acceleration_in_body_frame(v, {0, 0, 0}, {0, 0, 0},
+            trust, mass, gravity, wind, {1, 1, 1}, {0, 0, 0});
+    assert_almost_equal(a, (VectorType{-2, -4, -6}));
+    // should be (1-3, 2-6, 3-9) = (-2, -4, -6)
+
+    a = acceleration_in_body_frame(v, {0, 0, 0}, {0, 0, 0},
+            trust, mass, gravity, wind, {0, 0, 0}, {1, 1, 1});
+    assert_almost_equal(a, (VectorType{-4, -16, -36}));
+    // should be (-(1-3)^2, -(2-6)^2, -(3-9)^2) = (-4, -16, -36)
 }
 
 void test_ground_acceleration() {
@@ -494,6 +509,7 @@ int main() {
     T(test_body_anti_Jr_torque);
     T(test_collision);
     T(test_rotor_omega_acceleration);
+    T(test_wind);
     std::cerr << "-------all standard test PASSSED!!----\n";
     T(test_issue_89_yaw_angle_bug);
     std::cerr << "-------all bug issue test PASSSED!!----\n";
