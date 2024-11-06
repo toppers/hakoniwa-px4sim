@@ -456,7 +456,18 @@ $$
 \dot{\Omega}(t) = (K V_{bat} d(t) - (K^2+DR) \Omega(t) - C_q R \Omega(t)^2) /JR
 $$
 
+
 The function name is (another version of)`rotor_omega_acceleration`.
+
+And the current $i(t)$ is obtained by the following equation.
+
+$$
+i(t) = (e(t) - K \Omega(t))/R = (V_{bat} d(t) - K \Omega(t))/R
+$$
+
+The function name is `rotor_current` ．
+
+Note that when $\Omega(t)$ gets larger by some external force, the current may flow back to the battery(charging the battery) by the back EMF(back electromotive force) of the motor.
 
 #### One rotor thrust and anti-torque
 The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity
@@ -505,7 +516,7 @@ Mission:
 - Implemented as functions, not classes. Meaning stateless.
 
 ## Acknowledgement
-I thank Dr. Nonami for writing the detailed description of the math around the drone development.
+I thank Dr. Nonami for writing the detailed description of the math around the drone development. And Kohei Ito([@Kouhei_Ito](https://www.docswell.com/user/Kouhei_Ito)) for the detailed explanation of the drone dynamics in his blog and also kind replies to my questions.
 And also I thank （[@tmori](https://github.com/tmori)）for connecting Hakoniwa to
 PX4, QGroundControl, and Unity, and spending a long time testing the drone flight virtually, and also for leading this whole Hakoniwa project.
 

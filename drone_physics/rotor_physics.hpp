@@ -14,7 +14,7 @@ namespace hako::drone_physics {
 double rotor_omega_acceleration(
     double Kr, /* gain constant */
     double Tr, /* time constant */
-    double omega, /* in radian/sec */
+    double omega, /* angular velocity in [rad/s] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */ );
 
 /* realistic model for rotor */
@@ -25,7 +25,15 @@ double rotor_omega_acceleration(
     double J, /* propeller inertia in [kg m^2] */
     double K, /* back electromotive force coeff in [N m/A] */
     double D, /* Kinematic viscosity coefficient [Nms/rad] */
-    double omega, /* in radian/sec */
+    double omega, /* angular velocity in [rad/s] */
+    double duty_rate /* 0.0-1.0 (ratio of PWM) */);
+
+/* current in the rotor */
+double rotor_current(
+    double Vbat, /* battery voltage in volt [V]*/
+    double R, /* resistance in ohm [V/A] */
+    double K, /* back electromotive force coeff in [N m/A] */
+    double omega, /* angular velocity in [rad/sec] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */);
 
 /* thrust from omega in radian/sec eq.(2.50)*/

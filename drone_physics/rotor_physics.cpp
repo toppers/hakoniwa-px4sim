@@ -70,7 +70,7 @@ double rotor_omega_acceleration(
     double J, /* propeller inertia in [kg m^2] */
     double K, /* back electromotive force coeff in [N m/A] */
     double D, /* Kinematic viscosity coefficient [Nms/rad] */
-    double omega, /* in radian/sec */
+    double omega, /* angular velocity in [rad/sec] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
     assert(R != 0.0);
@@ -81,7 +81,18 @@ double rotor_omega_acceleration(
      * where, e = duty_rate * Vbat.
      * Assuming inductance L and Qf is very small(zero).
      */
-    return ( K*Vbat*duty_rate - (Cq*R*omega + K*K + D*R)*omega)  /  (J*R);
+    return ( K * Vbat * duty_rate - (Cq*R*omega + K*K + D*R)*omega)  /  (J*R);
+}
+
+double rotor_current(
+    double Vbat, /* battery voltage in volt [V]*/
+    double R, /* resistance in ohm [V/A] */
+    double K, /* back electromotive force coeff in [N m/A] */
+    double omega, /* angular velocity in [rad/sec] */
+    double duty_rate /* 0.0-1.0 (ratio of PWM) */)
+{
+    assert(R != 0.0);
+    return (Vbat * duty_rate  - K * omega)/R;
 }
 
 /* thrust from omega in radian/sec eq.(2.50)*/
