@@ -41,7 +41,7 @@ def main():
         return 1
 
     # connect to the HakoSim simulator
-    client = hakosim.MultirotorClient(sys.argv[1])
+    client = hakosim.MultirotorClient(sys.argv[1], "DroneTransporter")
     client.confirmConnection()
     client.enableApiControl(True)
     client.armDisarm(True)
