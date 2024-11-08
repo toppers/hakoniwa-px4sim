@@ -47,10 +47,10 @@ namespace hako::drone_physics {
  * 
  *     Omega = Kr * (1 - exp(-t/Tr) * (duty rate))
  */
-double rotor_omega_acceleration(
+double rotor_omega_acceleration( /* omega acceleration in [rad/s^2]*/
     double Kr /* gain constant */,
     double Tr /* time constant */,
-    double omega, /* in radian/sec */
+    double omega, /* in [rad/s] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
     /**
@@ -63,14 +63,14 @@ double rotor_omega_acceleration(
 /**
  * Realistic modeling of the rotor, using battery voltage, intertia and etc.
  */
-double rotor_omega_acceleration(
+double rotor_omega_acceleration( /* omega acceleration in [rad/s^2]*/
     double Vbat, /* battery voltage in volt [V]*/
     double R, /* resistance in ohm [V/A] */
     double Cq, /* torque coeff (= B param in anti-torque) [N ms^2/rad^2] */
     double J, /* propeller inertia in [kg m^2] */
     double K, /* back electromotive force coeff in [N m/A] */
     double D, /* Kinematic viscosity coefficient [Nms/rad] */
-    double omega, /* angular velocity in [rad/sec] */
+    double omega, /* angular velocity in [rad/s] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
     assert(R != 0.0);
@@ -84,7 +84,7 @@ double rotor_omega_acceleration(
     return ( K * Vbat * duty_rate - (Cq*R*omega + K*K + D*R)*omega)  /  (J*R);
 }
 
-double rotor_current(
+double rotor_current(  /* current in [A] */
     double Vbat, /* battery voltage in volt [V]*/
     double R, /* resistance in ohm [V/A] */
     double K, /* back electromotive force coeff in [N m/A] */
@@ -96,9 +96,9 @@ double rotor_current(
 }
 
 /* thrust from omega in radian/sec eq.(2.50)*/
-double rotor_thrust(
+double rotor_thrust( /* thrust in [N] */
     double A, /* the A parameter in Trust = A*(Omega)^2 */
-    double omega /* in radian/sec */ )
+    double omega /* in [rad/s] */ )
 {
     /**
      * Nonami's book (2.50)
@@ -109,8 +109,12 @@ double rotor_thrust(
 }
 
 /* this makes z-axis rotation eq.(2.56) */
-double rotor_anti_torque(double B, 
- double Jr, double omega, double omega_acceleratoin, double ccw)
+double rotor_anti_torque( /* anti torque(z-axis) in [Nm]*/
+    double B, /* torque coefficient (referred to as Cq in Kohei's doc) in [N m s^2/rad^2] */
+    double Jr, /* torque coefficient for 2nd order rotation */
+    double omega, /* in [rad/s] */
+    double omega_acceleratoin, /* in [rad/s^2] */
+    double ccw /* 1 or -1 */ )
 {
     /**
      * See Nonami's book eq.(2.56)
@@ -122,7 +126,10 @@ double rotor_anti_torque(double B,
 
 
 /* the sum of the n trust from the rotors eq.(2.61) */
-double body_thrust(double A, unsigned n, double omega[])
+double body_thrust( /* thrust in [N] */
+    double A, /* parameter A in Trust = A*(Omega)^2 in each motor */
+    unsigned n, /* number of rotors */
+    double omega[] /* in radian/sec */ )
 {
     double thrust = 0;
     for (unsigned i = 0; i < n; i++) {
@@ -133,9 +140,15 @@ double body_thrust(double A, unsigned n, double omega[])
 
 /* the sum of the n torques from the rotors including anti-torque */
 /* eq.(2.60)-(2.62)*/
-TorqueType body_torque(double A, double B, double Jr, unsigned n,
-    VectorType position[], double ccw[], double omega[],
-    double omega_acceleration[])
+TorqueType body_torque( /* torque in [Nm] */
+    double A, /* parameter A in Trust = A*(Omega)^2 */
+    double B, /* anti-torque parameter B in Ta = B*(Omega)^2 + Jr* (d(Omega)/dt) */
+    double Jr,
+    unsigned n, /* number of rotors */
+    VectorType position[], /* position of each rotor in [m] */
+    double ccw[], /* 1 or -1 */
+    double omega[], /* in [rad/s] */
+    double omega_acceleration[] /* in [rad/s^2] */ )
 {
     TorqueType total_torque = {0, 0, 0};
     for (unsigned i = 0; i < n; i++) {
@@ -162,8 +175,9 @@ TorqueType body_torque(double A, double B, double Jr, unsigned n,
 }
 
 /**
- * jMAVsim implemntation
- * thrust from omega linearly
+ * Linear approximation versions
+ * used in jMAVsim implemntation.
+ * Used in comparing with the non-linear(our) model.
  */
 double rotor_thrust_linear(
     double A2, /* the A parameter in Trust = A*(Omega) */
