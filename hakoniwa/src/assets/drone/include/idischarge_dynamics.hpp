@@ -7,6 +7,8 @@ namespace hako::assets::drone {
 class IDischargeDynamics {
 public:
     virtual ~IDischargeDynamics() {};
+    
+    // return value Unit: [A*s]
     virtual double get_discharged() = 0;
 };
 }

@@ -18,11 +18,36 @@ namespace hako::assets::drone {
         double J;
     };
     struct BatteryModelParameters {
+        /*
+         * 公称容量: [Ah]
+         * バッテリーが供給できる理論上の電気量
+         */
         double NominalCapacity;
+        /*
+         * 実容量: [Ah]
+         * 実際に使用可能な電気容量
+         */
         double ActualCapacity;
+        /*
+         * 定格電圧: [V]
+         * バッテリーの公称電圧
+         */
         double RatedVoltage;
+        /*
+         * 公称電圧: [V]
+         * バッテリーの標準的な動作電圧
+         */
         double NominalVoltage;
+        /*
+         * 最大放電電流: [A]
+         * 安全に放電できる最大電流値
+         */
         double MaximumDischargeCurrent;
+        /*
+         * 定格容量: [Ah]
+         * メーカーが保証する容量
+         */
+        double RatedCapacity;
     };
 }
 
