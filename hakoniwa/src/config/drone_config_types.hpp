@@ -20,6 +20,8 @@ namespace hako::assets::drone {
     struct BatteryModelParameters {
         double NominalCapacity;
         double ActualCapacity;
+        double RatedVoltage;
+        double NominalVoltage;
     };
 }
 

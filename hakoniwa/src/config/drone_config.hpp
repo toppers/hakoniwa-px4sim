@@ -245,6 +245,8 @@ public:
             if (configJson["components"].contains("battery")) {
                 params.NominalCapacity = configJson["components"]["battery"]["NominalCapacity"].get<double>();
                 params.ActualCapacity = configJson["components"]["battery"]["ActualCapacity"].get<double>();
+                params.RatedVoltage = configJson["components"]["battery"]["RatedVoltage"].get<double>();
+                params.NominalVoltage = configJson["components"]["battery"]["NominalVoltage"].get<double>();
                 std::cout << "Battery model is enabled." << std::endl;
                 return params;
             }
