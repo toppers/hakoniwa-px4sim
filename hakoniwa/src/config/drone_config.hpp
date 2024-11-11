@@ -243,7 +243,7 @@ public:
         hako::assets::drone::BatteryModelParameters params;
         try {
             if (configJson["components"].contains("battery")) {
-                params.vendor = configJson["components"]["battery"][""].get<std::string>();
+                params.vendor = configJson["components"]["battery"]["vendor"].get<std::string>();
                 params.NominalCapacity = configJson["components"]["battery"]["NominalCapacity"].get<double>();
                 params.ActualCapacity = configJson["components"]["battery"]["ActualCapacity"].get<double>();
                 params.RatedVoltage = configJson["components"]["battery"]["RatedVoltage"].get<double>();
