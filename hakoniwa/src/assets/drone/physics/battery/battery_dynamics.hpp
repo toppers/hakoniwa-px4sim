@@ -33,7 +33,6 @@ public:
     BatteryDynamics()
     {
         this->current_charge_voltage = 0;
-        this->remain_charge_voltage = 0;
     }
     double get_vbat() override 
     {

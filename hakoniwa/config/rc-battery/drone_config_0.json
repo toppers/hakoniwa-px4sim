@@ -66,8 +66,12 @@
       },
       "battery": {
         "vendor": "None",
-        "NominalCapacity": 11.1,
-        "ActualCapacity": 11.1
+        "NominalCapacity": 3.0,
+        "ActualCapacity": 3.0,
+        "RatedCapacity": 3.0,
+        "NominalVoltage": 11.1,
+        "RatedVoltage": 3.0,
+        "MaximumDischargeCurrent": 0.0
       },
       "rotor": {
         "vendor": "BatteryModel",

@@ -5,6 +5,7 @@
 #include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
 #include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include "assets/drone/physics/rotor/rotor_dynamics.hpp"
+#include "assets/drone/physics/battery/battery_dynamics.hpp"
 #include "assets/drone/physics/rotor/rotor_dynamics_jmavsim.hpp"
 #include "assets/drone/physics/thruster/thrust_dynamics_linear.hpp"
 #include "assets/drone/physics/thruster/thrust_dynamics_nonlinear.hpp"
@@ -146,6 +147,21 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         rotors[i] = rotor;
     }
     drone->set_rotor_dynamics(rotors);
+
+    //battery dynamics
+    BatteryModelParameters battery_config = drone_config.getComDroneDynamicsBattery();
+    //TODO vendor support
+    if (battery_config.vendor == "None") {
+        auto battery = new BatteryDynamics();
+        HAKO_ASSERT(battery != nullptr);
+        battery->set_params(battery_config);
+        drone->set_battery_dynamics(battery);
+        drone->get_logger().add_entry(*static_cast<BatteryDynamics*>(battery), LOGPATH(drone->get_index(), "log_battery.csv"));
+    }
+    else {
+        std::cout << "INFO: battery is not enabled." << std::endl;
+    }
+
 
     //thrust dynamics
     IThrustDynamics *thrust = nullptr;

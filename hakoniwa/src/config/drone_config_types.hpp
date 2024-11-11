@@ -18,6 +18,7 @@ namespace hako::assets::drone {
         double J;
     };
     struct BatteryModelParameters {
+        std::string vendor;
         /*
          * 公称容量: [Ah]
          * バッテリーが供給できる理論上の電気量
