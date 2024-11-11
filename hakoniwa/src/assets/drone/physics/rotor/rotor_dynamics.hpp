@@ -3,6 +3,7 @@
 
 #include "drone_primitive_types.hpp"
 #include "irotor_dynamics.hpp"
+#include "idischarge_dynamics.hpp"
 #include "utils/icsv_log.hpp"
 #include "rotor_physics.hpp"
 #include <math.h>
@@ -10,7 +11,7 @@
 namespace hako::assets::drone {
 
 
-class RotorDynamics : public hako::assets::drone::IRotorDynamics, public ICsvLog {
+class RotorDynamics : public hako::assets::drone::IRotorDynamics, public hako::assets::drone::IDischargeDynamics, public ICsvLog {
 private:
     double param_rad_per_sec_max = 6000.0;
     double param_tr = 1.0;
@@ -21,7 +22,19 @@ private:
     DroneRotorSpeedType next_speed;
     double delta_time_sec;
     double total_time_sec;
+    double discharged_value;
 
+    void run_discharge(double vbat, double omega, double duty_rate)
+    {
+        double current = drone_physics::rotor_current(
+                            vbat, /* battery voltage in volt [V]*/
+                            this->constants.R, /* resistance in ohm [V/A] */
+                            this->constants.K, /* back electromotive force coeff in [N m/A] */
+                            omega, /* angular velocity in [rad/sec] */
+                            duty_rate /* 0.0-1.0 (ratio of PWM) */
+                            );
+        this->discharged_value += current * this->delta_time_sec;
+    }
 public:
     virtual ~RotorDynamics() {}
     RotorDynamics(double dt)
@@ -29,6 +42,7 @@ public:
         this->delta_time_sec = dt;
         this->total_time_sec = 0;
         this->speed.data = 0;
+        this->discharged_value = 0;
     }
     void set_battery_dynamics_constants(const RotorBatteryModelConstants &c) override
     {
@@ -80,6 +94,7 @@ public:
     }
     void run(double control, double vbat) override
     {
+        this->run_discharge(vbat, this->speed.data, control);
         this->next_speed.data =   (
                                     drone_physics::rotor_omega_acceleration(vbat, constants.R, constants.Cq, constants.J, constants.K, constants.D, speed.data, control)
                                   ) * this->delta_time_sec
@@ -94,15 +109,19 @@ public:
         }
         this->speed.data = this->next_speed.data;
         this->total_time_sec += this->delta_time_sec;
-    }    
+    }
+    double get_discharged() override
+    {
+        return this->discharged_value;
+    }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "RadPerSec" };
+        return { "timestamp", "RadPerSec", "DischargedValue" };
     }
     const std::vector<std::string> log_data() override
     {
         DroneRotorSpeedType v = get_rotor_speed();
-        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(v.data)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(v.data), std::to_string(this->discharged_value)};
     }
 };
 
