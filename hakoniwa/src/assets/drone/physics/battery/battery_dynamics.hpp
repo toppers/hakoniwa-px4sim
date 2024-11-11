@@ -23,7 +23,7 @@ private:
         double MaxCapacity = params.ActualCapacity;  // 実容量（実際に使用可能な容量） [Ah]
 
         // 放電容量に基づく電圧低下の傾きを計算
-        double slope = (V_initial - V_final) / (MaxCapacity * 1000.0); // mAhに変換
+        double slope = (V_initial - V_final) / (MaxCapacity);
         double battery_voltage = V_initial - (slope * discharged_value);
         
         return battery_voltage;

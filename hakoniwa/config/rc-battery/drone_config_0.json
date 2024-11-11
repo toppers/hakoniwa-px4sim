@@ -67,7 +67,7 @@
       "battery": {
         "vendor": "None",
         "NominalCapacity": 3.0,
-        "ActualCapacity": 3.0,
+        "ActualCapacity": 30.0,
         "RatedCapacity": 3.0,
         "NominalVoltage": 11.1,
         "RatedVoltage": 3.0,
