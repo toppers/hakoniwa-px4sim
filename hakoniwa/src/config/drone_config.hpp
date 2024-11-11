@@ -239,6 +239,23 @@ public:
     double getCompRotorKr() const {
         return configJson["components"]["rotor"]["Kr"].get<double>();
     }
+    hako::assets::drone::BatteryModelParameters getComDroneDynamicsBattery() const {
+        hako::assets::drone::BatteryModelParameters params;
+        try {
+            if (configJson["components"].contains("battery")) {
+                params.NominalCapacity = configJson["components"]["battery"]["NominalCapacity"].get<double>();
+                params.ActualCapacity = configJson["components"]["battery"]["ActualCapacity"].get<double>();
+                std::cout << "Battery model is enabled." << std::endl;
+                return params;
+            }
+            else {
+                std::cout << "ERROR: Battery model config is invalid." << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error retrieving Battery Model config: " << e.what() << std::endl;
+        }
+        return params;
+    }
 
     hako::assets::drone::RotorBatteryModelConstants getCompDroneDynamicsRotorDynamicsConstants() const {
         hako::assets::drone::RotorBatteryModelConstants constants = {};

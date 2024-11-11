@@ -64,6 +64,11 @@
               0
           ]
       },
+      "battery": {
+        "vendor": "None",
+        "NominalCapacity": 11.1,
+        "ActualCapacity": 11.1
+      },
       "rotor": {
         "vendor": "BatteryModel",
         "dynamics_constants": {
@@ -141,8 +146,8 @@
       }
   },
   "controller": {
-    "moduleDirectory": "../drone_control/cmake-build/workspace/FlightController",
-    "moduleName": "FlightController",
+    "moduleDirectory": "../drone_control/cmake-build/workspace/RadioController",
+    "moduleName": "RadioController",
       "direct_rotor_control": false,
       "mixer": {
           "vendor": "None",

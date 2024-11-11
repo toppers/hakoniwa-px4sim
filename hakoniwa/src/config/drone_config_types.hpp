@@ -17,6 +17,10 @@ namespace hako::assets::drone {
         double D;
         double J;
     };
+    struct BatteryModelParameters {
+        double NominalCapacity;
+        double ActualCapacity;
+    };
 }
 
 #endif /* _DRONE_CONFIG_TYPES_HPP_ */
