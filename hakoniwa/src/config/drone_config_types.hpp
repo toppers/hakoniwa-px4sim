@@ -22,6 +22,7 @@ namespace hako::assets::drone {
         double ActualCapacity;
         double RatedVoltage;
         double NominalVoltage;
+        double MaximumDischargeCurrent;
     };
 }
 

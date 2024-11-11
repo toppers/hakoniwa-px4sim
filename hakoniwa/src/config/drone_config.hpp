@@ -247,6 +247,7 @@ public:
                 params.ActualCapacity = configJson["components"]["battery"]["ActualCapacity"].get<double>();
                 params.RatedVoltage = configJson["components"]["battery"]["RatedVoltage"].get<double>();
                 params.NominalVoltage = configJson["components"]["battery"]["NominalVoltage"].get<double>();
+                params.MaximumDischargeCurrent = configJson["components"]["battery"]["MaximumDischargeCurrent"].get<double>();
                 std::cout << "Battery model is enabled." << std::endl;
                 return params;
             }
