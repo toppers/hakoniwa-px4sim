@@ -4,6 +4,7 @@
 #include "idischarge_dynamics.hpp"
 #include "config/drone_config_types.hpp"
 #include <vector>
+#include <iostream>
 
 namespace hako::assets::drone {
 

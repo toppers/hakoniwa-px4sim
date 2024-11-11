@@ -12,6 +12,7 @@ namespace hako::assets::drone {
 class BatteryDynamics : public hako::assets::drone::IBatteryDynamics, public ICsvLog {
 private:
     double current_charge_voltage;
+    double total_discharged_value;
     double get_current_charge_value(double discharged_value) 
     {
         if (discharged_value > params.ActualCapacity) {
@@ -40,22 +41,21 @@ public:
         for (auto* entry : devices) {
             total_discharge_value += entry->get_discharged();
         }
-        // Convert total_discharge_value from As (Ampere-seconds) to mAh (milliampere-hours)
+        // Convert total_discharge_value from As (Ampere-seconds) to Ah (Ampere-hours)
         // 1 A・s = 1 / 3600 Ah
-        // 1 Ah = 1000 mAh
-        // Therefore: mAh = A・s * (1000 / 3600) = A・s * 0.2778
-        double discharged_value = total_discharge_value * (1000 / 3600); // Unit conversion from As to mAh    
-        this->current_charge_voltage = this->get_current_charge_value(discharged_value);
+        // Therefore: Ah = A・s * (1 / 3600)
+        total_discharged_value = total_discharge_value * (1.0 / 3600.0); // Unit conversion from As to Ah    
+        this->current_charge_voltage = this->get_current_charge_value(total_discharged_value);
         return this->current_charge_voltage;
     }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "CurrentVoltage" };
+        return { "timestamp", "DischargedValue", "CurrentVoltage" };
     }
 
     const std::vector<std::string> log_data() override
     {
-        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(current_charge_voltage)};
+        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(total_discharged_value), std::to_string(current_charge_voltage)};
     }
 };
 
