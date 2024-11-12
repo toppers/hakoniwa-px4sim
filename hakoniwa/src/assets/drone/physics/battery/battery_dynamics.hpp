@@ -17,10 +17,10 @@ private:
     double discharge_current;
     double delta_time_sec;
     
-    double get_current_charge_value(double discharged_value) 
+    double get_current_charge_voltage(double discharged_capacity) 
     {
-        if (discharged_value > params.ActualCapacity) {
-            discharged_value = params.ActualCapacity;
+        if (discharged_capacity > params.ActualCapacity) {
+            discharged_capacity = params.ActualCapacity;
         }
         double V_initial = params.NominalVoltage;    // 初期電圧（公称電圧） [V]
         double V_final = params.RatedVoltage;        // 放電終了電圧（定格電圧） [V]
@@ -28,7 +28,7 @@ private:
 
         // 放電容量に基づく電圧低下の傾きを計算
         double slope = (V_initial - V_final) / (MaxCapacity);
-        double battery_voltage = V_initial - (slope * discharged_value);
+        double battery_voltage = V_initial - (slope * discharged_capacity);
         
         return battery_voltage;
     }
@@ -55,7 +55,7 @@ public:
         // 1 A・s = 1 / 3600 Ah
         // Therefore: Ah = A・s * (1 / 3600)
         this->discharge_capacity_hour = discharge_capacity_sec /3600.0; // Unit conversion from As to Ah    
-        this->current_charge_voltage = this->get_current_charge_value(discharge_capacity_hour);
+        this->current_charge_voltage = this->get_current_charge_voltage(discharge_capacity_hour);
 
         this->total_discharged_capacity_sec = discharge_capacity_sec;
         return this->current_charge_voltage;
