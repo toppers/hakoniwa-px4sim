@@ -70,6 +70,8 @@
         "RatedCapacity": 3.0,
         "MaximumDischargeCurrent": 0.0,
 
+        "VoltageLevelGreen": 11.1, 
+        "VoltageLevelYellow": 9.5, 
         "NominalVoltage": 14.8,
         "RatedVoltage": 3.0,
         "ActualCapacity": 4.0

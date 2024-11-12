@@ -49,6 +49,15 @@ namespace hako::assets::drone {
          * メーカーが保証する容量
          */
         double RatedCapacity;
+
+        /*
+         * 電圧 Green レベルのミニマム値： [V]
+         */
+        double VoltageLevelGreen;
+        /*
+         * 電圧 Yellow レベルのミニマム値： [V]
+         */
+        double VoltageLevelYellow;
     };
 }
 

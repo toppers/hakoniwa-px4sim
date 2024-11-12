@@ -66,7 +66,15 @@ public:
         status.full_voltage = this->params.NominalVoltage;
         status.curr_voltage = this->current_charge_voltage;
         status.cycles = 0;
-        status.status = 0;
+        if (status.curr_voltage > this->params.VoltageLevelGreen) {
+            status.status = 0; //green
+        }
+        else if (status.curr_voltage > this->params.VoltageLevelYellow) {
+            status.status = 1; //yellow
+        }
+        else {
+            status.status = 2; //red
+        }
         return status;
     }
     const std::vector<std::string> log_head() override
