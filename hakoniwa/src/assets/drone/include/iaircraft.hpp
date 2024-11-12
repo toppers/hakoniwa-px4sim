@@ -89,6 +89,10 @@ public:
     {
         this->battery_dynamics = src;
     }
+    IBatteryDynamics *get_battery_dynamics()
+    {
+        return this->battery_dynamics;
+    }
     double get_rpm_max(int rotor_index)
     {
         if (rotor_index < ROTOR_NUM) {

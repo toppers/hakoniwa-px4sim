@@ -3,7 +3,7 @@
       {
         "area_id": "area_1",
         "properties": {
-          "wind_velocity": [1.0, 1.0, 0.0],
+          "wind_velocity": [0.0, 20.0, 0.0],
           "temperature": 22.5
         }
       },

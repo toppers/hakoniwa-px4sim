@@ -8,6 +8,13 @@
 
 namespace hako::assets::drone {
 
+typedef struct {
+    double full_voltage;
+    double curr_voltage;
+    uint32_t status;
+    uint32_t cycles;
+} BatteryStatusType;
+
 class IBatteryDynamics {
 protected:
     void *vendor_model;
@@ -27,6 +34,7 @@ public:
     }
     //calculate battery remained value
     virtual double get_vbat() = 0;
+    virtual BatteryStatusType get_status() = 0;
     virtual void set_params(const BatteryModelParameters &p)
     {
         this->params = p;

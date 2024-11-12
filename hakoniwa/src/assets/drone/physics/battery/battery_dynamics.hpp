@@ -60,6 +60,15 @@ public:
         this->total_discharged_capacity_sec = discharge_capacity_sec;
         return this->current_charge_voltage;
     }
+    BatteryStatusType get_status() override
+    {
+        BatteryStatusType status;
+        status.full_voltage = this->params.NominalVoltage;
+        status.curr_voltage = this->current_charge_voltage;
+        status.cycles = 0;
+        status.status = 0;
+        return status;
+    }
     const std::vector<std::string> log_head() override
     {
         return { "timestamp", "DischargeCurrent", "CurrentVoltage", "DischargeCapacity" };
