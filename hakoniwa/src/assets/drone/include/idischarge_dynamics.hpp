@@ -8,8 +8,10 @@ class IDischargeDynamics {
 public:
     virtual ~IDischargeDynamics() {};
     
-    // return value Unit: [A*s]
-    virtual double get_discharged() = 0;
+    // return value Unit: [As]
+    virtual double get_discharged_capacity() = 0;
+    // return value Unit: [A]
+    virtual double get_current() = 0;
 };
 }
 

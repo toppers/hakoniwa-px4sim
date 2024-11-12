@@ -123,7 +123,7 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     //TODO vendor support
     IBatteryDynamics *battery = nullptr;
     if (battery_config.vendor == "None") {
-        battery = new BatteryDynamics();
+        battery = new BatteryDynamics(DELTA_TIME_SEC);
         HAKO_ASSERT(battery != nullptr);
         battery->set_params(battery_config);
         drone->set_battery_dynamics(battery);
