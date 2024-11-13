@@ -51,6 +51,10 @@ def on_manual_timing_control(context):
                 pdu_data['d_wind']['value']['x'] = wind[0]
                 pdu_data['d_wind']['value']['y'] = wind[1]
                 pdu_data['d_wind']['value']['z'] = wind[2]
+            temperature = property_info.get_temperature()
+            if temperature is not None:
+                print(f"{hakopy.simulation_time()} temperature ==> {property_info.get_temperature()}")
+                pdu_data['d_temp']['value'] = temperature
         else:
             print(f"{hakopy.simulation_time()}: No wind")
 
