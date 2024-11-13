@@ -38,12 +38,12 @@ double rotor_current(  /* current in [A] */
 
 /* thrust from omega in radian/sec eq.(2.50)*/
 double rotor_thrust( /* thrust in [N] */
-    double A, /* parameter A in Trust = A*(Omega)^2 */
+    double Ct, /* thrust coeff, in Trust = Ct*(Omega)^2 (referred to as 'A' in Nonami's book ) in [N s^2/rad^2]*/
     double omega /* in [rad/s] */ );
 
 /* this makes z-axis rotation eq.(2.56) */
 double rotor_anti_torque( /* anti torque(z-axis) in [Nm]*/
-    double B, /* torque coefficient (referred to as Cq in Kohei's doc) in [N m s^2/rad^2] */
+    double Cq, /* torque coefficient (referred to as B in nonami's book in [N m s^2/rad^2] */
     double Jr, /* torque coefficient for 2nd order rotation */
     double omega, /* in [rad/s] */
     double omega_acceleratoin, /* in [rad/s^2] */
@@ -56,16 +56,16 @@ double rotor_anti_torque( /* anti torque(z-axis) in [Nm]*/
 
 /* the sum of the n trust from the rotors eq.(2.61) */
 double body_thrust( /* thrust in [N] */
-    double A, /* parameter A in Trust = A*(Omega)^2 in each motor */
+    double Ct, /* thrust coeff, in Trust = Ct*(Omega)^2 (referred to as 'A' in Nonami's book ) in [N s^2/rad^2] */
     unsigned n, /* number of rotors */
     double omega[] /* in radian/sec */ );
 
 /* the sum of the n torques from the rotors including anti-torque */
 /* eq.(2.60)-(2.62)*/
 TorqueType body_torque( /* torque in [Nm] */
-    double A, /* parameter A in Trust = A*(Omega)^2 */
-    double B, /* anti-torque parameter B in Ta = B*(Omega)^2 + Jr* (d(Omega)/dt) */
-    double Jr,
+    double Ct, /* thrust coeff, in Trust = Ct*(Omega)^2 (referred to as 'A' in Nonami's book ) in [N s^2/rad^2] */
+    double Cq, /* torque coefficient (referred to as B in nonami's book in [N m s^2/rad^2] */
+    double Jr, /* torque coefficient for 2nd order rotation */
     unsigned n, /* number of rotors */
     VectorType position[], /* position of each rotor in [m] */
     double ccw[], /* 1 or -1 */
@@ -78,15 +78,11 @@ TorqueType body_torque( /* torque in [Nm] */
  * used in jMAVsim implemntation.
  * Used in comparing with the non-linear(our) model.
  */
-double rotor_thrust_linear(
-    double A, /* the A parameter in Trust = A*(Omega) */
-    double omega /* in radian/sec */ );
-
-double rotor_anti_torque_linear(double B2, double omega, double ccw);
-TorqueType body_torque_linear(double A2, double B2, unsigned n,
+double rotor_thrust_linear(double Ct2, double omega);
+double rotor_anti_torque_linear(double Cq2, double omega, double ccw);
+TorqueType body_torque_linear(double Ct2, double Cq2, unsigned n,
     VectorType position[], double ccw[], double omega[]);
-
-double body_thrust_linear(double A2, unsigned n, double omega[]);
+double body_thrust_linear(double Ct2, unsigned n, double omega[]);
 
 
 
