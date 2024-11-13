@@ -20,12 +20,12 @@ private:
     double get_current_charge_voltage(double discharged_capacity) 
     {
         //TODO 最終電圧になったら、フラットにする
-        if (discharged_capacity > params.ActualCapacity) {
-            discharged_capacity = params.ActualCapacity;
+        if (discharged_capacity > params.NominalCapacity) {
+            discharged_capacity = params.NominalCapacity;
         }
-        double V_initial = params.NominalVoltage;    // 初期電圧（公称電圧） [V]
-        double V_final = params.RatedVoltage;        // 放電終了電圧（定格電圧） [V]
-        double MaxCapacity = params.ActualCapacity;  // 実容量（実際に使用可能な容量） [Ah]
+        double V_initial = params.NominalVoltage;    // 初期電圧 [V]
+        double V_final = params.EODVoltage;        // 放電終了電圧 [V]
+        double MaxCapacity = params.NominalCapacity;  // 実容量 [Ah]
 
         // 放電容量に基づく電圧低下の傾きを計算
         double slope = (V_initial - V_final) / (MaxCapacity);
@@ -53,6 +53,7 @@ public:
         for (auto* entry : devices) {
             entry->discharge_capacity_sec += (entry->device->get_current() * this->delta_time_sec);
             this->discharge_current += entry->device->get_current();
+            discharge_capacity_sec += entry->discharge_capacity_sec;
         }
         // Convert total_discharge_value from As (Ampere-seconds) to Ah (Ampere-hours)
         // 1 A・s = 1 / 3600 Ah

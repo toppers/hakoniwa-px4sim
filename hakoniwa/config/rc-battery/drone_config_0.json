@@ -67,18 +67,11 @@
       },
       "battery": {
         "vendor": "None",
-        "RatedCapacity": 3.0,
-        "MaximumDischargeCurrent": 0.0,
-        "ActualCapacity": 4.0,
-        "RatedVoltage": 3.0,
-        "TerminalVoltage": 3.0,
-
         "VoltageLevelGreen": 11.1, 
         "VoltageLevelYellow": 9.5, 
         "NominalVoltage": 14.8,
-        "comment": "TODO",
-        "EODVoltage": 3.0,
-        "NominalCapacity": 3.0
+        "NominalCapacity": 4.0,
+        "EODVoltage": 3.0
       },
       "rotor": {
         "vendor": "BatteryModel",
