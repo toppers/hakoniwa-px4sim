@@ -17,6 +17,7 @@ struct BatteryModelFactor {
 typedef struct {
     double full_voltage;
     double curr_voltage;
+    double temperature;
     uint32_t status;
     uint32_t cycles;
 } BatteryStatusType;

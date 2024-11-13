@@ -220,6 +220,7 @@ static inline bool do_io_write_battery_status(hako::assets::drone::IAirCraft *dr
         auto status = battery->get_status();
         packet.full_voltage = status.full_voltage;
         packet.curr_voltage = status.curr_voltage;
+        packet.curr_temp = status.temperature;
         packet.cycles = status.cycles;
         packet.status = status.status;
         return do_io_write_data(drone, HAKO_AVATOR_CHANNEL_ID_BATTERY_STAT, packet);

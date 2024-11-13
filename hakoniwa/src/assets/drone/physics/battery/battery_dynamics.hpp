@@ -266,6 +266,7 @@ public:
         BatteryStatusType status;
         status.full_voltage = this->params.NominalVoltage;
         status.curr_voltage = this->current_charge_voltage;
+        status.temperature = this->current_factor.temperature;
         status.cycles = 0;
         if (status.curr_voltage > this->params.VoltageLevelGreen) {
             status.status = 0; //green

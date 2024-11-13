@@ -32,6 +32,8 @@ public:
     {
         double vbat = 0.0;
         if (this->battery_dynamics != nullptr) {
+            BatteryModelFactor factor = { input.disturbance.values.d_temp.value }; //温度
+            this->battery_dynamics->set_current_factor(factor);
             this->battery_dynamics->run();
             vbat = this->battery_dynamics->get_vbat();
         }
