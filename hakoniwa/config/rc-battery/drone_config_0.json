@@ -68,9 +68,10 @@
       "battery": {
         "vendor": "None",
         "VoltageLevelGreen": 11.1, 
-        "VoltageLevelYellow": 9.5, 
+        "VoltageLevelYellow": 9.5,
+        "CapacityLevelYellow": 2.5, 
         "NominalVoltage": 14.8,
-        "NominalCapacity": 4.0,
+        "NominalCapacity": 3.0,
         "EODVoltage": 3.0
       },
       "rotor": {

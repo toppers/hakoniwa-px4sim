@@ -41,6 +41,10 @@ namespace hako::assets::drone {
          * 電圧 Yellow レベルのミニマム値： [V]
          */
         double VoltageLevelYellow;
+        /*
+         * 容量 Yellow レベルのミニマム値： [Ah]
+         */
+        double CapacityLevelYellow;
     };
 }
 

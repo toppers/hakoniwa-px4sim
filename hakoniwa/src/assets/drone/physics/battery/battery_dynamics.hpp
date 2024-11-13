@@ -19,20 +19,25 @@ private:
     
     double get_current_charge_voltage(double discharged_capacity) 
     {
-        //TODO 最終電圧になったら、フラットにする
+        // 放電容量は増え続けるため、最大容量を超えたら、
+        // 最大容量にすることで、電圧レベルを固定値にする
         if (discharged_capacity > params.NominalCapacity) {
             discharged_capacity = params.NominalCapacity;
         }
-        double V_initial = params.NominalVoltage;    // 初期電圧 [V]
-        double V_final = params.EODVoltage;        // 放電終了電圧 [V]
-        double MaxCapacity = params.NominalCapacity;  // 実容量 [Ah]
 
+        double slope = 0;
+        double battery_voltage = 0;
         // 放電容量に基づく電圧低下の傾きを計算
-        double slope = (V_initial - V_final) / (MaxCapacity);
-        double battery_voltage = V_initial - (slope * discharged_capacity);
-        
-        // Yellowラインまでは同じで、そこから急降下する
-        // グラフをCSVで読み込ませる
+        if (discharged_capacity < this->params.CapacityLevelYellow) {
+            // 放電容量がyellowレベルを下回っていない場合、電圧を緩やかに低下させる
+            slope = (params.NominalVoltage - params.VoltageLevelGreen) / this->params.CapacityLevelYellow;
+            battery_voltage = params.NominalVoltage - (slope * discharged_capacity);
+        }
+        else {
+            // 放電容量がyellowレベルを下回ったら、電圧を急降下させる
+            slope = (params.VoltageLevelGreen - params.EODVoltage) / (params.NominalCapacity - this->params.CapacityLevelYellow);
+            battery_voltage = params.VoltageLevelGreen - (slope * (discharged_capacity - this->params.CapacityLevelYellow));
+        }
         return battery_voltage;
     }
 
@@ -46,6 +51,7 @@ public:
         this->discharge_current = 0;
         this->discharge_capacity_hour = 0;
     }
+    // TODO グラフをCSVで読み込ませる
     void run() override
     {
         double discharge_capacity_sec = 0;
