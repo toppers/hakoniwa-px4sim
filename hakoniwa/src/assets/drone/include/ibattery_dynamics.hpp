@@ -42,8 +42,9 @@ public:
         entry->discharge_capacity_sec = 0;
         devices.push_back(entry);
     }
-    //calculate battery remained value
     virtual double get_vbat() = 0;
+    //calculate battery remained value
+    virtual void run() = 0;
     virtual BatteryStatusType get_status() = 0;
     virtual void set_params(const BatteryModelParameters &p)
     {

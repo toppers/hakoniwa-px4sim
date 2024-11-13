@@ -46,7 +46,7 @@ public:
         this->discharge_current = 0;
         this->discharge_capacity_hour = 0;
     }
-    double get_vbat() override 
+    void run() override
     {
         double discharge_capacity_sec = 0;
         this->discharge_current = 0;
@@ -60,8 +60,10 @@ public:
         // Therefore: Ah = A・s * (1 / 3600)
         this->discharge_capacity_hour = discharge_capacity_sec /3600.0; // Unit conversion from As to Ah    
         this->current_charge_voltage = this->get_current_charge_voltage(discharge_capacity_hour);
-
         this->total_discharged_capacity_sec = discharge_capacity_sec;
+    }
+    double get_vbat() override 
+    {
         return this->current_charge_voltage;
     }
     BatteryStatusType get_status() override

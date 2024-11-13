@@ -32,6 +32,7 @@ public:
     {
         double vbat = 0.0;
         if (this->battery_dynamics != nullptr) {
+            this->battery_dynamics->run();
             vbat = this->battery_dynamics->get_vbat();
         }
         //actuators
