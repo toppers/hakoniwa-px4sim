@@ -37,7 +37,7 @@
       "droneDynamics": {
           "physicsEquation": "BodyFrame",
           "collision_detection": true,
-          "enable_disturbance": true,
+          "enable_disturbance": false,
           "manual_control": false,
           "airFrictionCoefficient": [
               0.05,
@@ -67,15 +67,18 @@
       },
       "battery": {
         "vendor": "None",
-        "NominalCapacity": 3.0,
         "RatedCapacity": 3.0,
         "MaximumDischargeCurrent": 0.0,
+        "ActualCapacity": 4.0,
+        "RatedVoltage": 3.0,
+        "TerminalVoltage": 3.0,
 
         "VoltageLevelGreen": 11.1, 
         "VoltageLevelYellow": 9.5, 
         "NominalVoltage": 14.8,
-        "RatedVoltage": 3.0,
-        "ActualCapacity": 4.0
+        "comment": "TODO",
+        "EODVoltage": 3.0,
+        "NominalCapacity": 3.0
       },
       "rotor": {
         "vendor": "BatteryModel",

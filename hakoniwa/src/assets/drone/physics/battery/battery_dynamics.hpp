@@ -3,7 +3,7 @@
 
 #include "drone_primitive_types.hpp"
 #include "ibattery_dynamics.hpp"
-#include "idischarge_dynamics.hpp"
+#include "icurrent_dynamics.hpp"
 #include "utils/icsv_log.hpp"
 #include <math.h>
 
@@ -19,6 +19,7 @@ private:
     
     double get_current_charge_voltage(double discharged_capacity) 
     {
+        //TODO 最終電圧になったら、フラットにする
         if (discharged_capacity > params.ActualCapacity) {
             discharged_capacity = params.ActualCapacity;
         }
@@ -30,6 +31,8 @@ private:
         double slope = (V_initial - V_final) / (MaxCapacity);
         double battery_voltage = V_initial - (slope * discharged_capacity);
         
+        // Yellowラインまでは同じで、そこから急降下する
+        // グラフをCSVで読み込ませる
         return battery_voltage;
     }
 
@@ -48,8 +51,8 @@ public:
         double discharge_capacity_sec = 0;
         this->discharge_current = 0;
         for (auto* entry : devices) {
-            discharge_capacity_sec += entry->get_discharged_capacity();
-            this->discharge_current += entry->get_current();
+            entry->discharge_capacity_sec += (entry->device->get_current() * this->delta_time_sec);
+            this->discharge_current += entry->device->get_current();
         }
         // Convert total_discharge_value from As (Ampere-seconds) to Ah (Ampere-hours)
         // 1 A・s = 1 / 3600 Ah
@@ -79,7 +82,7 @@ public:
     }
     const std::vector<std::string> log_head() override
     {
-        return { "timestamp", "DischargeCurrent", "CurrentVoltage", "DischargeCapacity" };
+        return { "timestamp", "DischargeCurrent", "Voltage", "DischargeCapacity" };
     }
 
     const std::vector<std::string> log_data() override

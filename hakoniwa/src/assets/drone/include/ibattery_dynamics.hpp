@@ -1,8 +1,9 @@
 #ifndef _IBATTERY_DYNAMICS_HPP_
 #define _IBATTERY_DYNAMICS_HPP_
 
-#include "idischarge_dynamics.hpp"
+#include "icurrent_dynamics.hpp"
 #include "config/drone_config_types.hpp"
+#include "utils/hako_utils.hpp"
 #include <vector>
 #include <iostream>
 
@@ -15,12 +16,17 @@ typedef struct {
     uint32_t cycles;
 } BatteryStatusType;
 
+typedef struct {
+    ICurrentDynamics *device;
+    double discharge_capacity_sec;
+} DischargeDynamicsType;
+
 class IBatteryDynamics {
 protected:
     void *vendor_model;
     void *context;
     BatteryModelParameters params;
-    std::vector<IDischargeDynamics*> devices;
+    std::vector<DischargeDynamicsType*> devices;
 public:
     virtual ~IBatteryDynamics() {}
     virtual void set_vendor(void *vendor, void *context)
@@ -28,9 +34,13 @@ public:
         this->vendor_model = vendor;
         this->context = context;
     }
-    virtual void add_device(IDischargeDynamics& device)
+    virtual void add_device(ICurrentDynamics& device)
     {
-        devices.push_back(&device);
+        DischargeDynamicsType* entry = new DischargeDynamicsType();
+        HAKO_ASSERT(entry != nullptr);
+        entry->device = &device;
+        entry->discharge_capacity_sec = 0;
+        devices.push_back(entry);
     }
     //calculate battery remained value
     virtual double get_vbat() = 0;
