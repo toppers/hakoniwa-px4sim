@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <map>
 
 namespace hako::assets::drone {
 
@@ -27,44 +28,111 @@ private:
     double discharge_current;
     double delta_time_sec;
     bool is_battery_model_enabled;
-    std::vector<DischargeData> battery_model_data;
+    // バッテリーの放電特性を決める要因データ
+    // インデックス番号は、要因IDとして扱う
+    std::vector<BatteryModelFactor> discharge_factors;
+    //要因IDと放電データのマップ
+    std::map<int, std::vector<DischargeData>> battery_model_map;
 
-    // CSVファイルを読み込み、データをメモリにロードする関数
-    std::vector<DischargeData> loadCSV(const std::string& filename) {
-        std::vector<DischargeData> data;
+
+    // 1段階目：要因データを読み込み、要因IDを確定する関数
+    void loadDischargeFactors(const std::string& filename) {
         std::ifstream file(filename);
         std::string line;
 
         while (std::getline(file, line)) {
-            // コメント行（#で始まる行）をスキップ
             if (line.empty() || line[0] == '#') {
                 continue;
             }
 
-            // 行内の#以降の文字を削除
-            auto comment_pos = line.find('#');
-            if (comment_pos != std::string::npos) {
-                line = line.substr(0, comment_pos);
+            std::istringstream ss(line);
+            std::string temperatureStr, capacityStr, voltageStr;
+            if (std::getline(ss, temperatureStr, ',')) {
+                // 要因データを取得
+                double temperature = std::stod(temperatureStr);
+                
+                // 重複を避けるため、既に存在する温度かどうかを確認
+                auto it = std::find_if(discharge_factors.begin(), discharge_factors.end(),
+                                    [temperature](const BatteryModelFactor& factor) {
+                                        return factor.temperature == temperature;
+                                    });
+
+                // まだ存在しない場合のみ追加
+                if (it == discharge_factors.end()) {
+                    BatteryModelFactor factor;
+                    factor.temperature = temperature;
+                    std::cout << "INFO: battery factor: temperature = " << factor.temperature << std::endl;
+                    discharge_factors.push_back(factor); // 要因データを格納
+                }
+            }
+        }
+    }
+    // 2段階目：要因データに基づいて、要因IDをマップに割り当てる
+    void loadDischargeData(const std::string& filename) {
+        std::ifstream file(filename);
+        std::string line;
+
+        while (std::getline(file, line)) {
+            if (line.empty() || line[0] == '#') {
+                continue;
             }
 
             std::istringstream ss(line);
-            std::string capacityStr, voltageStr;
-            if (std::getline(ss, capacityStr, ',') && std::getline(ss, voltageStr, ',')) {
+            std::string temperatureStr, capacityStr, voltageStr;
+
+            if (std::getline(ss, temperatureStr, ',') &&
+                std::getline(ss, capacityStr, ',') &&
+                std::getline(ss, voltageStr, ',')) {
+
+                // 要因データから対応する要因IDを取得
+                double temperature = std::stod(temperatureStr);
+                int factor_id = findFactorOrCreateID(temperature);
+
+                // 放電データを生成
                 DischargeData record;
                 record.capacity = std::stod(capacityStr);
                 record.voltage = std::stod(voltageStr);
-                data.push_back(record);
+
+                // 要因IDをキーにしてデータをマップに格納
+                battery_model_map[factor_id].push_back(record);
             }
         }
 
-        // 放電容量で昇順にソートしておく
-        std::sort(data.begin(), data.end(), [](const DischargeData& a, const DischargeData& b) {
-            return a.capacity < b.capacity;
-        });
-
-        return data;
+        // 各要因IDに対するデータを容量でソート
+        for (auto& [factor_id, data] : battery_model_map) {
+            std::sort(data.begin(), data.end(), [](const DischargeData& a, const DischargeData& b) {
+                return a.capacity < b.capacity;
+            });
+        }
     }
 
+    // 要因データから要因IDを取得する関数
+    int findFactorOrCreateID(double temperature) {
+        for (uint i = 0; i < discharge_factors.size(); ++i) {
+            if (discharge_factors[i].temperature == temperature) {
+                return i; // 要因のインデックスをIDとして使用
+            }
+        }
+        // 該当する要因がない場合、新しい要因を追加しIDを返す
+        BatteryModelFactor new_factor{temperature};
+        discharge_factors.push_back(new_factor);
+        return discharge_factors.size() - 1;
+    }
+    // current_factorの温度に最も近い要因IDを検索する関数
+    int findClosestFactorID() {
+        int closest_id = 0;
+        double min_difference = std::abs(current_factor.temperature - discharge_factors[0].temperature);
+
+        for (uint i = 1; i < discharge_factors.size(); ++i) {
+            double difference = std::abs(current_factor.temperature - discharge_factors[i].temperature);
+            if (difference < min_difference) {
+                closest_id = i;
+                min_difference = difference;
+            }
+        }
+        //std::cout << "INFO: closest factor ID = " << closest_id << " temp: " << discharge_factors[closest_id].temperature << std::endl;
+        return closest_id;
+    }
     void run_discharged_capacity()
     {
         double discharge_capacity_sec = 0;
@@ -81,8 +149,10 @@ private:
         this->accumulated_capacity_sec = discharge_capacity_sec;
     }
     // 2分探索で指定した容量に近い前後のデータを取得する関数（境界条件を考慮）
-    std::pair<DischargeData, DischargeData> findSurroundingData(const std::vector<DischargeData>& data, double targetCapacity) 
+    std::pair<DischargeData, DischargeData> findSurroundingData(double targetCapacity) 
     {
+        int closest_factor_id = findClosestFactorID();
+        const auto& data = battery_model_map.at(closest_factor_id);        
         if (data.size() < 2) {
             throw std::runtime_error("Insufficient data in battery model.");
         }
@@ -113,7 +183,7 @@ private:
             discharged_capacity = params.NominalCapacity;
         }
         // 前後のデータ取得
-        auto [lower, upper] = findSurroundingData(this->battery_model_data, discharged_capacity);
+        auto [lower, upper] = findSurroundingData(discharged_capacity);
         // 線形補間で電圧を計算
         double interpolatedVoltage = interpolateVoltage(lower, upper, discharged_capacity);
         this->current_charge_voltage = interpolatedVoltage;
@@ -163,7 +233,11 @@ public:
             std::cout << "BatteryModelCsvFilePath: " << params.BatteryModelCsvFilePath << std::endl;
             if (std::filesystem::exists(params.BatteryModelCsvFilePath)) {
                 std::cout << "BatteryModelCsvFilePath exists." << std::endl;
-                this->battery_model_data = loadCSV(params.BatteryModelCsvFilePath);
+                // 1段階目：要因データの読み込み
+                loadDischargeFactors(params.BatteryModelCsvFilePath);
+
+                // 2段階目：放電データの読み込みとマップ化
+                loadDischargeData(params.BatteryModelCsvFilePath);
                 this->is_battery_model_enabled = true;
             }
             else {

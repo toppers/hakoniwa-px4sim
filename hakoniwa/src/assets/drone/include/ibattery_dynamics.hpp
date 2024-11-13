@@ -9,6 +9,11 @@
 
 namespace hako::assets::drone {
 
+// バッテリーの放電特性を決める要因データ
+struct BatteryModelFactor {
+    double temperature; // 温度 (℃)
+};
+
 typedef struct {
     double full_voltage;
     double curr_voltage;
@@ -26,6 +31,7 @@ protected:
     void *vendor_model;
     void *context;
     BatteryModelParameters params;
+    BatteryModelFactor current_factor = {};
     std::vector<DischargeDynamicsType*> devices;
 public:
     virtual ~IBatteryDynamics() {}
@@ -33,6 +39,10 @@ public:
     {
         this->vendor_model = vendor;
         this->context = context;
+    }
+    virtual void set_current_factor(BatteryModelFactor factor)
+    {
+        current_factor = factor;
     }
     virtual void add_device(ICurrentDynamics& device)
     {
