@@ -5,6 +5,7 @@
 #include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
 #include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
 #include "assets/drone/physics/rotor/rotor_dynamics.hpp"
+#include "assets/drone/physics/battery/battery_dynamics.hpp"
 #include "assets/drone/physics/rotor/rotor_dynamics_jmavsim.hpp"
 #include "assets/drone/physics/thruster/thrust_dynamics_linear.hpp"
 #include "assets/drone/physics/thruster/thrust_dynamics_nonlinear.hpp"
@@ -116,6 +117,21 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     std::cout << "INFO: logpath: " << LOGPATH(drone->get_index(), "drone_dynamics.csv") << std::endl;
     drone->get_logger().add_entry(*drone_dynamics, LOGPATH(drone->get_index(), "drone_dynamics.csv"));
 
+
+    //battery dynamics
+    BatteryModelParameters battery_config = drone_config.getComDroneDynamicsBattery();
+    //TODO vendor support
+    IBatteryDynamics *battery = nullptr;
+    if (battery_config.vendor == "None") {
+        battery = new BatteryDynamics(DELTA_TIME_SEC);
+        HAKO_ASSERT(battery != nullptr);
+        battery->set_params(battery_config);
+        drone->set_battery_dynamics(battery);
+        drone->get_logger().add_entry(*static_cast<BatteryDynamics*>(battery), LOGPATH(drone->get_index(), "log_battery.csv"));
+    }
+    else {
+        std::cout << "INFO: battery is not enabled." << std::endl;
+    }
     //rotor dynamics
     IRotorDynamics* rotors[hako::assets::drone::ROTOR_NUM];
     auto rotor_vendor = drone_config.getCompRotorVendor();
@@ -136,6 +152,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
             rotor->set_battery_dynamics_constants(constants);
             static_cast<RotorDynamics*>(rotor)->set_params(RAD_PER_SEC_MAX, 0, ROTOR_K);
             drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(drone->get_index(), logfilename));
+            HAKO_ASSERT(battery != nullptr);
+            battery->add_device(*static_cast<RotorDynamics*>(rotor));
         }
         else {
             rotor = new RotorDynamics(DELTA_TIME_SEC);
@@ -146,6 +164,7 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         rotors[i] = rotor;
     }
     drone->set_rotor_dynamics(rotors);
+
 
     //thrust dynamics
     IThrustDynamics *thrust = nullptr;

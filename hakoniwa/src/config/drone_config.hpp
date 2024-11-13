@@ -239,6 +239,28 @@ public:
     double getCompRotorKr() const {
         return configJson["components"]["rotor"]["Kr"].get<double>();
     }
+    hako::assets::drone::BatteryModelParameters getComDroneDynamicsBattery() const {
+        hako::assets::drone::BatteryModelParameters params;
+        try {
+            if (configJson["components"].contains("battery")) {
+                params.vendor = configJson["components"]["battery"]["vendor"].get<std::string>();
+                params.VoltageLevelGreen = configJson["components"]["battery"]["VoltageLevelGreen"].get<double>();
+                params.VoltageLevelYellow = configJson["components"]["battery"]["VoltageLevelYellow"].get<double>();
+                params.NominalVoltage = configJson["components"]["battery"]["NominalVoltage"].get<double>();
+                params.NominalCapacity = configJson["components"]["battery"]["NominalCapacity"].get<double>();
+                params.EODVoltage = configJson["components"]["battery"]["EODVoltage"].get<double>();
+                params.CapacityLevelYellow = configJson["components"]["battery"]["CapacityLevelYellow"].get<double>();
+                std::cout << "Battery model is enabled." << std::endl;
+                return params;
+            }
+            else {
+                std::cout << "ERROR: Battery model config is invalid." << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error retrieving Battery Model config: " << e.what() << std::endl;
+        }
+        return params;
+    }
 
     hako::assets::drone::RotorBatteryModelConstants getCompDroneDynamicsRotorDynamicsConstants() const {
         hako::assets::drone::RotorBatteryModelConstants constants = {};

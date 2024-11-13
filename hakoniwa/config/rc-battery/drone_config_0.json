@@ -36,7 +36,8 @@
   "components": {
       "droneDynamics": {
           "physicsEquation": "BodyFrame",
-          "collision_detection": false,
+          "collision_detection": true,
+          "enable_disturbance": false,
           "manual_control": false,
           "airFrictionCoefficient": [
               0.05,
@@ -63,6 +64,15 @@
               0,
               0
           ]
+      },
+      "battery": {
+        "vendor": "None",
+        "VoltageLevelGreen": 11.1, 
+        "VoltageLevelYellow": 9.5,
+        "CapacityLevelYellow": 2.5, 
+        "NominalVoltage": 14.8,
+        "NominalCapacity": 3.0,
+        "EODVoltage": 3.0
       },
       "rotor": {
         "vendor": "BatteryModel",
@@ -141,8 +151,8 @@
       }
   },
   "controller": {
-    "moduleDirectory": "../drone_control/cmake-build/workspace/FlightController",
-    "moduleName": "FlightController",
+    "moduleDirectory": "../drone_control/cmake-build/workspace/RadioController",
+    "moduleName": "RadioController",
       "direct_rotor_control": false,
       "mixer": {
           "vendor": "None",

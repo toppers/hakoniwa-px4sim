@@ -13,6 +13,7 @@
 #include "hako_msgs/pdu_ctype_HakoDroneCmdMove.h"
 #include "hako_msgs/pdu_ctype_HakoDroneCmdLand.h"
 #include "hako_msgs/pdu_ctype_GameControllerOperation.h"
+#include "hako_msgs/pdu_ctype_HakoBatteryStatus.h"
 #include "config/drone_config.hpp"
 
 extern bool hako_pdu_data_init(DroneConfigManager& mgr);

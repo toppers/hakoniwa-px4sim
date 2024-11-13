@@ -260,6 +260,7 @@ static void my_task()
             drone_input.controls[i] = container.controls[i];
         }
         container.drone->run(drone_input);
+        do_io_write_battery_status(container.drone);
         do_io_write(container.drone, container.controls);
     }
     return;
