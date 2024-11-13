@@ -36,6 +36,17 @@ private:
         std::string line;
 
         while (std::getline(file, line)) {
+            // コメント行（#で始まる行）をスキップ
+            if (line.empty() || line[0] == '#') {
+                continue;
+            }
+
+            // 行内の#以降の文字を削除
+            auto comment_pos = line.find('#');
+            if (comment_pos != std::string::npos) {
+                line = line.substr(0, comment_pos);
+            }
+
             std::istringstream ss(line);
             std::string capacityStr, voltageStr;
             if (std::getline(ss, capacityStr, ',') && std::getline(ss, voltageStr, ',')) {
@@ -50,8 +61,10 @@ private:
         std::sort(data.begin(), data.end(), [](const DischargeData& a, const DischargeData& b) {
             return a.capacity < b.capacity;
         });
+
         return data;
     }
+
     void run_discharged_capacity()
     {
         double discharge_capacity_sec = 0;
@@ -160,7 +173,6 @@ public:
     }
 
 
-    // TODO グラフをCSVで読み込ませる
     void run() override
     {
         run_discharged_capacity();

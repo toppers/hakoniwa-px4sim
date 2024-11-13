@@ -72,7 +72,7 @@
         "VoltageLevelYellow": 9.5,
         "CapacityLevelYellow": 2.5, 
         "NominalVoltage": 14.8,
-        "NominalCapacity": 3.0,
+        "NominalCapacity": 5.0,
         "EODVoltage": 3.0
       },
       "rotor": {
