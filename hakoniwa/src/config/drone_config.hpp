@@ -240,10 +240,13 @@ public:
         return configJson["components"]["rotor"]["Kr"].get<double>();
     }
     hako::assets::drone::BatteryModelParameters getComDroneDynamicsBattery() const {
-        hako::assets::drone::BatteryModelParameters params;
+        hako::assets::drone::BatteryModelParameters params = {};
         try {
             if (configJson["components"].contains("battery")) {
                 params.vendor = configJson["components"]["battery"]["vendor"].get<std::string>();
+                if (configJson["components"]["battery"].contains("BatteryModelCsvFilePath")) {
+                    params.BatteryModelCsvFilePath = configJson["components"]["battery"]["BatteryModelCsvFilePath"].get<std::string>();
+                }
                 params.VoltageLevelGreen = configJson["components"]["battery"]["VoltageLevelGreen"].get<double>();
                 params.VoltageLevelYellow = configJson["components"]["battery"]["VoltageLevelYellow"].get<double>();
                 params.NominalVoltage = configJson["components"]["battery"]["NominalVoltage"].get<double>();
