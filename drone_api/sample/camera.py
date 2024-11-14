@@ -41,7 +41,7 @@ def main():
         print(f"Usage: {sys.argv[0]} <config_path>")
         return 1
 
-    client = hakosim.MultirotorClient(sys.argv[1])
+    client = hakosim.MultirotorClient(sys.argv[1], "DroneTransporter")
     client.confirmConnection()
     client.enableApiControl(True)
     client.armDisarm(True)
