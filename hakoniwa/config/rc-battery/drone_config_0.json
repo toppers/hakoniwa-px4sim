@@ -83,10 +83,7 @@
             "K": 3.28e-3,
             "D": 0.0,
             "J": 8.12e-6
-        },
-        "Tr": 0.046,
-        "Kr": 27654.76291,
-        "rpmMax": 27654.76291
+        }
       },
       "thruster": {
           "vendor": "None",
@@ -124,9 +121,9 @@
                   "rotationDirection": -1.0
               }
           ],
-          "HoveringRpm": 13827.38146,
-          "parameterB": 3.0E-8,
-          "parameterJr": 0.0
+          "Ct": 8.3E-07,
+          "Cq": 3.0E-8,
+          "Jr": 0.0
       },
       "sensors": {
           "acc": {

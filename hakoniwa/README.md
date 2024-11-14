@@ -154,11 +154,10 @@ The settings for each item are as follows:
   - **angle_degree**: The initial angle of the aircraft, in degrees (`deg`).
 - **rotor**: Rotor settings.
   - **vendor**: Specify the vendor name. Currently, set it to `None`.
-  - **Ct**: Thrust coefficient.
-  - **Tr**: Rotor response time, in seconds (`s`).
 - **thruster**: Thruster settings.
   - **vendor**: Specify the vendor name. Currently, set it to `None`.
   - **rotorPositions**: The positions and rotation directions of the rotors, in meters (`m`). rotationDirection is the direction of rotor rotation (CW:-1.0, CCW: 1.0)
+  - **Ct**: Thrust coefficient.
   - **Cq**: Torque coefficient.
   - **Jr**: Thruster moment of inertia parameter.
 - **sensors**: Settings for various sensors.

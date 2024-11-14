@@ -232,13 +232,7 @@ public:
             return "None";
         }
     }
-    double getCompRotorTr() const {
-        return configJson["components"]["rotor"]["Tr"].get<double>();
-    }
 
-    double getCompRotorKr() const {
-        return configJson["components"]["rotor"]["Kr"].get<double>();
-    }
     hako::assets::drone::BatteryModelParameters getComDroneDynamicsBattery() const {
         hako::assets::drone::BatteryModelParameters params = {};
         try {
