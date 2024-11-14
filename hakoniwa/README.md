@@ -154,15 +154,13 @@ The settings for each item are as follows:
   - **angle_degree**: The initial angle of the aircraft, in degrees (`deg`).
 - **rotor**: Rotor settings.
   - **vendor**: Specify the vendor name. Currently, set it to `None`.
+  - **Ct**: Thrust coefficient.
   - **Tr**: Rotor response time, in seconds (`s`).
-  - **Kr**: Rotor force constant.
-  - **rpmMax**: Maximum rotor speed, in revolutions per minute (`rpm`).
 - **thruster**: Thruster settings.
   - **vendor**: Specify the vendor name. Currently, set it to `None`.
   - **rotorPositions**: The positions and rotation directions of the rotors, in meters (`m`). rotationDirection is the direction of rotor rotation (CW:-1.0, CCW: 1.0)
-  - **HoveringRpm**: The rotation speed at hovering, in revolutions per minute (`rpm`).
-  - **parameterB**: Thruster parameter B.
-  - **parameterJr**: Thruster moment of inertia parameter.
+  - **Cq**: Torque coefficient.
+  - **Jr**: Thruster moment of inertia parameter.
 - **sensors**: Settings for various sensors.
   - **sampleCount**: The number of samples.
   - **noise**: Noise level (standard deviation). If noise is not set, it is 0.

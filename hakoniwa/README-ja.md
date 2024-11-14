@@ -163,15 +163,13 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
   - **angle_degree**: 機体の初期角度。単位は度(`deg`)。
 - **rotor**: ローターの設定。
   - **vendor**: ベンダ名を指定します。現状は`None`を設定して下さい。
+  - **Ct**: 推力係数
   - **Tr**: ローターの応答時間。単位は秒(`s`)。
-  - **Kr**: ローターの力定数。
-  - **rpmMax**: ローターの最大回転数。単位は回転/分(`rpm`)。
 - **thruster**: スラスターの設定。
   - **vendor**: ベンダ名を指定します。現状は`None`を設定して下さい。
   - **rotorPositions**: ローターの位置と回転方向。単位はメートル(`m`)。rotationDirectionはローターの回転方向(CW:-1.0, CCW: 1.0)
-  - **HoveringRpm**: ホバリング時の回転数。単位は回転/分(`rpm`)。
-  - **parameterB**: スラスターのパラメータB。
-  - **parameterJr**: スラスターの慣性モーメントパラメータ。
+  - **Cq**: トルク係数。
+  - **Jr**: スラスターの慣性モーメントパラメータ。
 - **sensors**: 各種センサーの設定。
   - **sampleCount**: サンプル数
   - **noise**:ノイズレベル(標準偏差)。ノイズ未設定の場合は0。

@@ -126,7 +126,7 @@
           ],
           "HoveringRpm": 13827.38146,
           "parameterB": 3.0E-8,
-              "parameterJr": 0.0
+          "parameterJr": 0.0
       },
       "sensors": {
           "acc": {
