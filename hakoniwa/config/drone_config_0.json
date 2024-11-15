@@ -67,6 +67,7 @@
       },
       "battery": {
         "vendor": "None",
+        "model": "constant",
         "BatteryModelCsvFilePath": "./tmp_battery_model.csv",
         "VoltageLevelGreen": 11.1, 
         "VoltageLevelYellow": 9.5,

@@ -241,6 +241,12 @@ public:
                 if (configJson["components"]["battery"].contains("BatteryModelCsvFilePath")) {
                     params.BatteryModelCsvFilePath = configJson["components"]["battery"]["BatteryModelCsvFilePath"].get<std::string>();
                 }
+                if (configJson["components"]["battery"].contains("model")) {
+                    params.model = configJson["components"]["battery"]["model"].get<std::string>();
+                }
+                else {
+                    params.model = "constant";
+                }
                 params.VoltageLevelGreen = configJson["components"]["battery"]["VoltageLevelGreen"].get<double>();
                 params.VoltageLevelYellow = configJson["components"]["battery"]["VoltageLevelYellow"].get<double>();
                 params.NominalVoltage = configJson["components"]["battery"]["NominalVoltage"].get<double>();

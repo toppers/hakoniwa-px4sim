@@ -28,6 +28,7 @@ private:
     double discharge_current;
     double delta_time_sec;
     bool is_battery_model_enabled;
+    bool is_battery_mode_constant;
     // バッテリーの放電特性を決める要因データ
     // インデックス番号は、要因IDとして扱う
     std::vector<BatteryModelFactor> discharge_factors;
@@ -188,6 +189,10 @@ private:
         double interpolatedVoltage = interpolateVoltage(lower, upper, discharged_capacity);
         this->current_charge_voltage = interpolatedVoltage;
     }
+    void run_constant_model()
+    {
+        this->current_charge_voltage = this->params.NominalVoltage;
+    }
     void run_linear_model()
     {
         double discharged_capacity = this->discharge_capacity_hour;
@@ -222,10 +227,18 @@ public:
         this->discharge_current = 0;
         this->discharge_capacity_hour = 0;
         this->is_battery_model_enabled = false;
+        this->is_battery_mode_constant = false;
     }
     void set_params(const BatteryModelParameters &p) override
     {
         this->params = p;
+        if (params.model == "constant") {
+            this->is_battery_mode_constant = true;
+        }
+        else {
+            this->is_battery_mode_constant = false;
+        }
+
         if (params.BatteryModelCsvFilePath.empty()) {
             std::cout << "BatteryModelCsvFilePath is empty." << std::endl;
         }
@@ -249,12 +262,17 @@ public:
 
     void run() override
     {
-        run_discharged_capacity();
-        if (!this->is_battery_model_enabled) {
-            run_linear_model();
+        if (this->is_battery_mode_constant) {
+            run_constant_model();
         }
         else {
-            run_battery_model();
+            run_discharged_capacity();
+            if (!this->is_battery_model_enabled) {
+                run_linear_model();
+            }
+            else {
+                run_battery_model();
+            }
         }
     }
     double get_vbat() override 

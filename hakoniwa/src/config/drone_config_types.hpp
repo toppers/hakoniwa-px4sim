@@ -21,6 +21,12 @@ namespace hako::assets::drone {
         std::string vendor;
         std::string BatteryModelCsvFilePath;
         /*
+         * constant: バッテリ電圧が一定のモデル
+         * linear: リニアモデル
+         * custom: CSVファイルで指定するモデル
+         */
+        std::string model;
+        /*
          * 公称容量: [Ah]
          * バッテリーが供給できる理論上の電気量
          */
