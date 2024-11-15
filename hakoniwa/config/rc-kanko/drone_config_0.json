@@ -64,9 +64,9 @@
       "battery": {
         "vendor": "None",
         "BatteryModelCsvFilePath": "./tmp_battery_model.csv",
-        "VoltageLevelGreen": 11.1, 
-        "VoltageLevelYellow": 9.5,
-        "CapacityLevelYellow": 2.5, 
+        "VoltageLevelGreen": 12.1, 
+        "VoltageLevelYellow": 11.1,
+        "CapacityLevelYellow": 900, 
         "NominalVoltage": 14.8,
         "NominalCapacity": 1000.0,
         "EODVoltage": 3.0
