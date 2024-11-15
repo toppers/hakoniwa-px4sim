@@ -54,7 +54,6 @@ private:
     std::unique_ptr<DronePidControl> roll_control;
     std::unique_ptr<DronePidControl> pitch_control;
     DroneAngleRateInputType angle_prev_out = {};
-    double pos_simulation_time = 0;
 
     /*
      * rate control
@@ -68,7 +67,6 @@ private:
     std::unique_ptr<DronePidControl> pitch_rate_control;
     std::unique_ptr<DronePidControl> yaw_rate_control;
     DroneAngleOutputType rate_prev_out = {};
-    double spd_simulation_time = 0;
 
     DroneAngleRateInputType run_angle(DroneAngleInputType& in) {
         DroneAngleRateInputType out = angle_prev_out;

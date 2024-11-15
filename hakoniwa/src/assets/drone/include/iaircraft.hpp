@@ -3,6 +3,7 @@
 
 #include "idrone_dynamics.hpp"
 #include "irotor_dynamics.hpp"
+#include "ibattery_dynamics.hpp"
 #include "ithrust_dynamics.hpp"
 #include "isensor_acceleration.hpp"
 #include "isensor_baro.hpp"
@@ -19,6 +20,7 @@ protected:
     IDroneDynamics *drone_dynamics;
     IRotorDynamics *rotor_dynamics[ROTOR_NUM];
     IThrustDynamics *thrust_dynamis;
+    IBatteryDynamics *battery_dynamics;
 
     ISensorAcceleration *acc;
     ISensorBaro *baro;
@@ -82,6 +84,14 @@ public:
         for (int i = 0; i < ROTOR_NUM; i++) {
             this->rotor_dynamics[i] = src[i];
         }
+    }
+    void set_battery_dynamics(IBatteryDynamics *src)
+    {
+        this->battery_dynamics = src;
+    }
+    IBatteryDynamics *get_battery_dynamics()
+    {
+        return this->battery_dynamics;
     }
     double get_rpm_max(int rotor_index)
     {

@@ -11,15 +11,16 @@
 #define HAKO_AVATOR_CHANNEL_ID_CMD_MOVE     6
 #define HAKO_AVATOR_CHANNEL_ID_CMD_LAND     7
 #define HAKO_AVATOR_CHANNEL_ID_GAME_CTRL    8
-#define HAKO_AVATOR_CHANNEL_ID_CMD_CAMERA   9
-#define HAKO_AVATOR_CHANNEL_ID_CAMERA_DATA  10
-#define HAKO_AVATOR_CHANNEL_ID_CAMERA_MOVE  11
-#define HAKO_AVATOR_CHANNEL_ID_CAMERA_INFO  12
-#define HAKO_AVATOR_CHANNEL_ID_CMD_MAG      13
-#define HAKO_AVATOR_CHANNEL_ID_STAT_MAG     14
-#define HAKO_AVATOR_CHANNEL_ID_LIDAR_DATA   15
-#define HAKO_AVATOR_CHANNEL_ID_LIDAR_POS    16
-#define HAKO_AVATOR_CHANNLE_ID_CTRL         17 /* for pid control program only */
+#define HAKO_AVATOR_CHANNEL_ID_BATTERY_STAT 9
+#define HAKO_AVATOR_CHANNEL_ID_CMD_CAMERA   10
+#define HAKO_AVATOR_CHANNEL_ID_CAMERA_DATA  11
+#define HAKO_AVATOR_CHANNEL_ID_CAMERA_MOVE  12
+#define HAKO_AVATOR_CHANNEL_ID_CAMERA_INFO  13
+#define HAKO_AVATOR_CHANNEL_ID_CMD_MAG      14
+#define HAKO_AVATOR_CHANNEL_ID_STAT_MAG     15
+#define HAKO_AVATOR_CHANNEL_ID_LIDAR_DATA   16
+#define HAKO_AVATOR_CHANNEL_ID_LIDAR_POS    17
+#define HAKO_AVATOR_CHANNLE_ID_CTRL         18 /* for pid control program only */
 /*
 
         {
@@ -197,6 +198,34 @@ static inline bool do_io_write_cmd(hako::assets::drone::IAirCraft *drone, int ch
         return false;
     }
     return true;
+}
+template<typename PacketType>
+static inline bool do_io_write_data(hako::assets::drone::IAirCraft *drone, int channel_id, const PacketType& packet) {
+    char buffer[HAKO_PDU_FIXED_DATA_SIZE_BY_TYPE(PacketType)];
+    if (hako_pdu_put_fixed_data(buffer, reinterpret_cast<const char*>(&packet), sizeof(PacketType), sizeof(buffer)) < 0) {
+        std::cerr << "ERROR: can not put pdu data: PacketType" << std::endl;
+        return false;
+    }
+    if (!hako_asset_runner_pdu_write(drone->get_name().c_str(), channel_id, buffer, sizeof(buffer))) {
+        std::cerr << "ERROR: can not write pdu data: packet channel_id: " << channel_id << " pdu_size: " << sizeof(buffer) << std::endl;
+        return false;
+    }
+    return true;
+}
+static inline bool do_io_write_battery_status(hako::assets::drone::IAirCraft *drone)
+{
+    Hako_HakoBatteryStatus packet = {};
+    auto battery = drone->get_battery_dynamics();
+    if (battery != nullptr) {
+        auto status = battery->get_status();
+        packet.full_voltage = status.full_voltage;
+        packet.curr_voltage = status.curr_voltage;
+        packet.curr_temp = status.temperature;
+        packet.cycles = status.cycles;
+        packet.status = status.status;
+        return do_io_write_data(drone, HAKO_AVATOR_CHANNEL_ID_BATTERY_STAT, packet);
+    }
+    return false;
 }
 
 static inline void do_io_write(hako::assets::drone::IAirCraft *drone, const double controls[hako::assets::drone::ROTOR_NUM])

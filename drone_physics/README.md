@@ -392,7 +392,9 @@ The function name is `euler_rate_from_body_angular_velocity` ,
 and the inverse transformation is `body_angular_velocity_from_euler_rate`.
 
 
-### One Rotor dynamics
+### One Rotor dynamics(1st-order lag system)
+
+There are two versions of the rotor dynamics in this library.
 
 #### One rotor rotation speed
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
@@ -413,9 +415,63 @@ where;
 
 The function name is `rotor_omega_acceleration`.
 
+#### One rotor rotation speed(non-linear using battery voltage)
+Another model is that the rotor angular rate $\Omega(t)$ is controlled by the duty rate $d(t)$
+times the battery voltage $V_{bat}$ .
+The rotor is composed of a motor(torque generator by voltage) and a propeller(thrust generator using the torque).
+
+See https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2 eq (3)
+
+$$
+\begin{array}{l}
+J \dot{\Omega}(t) + D \Omega(t) + C_q \Omega(t)^2 = K i(t) \\
+L \dot{i}(t) + R i(t) + K \Omega(t) = e(t) \\
+e(t) = V_{bat} d(t) 
+\end{array}
+$$
+
+where;
+- $J$ - The inertia of the propeller. [$kg m^2$]
+- $D$ - The damping coefficient of the propeller. [$N m s/rad$]
+- $L$ - The inductance of the motor. [$H$]
+- $R$ - The resistance of the motor. [$\Omega$]
+- $K$ - The torque constant of the rotor. [$N m/A$]
+- $d(t)$ - The duty rate of the motor. ($0.0 \le d(t) \le 1.0$)
+- $V_{bat}$ - The battery voltage. [$V$]
+- $e(t)$ - The voltage applied to the motor, equals to $V_{bat}d(t)$. [$V$]
+- $i(t)$ - The current of the motor. [$A$]
+- $\Omega(t)$ - The angular velocity of the propeller. [$rad/s$]
+
+Neglecting the inductance $L$ which is very small, we have;
+
+$ i(t) = (e(t) - K \Omega(t))/R $
+
+Then the equations are simplified as follows, by erasing the current $i(t)$.
+
+$$
+J \dot{\Omega}(t) + (D + K^2/R) \Omega(t) + C_q \Omega(t)^2 = (K/R) V_{bat} d(t)
+$$
+
+$$
+\dot{\Omega}(t) = (K V_{bat} d(t) - (K^2+DR) \Omega(t) - C_q R \Omega(t)^2) /JR
+$$
+
+
+The function name is (another version of)`rotor_omega_acceleration`.
+
+And the current $i(t)$ is obtained by the following equation.
+
+$$
+i(t) = (e(t) - K \Omega(t))/R = (V_{bat} d(t) - K \Omega(t))/R
+$$
+
+The function name is `rotor_current` ．
+
+Note that when $\Omega(t)$ gets larger by some external force, the current may flow back to the battery(charging the battery) by the back EMF(back electromotive force) of the motor.
+
 #### One rotor thrust and anti-torque
 The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity
-$\Omega$ eq.(2.50). $A$ is a parameter related to the rotor size and the air density.
+$\Omega$ eq.(2.50). $A$ is a parameter related to the propeller size and the air density.
 
 $T = A \Omega^2 $
 
@@ -423,7 +479,7 @@ The anti-torque $\tau_i$ of the rotor (2.56).
  
 $\tau_i = B \Omega^2 + Jr \dot{\Omega}$
 
-where $B$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
+where $B(=C_q)$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
 
 The function name is `rotor_thrust` and `rotor_anti_torque`.
 
@@ -460,7 +516,7 @@ Mission:
 - Implemented as functions, not classes. Meaning stateless.
 
 ## Acknowledgement
-I thank Dr. Nonami for writing the detailed description of the math around the drone development.
+I thank Dr. Nonami for writing the detailed description of the math around the drone development. And Kohei Ito([@Kouhei_Ito](https://www.docswell.com/user/Kouhei_Ito)) for the detailed explanation of the drone dynamics in his blog and also kind replies to my questions.
 And also I thank （[@tmori](https://github.com/tmori)）for connecting Hakoniwa to
 PX4, QGroundControl, and Unity, and spending a long time testing the drone flight virtually, and also for leading this whole Hakoniwa project.
 

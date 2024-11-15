@@ -380,6 +380,7 @@ public:
             if ((mixer == nullptr) && (module.drone->is_rotor_control_enabled() == false)) {
                 calculate_simple_controls(module, thrust);
             }
+            do_io_write_battery_status(module.drone);
             do_io_write(module.drone, module.controls);
             index++;
         }

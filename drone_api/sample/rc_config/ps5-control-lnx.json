@@ -67,13 +67,13 @@
             "on": "down"
         },
         "CameraMoveUp": {
-            "index": 11,
+            "index": 5,
             "type": "switch",
             "off": "up",
             "on": "down"
         },
         "CameraMoveDown": {
-            "index": 12,
+            "index": 4,
             "type": "switch",
             "off": "up",
             "on": "down"

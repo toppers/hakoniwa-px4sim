@@ -11,7 +11,7 @@ struct PidControlInputType {
     double current;
     PidControlInputType() : target(0), current(0) {}
     PidControlInputType(double current_val, double target_val)
-        : current(current_val), target(target_val) {}
+        : target(target_val), current(current_val)  {}
 };
 
 struct FlightControllerInputEulerType

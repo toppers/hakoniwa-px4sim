@@ -236,7 +236,6 @@ AccelerationType acceleration_in_body_frame(
     const auto g = gravity;
     const auto d1 = drag1;
     const auto d2 = drag2;
-    const auto [wx, wy, wz] = wind;
 
     /*
      * See nonami's book eq.(1.136).(2.31)
@@ -246,49 +245,47 @@ AccelerationType acceleration_in_body_frame(
      * (1) 'g' is broken down to x, y, z components.
      * (2) T is only relavant to z-axis.
      * (3) Coriolis force(using uvw,pqr) IS needed(because the body frame is rotating!)
-
+     * 
+     * 10/31/2024: added wind effect to 1-st, 2-nd order drag.
+     * Note: ma = T - colioris - d1 v - d2 sign(v) (v*v), where v = v - wind = air_v.
+     * the air friction is always counter to the velocity vs wind, in the 1st and sencond order.
      */
-    /*****************************************************************/  
-    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (u - wx) - d2.x/m * u * u;
-    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (v - wy) - d2.y/m * v * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (w - wz) - d2.z/m * w * w;
+    /*****************************************************************/
+    double air_u = u - wind.x;
+    double air_v = v - wind.y;
+    double air_w = w - wind.z;
+
+    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (air_u) - d2.x/m * air_u * std::fabs(air_u);
+    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (air_v) - d2.y/m * air_v * std::fabs(air_v);
+    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (air_w) - d2.z/m * air_w * std::fabs(air_w);
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
 }
 
-
-/* Obsolete. for testing only. */
-AccelerationType acceleration_in_body_frame_without_Coriolis_for_testing_only(
-    const VelocityType& body,
+/* simplified version of the above */
+AccelerationType acceleration_in_body_frame(
+    const VelocityType& body_velocity,
     const EulerType& angle,
-    double thrust, double mass /* 0 is not allowed */, double gravity, double drag)
+    const AngularVelocityType& body_angular_velocity,
+    double thrust, double mass /* 0 is not allowed */,
+    double gravity, /* usually 9.8 > 0*/
+    double drag1,  /* air friction of 1-st order(-d1*v) counter to velocity */
+    double drag2 /* air friction of 2-nd order(-d2*v*v) counter to velocity */)
 {
-    assert(!is_zero(mass));
-    using std::sin; using std::cos;
-
-    const auto
-        c_phi   = cos(angle.phi),   s_phi   = sin(angle.phi),
-        c_theta = cos(angle.theta), s_theta = sin(angle.theta);
-    const auto [u, v, w]  = body;
-    const auto g = gravity;
-    const auto m = mass;
-    const auto d = drag;
-    const auto T = thrust;
-
-    /*****************************************************************/  
-    double dot_u =       - g * s_theta            - d/m * u;
-    double dot_v =         g * c_theta * s_phi    - d/m * v;
-    double dot_w = -T/m  + g * c_theta * c_phi    - d/m * w;
-    /*****************************************************************/  
-
-    return {dot_u, dot_v, dot_w};
+    return acceleration_in_body_frame(
+        body_velocity, angle, body_angular_velocity,
+        thrust, mass, gravity, {0, 0, 0}, {drag1, drag1, drag1}, {drag2, drag2, drag2});
 }
+
 
 
 /**
  * Acceleration in body frame based on eq.(2.46), (2.47) in Nonami's book.
  * A mistake in the book: (2.46) z-axis should be inverted (and also psi is inverted) in (2.47).
+ * 
+ * This is OBSOLETE because not considering wind, 3-dimentional drag coefficient.
+ * Used in the old ground coordinate system drone to check the correctness of the new one.
  */
 AccelerationType acceleration_in_ground_frame(
     const VelocityType& ground,

@@ -15,6 +15,7 @@ private:
     double param_rad_per_sec_max = 6000.0;
     double param_tr = 1.0;
     double param_kr = 1.0;
+    RotorBatteryModelConstants constants;
     double w;
     double delta_time_sec;
     double total_time_sec;
@@ -27,6 +28,15 @@ public:
         this->total_time_sec = 0;
         this->w = 0;
     }
+    void set_battery_dynamics_constants(const RotorBatteryModelConstants &c) override
+    {
+        this->constants = c;
+    }
+    bool has_battery_dynamics() override
+    {
+        return false;
+    }
+
     void set_params(double rad_per_sec_max, double tr, double kr)
     {
         this->param_rad_per_sec_max = rad_per_sec_max;
@@ -54,6 +64,10 @@ public:
         this->w += (control - this->w) * (1.0 - exp(-this->delta_time_sec/ this->param_tr));
         this->total_time_sec += this->delta_time_sec;
     }
+    void run(double control, double) override
+    {
+        return run(control);
+    }    
     const std::vector<std::string> log_head() override
     {
         return { "timestamp", "RadPerSec" };

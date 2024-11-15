@@ -20,19 +20,25 @@ class HakoDrone:
         self.camera_move_cmd_request_id = 1
 
 class MultirotorClient:
-    def __init__(self, config_path):
+    def __init__(self, config_path, default_drone_name = None):
         self.pdu_manager = None
         self.config_path = config_path
         self.pdudef = self._load_json(config_path)
         self.vehicles = {}
         default_drone_set = False
-        for entry in self.pdudef['robots']:
-            entry_name = entry['name']
-            if len(entry['shm_pdu_readers']) > 0 or len(entry['shm_pdu_writers']) > 0 or len(entry['rpc_pdu_readers']) > 0 or len(entry['rpc_pdu_writers']) > 0:
-                self.vehicles[entry_name] = HakoDrone(entry_name)
-                if not default_drone_set:
-                    self.default_drone_name = entry_name
-                    default_drone_set = True
+        if default_drone_name is None:
+            for entry in self.pdudef['robots']:
+                entry_name = entry['name']
+                if len(entry['shm_pdu_readers']) > 0 or len(entry['shm_pdu_writers']) > 0 or len(entry['rpc_pdu_readers']) > 0 or len(entry['rpc_pdu_writers']) > 0:
+                    self.vehicles[entry_name] = HakoDrone(entry_name)
+                    if not default_drone_set:
+                        self.default_drone_name = entry_name
+                        default_drone_set = True
+            print("default drone name: ", default_drone_name)
+        else:
+            print("default drone name: ", default_drone_name)
+            self.default_drone_name = default_drone_name
+            self.vehicles[default_drone_name] = HakoDrone(default_drone_name)
 
     def _load_json(self, path):
         try:

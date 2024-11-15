@@ -30,11 +30,23 @@ public:
     }
     void run(DroneDynamicsInputType& input) override
     {
+        double vbat = 0.0;
+        if (this->battery_dynamics != nullptr) {
+            BatteryModelFactor factor = { input.disturbance.values.d_temp.value }; //温度
+            this->battery_dynamics->set_current_factor(factor);
+            this->battery_dynamics->run();
+            vbat = this->battery_dynamics->get_vbat();
+        }
         //actuators
         if (input.no_use_actuator == false) {
             DroneRotorSpeedType rotor_speed[ROTOR_NUM];
             for (int i = 0; i < ROTOR_NUM; i++) {
-                rotor_dynamics[i]->run(input.controls[i]);
+                if (rotor_dynamics[i]->has_battery_dynamics()) {
+                    rotor_dynamics[i]->run(input.controls[i], vbat);
+                }
+                else {
+                    rotor_dynamics[i]->run(input.controls[i]);
+                }
                 rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
             }
             thrust_dynamis->run(rotor_speed);
