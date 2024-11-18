@@ -24,6 +24,14 @@ namespace hako::assets::drone {
         glm::dmat4 A_inv;
         glm::dmat4 MA_inv;
         DroneConfig::MixerInfo mixer_info {};
+
+        double get_duty(double omega) {
+            //e = K * w + (Cq * R / K ) w ^2
+            double e = mixer_info.K * omega + (mixer_info.Cq * mixer_info.R / mixer_info.K) * omega * omega;
+            //d = e / V_bat
+            double d = e / mixer_info.V_bat;
+            return d;
+        }
     public: 
         virtual ~DroneMixer() {}
         DroneMixer(double Kr, double a, double b, RotorConfigType rotor[ROTOR_NUM])
@@ -98,7 +106,8 @@ namespace hako::assets::drone {
                     Omega2[i] = 0;
                 }
                 else {
-                    duty.d[i] = std::sqrt(Omega2[i]) / this->param_Kr;
+                    //duty.d[i] = std::sqrt(Omega2[i]) / this->param_Kr;
+                    duty.d[i] = get_duty(std::sqrt(Omega2[i]));
                 }
                 if (mixer_info.enableDebugLog) {
                     std::cout << "Motor " << i << ": Omega^2 = " << Omega2[i] << ", PWM Duty = " << duty.d[i] << std::endl;

@@ -220,6 +220,10 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         HAKO_ASSERT(mixer != nullptr);
         bool inv_m = mixer->calculate_M_inv();
         HAKO_ASSERT(inv_m == true);
+        mixer_info.K = rotor_constants.K;
+        mixer_info.R = rotor_constants.R;
+        mixer_info.Cq = rotor_constants.Cq;
+        mixer_info.V_bat = battery_config.NominalVoltage;
         mixer->setMixerInfo(mixer_info);
         drone->set_mixer(mixer);
     }
