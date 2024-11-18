@@ -11,7 +11,7 @@ PID_ALT_MAX_SPD         5.0
 
 ## 高度制御のPIDパラメータ
 PID_ALT_Kp              5.0
-PID_ALT_Ki              0.3
+PID_ALT_Ki              0.0
 PID_ALT_Kd              5.0
 PID_ALT_SPD_Kp          5.0
 PID_ALT_SPD_Ki          0.0
