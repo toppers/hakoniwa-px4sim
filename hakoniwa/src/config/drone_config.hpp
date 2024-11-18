@@ -425,6 +425,12 @@ public:
         std::string vendor;
         bool enableDebugLog;
         bool enableErrorLog;
+
+        // not config info
+        double K;
+        double R;
+        double Cq;
+        double V_bat;
     };
     bool getControllerMixerInfo(MixerInfo& info) const
     {

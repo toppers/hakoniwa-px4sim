@@ -50,7 +50,6 @@ using hako::assets::drone::SensorNoise;
 #define MAG_SAMPLE_NUM              drone_config.getCompSensorSampleCount("mag")
 
 #define THRUST_PARAM_Ct              drone_config.getCompThrusterParameter("Ct")
-#define THRUST_PARAM_Cq              drone_config.getCompThrusterParameter("Cq")
 #define THRUST_PARAM_JR             drone_config.getCompThrusterParameter("Jr")
 
 #define LOGPATH(index, name)        drone_config.getSimLogFullPathFromIndex(index, name)
@@ -180,7 +179,7 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     auto thrust_vendor = drone_config.getCompThrusterVendor();
     std::cout<< "Thruster vendor: " << thrust_vendor << std::endl;
     double param_Ct = THRUST_PARAM_Ct;
-    double param_Cq = THRUST_PARAM_Cq;
+    double param_Cq = rotor_constants.Cq;
     std::cout << "param_Ct: " << param_Ct << std::endl;
     std::cout << "param_Cq: " << param_Cq << std::endl;
     if (thrust_vendor == "linear") {
@@ -221,6 +220,10 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         HAKO_ASSERT(mixer != nullptr);
         bool inv_m = mixer->calculate_M_inv();
         HAKO_ASSERT(inv_m == true);
+        mixer_info.K = rotor_constants.K;
+        mixer_info.R = rotor_constants.R;
+        mixer_info.Cq = rotor_constants.Cq;
+        mixer_info.V_bat = battery_config.NominalVoltage;
         mixer->setMixerInfo(mixer_info);
         drone->set_mixer(mixer);
     }

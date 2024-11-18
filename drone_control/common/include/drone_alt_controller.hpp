@@ -103,8 +103,8 @@ public:
             /*
              * thrust
              */
-            //out.thrust = (mass * gravity) + (throttle_gain * throttle_power);
-            out.thrust = (throttle_gain * throttle_power);
+            out.thrust = (mass * gravity) + (throttle_gain * throttle_power);
+            //out.thrust = (throttle_gain * throttle_power);
             spd_prev_out = out;
         }
         spd_simulation_time += delta_time;
