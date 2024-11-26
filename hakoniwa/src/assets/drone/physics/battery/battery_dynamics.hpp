@@ -148,6 +148,7 @@ private:
         // Therefore: Ah = A・s * (1 / 3600)
         this->discharge_capacity_hour = discharge_capacity_sec /3600.0; // Unit conversion from As to Ah
         this->accumulated_capacity_sec = discharge_capacity_sec;
+        //std::cout << "INFO: discharge_capacity_hour = " << this->discharge_capacity_hour << " Ah" << std::endl;
     }
     // 2分探索で指定した容量に近い前後のデータを取得する関数（境界条件を考慮）
     std::pair<DischargeData, DischargeData> findSurroundingData(double targetCapacity) 
@@ -229,6 +230,16 @@ public:
         this->is_battery_model_enabled = false;
         this->is_battery_mode_constant = false;
     }
+    void reset() override {
+        std::cout << "BatteryDynamics reset" << std::endl;
+        this->current_charge_voltage = this->params.NominalVoltage;;
+        this->accumulated_capacity_sec = 0;
+        this->discharge_current = 0;
+        this->discharge_capacity_hour = 0;
+        for (auto* entry : devices) {
+            entry->discharge_capacity_sec = 0;
+        }
+    }
     void set_params(const BatteryModelParameters &p) override
     {
         this->params = p;
@@ -295,6 +306,7 @@ public:
         else {
             status.status = 2; //red
         }
+        //std::cout << "BatteryStatus: " << status.curr_voltage << "V" << std::endl;
         return status;
     }
     const std::vector<std::string> log_head() override

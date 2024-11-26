@@ -28,6 +28,11 @@ public:
         this->total_time_sec = 0;
         this->w = 0;
     }
+    void reset() override
+    {
+        this->w = 0;
+        this->total_time_sec = 0;
+    }
     void set_battery_dynamics_constants(const RotorBatteryModelConstants &c) override
     {
         this->constants = c;

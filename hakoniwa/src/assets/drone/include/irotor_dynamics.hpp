@@ -19,6 +19,7 @@ public:
     virtual void set_battery_dynamics_constants(const RotorBatteryModelConstants &c) = 0;
 
     virtual double get_rad_per_sec_max() const = 0;
+    virtual void reset() = 0;
 
     virtual void run(double control) = 0;
     virtual void run(double control, double vbat) = 0;

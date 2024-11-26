@@ -99,6 +99,15 @@ public:
 
         total_time_sec += delta_time_sec;
     }
+    void reset() override
+    {
+        this->thrust.data = 0;
+        this->torque.data = {0, 0, 0};
+        for (int i = 0; i < ROTOR_NUM; i++) {
+            this->prev_rotor_speed[i].data = 0;
+        }
+        total_time_sec = 0;
+    }
 
     void print() override
     {
