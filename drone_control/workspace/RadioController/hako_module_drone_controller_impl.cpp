@@ -43,8 +43,6 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     ctrl->save_for_initial_position(pos.z);
     double target_yaw      =  ctrl->update_target_yaw(in->target.direction_velocity.r);
     double target_pos_z    =  ctrl->update_target_altitude(-in->target.throttle.power);
-    double target_vx       =  -in->target.attitude.pitch * ctrl->get_pos_max_spd();
-    double target_vy       =  in->target.attitude.roll  * ctrl->get_pos_max_spd();
     /*
      * 高度制御
      */
@@ -58,8 +56,20 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
     /*
      * 水平制御
      */
-    DroneVelInputType spd_in(velocity, target_vx, target_vy);
-    DronePosOutputType pos_out = ctrl->pos->run_spd(spd_in);
+    DronePosOutputType pos_out = {};
+    if (ctrl->is_pos_control_enable() == false) {
+        double target_vx       =  -in->target.attitude.pitch * ctrl->get_pos_max_spd();
+        double target_vy       =  in->target.attitude.roll  * ctrl->get_pos_max_spd();
+        DroneVelInputType spd_in(velocity, target_vx, target_vy);
+        pos_out = ctrl->pos->run_spd(spd_in);
+    }
+    else {
+        std::pair<double, double> target_pos = ctrl->update_target_position(-in->target.attitude.pitch, in->target.attitude.roll, euler.z, pos.x, pos.y);
+        double target_x       =  target_pos.first;
+        double target_y       =  target_pos.second;
+        DronePosInputType pos_in(pos, velocity, euler, target_x, target_y, ctrl->get_pos_max_spd());
+        pos_out = ctrl->pos->run(pos_in);
+    }
     /*
      * 姿勢角度制御
      */
