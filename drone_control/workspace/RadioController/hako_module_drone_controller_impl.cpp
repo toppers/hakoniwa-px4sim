@@ -53,28 +53,35 @@ mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in
      */
     DroneHeadingControlInputType head_in(euler, target_yaw);
     DroneHeadingControlOutputType head_out = ctrl->head->run(head_in);
-    /*
-     * 水平制御
-     */
-    DronePosOutputType pos_out = {};
-    if (ctrl->is_pos_control_enable() == false) {
+
+    DroneAngleOutputType angle_out = {};
+    if (ctrl->is_angle_control_enable() == false) {
+        /*
+        * 水平制御
+        */
+        DronePosOutputType pos_out = {};
         double target_vx       =  -in->target.attitude.pitch * ctrl->get_pos_max_spd();
         double target_vy       =  in->target.attitude.roll  * ctrl->get_pos_max_spd();
         DroneVelInputType spd_in(velocity, target_vx, target_vy);
         pos_out = ctrl->pos->run_spd(spd_in);
+        /*
+        * 姿勢角度制御
+        */
+        DroneAngleInputType angle_in(euler, angular_rate, pos_out.target_roll, pos_out.target_pitch, head_out.target_yaw_rate);
+        angle_out = ctrl->angle->run(angle_in);
     }
     else {
-        std::pair<double, double> target_pos = ctrl->update_target_position(-in->target.attitude.pitch, in->target.attitude.roll, euler.z, pos.x, pos.y);
-        double target_x       =  target_pos.first;
-        double target_y       =  target_pos.second;
-        DronePosInputType pos_in(pos, velocity, euler, target_x, target_y, ctrl->get_pos_max_spd());
-        pos_out = ctrl->pos->run(pos_in);
+        /*
+         * 姿勢角速度制御
+         */
+        //std::cout << "roll: " << in->target.attitude.roll << " pitch: " << in->target.attitude.pitch << " yaw: " << head_out.target_yaw_rate << std::endl;
+        DroneAngleInputType angle_in(euler, angular_rate, 
+            in->target.attitude.roll * ctrl->get_max_roll_deg(), 
+            in->target.attitude.pitch * ctrl->get_max_pitch_deg(), 
+            head_out.target_yaw_rate);
+        angle_out = ctrl->angle->run(angle_in);
     }
-    /*
-     * 姿勢角度制御
-     */
-    DroneAngleInputType angle_in(euler, angular_rate, pos_out.target_roll, pos_out.target_pitch, head_out.target_yaw_rate);
-    DroneAngleOutputType angle_out = ctrl->angle->run(angle_in);
+
     /*
      * 出力
      */

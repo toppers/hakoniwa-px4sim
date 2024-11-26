@@ -91,27 +91,7 @@ private:
         return out;
     }
 
-    DroneAngleOutputType run_rate(DroneAngleRateInputType& in) {
-        DroneAngleOutputType out = rate_prev_out;
-        if (angular_rate_simulation_time >= angular_rate_control_cycle) {
-            //roll rate control
-            out.p = roll_rate_control->calculate(in.target_roll_rate, NORMALIZE_RADIAN(in.angular_rate.p));
-            out.p = flight_controller_get_limit_value(out.p, 0, -roll_torque_max, roll_torque_max);
 
-            //pitch rate control
-            out.q = pitch_rate_control->calculate(in.target_pitch_rate, NORMALIZE_RADIAN(in.angular_rate.q));
-            out.q = flight_controller_get_limit_value(out.q, 0, -pitch_torque_max, pitch_torque_max);
-
-            //yaw rate control
-            out.r = roll_rate_control->calculate(in.target_yaw_rate, NORMALIZE_RADIAN(in.angular_rate.r));
-            out.r = flight_controller_get_limit_value(out.r, 0, -yaw_torque_max, yaw_torque_max);
-
-            angular_rate_simulation_time = 0;
-            rate_prev_out = out;
-        }
-        this->angular_rate_simulation_time += this->delta_time;
-        return out;
-    }
 public:
     DroneAngleController(const HakoControllerParamLoader& loader) {
         delta_time = loader.getParameter("SIMULATION_DELTA_TIME");
@@ -162,5 +142,26 @@ public:
         DroneAngleRateInputType vel = run_angle(in);
         return run_rate(vel);
     }
+    DroneAngleOutputType run_rate(DroneAngleRateInputType& in) {
+        DroneAngleOutputType out = rate_prev_out;
+        if (angular_rate_simulation_time >= angular_rate_control_cycle) {
+            //roll rate control
+            out.p = roll_rate_control->calculate(in.target_roll_rate, NORMALIZE_RADIAN(in.angular_rate.p));
+            out.p = flight_controller_get_limit_value(out.p, 0, -roll_torque_max, roll_torque_max);
+
+            //pitch rate control
+            out.q = pitch_rate_control->calculate(in.target_pitch_rate, NORMALIZE_RADIAN(in.angular_rate.q));
+            out.q = flight_controller_get_limit_value(out.q, 0, -pitch_torque_max, pitch_torque_max);
+
+            //yaw rate control
+            out.r = roll_rate_control->calculate(in.target_yaw_rate, NORMALIZE_RADIAN(in.angular_rate.r));
+            out.r = flight_controller_get_limit_value(out.r, 0, -yaw_torque_max, yaw_torque_max);
+
+            angular_rate_simulation_time = 0;
+            rate_prev_out = out;
+        }
+        this->angular_rate_simulation_time += this->delta_time;
+        return out;
+    }    
 };
 #endif /* _DRONE_ANGLE_CONTROLLER_HPP_ */
