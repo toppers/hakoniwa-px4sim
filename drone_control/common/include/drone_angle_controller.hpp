@@ -90,10 +90,9 @@ private:
         this->angular_simulation_time += this->delta_time;
         return out;
     }
-
-
-public:
-    DroneAngleController(const HakoControllerParamLoader& loader) {
+    const HakoControllerParamLoader* my_loader;
+    void loadParameters(const HakoControllerParamLoader& loader) {
+        //load parameters
         delta_time = loader.getParameter("SIMULATION_DELTA_TIME");
         /*
          * angle control
@@ -136,6 +135,12 @@ public:
             0, delta_time);
     }
 
+public:
+    DroneAngleController(const HakoControllerParamLoader& loader) {
+        this->my_loader = &loader;
+        this->loadParameters(loader);
+    }
+
     virtual ~DroneAngleController() {}
     DroneAngleOutputType run(DroneAngleInputType& in)
     {
@@ -162,6 +167,14 @@ public:
         }
         this->angular_rate_simulation_time += this->delta_time;
         return out;
-    }    
+    }
+    void reset() {
+        this->loadParameters(*my_loader);
+        roll_control->reset_integral();
+        pitch_control->reset_integral();
+        roll_rate_control->reset_integral();
+        pitch_rate_control->reset_integral();
+        yaw_rate_control->reset_integral();
+    }
 };
 #endif /* _DRONE_ANGLE_CONTROLLER_HPP_ */

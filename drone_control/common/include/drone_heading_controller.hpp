@@ -44,11 +44,8 @@ private:
         }
         return diff;
     }
-
-public:
-    double head_control_cycle;
-    DroneHeadingController(const HakoControllerParamLoader& loader)
-    {
+    const HakoControllerParamLoader* my_loader;
+    void loadParameters(const HakoControllerParamLoader& loader) {
         delta_time = loader.getParameter("SIMULATION_DELTA_TIME");
         head_control_cycle = loader.getParameter("HEAD_CONTROL_CYCLE");
         yaw_rate_max = RPM2EULER_RATE(loader.getParameter("PID_YAW_RPM_MAX"));
@@ -57,6 +54,13 @@ public:
             loader.getParameter("PID_YAW_Ki"), 
             loader.getParameter("PID_YAW_Kd"), 
             0, delta_time);
+    }
+public:
+    double head_control_cycle;
+    DroneHeadingController(const HakoControllerParamLoader& loader)
+    {
+        my_loader = &loader;
+        loadParameters(loader);
     }
 
     virtual ~DroneHeadingController() {}
@@ -76,6 +80,12 @@ public:
         }
         simulation_time += delta_time;
         return out;
+    }
+    void reset() {
+        loadParameters(*my_loader);
+        prev_out = {};
+        heading_control->reset_integral();
+        simulation_time = 0;
     }
 };
 

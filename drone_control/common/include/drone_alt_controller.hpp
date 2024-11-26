@@ -64,8 +64,8 @@ private:
         pos_simulation_time += delta_time;
         return out;
     }
-public:
-    DroneAltController(const HakoControllerParamLoader& loader) {
+    const HakoControllerParamLoader* my_loader;
+    void loadParameters(const HakoControllerParamLoader& loader) {
         delta_time = loader.getParameter("SIMULATION_DELTA_TIME");
         control_cycle = loader.getParameter("PID_ALT_CONTROL_CYCLE");
         max_power = loader.getParameter("PID_ALT_MAX_POWER");
@@ -83,6 +83,12 @@ public:
             loader.getParameter("PID_ALT_SPD_Ki"), 
             loader.getParameter("PID_ALT_SPD_Kd"), 
             0, delta_time);
+    }
+
+public:
+    DroneAltController(const HakoControllerParamLoader& loader) {
+        this->my_loader = &loader;
+        this->loadParameters(loader);
     }
     ~DroneAltController() {}
     DroneAltOutputType run_spd(DroneAltSpdInputType &in)
@@ -109,6 +115,13 @@ public:
         }
         spd_simulation_time += delta_time;
         return out;
+    }
+    void reset() {
+        this->loadParameters(*my_loader);
+        pos_control->reset_integral();
+        spd_control->reset_integral();
+        pos_simulation_time = 0;
+        spd_simulation_time = 0;
     }
     DroneAltOutputType run(DroneAltInputType &in)
     {
