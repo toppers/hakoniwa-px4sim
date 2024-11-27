@@ -16,6 +16,10 @@ public:
         this->status = OPERATION_STATUS_DONE;
     }
     virtual ~OperationStatus() {}
+    void reset()
+    {
+        this->status = OPERATION_STATUS_DONE;
+    }
     OperationStatusType get_status()
     {
         return this->status;

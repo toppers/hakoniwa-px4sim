@@ -45,6 +45,12 @@ public:
     MainStatusType get_status() {
         return this->status;
     }
+    void reset()
+    {
+        this->status = MAIN_STATUS_LANDED;
+        this->cancel_move_status = MAIN_STATUS_LANDED;
+        this->operation.reset();
+    }
     bool is_canceling() {
         return this->status == MAIN_STATUS_CANCELING;
     }

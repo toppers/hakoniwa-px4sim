@@ -53,6 +53,7 @@ private:
     Hako_HakoDroneCmdLand cmd_land = {};
     Hako_HakoDroneCmdMove cmd_move = {};
     Hako_GameControllerOperation cmd_game = {};
+    Hako_HakoCmdMagnetHolder cmd_magnet = {};
     Hako_Twist drone_pos = {};
 
     hako::assets::drone::IAirCraft *drone;
@@ -118,7 +119,27 @@ public:
         write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MOVE, cmd_move);
         write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_LAND, cmd_land);
         write_cmd(HAKO_AVATOR_CHANNEL_ID_GAME_CTRL, cmd_game);
+        write_cmd(HAKO_AVATOR_CHANNEL_ID_CMD_MAG, cmd_magnet);
         this->radio_control_on = false;
+    }
+    void reset()
+    {
+        void* context = in.context;
+        in = {};
+        in.context = context;
+        in.mass = drone->get_drone_dynamics().get_mass();
+        in.drag = drone->get_drone_dynamics().get_drag();
+
+        state.reset();
+        prev_status = MAIN_STATUS_LANDED;
+        cmd_takeoff = {};
+        cmd_land = {};
+        cmd_move = {};
+        cmd_game = {};
+        cmd_magnet = {};
+        cmd_magnet.header.request = true;
+        cmd_magnet.magnet_on = false;
+        setup();
     }
 
     DroneControlProxy(hako::assets::drone::IAirCraft *obj) 
@@ -294,6 +315,9 @@ public:
     void reset()
     {
         module_simulator.reset();
+        for (auto& proxy : drone_control_proxies) {
+            proxy.reset();
+        }
     }
     void setup()
     {
