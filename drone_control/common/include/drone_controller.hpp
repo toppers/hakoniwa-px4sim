@@ -30,6 +30,13 @@ public:
         head = std::make_unique<DroneHeadingController>(loader);
         angle = std::make_unique<DroneAngleController>(loader);
     }
+    void reset() {
+        this->loader.reload();
+        alt->reset();
+        pos->reset();
+        head->reset();
+        angle->reset();
+    }
 };
 
 #endif /* _DRONE_CONTROLLER_HPP_ */

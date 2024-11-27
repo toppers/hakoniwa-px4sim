@@ -19,8 +19,13 @@ int hako_module_drone_controller_impl_is_operation_doing(void *)
     return true;
 }
 
-int hako_module_drone_controller_impl_init(void*)
+int hako_module_drone_controller_impl_init(void* context)
 {
+    if (context != nullptr) {
+        DroneController* ctrl = (DroneController*)context;
+        ctrl->reset();
+        return 0;
+    }
     return 0;
 }
 mi_drone_control_out_t hako_module_drone_controller_impl_run(mi_drone_control_in_t *in)
