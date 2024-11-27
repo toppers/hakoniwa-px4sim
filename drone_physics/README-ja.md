@@ -459,7 +459,7 @@ $$
 J \dot{\omega}(t) + (D + \frac{K^2}{R}) \omega(t) + C_q \omega(t)^2 = \frac{K}{R} e(t)
 $$
 
-これを、$\omega(t)$ について解くと、以下の結果を得る。
+これを、 $\omega(t)$ について解くと、以下の結果を得る。
 
 $$
 \dot{\omega}(t) = \frac{e(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
