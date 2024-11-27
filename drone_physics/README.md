@@ -134,6 +134,11 @@ Note that the euleer angles are not vectors, and cannot be added, scaled, or mul
 
 ## List of functions
 Functions(C++) are implemented in the following categories, with the referece to the book.
+As a naming policy, the function names represent the output of the function(omitting get_ prefix)
+and describe the source using _from if needed, and the input as the arguments, (maybe) 
+overly using function overloading by argument types.
+None of the functions have states(static variable) nor side effects.
+All the arguments are passed by value(or const reference) and won't be changed in the function.
 
 ### Frame conversion:
 | Function | equation | note |
