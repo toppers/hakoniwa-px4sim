@@ -464,9 +464,7 @@ $$
 
 また、流れる電流は、
 
-$$
-i(t) = (e(t) - K \omega(t))/R = (V_{bat} d(t) - K \omega(t))/R
-$$
+$i(t) = (e(t) - K \omega(t))/R = (V_{bat} d(t) - K \omega(t))/R$
 
 で求まる。関数名は、`rotor_current` ．
 

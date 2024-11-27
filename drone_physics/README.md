@@ -405,7 +405,7 @@ Each rotor can be modeled as a first-order lag system, in which the rotor angula
 is $\omega(t)$. We use variable name $\omega$ as the rotation speed in radian, in this section.
 don't confuse with $\omega$ as the angular velocity of the whole body in other sections
 (Nonami's book use capital $\Omega$ for this name,
-but, we prioritize readability and use the lowercase $\omega(t)$).
+but, we prioritize readability and use the lowercase $\omega(t)$ ).
 
 is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
@@ -453,7 +453,7 @@ where;
 
 Neglecting the inductance $L$ which is very small, we have;
 
-$ i(t) = (e(t) - K \omega(t))/R $
+$i(t) = (e(t) - K \omega(t))/R$
 
 Then the equations are simplified as follows, by erasing the current $i(t)$.
 
@@ -461,6 +461,7 @@ $$
 \begin{array}{l}
 J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 &= (K/R) V_{bat} d(t) \\
 \dot{\omega}(t) &= (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
+\end{array}
 $$
 
 
