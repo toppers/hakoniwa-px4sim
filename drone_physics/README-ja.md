@@ -455,8 +455,15 @@ $ i(t) = (e(t) - K \omega(t))/R $
 
 $$
 \begin{array}{l}
-J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 &= (K/R) V_{bat} d(t) \\
-\dot{\omega}(t) &= (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
+J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 = (K/R) V_{bat} d(t)
+\end{array}
+$$
+
+これを、$\omega(t)$ について解くと、以下の結果を得る。
+
+$$
+\begin{array}{l}
+\dot{\omega}(t) = (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
 \end{array}
 $$
 

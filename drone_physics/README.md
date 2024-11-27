@@ -459,11 +459,17 @@ Then the equations are simplified as follows, by erasing the current $i(t)$.
 
 $$
 \begin{array}{l}
-J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 &= (K/R) V_{bat} d(t) \\
-\dot{\omega}(t) &= (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
+J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 = (K/R) V_{bat} d(t) \\
 \end{array}
 $$
 
+Soving this differential equation for $\omega$ , we have the following equation.
+
+$$
+\begin{array}{l}
+\dot{\omega}(t) = (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
+\end{array}
+$$
 
 The function name is (another version of)`rotor_omega_acceleration`.
 
