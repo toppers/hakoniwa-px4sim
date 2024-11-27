@@ -21,6 +21,7 @@
 - [ヘッドレス・シミュレーション](#ヘッドレスシミュレーション)
 - [ログリプレイ](#ログリプレイ)
 - [ARデバイスの対応](#ARデバイスの対応)
+- [バッテリーの対応](#バッテリーの対応)
 - [コミュニティとサポート](#コミュニティとサポート)
 - [本リポジトリの内容とライセンスについて](#本リポジトリの内容とライセンスについて)
 - [貢献ガイドライン](#貢献ガイドライン)
@@ -54,6 +55,8 @@
 13. **ARデバイスの対応:** ARデバイスを装着すれば、箱庭でシミュレーションしているドローンを目の前でリアルに体感することができます。詳細は[こちら](#ARデバイスの対応)を参照ください。
 
 14. **Webブラウザの対応:** 箱庭ドローンシミュレーションをWebブラウザでビジュアライズできます。ビジュアライズの仕組みとしては、箱庭Webサーバーを箱庭アセットとして登録することで実現しています。箱庭Webサーバーは、Webソケットを通じて箱庭PDUデータ（ドローンの位置情報など）を共有するため、Webブラウザ上でリアルタイムにそのデータをビジュアライズすることが可能になります。箱庭Webサーバーのセットアップ・利用手順は[こちら](https://github.com/toppers/hakoniwa-webserver)を参照ください。
+
+15. **バッテリーの対応:** 箱庭ドローンのバッテリー電圧モデルをシミュレーションすることが可能です。バッテリー電圧モデルは、機体パラメータで設定できます。バッテリー残量が一定値以下になるとドローンの飛行が制限されるようになります。バッテリー電圧モデルの設定方法については[こちら](#バッテリーの対応)を参照ください。
 
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
@@ -548,6 +551,62 @@ ARデバイスを使用してドローンシミュレーションを体験する
 - [QUEST3向けのアプリ作成手順](https://github.com/toppers/hakoniwa-unity-drone-model/blob/main/README-quest3.md)
 - [箱庭ドローンシミュレータをARアプリと連携するための方法](https://github.com/toppers/hakoniwa-unity-drone-model/blob/main/README-quest3-drone.md)
 
+
+# バッテリーの対応
+
+箱庭ドローンのバッテリー電圧モデルをシミュレーションすることが可能です。バッテリー電圧モデルは、機体パラメータで設定できます。バッテリー残量が一定値以下になるとドローンの飛行が制限されるようになります。
+
+バッテリー電圧モデルの設定方法は以下の通りです。
+
+## `drone_config_<id>.json` にバッテリー電圧モデルの設定を追加します。
+
+```json
+      "battery": {
+        "vendor": "None",
+        "model": "linear",
+        "BatteryModelCsvFilePath": "./config/battery_model.csv",
+        "VoltageLevelGreen": 12.1, 
+        "VoltageLevelYellow": 11.1,
+        "CapacityLevelYellow": 3, 
+        "NominalVoltage": 14.8,
+        "NominalCapacity": 4.0,
+        "EODVoltage": 3.0
+      }
+```
+
+`model` には、以下の３種類のモデルが選択できます。
+
+- `constant` : 電圧が一定値のモデル
+- `linear` : 電圧が線形に減少するモデル
+- `custom` : CSVファイルによるモデル
+
+`BatteryModelCsvFilePath` には、`csv` モデルを選択した場合に、CSVファイルのパスを指定します。
+
+## 電圧レベルの設定
+
+- `VoltageLevelGreen` : 電圧 Green レベルのミニマム値 [V]
+- `VoltageLevelYellow` : 電圧 Yellow レベルのミニマム値 [V]
+- `CapacityLevelYellow` : 容量 Yellow レベルのミニマム値 [Ah]
+
+## 電圧モデルのパラメータ設定
+
+- `NominalVoltage` : 公称電圧: [V] バッテリーの標準的な動作電圧
+- `NominalCapacity` : 公称容量 [Ah] バッテリーが供給できる理論上の電気量
+- `EODVoltage` : 終了電圧 [V]
+
+## `battery_model.csv` ファイルを作成します。
+
+`model` に `custom` を指定した場合、`BatteryModelCsvFilePath` で指定したファイルにバッテリー電圧モデルを記述します。
+
+**設定例:**
+| Temperature (°C)|Discharge Capacity (Ah)|Voltage (V)|
+|------|------|------|
+| 45|0.0|14.8 |
+|45|0.1|14.6|
+|45|0.2|14.5|
+|45|0.3|14.4|
+|45|0.4|14.3|
+  :
 
 # コミュニティとサポート
 

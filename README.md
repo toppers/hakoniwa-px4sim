@@ -22,6 +22,7 @@ This repository is a simulation environment for drone plant models that can be i
 - [Headless Simulation](#headless-simulation)
 - [Log Replay](#logreplay)
 - [Support for AR Devices](#Support-for-AR-Devices)
+- [Support for Battery](#Support-for-Battery)
 - [Community and Support](#community-and-support)
 - [About This Repository and License](#about-this-repository-and-license)
 - [Contribution Guidelines](#contribution-guidelines)
@@ -55,6 +56,8 @@ This repository is a simulation environment for drone plant models that can be i
 13. **Support for AR Devices:** By wearing an AR device, you can experience the drone being simulated in Hakoniwa in real-time right in front of you. For more details, see [here](#Support-for-AR-Devices).
 
 14. **Web Browser Support:** You can visualize the Hakoniwa Drone Simulation in a web browser. The visualization is made possible by registering the Hakoniwa Web Server as a Hakoniwa asset. The Hakoniwa Web Server shares Hakoniwa PDU data (such as the drone’s position information) through WebSocket, allowing real-time visualization of the data in a web browser. For setup and usage instructions for the Hakoniwa Web Server, see [here](https://github.com/toppers/hakoniwa-webserver).
+
+15. **Support for Battery:** It is possible to simulate the battery voltage model for Hakoniwa drones. The battery voltage model can be configured using the aircraft parameters. When the battery level drops below a certain threshold, the drone's flight becomes restricted. For details on how to configure the battery voltage model see [here](#Support-for-Battery).
 
 ![スクリーンショット 2024-01-30 10 22 34](https://github.com/toppers/hakoniwa-px4sim/assets/164193/be993a09-ac40-4328-9602-6a593cd105b1)
 
@@ -534,6 +537,67 @@ To experience the drone simulation using an AR device, you will need to create a
 
 - [Steps for creating a Quest 3 app](https://github.com/toppers/hakoniwa-unity-drone-model/blob/main/README-quest3.md)
 - [How to link the Hakoniwa Drone Simulator with an AR app](https://github.com/toppers/hakoniwa-unity-drone-model/blob/main/README-quest3-drone.md)
+
+# Support for Battery
+
+You can simulate the battery voltage model for Hakoniwa drones. The battery voltage model can be configured through the aircraft parameters. When the battery level falls below a certain threshold, the drone's flight will be restricted.
+
+The following steps outline how to configure the battery voltage model:
+
+
+## Add Battery Voltage Model Settings to `drone_config_<id>.json`
+
+```json
+      "battery": {
+        "vendor": "None",
+        "model": "linear",
+        "BatteryModelCsvFilePath": "./config/battery_model.csv",
+        "VoltageLevelGreen": 12.1, 
+        "VoltageLevelYellow": 11.1,
+        "CapacityLevelYellow": 3, 
+        "NominalVoltage": 14.8,
+        "NominalCapacity": 4.0,
+        "EODVoltage": 3.0
+      }
+```
+
+The `model` parameter allows you to choose from three types of battery voltage models:
+
+- `constant`: A model where the voltage remains constant.
+- `linear`: A model where the voltage decreases linearly.
+- `custom`: A model defined using a CSV file.
+
+If you select the `custom` model, specify the path to the CSV file in `BatteryModelCsvFilePath`.
+
+
+## Voltage Level Settings
+
+- `VoltageLevelGreen`: Minimum value [V] for the Green voltage level.
+- `VoltageLevelYellow`: Minimum value [V] for the Yellow voltage level.
+- `CapacityLevelYellow`: Minimum capacity [Ah] for the Yellow capacity level.
+
+
+## Voltage Model Parameters
+
+- `NominalVoltage`: Nominal voltage [V], the standard operating voltage of the battery.
+- `NominalCapacity`: Nominal capacity [Ah], the theoretical amount of charge the battery can supply.
+- `EODVoltage`: End-of-discharge voltage [V].
+
+
+## Create the `battery_model.csv` File
+
+If you select `custom` for the `model`, define the battery voltage model in the file specified by `BatteryModelCsvFilePath`.
+
+**Example Configuration:**
+
+| Temperature (°C) | Discharge Capacity (Ah) | Voltage (V) |
+|-------------------|-------------------------|-------------|
+| 45                | 0.0                     | 14.8        |
+| 45                | 0.1                     | 14.6        |
+| 45                | 0.2                     | 14.5        |
+| 45                | 0.3                     | 14.4        |
+| 45                | 0.4                     | 14.3        |
+
 
 # Community and Support
 
