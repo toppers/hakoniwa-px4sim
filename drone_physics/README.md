@@ -155,9 +155,10 @@ Functions(C++) are implemented in the following categories, with the referece to
 ### Rotor dynamics(for one rotor, rotation speed and thrust):
 | Function | equations in the book | note |
 |----------|-----------|------|
-|`rotor_omega_acceleration` | (2.48) | Rotor angular rate acceleration from dury rate |
+|`rotor_omega_acceleration` | (2.48) | Rotor angular rate acceleration from dury rate (linear and non-linear versions) |
 |`rotor_thrust` | (2.50) | Rotor thrust from rotor angular rate($-z$ direction) |
 |`rotor_anti_torque` | (2.56) | Rotor anti-torque from rotor thrust($z$ -axis rotation) |
+|`rotor_current` |  | Rotor current |
 
 ### Body dynamics(n rotors, thrust and torque to the body):
 | Function | equations in the book | note |
@@ -336,8 +337,9 @@ $$
 $$
 
 This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices in the order $R_z(\psi)R_y(\theta)R_x(\phi)$. DCM is always orthogonal and has a '1' as its eigenvalues.
-The direction of the eigenvectors to '1' is the direction of the rotation(the quaternion's
-imaginary part).
+The direction of the eigenvector corresponding to '1' is the direction of the rotation,
+which is the quaternion's imaginary part.
+
 $$
 R_z(\psi) = \begin{bmatrix}
     \cos\psi & -\sin\psi & 0 \\
@@ -392,20 +394,27 @@ The function name is `euler_rate_from_body_angular_velocity` ,
 and the inverse transformation is `body_angular_velocity_from_euler_rate`.
 
 
-### One Rotor dynamics(1st-order lag system)
+### One Rotor dynamics
 
 There are two versions of the rotor dynamics in this library.
+Note that the function name is the same for both versions, but the parameters are different
+(using C++ funtion overlading).
 
-#### One rotor rotation speed
+#### One rotor rotation speed(1st-order lag system)
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
-$\Omega(t)$ is controlled by the duty rate $d(t)$, described as transfer function G(s)
+is $\omega(t)$. We use variable name $\omega$ as the rotation speed in radian, in this section.
+don't confuse with $\omega$ as the angular velocity of the whole body in other sections
+(Nonami's book use capital $\Omega$ for this name,
+but, we prioritize readability and use the lowercase $\omega(t)$).
+
+is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
 
 $\Omega(s)/D(s) = G(s) = K_r/(T_r s + 1)$
 
 and the time domain differential equation is as follows.
 
-$\dot{\Omega}(t) = (K_r d(t) - \Omega(t))/T_r$
+$\dot{\omega}(t) = (K_r d(t) - \omega(t))/T_r$
 
 where;
 
@@ -416,7 +425,7 @@ where;
 The function name is `rotor_omega_acceleration`.
 
 #### One rotor rotation speed(non-linear using battery voltage)
-Another model is that the rotor angular rate $\Omega(t)$ is controlled by the duty rate $d(t)$
+Another model is that the rotor angular rate $\omega(t)$ is controlled by the duty rate $d(t)$
 times the battery voltage $V_{bat}$ .
 The rotor is composed of a motor(torque generator by voltage) and a propeller(thrust generator using the torque).
 
@@ -424,36 +433,34 @@ See https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2 eq (3)
 
 $$
 \begin{array}{l}
-J \dot{\Omega}(t) + D \Omega(t) + C_q \Omega(t)^2 = K i(t) \\
-L \dot{i}(t) + R i(t) + K \Omega(t) = e(t) \\
-e(t) = V_{bat} d(t) 
+J \dot{\omega}(t) + D \omega(t) + C_q \omega(t)^2 &= K i(t) \\
+L \dot{i}(t) + R i(t) + K \omega(t) &= e(t) \\
+e(t) &= V_{bat} d(t) 
 \end{array}
 $$
 
 where;
-- $J$ - The inertia of the propeller. [$kg m^2$]
-- $D$ - The damping coefficient of the propeller. [$N m s/rad$]
-- $L$ - The inductance of the motor. [$H$]
-- $R$ - The resistance of the motor. [$\Omega$]
-- $K$ - The torque constant of the rotor. [$N m/A$]
-- $d(t)$ - The duty rate of the motor. ($0.0 \le d(t) \le 1.0$)
-- $V_{bat}$ - The battery voltage. [$V$]
-- $e(t)$ - The voltage applied to the motor, equals to $V_{bat}d(t)$. [$V$]
-- $i(t)$ - The current of the motor. [$A$]
-- $\Omega(t)$ - The angular velocity of the propeller. [$rad/s$]
+- $J$ - The inertia of the propeller. [ $kg m^2$ ]
+- $D$ - The damping coefficient of the propeller. [ $N m s/rad$ ]
+- $L$ - The inductance of the motor. [ $H = Vs/A$ (Henry)]
+- $R$ - The resistance of the motor. [ $\Omega$ (Ohm)]
+- $K$ - The torque constant of the rotor. [ $N m/A$ ]
+- $d(t)$ - The duty rate of the motor. ( $0.0 \le d(t) \le 1.0$ )
+- $V_{bat}$ - The battery voltage. [ $V$ ]
+- $e(t)$ - The voltage applied to the motor, equals to $V_{bat}d(t)$. [ $V$ ]
+- $i(t)$ - The current of the motor. [ $A$ ]
+- $\omega(t)$ - The angular velocity of the propeller. [ $rad/s$ ]
 
 Neglecting the inductance $L$ which is very small, we have;
 
-$ i(t) = (e(t) - K \Omega(t))/R $
+$ i(t) = (e(t) - K \omega(t))/R $
 
 Then the equations are simplified as follows, by erasing the current $i(t)$.
 
 $$
-J \dot{\Omega}(t) + (D + K^2/R) \Omega(t) + C_q \Omega(t)^2 = (K/R) V_{bat} d(t)
-$$
-
-$$
-\dot{\Omega}(t) = (K V_{bat} d(t) - (K^2+DR) \Omega(t) - C_q R \Omega(t)^2) /JR
+\begin{array}{l}
+J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 &= (K/R) V_{bat} d(t) \\
+\dot{\omega}(t) &= (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
 $$
 
 
@@ -462,24 +469,26 @@ The function name is (another version of)`rotor_omega_acceleration`.
 And the current $i(t)$ is obtained by the following equation.
 
 $$
-i(t) = (e(t) - K \Omega(t))/R = (V_{bat} d(t) - K \Omega(t))/R
+i(t) = (e(t) - K \omega(t))/R = (V_{bat} d(t) - K \omega(t))/R
 $$
 
 The function name is `rotor_current` ．
 
-Note that when $\Omega(t)$ gets larger by some external force, the current may flow back to the battery(charging the battery) by the back EMF(back electromotive force) of the motor.
+Note that when $\omega(t)$ gets larger by some external force, the current may flow back to the battery(charging the battery) by the back EMF(back electromotive force) of the motor.
 
 #### One rotor thrust and anti-torque
 The thrust $T$ of the rotor is proportional to the square of the rotor angular velocity
-$\Omega$ eq.(2.50). $A$ is a parameter related to the propeller size and the air density.
+$\omega$ eq.(2.50). $C_T$ is the thrust coefficient, a parameter related to the propeller size and the air density
+(In Nonami's book it is denoted as $A$).
 
-$T = A \Omega^2 $
+$T = C_T \omega^2 $
 
 The anti-torque $\tau_i$ of the rotor (2.56).
  
-$\tau_i = B \Omega^2 + Jr \dot{\Omega}$
+$\tau_i = C_q \omega^2 + Jr \dot{\omega}$
 
-where $B(=C_q)$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis.
+where $C_q$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis
+(In Nonami's book $C_q$ is denoted as $B$).
 
 The function name is `rotor_thrust` and `rotor_anti_torque`.
 
