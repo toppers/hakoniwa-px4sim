@@ -449,23 +449,28 @@ $$
 
 インダクタンス $L$ は非常に小さいため無視すると、
 
-$ i(t) = (e(t) - K \omega(t))/R $
+$$
+i(t) = \frac{e(t) - K \omega(t)}{R}
+$$
 
 さらに、電流 $i(t)$ を消去すると、 $\omega(t)$ は以下のような非線形微分方程式になります。
 
 $$
-\begin{array}{l}
-J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 = (K/R) V_{bat} d(t)
-\end{array}
+J \dot{\omega}(t) + (D + \frac{K^2}{R}) \omega(t) + C_q \omega(t)^2 = \frac{K}{R} e(t)
 $$
 
 これを、$\omega(t)$ について解くと、以下の結果を得る。
 
 $$
-\begin{array}{l}
-\dot{\omega}(t) = (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
-\end{array}
+\dot{\omega}(t) = \frac{e(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
 $$
+
+$e(t) = V_{bat} d(t)$ として、$\omega(t)$ の入力 $d(t)$ に関する微分方程式は以下のようになります。
+
+$$
+\dot{\omega}(t) = \frac{V_{bat}d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
+$$
+
 
 関数名は，`rotor_omega_acceleration` の別バージョンです．
 
@@ -490,7 +495,10 @@ $T = C_T \omega^2 $
 $\tau_i = C_q \omega^2 + Jr \dot{\omega}$
 
 ここで， $C_q$ と $Jr$ はローターの特性に関連するパラメータです．
+
 これによって，機体は $z$ 軸周りに回転します．
+
+（NOTE: この $Jr$ がロータのイナーシャ $J$ に一致するかは確証が取れていない。こうへいさんのモデルでは、反トルクは $C_q \omega^2$ のみで決まっており、野波先生の書籍では $Jr \dot{\omega}$ が加わっている。今は別物として扱い、上位でどちらでも実装できるようにする）
 
 関数名は，`rotor_thrust` と `rotor_anti_torque` ．
 
