@@ -49,3 +49,5 @@ The current default settings can be found here:
 [Drone Control Parameter File](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control/config/param-api.txt)
 
 Additionally, to ensure the parameter file is loaded correctly, make sure to specify the file path in the environment variable `HAKO_CONTROLLER_PARAM_FILE`.
+
+The PID control parameters will be reloaded when the simulation is reset.

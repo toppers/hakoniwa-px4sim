@@ -49,3 +49,6 @@ cmake-build/workspace/RadioController/libRadioController.so
 [ドローン制御パラメータ設定ファイル](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control/config/param-api.txt)
 
 また、パラメータファイルを正しく読み込むためには、環境変数 `HAKO_CONTROLLER_PARAM_FILE` にそのファイルのパスを設定する必要があります。
+
+
+なお、PID制御パラメータは、シミュレーションをリセットすると再ローディングされます。
