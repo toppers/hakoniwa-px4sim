@@ -134,6 +134,11 @@ Note that the euleer angles are not vectors, and cannot be added, scaled, or mul
 
 ## List of functions
 Functions(C++) are implemented in the following categories, with the referece to the book.
+As a naming policy, the function names represent the output of the function(omitting get_ prefix)
+and describe the source using _from if needed, and the input as the arguments, (maybe) 
+overly using function overloading by argument types.
+None of the functions have states(static variable) nor side effects.
+All the arguments are passed by value(or const reference) and won't be changed in the function.
 
 ### Frame conversion:
 | Function | equation | note |
@@ -434,8 +439,7 @@ See https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2 eq (3)
 $$
 \begin{array}{l}
 J \dot{\omega}(t) + D \omega(t) + C_q \omega(t)^2 &= K i(t) \\
-L \dot{i}(t) + R i(t) + K \omega(t) &= e(t) \\
-e(t) &= V_{bat} d(t) 
+L \dot{i}(t) + R i(t) + K \omega(t) &= e(t)
 \end{array}
 $$
 
@@ -453,23 +457,28 @@ where;
 
 Neglecting the inductance $L$ which is very small, we have;
 
-$i(t) = (e(t) - K \omega(t))/R$
-
-Then the equations are simplified as follows, by erasing the current $i(t)$.
-
 $$
-\begin{array}{l}
-J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 = (K/R) V_{bat} d(t) \\
-\end{array}
+i(t) = \frac{e(t) - K \omega(t)}{R}
 $$
 
-Soving this differential equation for $\omega$ , we have the following equation.
+Then the differential equation for $\omega(t)$ is obtained as follows, by erasing the current $i(t)$.
 
 $$
-\begin{array}{l}
-\dot{\omega}(t) = (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
-\end{array}
+J \dot{\omega}(t) + (D + \frac{K^2}{R}) \omega(t) + C_q \omega(t)^2 = \frac{K}{R} e(t)
 $$
+
+Soving this differential equation for $\omega$ , we have the following result.
+
+$$
+\dot{\omega}(t) = \frac{e(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
+$$
+
+Let $e(t) = V_{bat} d(t)$, the differential equation of $\omega(t)$ for the input $d(t)$  is as follows.
+
+$$
+\dot{\omega}(t) = \frac{V_{bat}d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
+$$
+
 
 The function name is (another version of)`rotor_omega_acceleration`.
 
@@ -496,6 +505,8 @@ $\tau_i = C_q \omega^2 + Jr \dot{\omega}$
 
 where $C_q$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis
 (In Nonami's book $C_q$ is denoted as $B$).
+
+(Note: It is not confirmed whether this $Jr$ matches the rotor inertia $J$. In Kohei's model, the anti-torque is determined only by $C_q \omega^2$, while in Nonami's book, $Jr \dot{\omega}$ is included. For now, treat them separately and implement it in a way that either can be used by the caller.)
 
 The function name is `rotor_thrust` and `rotor_anti_torque`.
 

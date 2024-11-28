@@ -143,6 +143,10 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 
 ## 関数リスト
 関数は以下のカテゴリから構成され，書籍の式番号が記載されています（C++）．
+命名方針として、関数名の先頭は関数の出力を表し（get_ プレフィックスを省略）、
+必要に応じて _from を使用して変換元を記述し、引数として入力を示します。
+また、引数の型や数によって関数のオーバーロードを多用することがあります。
+なお、内部に状態（static variable）を持つ関数はなく、副作用もありません。すべての引数は入力として扱い、変更されません。
 
 ### 座標変換
 | 関数 | 数式 | 意味 |
@@ -449,23 +453,28 @@ $$
 
 インダクタンス $L$ は非常に小さいため無視すると、
 
-$ i(t) = (e(t) - K \omega(t))/R $
+$$
+i(t) = \frac{e(t) - K \omega(t)}{R}
+$$
 
 さらに、電流 $i(t)$ を消去すると、 $\omega(t)$ は以下のような非線形微分方程式になります。
 
 $$
-\begin{array}{l}
-J \dot{\omega}(t) + (D + K^2/R) \omega(t) + C_q \omega(t)^2 = (K/R) V_{bat} d(t)
-\end{array}
+J \dot{\omega}(t) + (D + \frac{K^2}{R}) \omega(t) + C_q \omega(t)^2 = \frac{K}{R} e(t)
 $$
 
-これを、$\omega(t)$ について解くと、以下の結果を得る。
+これを、 $\omega(t)$ について解くと、以下の結果を得ます。
 
 $$
-\begin{array}{l}
-\dot{\omega}(t) = (K V_{bat} d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2) /JR
-\end{array}
+\dot{\omega}(t) = \frac{e(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
 $$
+
+$e(t) = V_{bat} d(t)$ として、 $\omega(t)$ の入力 $d(t)$ に関する微分方程式は以下のようになります。
+
+$$
+\dot{\omega}(t) = \frac{V_{bat}d(t) - (K^2+DR) \omega(t) - C_q R \omega(t)^2}{JR}
+$$
+
 
 関数名は，`rotor_omega_acceleration` の別バージョンです．
 
@@ -473,7 +482,7 @@ $$
 
 $i(t) = (e(t) - K \omega(t))/R = (V_{bat} d(t) - K \omega(t))/R$
 
-で求まる。関数名は、`rotor_current` ．
+で求まります。関数名は、`rotor_current` ．
 
 $\omega(t)$ が何らかの外力で大きくなると、逆起電力(Back EMF)によって電流が逆流（電池に充電）する可能性がある式になっていることに注意してください。
 
@@ -490,7 +499,10 @@ $T = C_T \omega^2 $
 $\tau_i = C_q \omega^2 + Jr \dot{\omega}$
 
 ここで， $C_q$ と $Jr$ はローターの特性に関連するパラメータです．
+
 これによって，機体は $z$ 軸周りに回転します．
+
+（NOTE: この $Jr$ がロータのイナーシャ $J$ に一致するかは確証が取れていない。こうへいさんのモデルでは、反トルクは $C_q \omega^2$ のみで決まっており、野波先生の書籍では $Jr \dot{\omega}$ が加わっている。今は別物として扱い、上位でどちらでも実装できるようにする。）
 
 関数名は，`rotor_thrust` と `rotor_anti_torque` ．
 
