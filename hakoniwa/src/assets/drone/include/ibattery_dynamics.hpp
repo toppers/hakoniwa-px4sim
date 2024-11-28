@@ -53,6 +53,7 @@ public:
         entry->discharge_capacity_sec = 0;
         devices.push_back(entry);
     }
+    virtual void reset() = 0;
     virtual double get_vbat() = 0;
     //calculate battery remained value
     virtual void run() = 0;

@@ -111,7 +111,7 @@ double rotor_thrust( /* thrust in [N] */
 
 /* this makes z-axis rotation eq.(2.56) */
 double rotor_anti_torque( /* anti torque(z-axis) in [Nm]*/
-    double Cq, /* torque coefficient (referred to as B in nonami's book in [N m s^2/rad^2] */
+    double Cq, /* torque coefficient (referred to as B in nonami's book) in [N m s^2/rad^2] */
     double Jr, /* torque coefficient for 2nd order rotation */
     double omega, /* in [rad/s] */
     double omega_acceleratoin, /* in [rad/s^2] */

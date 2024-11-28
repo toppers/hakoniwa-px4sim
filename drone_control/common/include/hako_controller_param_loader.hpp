@@ -24,15 +24,21 @@ public:
         }
         std::cout << "controller param path: " << env_p << std::endl;
         filename = std::string(env_p);
+        loadParameters();
     }
 
-    HakoControllerParamLoader(const std::string& filename) : filename(filename) {}
+    HakoControllerParamLoader(const std::string& filename) : filename(filename) {
+        loadParameters();
+    }
 
     void loadParameters() {
         std::ifstream file(filename);
         if (!file.is_open()) {
             throw std::runtime_error("Failed to open file: " + filename);
         }
+
+        // パラメータをクリアして再読み込み
+        parameters.clear();
 
         std::string line;
         while (std::getline(file, line)) {
@@ -50,6 +56,11 @@ public:
         }
 
         file.close();
+    }
+
+    void reload() {
+        std::cout << "Reloading parameters from: " << filename << std::endl;
+        loadParameters();
     }
 
     double getParameter(const std::string& paramName) const {

@@ -46,6 +46,9 @@ cmake-build/workspace/RadioController/libRadioController.so
 もしドローンの動きに調整が必要な場合、このパラメータファイルの値を変更することで、動作の微調整を行うことができます。
 
 現在のデフォルト設定は、こちらで確認できます：
-[ドローン制御パラメータ設定ファイル](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control/config/param-api.txt)
+[ドローン制御パラメータ設定ファイル](https://github.com/toppers/hakoniwa-px4sim/blob/main/drone_control/config/param-api-mixer.txt)
 
-また、パラメータファイルを正しく読み込むためには、環境変数 `HAKO_CONTROLLER_PARAM_FILE` にそのファイルのパスを設定する必要があります。
+
+- パラメータファイルを正しく読み込むためには、環境変数 `HAKO_CONTROLLER_PARAM_FILE` にそのファイルのパスを設定する必要があります。
+- ラジオコントロールの場合、`ANGLE_CONTROL_ENABLE` を  `1` にすると、ATTIモードで操作できます。`0` にすると、GPSモードで操作できます。
+- PID制御パラメータは、シミュレーションをリセットすると再ローディングされます。

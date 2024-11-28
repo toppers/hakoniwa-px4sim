@@ -26,6 +26,13 @@ public:
     void reset() override
     {
         drone_dynamics->reset();
+        if (this->battery_dynamics != nullptr) {
+            battery_dynamics->reset();
+        }
+        for (int i = 0; i < ROTOR_NUM; i++) {
+            rotor_dynamics[i]->reset();
+        }
+        thrust_dynamis->reset();
         logger.reset();
     }
     void run(DroneDynamicsInputType& input) override

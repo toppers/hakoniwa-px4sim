@@ -40,8 +40,8 @@
           "enable_disturbance": false,
           "manual_control": false,
           "airFrictionCoefficient": [
-              0.05,
-              0
+              0.2,
+              0.0
           ],
           "inertia": [
               0.0061,
@@ -67,7 +67,7 @@
       },
       "battery": {
         "vendor": "None",
-        "model": "linear",
+        "model": "constant",
         "BatteryModelCsvFilePath": "./tmp_battery_model.csv",
         "VoltageLevelGreen": 12.1, 
         "VoltageLevelYellow": 11.1,

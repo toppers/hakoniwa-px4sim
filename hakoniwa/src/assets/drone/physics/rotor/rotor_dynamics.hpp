@@ -45,6 +45,12 @@ public:
         this->speed.data = 0;
         this->current = 0;
     }
+    void reset() override
+    {
+        this->speed.data = 0;
+        this->current = 0;
+        this->total_time_sec = 0;
+    }
     void set_battery_dynamics_constants(const RotorBatteryModelConstants &c) override
     {
         battery_dynamics = true;

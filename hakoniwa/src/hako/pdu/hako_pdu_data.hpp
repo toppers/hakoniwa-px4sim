@@ -14,6 +14,7 @@
 #include "hako_msgs/pdu_ctype_HakoDroneCmdLand.h"
 #include "hako_msgs/pdu_ctype_GameControllerOperation.h"
 #include "hako_msgs/pdu_ctype_HakoBatteryStatus.h"
+#include "hako_msgs/pdu_ctype_HakoCmdMagnetHolder.h"
 #include "config/drone_config.hpp"
 
 extern bool hako_pdu_data_init(DroneConfigManager& mgr);

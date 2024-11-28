@@ -7,6 +7,7 @@ import pygame
 import time
 import os
 from rc_utils.rc_utils import RcConfig, StickMonitor
+from return_to_home import DroneController
 
 # デフォルトのJSONファイルパス
 DEFAULT_CONFIG_PATH = "rc_config/ps4-control.json"
@@ -44,6 +45,9 @@ def joystick_control(client: hakosim.MultirotorClient, joystick, stick_monitor: 
                                 if event_op_index == stick_monitor.rc_config.SWITCH_CAMERA_SHOT:
                                     time.sleep(0.5)
                                     saveCameraImage(client)
+                                elif event_op_index == stick_monitor.rc_config.SWITCH_RETURN_HOME:
+                                    controller = DroneController(client, default_drone_name=client.default_drone_name, height=2.0, power=0.5, yaw_power=0.8)
+                                    controller.return_to_home()
                     else:
                         print(f'ERROR: not supported button index: {event.button}')
             client.putGameJoystickData(data)

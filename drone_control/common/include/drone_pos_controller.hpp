@@ -87,9 +87,8 @@ private:
         return out;
     }
 
-
-public:
-    DronePosController(const HakoControllerParamLoader& loader) {
+    const HakoControllerParamLoader* my_loader;
+    void loadParameters(const HakoControllerParamLoader& loader) {
         delta_time = loader.getParameter("SIMULATION_DELTA_TIME");
         /*
          * position control
@@ -124,6 +123,11 @@ public:
             loader.getParameter("PID_POS_VY_Kd"), 
             0, delta_time);
     }
+public:
+    DronePosController(const HakoControllerParamLoader& loader) {
+        my_loader = &loader;
+        loadParameters(loader);
+    }
 
     virtual ~DronePosController() {}
     DronePosOutputType run_spd(DroneVelInputType& in) {
@@ -145,6 +149,17 @@ public:
     {
         DroneVelInputType vel = run_pos(in);
         return run_spd(vel); 
+    }
+    void reset() {
+        loadParameters(*my_loader);
+        pos_prev_out = {};
+        spd_prev_out = {};
+        position_control_vx->reset_integral();
+        position_control_vy->reset_integral();
+        speed_control_vx->reset_integral();
+        speed_control_vy->reset_integral();
+        pos_simulation_time = 0;
+        spd_simulation_time = 0;
     }
 };
 

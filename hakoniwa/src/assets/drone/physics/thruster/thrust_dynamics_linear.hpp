@@ -41,7 +41,12 @@ public:
         set_rotor_config(rotor_config);
     }
     virtual ~ThrustDynamicsLinear() {}
-
+    void reset() override
+    {
+        this->thrust.data = 0;
+        this->torque.data = {0, 0, 0};
+        total_time_sec = 0;
+    }
     void set_params(double a, double b)
     {
         this->param_A = a;
