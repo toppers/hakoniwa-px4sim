@@ -405,14 +405,15 @@ There are two versions of the rotor dynamics in this library.
 Note that the function name is the same for both versions, but the parameters are different
 (using C++ funtion overlading).
 
-#### One rotor rotation speed(1st-order lag system)
 Each rotor can be modeled as a first-order lag system, in which the rotor angular rate
 is $\omega(t)$. We use variable name $\omega$ as the rotation speed in radian, in this section.
 don't confuse with $\omega$ as the angular velocity of the whole body in other sections
 (Nonami's book use capital $\Omega$ for this name,
 but, we prioritize readability and use the lowercase $\omega(t)$ ).
 
-is controlled by the duty rate $d(t)$, described as transfer function G(s)
+#### One rotor rotation speed(1st-order lag system version)
+
+$\omega(t)$ is is controlled by the duty rate $d(t)$, described as transfer function G(s)
 eq.(2.48) in the book,
 
 $\Omega(s)/D(s) = G(s) = K_r/(T_r s + 1)$
@@ -427,9 +428,10 @@ where;
 - $T_r$ - rotor time constant.
 - $d(t)$ - duty rate of the rotor. ($0.0 \le d(t) \le 1.0$)
 
+This model is an approximation of the non-linear model described later, with two parameters $K_r, T_r$.
 The function name is `rotor_omega_acceleration`.
 
-#### One rotor rotation speed(non-linear using battery voltage)
+#### One rotor rotation speed(non-linear using battery voltage version)
 Another model is that the rotor angular rate $\omega(t)$ is controlled by the duty rate $d(t)$
 times the battery voltage $V_{bat}$ .
 The rotor is composed of a motor(torque generator by voltage) and a propeller(thrust generator using the torque).
@@ -446,6 +448,7 @@ $$
 where;
 - $J$ - The inertia of the propeller. [ $kg m^2$ ]
 - $D$ - The damping coefficient of the propeller. [ $N m s/rad$ ]
+- $C_q$ - The torque coefficient of the propeller. [ $N m^2/s^2$ ]
 - $L$ - The inductance of the motor. [ $H = Vs/A$ (Henry)]
 - $R$ - The resistance of the motor. [ $\Omega$ (Ohm)]
 - $K$ - The torque constant of the rotor. [ $N m/A$ ]
@@ -480,7 +483,7 @@ $$
 $$
 
 
-The function name is (another version of)`rotor_omega_acceleration`.
+The function name is (another version of)`rotor_omega_acceleration`(overloaded function name).
 
 And the current $i(t)$ is obtained by the following equation.
 
@@ -501,12 +504,11 @@ $T = C_T \omega^2 $
 
 The anti-torque $\tau_i$ of the rotor (2.56).
  
-$\tau_i = C_q \omega^2 + Jr \dot{\omega}$
+$\tau_i = C_q \omega^2 + J \dot{\omega}$
 
-where $C_q$, $Jr$ is parameters related to the rotor properties. This makes the drone rotate around the $z$-axis
-(In Nonami's book $C_q$ is denoted as $B$).
-
-(Note: It is not confirmed whether this $Jr$ matches the rotor inertia $J$. In Kohei's model, the anti-torque is determined only by $C_q \omega^2$, while in Nonami's book, $Jr \dot{\omega}$ is included. For now, treat them separately and implement it in a way that either can be used by the caller.)
+where $C_q$, $J$ is parameters related to the rotor properties.
+Note that $J$ is the same as the one we used in the rotor propeller inertia.
+This makes the drone rotate around the $z$-axis(In Nonami's book $C_q$ is denoted as $B$).
 
 The function name is `rotor_thrust` and `rotor_anti_torque`.
 

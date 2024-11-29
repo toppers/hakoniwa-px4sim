@@ -112,7 +112,7 @@ double rotor_thrust( /* thrust in [N] */
 /* this makes z-axis rotation eq.(2.56) */
 double rotor_anti_torque( /* anti torque(z-axis) in [Nm]*/
     double Cq, /* torque coefficient (referred to as B in nonami's book) in [N m s^2/rad^2] */
-    double Jr, /* torque coefficient for 2nd order rotation */
+    double J, /* innertia of propeller [kg m^2] */
     double omega, /* in [rad/s] */
     double omega_acceleratoin, /* in [rad/s^2] */
     double ccw /* 1 or -1 */ )
@@ -123,7 +123,7 @@ double rotor_anti_torque( /* anti torque(z-axis) in [Nm]*/
      * The name 'Cq' is from Kohei's doc and referred to as 'B' in Nonami's eq.(2.56)
      * Kohei's doc https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2     
      */
-   return ccw * ( Cq * omega * omega + Jr * omega_acceleratoin );
+   return ccw * ( Cq * omega * omega + J * omega_acceleratoin );
 }
 
 
@@ -145,7 +145,7 @@ double body_thrust( /* thrust in [N] */
 TorqueType body_torque( /* torque in [Nm] */
     double Ct, /* thrust coeff, in Trust = Ct*(Omega)^2 (referred to as 'A' in Nonami's book ) in [N s^2/rad^2] */
     double Cq, /* torque coefficient (referred to as B in nonami's book in [N m s^2/rad^2] */
-    double Jr,
+    double J, /* innertia of propeller [kg m^2] */
     unsigned n, /* number of rotors */
     VectorType position[], /* position of each rotor in [m] */
     double ccw[], /* 1 or -1 */
@@ -168,7 +168,7 @@ TorqueType body_torque( /* torque in [Nm] */
 
         // (2) anti-torque around z-axis = yaw.
         const auto anti_torque =
-            rotor_anti_torque(Cq, Jr, omega[i], omega_acceleration[i], ccw[i]);
+            rotor_anti_torque(Cq, J, omega[i], omega_acceleration[i], ccw[i]);
         
         total_torque += thrust_torque;
         total_torque.z += anti_torque;
