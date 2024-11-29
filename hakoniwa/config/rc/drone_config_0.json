@@ -41,7 +41,7 @@
           "manual_control": false,
           "airFrictionCoefficient": [
               0.2,
-              0.05
+              0.0
           ],
           "inertia": [
               0.0061,
