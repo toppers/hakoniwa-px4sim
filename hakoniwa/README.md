@@ -159,7 +159,6 @@ The settings for each item are as follows:
   - **rotorPositions**: The positions and rotation directions of the rotors, in meters (`m`). rotationDirection is the direction of rotor rotation (CW:-1.0, CCW: 1.0)
   - **Ct**: Thrust coefficient.
   - **Cq**: Torque coefficient.
-  - **Jr**: Thruster moment of inertia parameter.
 - **sensors**: Settings for various sensors.
   - **sampleCount**: The number of samples.
   - **noise**: Noise level (standard deviation). If noise is not set, it is 0.

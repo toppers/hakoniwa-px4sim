@@ -168,7 +168,6 @@ bash build.bash HAKONIWA_MATLAB_BUILD=true
   - **rotorPositions**: ローターの位置と回転方向。単位はメートル(`m`)。rotationDirectionはローターの回転方向(CW:-1.0, CCW: 1.0)
   - **Ct**: 推力係数
   - **Cq**: トルク係数。
-  - **Jr**: スラスターの慣性モーメントパラメータ。
 - **sensors**: 各種センサーの設定。
   - **sampleCount**: サンプル数
   - **noise**:ノイズレベル(標準偏差)。ノイズ未設定の場合は0。

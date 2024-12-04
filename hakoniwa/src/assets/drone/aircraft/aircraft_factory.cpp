@@ -50,7 +50,6 @@ using hako::assets::drone::SensorNoise;
 #define MAG_SAMPLE_NUM              drone_config.getCompSensorSampleCount("mag")
 
 #define THRUST_PARAM_Ct              drone_config.getCompThrusterParameter("Ct")
-#define THRUST_PARAM_JR             drone_config.getCompThrusterParameter("Jr")
 
 #define LOGPATH(index, name)        drone_config.getSimLogFullPathFromIndex(index, name)
 
@@ -194,8 +193,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     else {
         thrust = new ThrustDynamicsNonLinear(DELTA_TIME_SEC);
         HAKO_ASSERT(thrust != nullptr);
-        std::cout << "param_Jr: " << THRUST_PARAM_JR << std::endl;
-        static_cast<ThrustDynamicsNonLinear*>(thrust)->set_params(param_Ct, param_Cq, THRUST_PARAM_JR);
+        std::cout << "param_J: " << rotor_constants.J << std::endl;
+        static_cast<ThrustDynamicsNonLinear*>(thrust)->set_params(param_Ct, param_Cq, rotor_constants.J);
         drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), LOGPATH(drone->get_index(), "log_thrust.csv"));
     }
     drone->set_thrus_dynamics(thrust);

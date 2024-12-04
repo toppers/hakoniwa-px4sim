@@ -118,8 +118,7 @@
                   "rotationDirection": -1.0
               }
           ],
-          "Ct": 8.3E-07,
-          "Jr": 0.0
+          "Ct": 8.3E-07
       },
       "sensors": {
           "acc": {
