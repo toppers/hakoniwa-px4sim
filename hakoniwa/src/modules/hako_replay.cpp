@@ -27,6 +27,11 @@ void hako_replay_main(bool master)
         std::cerr << "ERROR: can not find drone config file on " << drone_config_directory << std::endl;
         return;
     }
+    int max_delay_time_usec;
+    if (hako_param_env_get_integer(HAKO_MAXDELAY_TIME_USEC, &max_delay_time_usec) == false) {
+        HAKO_ABORT("Failed to get HAKO_MAXDELAY_TIME_USEC");
+    }
+    std::cout << "INFO: max_delay_time_usec: " << max_delay_time_usec << std::endl;
 
     DroneConfig drone_config;
     if (drone_config_manager.getConfig(0, drone_config) == false) {

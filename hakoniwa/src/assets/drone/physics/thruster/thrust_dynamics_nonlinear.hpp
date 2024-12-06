@@ -14,9 +14,9 @@ class ThrustDynamicsNonLinear : public hako::assets::drone::IThrustDynamics, pub
 private:
     double delta_time_sec;
     double total_time_sec = 0;
-    double param_A;
-    double param_B;
-    double param_Jr;
+    double param_Ct;
+    double param_Cq;
+    double param_J;
     DroneThrustType thrust;
     DroneTorqueType torque;
     DroneRotorSpeedType prev_rotor_speed[ROTOR_NUM];
@@ -32,11 +32,11 @@ public:
         this->delta_time_sec = dt;
         // 1kg の機体が 6000 rpm でホバリングする定数
         // A = mg / (Ω0^2 * ROTOR_NUM)
-        this->param_A =  GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+        this->param_Ct =  GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
         // 1kg の機体が 6000 rpm でホバリングする場合に、1Nmで反トルクがかかる定数
         // B = 1 / (Ω0^2 * ROTOR_NUM)
-        this->param_B = 1.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-        this->param_Jr = 0.1;
+        this->param_Cq = 1.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+        this->param_J = 0.1;
 
         this->rotor_config[0].ccw = -1;
         this->rotor_config[0].data = { 0.3, 0.0, 0 };
@@ -50,11 +50,11 @@ public:
     }
     virtual ~ThrustDynamicsNonLinear() {}
 
-    void set_params(double a, double b, double jr)
+    void set_params(double Ct, double Cq, double J)
     {
-        this->param_A = a;
-        this->param_B = b;
-        this->param_Jr = jr;
+        this->param_Ct = Ct;
+        this->param_Cq = Cq;
+        this->param_J = J;
     }
 
     void set_rotor_config(const RotorConfigType _rotor_config[ROTOR_NUM]) override
@@ -89,8 +89,8 @@ public:
             omega[i] = rotor_speed[i].data;
             omega_acceleration[i] = (rotor_speed[i].data - this->prev_rotor_speed[i].data) / this->delta_time_sec;
         }
-        this->thrust.data = drone_physics::body_thrust(param_A, ROTOR_NUM, omega);
-        this->torque = drone_physics::body_torque(param_A, param_B, param_Jr, ROTOR_NUM,
+        this->thrust.data = drone_physics::body_thrust(param_Ct, ROTOR_NUM, omega);
+        this->torque = drone_physics::body_torque(param_Ct, param_Cq, param_J, ROTOR_NUM,
                                             position, ccw, omega, omega_acceleration);
 
         for (int i = 0; i < ROTOR_NUM; i++) {

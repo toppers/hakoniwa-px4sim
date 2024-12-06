@@ -32,11 +32,15 @@ static HakoParamStringType hako_param_string[HAKO_PARAM_STRING_NUM] = {
         "../config"
     },
 };
-#define HAKO_PARAM_INTEGER_NUM 1
+#define HAKO_PARAM_INTEGER_NUM 2
 static HakoParamIntegerType hako_param_integer[HAKO_PARAM_INTEGER_NUM] = {
     {
         HAKO_BYPASS_PORTNO,
         54001
+    },
+    {
+        HAKO_MAXDELAY_TIME_USEC,
+        20000 // 20msec
     },
 };
 

@@ -154,12 +154,16 @@ The settings for each item are as follows:
   - **angle_degree**: The initial angle of the aircraft, in degrees (`deg`).
 - **rotor**: Rotor settings.
   - **vendor**: Specify the vendor name. Currently, set it to `None`.
+  - **dynamics_constants**: Rotor dynamics constants.
+    - **R**: Electrical resistance. Unit is Ohm (`Ω`).
+    - **Cq**: Torque coefficient. Unit is (`Nms^2/rad^2`).
+    - **D**: Dynamic viscosity friction coefficient. Unit is (`Nms/rad`).
+    - **K**: Back electromotive force constant. Unit is radians/second-volt (`Nm/A`).
+    - **J**: Motor inertia. Unit is kilogram-meter squared (`kg*m^2`).
 - **thruster**: Thruster settings.
   - **vendor**: Specify the vendor name. Currently, set it to `None`.
   - **rotorPositions**: The positions and rotation directions of the rotors, in meters (`m`). rotationDirection is the direction of rotor rotation (CW:-1.0, CCW: 1.0)
-  - **Ct**: Thrust coefficient.
-  - **Cq**: Torque coefficient.
-  - **Jr**: Thruster moment of inertia parameter.
+  - **Ct**: Thrust coefficient. Unit is (`Ns^2/rad^2`).
 - **sensors**: Settings for various sensors.
   - **sampleCount**: The number of samples.
   - **noise**: Noise level (standard deviation). If noise is not set, it is 0.
