@@ -33,6 +33,11 @@ void hako_phys_main()
         std::cerr << "ERROR: can not find drone config file on " << drone_config_path << std::endl;
         return;
     }
+    int max_delay_time_usec;
+    if (hako_param_env_get_integer(HAKO_MAXDELAY_TIME_USEC, &max_delay_time_usec) == false) {
+        HAKO_ABORT("Failed to get HAKO_MAXDELAY_TIME_USEC");
+    }
+    std::cout << "INFO: max_delay_time_usec: " << max_delay_time_usec << std::endl;
     CsvLogger::enable();
     DroneConfig drone_config;
     if (drone_config_manager.getConfig(0, drone_config) == false) {
@@ -46,7 +51,7 @@ void hako_phys_main()
     else {
         std::cout << "INFO: hako_master_init() success" << std::endl;
     }
-    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (drone_config.getSimTimeStep()*1000000));
+    hako_master_set_config_simtime((drone_config.getSimTimeStep()*1000000), (hako_time_t)max_delay_time_usec);
     try {
         std::thread thread(hako_px4_master_thread_run, (void*)nullptr);
         thread.detach();

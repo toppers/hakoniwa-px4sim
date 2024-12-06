@@ -14,8 +14,8 @@ class ThrustDynamicsLinear : public hako::assets::drone::IThrustDynamics, public
 private:
     double delta_time_sec;
     double total_time_sec = 0;
-    double param_A;
-    double param_B;
+    double param_Ct;
+    double param_Cq;
     DroneThrustType thrust;
     DroneTorqueType torque;
     RotorConfigType rotor_config[ROTOR_NUM];
@@ -27,8 +27,8 @@ public:
     ThrustDynamicsLinear(double dt)
     {
         this->delta_time_sec = dt;
-        this->param_A =  1;
-        this->param_B = 1.0/8000.0;
+        this->param_Ct =  1;
+        this->param_Cq = 1.0/8000.0;
 
         this->rotor_config[0].ccw = -1;
         this->rotor_config[0].data = { 0.3, 0.0, 0 };
@@ -47,10 +47,10 @@ public:
         this->torque.data = {0, 0, 0};
         total_time_sec = 0;
     }
-    void set_params(double a, double b)
+    void set_params(double Ct, double Cq)
     {
-        this->param_A = a;
-        this->param_B = b;
+        this->param_Ct = Ct;
+        this->param_Cq = Cq;
     }
 
     void set_rotor_config(const RotorConfigType rotor_config_[ROTOR_NUM]) override
@@ -84,8 +84,8 @@ public:
         for (int i = 0; i < ROTOR_NUM; i++) {
             omega[i] = rotor_speed[i].data;
         }
-        this->thrust.data = drone_physics::body_thrust_linear(param_A, ROTOR_NUM, omega);
-        this->torque = drone_physics::body_torque_linear(param_A, param_B, ROTOR_NUM, position, ccw, omega);
+        this->thrust.data = drone_physics::body_thrust_linear(param_Ct, ROTOR_NUM, omega);
+        this->torque = drone_physics::body_torque_linear(param_Ct, param_Cq, ROTOR_NUM, position, ccw, omega);
 
         total_time_sec += delta_time_sec;
     }
