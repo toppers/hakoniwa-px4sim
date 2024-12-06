@@ -13,6 +13,7 @@
  * integer params
  */
 #define HAKO_BYPASS_PORTNO "HAKO_BYPASS_PORTNO"
+#define HAKO_MAXDELAY_TIME_USEC "HAKO_MAXDELAY_TIME_USEC"
 
 extern void hako_param_env_init();
 extern const char* hako_param_env_get_string(const char* param_name);
