@@ -25,6 +25,11 @@ typedef VectorType AngularVectorType;
 typedef AngularVectorType AngularVelocityType;
 typedef AngularVectorType AngularAccelerationType;
 
+struct QuaternionType {
+    double w, x, y, z;
+};
+typedef QuaternionType QuaternionVelocityType;
+
 /*
  * The Euler types below are used for "Euler Angles" in this library,
  * including rotation, rotation rate, rotation acceleration, etc.
@@ -71,9 +76,21 @@ VectorType& operator += (VectorType& u, const VectorType& v);
 VectorType operator + (const VectorType& u, const VectorType& v);
 VectorType& operator -= (VectorType& u, const VectorType& v);
 VectorType operator - (const VectorType& u, const VectorType& v);
+VectorType& operator *= (double s, const VectorType& v);
 VectorType operator * (double s, const VectorType& v);
 VectorType operator * (const VectorType& v, double s);
+VectorType& operator /= (VectorType& v, double s);
 VectorType operator / (const VectorType& v, double s);
+QuaternionType& operator += (QuaternionType& q1, const QuaternionType& q2);
+QuaternionType operator + (const QuaternionType& q1, const QuaternionType& q2);
+QuaternionType& operator -= (QuaternionType& q1, const QuaternionType& q2);
+QuaternionType operator - (const QuaternionType& q1, const QuaternionType& q2);
+QuaternionType& operator *= (QuaternionType& q, double s);
+QuaternionType operator * (const QuaternionType& q, double s);
+QuaternionType operator * (double s, const QuaternionType& q);
+QuaternionType& operator /= (QuaternionType& q, double s);
+QuaternionType operator / (const QuaternionType& q, double s);
+void normalize(QuaternionType& q);
 
 #ifdef BP_INCLUDE_IO /* for printint out */
 std::ostream& operator << (std::ostream& os, const VectorType& v) {
@@ -82,6 +99,10 @@ std::ostream& operator << (std::ostream& os, const VectorType& v) {
 }
 std::ostream& operator << (std::ostream& os, const EulerType& v) {
     os << "(" << v.phi << "r, " << v.theta << "r, " << v.psi << "r)";
+    return os;
+}
+std::ostream& operator << (std::ostream& os, const QuaternionType& v) {
+    os << "(" << v.w << v.x << ", " << v.y << ", " << v.z << ")";
     return os;
 }
 #endif /* BP_INCLUDE_IO */
@@ -153,6 +174,17 @@ EulerAccelerationType euler_acceleration_in_ground_frame(
     const EulerType& current_euler,
     const TorqueType& torque, /* in BODY FRAME!! */
     double I_xx, double I_yy, double I_zz /* in BODY FRAME!! */);
+
+/* Quaternion velocity(dq/dt) from body angllar velocity */
+QuaternionVelocityType quaternion_velocity_from_body_angular_velocity(
+    const AngularVelocityType& body_angular_velocity,
+    const QuaternionType& quaternion);
+
+/* Quaternion from euler angle */
+QuaternionType quaternion_from_euler(const EulerType& euler);
+
+/* Euler angle from Quaternion */
+EulerType euler_from_quaternion(const QuaternionType& quaternion);
 
 /**
  * Physics for collision with wall(walls don't move).

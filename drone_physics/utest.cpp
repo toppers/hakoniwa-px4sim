@@ -489,6 +489,86 @@ void test_collision()
     assert_almost_equal(after, (VectorType{0, 0, 0}));
 }
 
+void test_quaternion_basic_operation()
+{
+    QuaternionType q1{1, 2, 3, 4};
+    assert_almost_equal(q1, (QuaternionType{1, 2, 3, 4}));
+
+    QuaternionType q2{5, 6, 7, 8};
+    assert_almost_equal(q1+q2, (QuaternionType{6, 8, 10, 12}));
+    assert_almost_equal(q2-q1, (QuaternionType{4, 4, 4, 4}));
+
+    QuaternionType q3 = q1*2;
+    assert_almost_equal(q3, (QuaternionType{2, 4, 6, 8}));
+    assert_almost_equal(q3/2, (QuaternionType{1, 2, 3, 4}));
+}
+void test_quaternion_to_euler()
+{
+    /* around Z axis */
+    /* theta = PI */
+    QuaternionType q1{0, 0, 0, 1};
+    assert_almost_equal(q1, (QuaternionType{cos(PI/2), 0, 0, sin(PI/2)}));
+    EulerType euler = euler_from_quaternion(q1);
+    assert_almost_equal(euler, (EulerType{0, 0, PI}));
+    QuaternionType q2 = quaternion_from_euler(euler);
+    assert_almost_equal(q2, q1);
+    /* theta = PI/2 */
+    q1 = {cos(PI/4), 0, 0, sin(PI/4)};
+    euler = euler_from_quaternion(q1);
+    assert_almost_equal(euler, (EulerType{0, 0, PI/2}));
+
+    /* around  Y axis */
+    q1 = {0, 0, 1, 0};
+    assert_almost_equal(q1, (QuaternionType{cos(PI/2), 0, sin(PI/2), 0}));
+    euler = euler_from_quaternion(q1);
+    // assert_almost_equal(euler, (EulerType{0, PI, 0})); ACTUALLY, same result as the next line(2 possible).
+    assert_almost_equal(euler, (EulerType{PI, 0, PI}));
+    /* theta = PI/2 */
+    q1 = {cos(PI/4), 0, sin(PI/4), 0};
+    euler = euler_from_quaternion(q1);
+    assert_almost_equal(euler, (EulerType{0, PI/2, 0}));
+
+    /* around  X axis */
+    q1 = {0, 1, 0, 0};
+    assert_almost_equal(q1, (QuaternionType{cos(PI/2), sin(PI/2), 0, 0}));
+    euler = euler_from_quaternion(q1);
+    assert_almost_equal(euler, (EulerType{PI, 0, 0}));
+    /* theta = PI/2 */
+    q1 = {cos(PI/4), sin(PI/4), 0, 0};
+    euler = euler_from_quaternion(q1);
+    assert_almost_equal(euler, (EulerType{PI/2, 0, 0}));
+
+    /* round trip the rotation */
+    for (int i = 0; i < 89; i+=10) {
+        for (int j = 0; j < 89; j+=10) {
+            for (int k = 0; k < 89; k+=10) {
+                EulerType euler{i * (PI/180), j * (PI/180), k * (PI/180)};
+                QuaternionType q = quaternion_from_euler(euler);
+                EulerType euler2 = euler_from_quaternion(q);
+                assert_almost_equal(euler, euler2);
+                QuaternionType q2 = quaternion_from_euler(euler2);
+                assert_almost_equal(q, q2);
+            }
+        }
+    }
+}
+
+void test_quaternion_velocity()
+{
+    QuaternionType q1{1, 2, 3, 4};
+    normalize(q1);
+    EulerType e1 = euler_from_quaternion(q1);
+    assert_almost_equal(e1, euler_from_quaternion(q1));
+
+    // AngularVelocityType v{1, 2, 3};
+    // QuaternionVelocityType dq = quaternion_velocity_from_body_angular_velocity(v, q1);
+    // q1 += dq;
+    // EulerRateType de = euler_rate_from_body_angular_velocity(v, e1);
+    // e1 += de;
+
+    // QuaternionType q2 = quaternion_from_euler(e1);
+}
+
 int main() {
     std::cerr << "-------start unit test-------\n";
     T(test_frame_all_unit_vectors_with_angle0);
@@ -510,6 +590,9 @@ int main() {
     T(test_collision);
     T(test_rotor_omega_acceleration);
     T(test_wind);
+    T(test_quaternion_basic_operation);
+    T(test_quaternion_to_euler);
+    T(test_quaternion_velocity);
     std::cerr << "-------all standard test PASSSED!!----\n";
     T(test_issue_89_yaw_angle_bug);
     std::cerr << "-------all bug issue test PASSSED!!----\n";

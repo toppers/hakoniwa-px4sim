@@ -20,58 +20,29 @@ namespace hako::drone_physics {
  *  Utility section (tried not to depend on other libraries, except for C++ std)
  */
 VectorType cross(const VectorType& u, const VectorType& v)
-{
-    return {
-        u.y * v.z - u.z * v.y,
-        u.z * v.x - u.x * v.z,
-        u.x * v.y - u.y * v.x
-    };
-}
-double dot(const VectorType& u, const VectorType& v)
-{
-    return u.x * v.x + u.y * v.y + u.z * v.z;
-}
-double length_squared(const VectorType& v)
-{
-    return dot(v, v);
-}
-double length(const VectorType& v)
-{
-    return std::sqrt(length_squared(v));
-}
-VectorType& operator += (VectorType& u, const VectorType& v)
-{
-    u.x += v.x;    u.y += v.y;    u.z += v.z;
-    return u;
-}
-VectorType operator + (const VectorType& u, const VectorType& v)
-{
-    VectorType result = u;
-    return result += v;
-}
-VectorType& operator -= (VectorType& u, const VectorType& v)
-{
-    u.x -= v.x;    u.y -= v.y;    u.z -= v.z;
-    return u;
-}
-VectorType operator - (const VectorType& u, const VectorType& v)
-{
-    VectorType result = u;
-    return result -= v;
-}
-VectorType operator * (double s, const VectorType& v)
-{
-    return {s*v.x, s*v.y, s*v.z};
-}
-VectorType operator * (const VectorType& v, double s)
-{
-    return {s*v.x, s*v.y, s*v.z};
-}
-VectorType operator / (const VectorType& v, double s)
-{
-    return {v.x/s, v.y/s, v.z/s};
-}
-
+{ return { u.y * v.z - u.z * v.y, u.z * v.x - u.x * v.z, u.x * v.y - u.y * v.x };}
+double dot(const VectorType& u, const VectorType& v) { return u.x * v.x + u.y * v.y + u.z * v.z;}
+double length_squared(const VectorType& v) { return dot(v, v);}
+double length(const VectorType& v) { return std::sqrt(length_squared(v));}
+double length_squared(const QuaternionType& q) { return q.w*q.w + q.x*q.x + q.y*q.y + q.z*q.z;}
+double length(const QuaternionType& q) { return std::sqrt(length_squared(q));}
+VectorType& operator += (VectorType& u, const VectorType& v) { u.x += v.x; u.y += v.y; u.z += v.z; return u;}
+VectorType operator + (const VectorType& u, const VectorType& v) { VectorType result = u; return result += v;}
+VectorType& operator -= (VectorType& u, const VectorType& v) { u.x -= v.x;    u.y -= v.y;    u.z -= v.z; return u;}
+VectorType operator - (const VectorType& u, const VectorType& v) { VectorType result = u; return result -= v;}
+VectorType operator * (double s, const VectorType& v) { return {s*v.x, s*v.y, s*v.z};}
+VectorType operator * (const VectorType& v, double s) { return s*v;}
+VectorType& operator /= (VectorType& v, const double s) { v.x /= s; v.y /= s; v.z /= s; return v;}
+VectorType operator / (const VectorType& v, double s) { return {v.x/s, v.y/s, v.z/s};}
+QuaternionType& operator += (QuaternionType& q1, const QuaternionType& q2) { q1.w += q2.w; q1.x += q2.x; q1.y += q2.y; q1.z += q2.z; return q1;}
+QuaternionType operator + (const QuaternionType& q1, const QuaternionType& q2) { QuaternionType result = q1; return result += q2;}
+QuaternionType& operator -= (QuaternionType& q1, const QuaternionType& q2) { q1.w -= q2.w; q1.x -= q2.x; q1.y -= q2.y; q1.z -= q2.z; return q1;}
+QuaternionType operator - (const QuaternionType& q1, const QuaternionType& q2) { QuaternionType result = q1; return result -= q2;}
+QuaternionType& operator *= (QuaternionType& q, double s) { q.w *= s; q.x *= s; q.y *= s; q.z *= s; return q;}
+QuaternionType operator * (const QuaternionType& q, double s) { QuaternionType result = q; return result *= s;}
+QuaternionType operator * (double s, const QuaternionType& q) { return q * s;}
+QuaternionType& operator /= (QuaternionType& q, double s) { q.w /= s; q.x /= s; q.y /= s; q.z /= s; return q;}
+QuaternionType operator / (const QuaternionType& q, double s) { QuaternionType result = q; return result /= s;}
 
 /**
  *  Maths section (3D frame transformations between body and ground)
@@ -420,6 +391,73 @@ EulerAccelerationType euler_acceleration_in_ground_frame(
 
     return {dot_dot_phi, dot_dot_theta, dot_dot_psi};
 }
+
+/* Quaternion velocity(dq/dt) from body angllar velocity */
+QuaternionVelocityType quaternion_velocity_from_body_angular_velocity(
+    const AngularVelocityType& body_angular_velocity,
+    const QuaternionType& quaternion) 
+{
+
+    auto [p, q, r] = body_angular_velocity;
+    auto [q0, q1, q2, q3] = quaternion;
+    double dq0 = 0.5 * (-p*q1 - q*q2 - r*q3);
+    double dq1 = 0.5 * ( p*q0 + r*q2 - q*q3);
+    double dq2 = 0.5 * ( q*q0 - r*q1 + p*q3);
+    double dq3 = 0.5 * ( r*q0 + q*q1 - p*q2);
+    return {dq0, dq1, dq2, dq3};
+}
+
+/* Quaternion from euler angle */
+QuaternionType quaternion_from_euler(const EulerType& euler)
+{
+    /**
+     * See eq.(1.66) in Nonami's book,
+     * and also https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf (rotation order is XYZ)
+     * - https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
+     */
+    auto cx = std::cos(0.5 * euler.phi);
+    auto sx = std::sin(0.5 * euler.phi);
+    auto cy = std::cos(0.5 * euler.theta);
+    auto sy = std::sin(0.5 * euler.theta);
+    auto cz = std::cos(0.5 * euler.psi);
+    auto sz = std::sin(0.5 * euler.psi);
+
+    auto q0 = cz * cy * cx  +  sz * sy * sx;
+    auto q1 = cz * cy * sx  -  sz * sy * cx;
+    auto q2 = cz * sy * cx  +  sz * cy * sx;
+    auto q3 = sz * cy * cx  -  cz * sy * sx;
+
+    return {q0, q1, q2, q3};
+}
+
+/* Euler angle from Quaternion */
+EulerType euler_from_quaternion(const QuaternionType& quaternion)
+{ 
+    /**
+     * See eq.(1.74)-(1.77) in Nonami's book,
+     * 
+     * and also;
+     * - https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf (rotation order is XYZ)
+     * - https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
+     * - 
+     */
+    using std::atan2; using std::asin;
+    auto [q0, q1, q2, q3] = quaternion; /* [w, x, y, z] aligned name with the book for reviewability */
+
+    auto phi   = atan2(2*(q2*q3 + q0*q1), 2*(q0*q0 + q3*q3) - 1);
+    auto theta = asin (2*(q0*q2 - q1*q3));
+    auto psi   = atan2(2*(q1*q2 + q0*q3), 2*(q0*q0 + q1*q1) - 1);
+
+    return {phi, theta, psi};
+}
+
+void normalize(QuaternionType& quaternion)
+{
+    double norm = length(quaternion);
+    assert(!is_zero(norm));
+    quaternion /= norm;
+}
+
 
 /**
  * Collision section.

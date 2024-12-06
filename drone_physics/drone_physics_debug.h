@@ -16,6 +16,11 @@ inline double diff(const hako::drone_physics::EulerType& a, const hako::drone_ph
     auto [phi2, theta2, psi2] = b;
     return (phi-phi2)*(phi-phi2) + (theta-theta2)*(theta-theta2) + (psi-psi2)*(psi-psi2);
 }
+inline double diff(const hako::drone_physics::QuaternionType& a, const hako::drone_physics::QuaternionType& b) {
+    auto [w, x, y, z] = a;
+    auto [w2, x2, y2, z2] = b;
+    return (w-w2)*(w-w2) + (x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2);
+}
 
 static int AssertCount = 0;
 
