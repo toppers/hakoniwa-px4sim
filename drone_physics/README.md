@@ -261,6 +261,9 @@ rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ is time-integrated to get
 the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude, also
 described in the transformation section.
 
+The last part above can alternatively be implemented by quaternion, which is more stable than the euler angles.
+We will describe the quaternion-based implementation in the later section.
+
 ![plant-model](plant-model.png)
 
 #### Velocity and Acceleration(linear translation)
@@ -362,6 +365,78 @@ R_x(\phi) = \begin{bmatrix}
     0 & \sin\phi & \cos\phi
   \end{bmatrix}
 $$
+
+##### Memo on linear algebra
+
+The rotation matrix is a basis transformation matrix, which transforms the basis vectors of the original space to the basis vectors of the new space. 
+
+$R_z(\psi), R_y(\theta), R_x(\phi)$ are the basis transformation matrices. For example, $R_z(\psi)$, which rotates the ground frame, namely, the basis $e_x, e_y, e_z$ around the z-axis.
+
+$$
+\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} = 
+  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+  \begin{bmatrix}
+    \cos\psi & -\sin\psi & 0 \\
+    \sin\psi & \cos\psi & 0 \\
+    0 & 0 & 1
+  \end{bmatrix} = \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+R_z(\psi)
+$$
+
+Focusing on the new $\bm{e}_x'$, it can be expressed using the old basis $\bm{e}_x, \bm{e}_y, \bm{e}_z$ as follows (looking at the first column of the matrix).
+
+$$
+\bm{e}_x' = (\cos\psi) \bm{e}_x +(\sin\psi) \bm{e}_y + (0)\bm{e}_z
+$$
+
+Now, as a general theory of linear algebra, using the basis transformation matrix $R$, the basis transformation is expressed as follows:
+
+$$
+\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} =  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}R
+$$
+
+The old coordinates $\bm{r}=(x, y, z)^T$ and the new coordinates $\bm{r}'=(x', y', z')^T$ have the following relationship (the both sides of the equation represent the same vector).
+
+$$
+\begin{array}{l}
+\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} 
+\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} &=
+\begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+\begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\end{array}
+$$
+
+From these two equations, the transformation equation for the coordinates is as follows (multiplying both sides of the first equation by $(x',y',z')^T$ from the right and using the second equation).
+
+$$
+\begin{array}{l}
+\begin{bmatrix} x \\ y \\ z \end{bmatrix} &= R \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} \\ \\
+\bm{r} &= R \bm{r}'
+\end{array}
+$$
+
+The right side is the product of the transformed "basis" and its "coordinate components", and the product doesn't change before and after the transformation.
+
+Now, apply this to the three rotation matrices in this case, i.e., the transformation from the ground frame coordinate system to the body frame coordinate system, rotated ($\psi, \theta, \phi$) in this order.
+
+$$
+\begin{array}{l}
+\bm{r} &= R_z(\psi)\bm{r}' \\
+\bm{r}' &= R_y(\theta)\bm{r}'' \\
+\bm{r}'' &= R_x(\phi)\bm{r}'''
+\end{array}
+$$
+
+That is,
+
+$$
+\begin{array}{l}
+\bm{r} = R_z(\psi) R_y(\theta) R_x(\phi) \bm{r}'''
+\end{array}
+$$
+
+This becomes the transformation matrix (DCM) from the body frame coordinate system to the ground frame coordinate system.
+(End of linear algebra memo)
 
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
 - [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
@@ -559,6 +634,7 @@ A lot of good references are available on the web. I list some of them here.
 - [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 - [Basics of Multi-Copter(Japanese) by @Kouhei_Ito](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- - [Rotaion Matrix, Quaternion, and Euler Angle by Atsushi Asakura (@aa_debdeb)](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf)
 - [3D rotation in Quaterinon by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
 - [The art of Linear Algebra by @kenjihiranabe](https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra/blob/main/The-Art-of-Linear-Algebra.pdf)
 

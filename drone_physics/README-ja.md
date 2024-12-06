@@ -261,6 +261,8 @@ $$
 機体角加速度 $(p,q,r)^T$ から後述の変換で
 オイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ を求め，それを時間積分することで，機体の姿勢 $(\phi, \theta, \psi)^T$ が求まります．
 
+なお、最後の部分については、Quaternionを使ったより安定的な手法があり、それについても後述します。
+
 ![plant-model](plant-model.png)
 
 
@@ -319,7 +321,7 @@ $$
 
 機体座標系と地上座標系の変換は以下のようになります．
 
-#### 速度，加速度の変換
+#### ベクトルの座標変換（速度，加速度角加速度，力，トルク，など）の変換
 
 機体座標系 $v = (u, v, w)^T$ から地上座標系 $v_e = (u_e, v_e, w_e)^T$ への速度変換行列は以下のようになります．
 加速度，角速度，角加速度，力，トルクも同様で，
@@ -364,6 +366,81 @@ R_x(\phi) = \begin{bmatrix}
     0 & \sin\phi & \cos\phi
   \end{bmatrix}
 $$
+
+##### 線形代数のメモ
+
+$R_z(\psi), R_y(\theta), R_x(\phi)$ はそれぞれ基底変換行列である。
+例えば、地上座標系を最初に回転する $R_z(\psi)$ は基底 $e_x, e_y, e_z$ を $z$ 軸周りに回転する。
+
+$$
+\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} = 
+  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+  \begin{bmatrix}
+    \cos\psi & -\sin\psi & 0 \\
+    \sin\psi & \cos\psi & 0 \\
+    0 & 0 & 1
+  \end{bmatrix} = \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+R_z(\psi)
+$$
+
+新しい $\bm{e}_x'$ に着目するとは古い基底の $\bm{e}_x, \bm{e}_y, \bm{e}_z$ を使って次のように表される（行列の一列目に注目）。
+
+$$
+\bm{e}_x' = (\cos\psi) \bm{e}_x +(\sin\psi) \bm{e}_y + (0)\bm{e}_z
+$$
+
+
+
+さて、線形代数の一般論として、基底変換行列 $R$ を使って、基底変換は、
+
+$$
+\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} =  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}R
+$$
+
+と表される。旧座標 $\bm{r}=(x, y, z)^T$ と新しい座標 $\bm{r}'=(x', y', z')^T$ は次のような関係になる（両辺のベクトルはもともと同じものを表現している）。
+
+$$
+\begin{array}{l}
+\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} 
+\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} &=
+\begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+\begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\end{array}
+$$
+
+この2式から、座標についての変換式は次のようになる（最初の式の両辺に右から $(x',y',z')^T$を掛けて2式目を使う）。
+
+$$
+\begin{array}{l}
+\begin{bmatrix} x \\ y \\ z \end{bmatrix} &= R \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} \\ \\
+\bm{r} &= R \bm{r}'
+\end{array}
+$$
+
+右辺は変換後の「基底とその座標成分」の積になっていて、それは変換の前後で変化しない。
+
+さて、これを今回の3つの回転行列すなわち、地上座標系から機体座標系への変換($\psi, \theta, \phi$)にこの順で適用する。
+
+$$
+\begin{array}{l}
+\bm{r} &= R_z(\psi)\bm{r}' \\
+\bm{r}' &= R_y(\theta)\bm{r}'' \\
+\bm{r}'' &= R_x(\phi)\bm{r}'''
+\end{array}
+$$
+
+すなわち、
+
+$$
+\begin{array}{l}
+\bm{r} = R_z(\psi) R_y(\theta) R_x(\phi) \bm{r}'''
+\end{array}
+$$
+
+となって、これが機体座標系から地上座標系への変換行列（DCM）になる。
+（線形代数のメモ終わり）
+
+##### 参考文献
 
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
 - [オイラー角とは？定義と性質、回転行列・角速度ベクトルとの関係（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulerian-angles/)
@@ -551,6 +628,7 @@ $\tau_i = C_q \omega^2 + J \dot{\omega}$
 - [飛行力学における機体座標系の定義(@mtk_birdman)](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 - [「マルチコプタの運動と制御」基礎のきそ（伊藤恒平）](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- [回転行列、クォータニオン(四元数)、オイラー角の相互変換 by Atsushi Asakura (@aa_debdeb)](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf)
 - [Quaternion による3D回転変換 by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
 - [線形代数の可視化 by @kenjihiranabe](https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra/blob/main/The-Art-of-Linear-Algebra.pdf)
 
