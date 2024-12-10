@@ -1,11 +1,17 @@
 #ifndef _DRONE_PHYSICS_DEBUG_H_
 /* Only for test files in this directory. User of this library do not use this. */
 
+const double almost_tolerance = 0.0001;
+
 #if defined(__cplusplus)
 #include <iostream>
 #include <cassert>
 #include <cmath>
 #include "drone_physics.hpp"
+
+inline double diff(double a, double b) {
+    return (a-b)*(a-b);
+}
 
 inline double diff(const hako::drone_physics::VectorType& v, const hako::drone_physics::VectorType& w) {
     return length_squared(v - w);
@@ -19,13 +25,13 @@ inline double diff(const hako::drone_physics::EulerType& a, const hako::drone_ph
 inline double diff(const hako::drone_physics::QuaternionType& a, const hako::drone_physics::QuaternionType& b) {
     auto [w, x, y, z] = a;
     auto [w2, x2, y2, z2] = b;
-    return (w-w2)*(w-w2) + (x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2);
+    auto d = (w-w2)*(w-w2) + (x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2);
+    auto d2 = (w+w2)*(w+w2) + (x+x2)*(x+x2) + (y+y2)*(y+y2) + (z+z2)*(z+z2); // alow negation
+    return std::min(d, d2);
 }
 
 static int AssertCount = 0;
-
-#define assert_almost_equal(a, b) \
-    assert(++AssertCount && (diff((a), (b)) < 0.0001 || (std::cerr << std::endl << #a "=" << (a) << "<-?->" #b "=" << (b) << " ----> see next line Assert "<< std::endl, 0)))
+#define assert_almost_equal(a, b) (++AssertCount, (diff((a), (b)) <almost_tolerance) ? true : (std::cerr << std::endl << "Failed: " #a "=" << (a) << "<=!!!!=>" #b "=" << (b) << std::endl, assert((diff((a), (b)) <almost_tolerance)), false))
 
 #define print_vec(v) std::cerr << #v "=" << v << std::endl
 
@@ -70,10 +76,10 @@ static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
 static int AssertCount = 0;
 
 #define assert_almost_equal(a, b) \
-    assert(++AssertCount && diff(&(a), &(b)) < 0.0001 || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
+    assert(++AssertCount && diff(&(a), &(b)) <almost_tolerance || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
 
 #define assert_almost_equal_euler(a, b) \
-    assert(++AssertCount && diff_e(&(a), &(b)) < 0.0001 || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
+    assert(++AssertCount && diff_e(&(a), &(b)) <almost_tolerance || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
 
 #define print_vec(v) \
     fprintf(stderr, "%s=(%g,%g,%g)", #v, v.x, v.y, v.z)

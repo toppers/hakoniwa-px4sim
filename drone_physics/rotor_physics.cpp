@@ -73,8 +73,8 @@ double rotor_omega_acceleration( /* omega acceleration in [rad/s^2]*/
     double omega, /* angular velocity in [rad/s] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
-    assert(R != 0.0);
-    assert(J != 0.0);
+    assert(!is_zero(R));
+    assert(!is_zero(J));
     /**
      * See. Kohoei model of motor/propeller(= roter)
      * https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p2 eq (3)
@@ -91,7 +91,7 @@ double rotor_current(  /* current in [A] */
     double omega, /* angular velocity in [rad/sec] */
     double duty_rate /* 0.0-1.0 (ratio of PWM) */)
 {
-    assert(R != 0.0);
+    assert(!is_zero(R));
     return (Vbat * duty_rate  - K * omega)/R;
 }
 
