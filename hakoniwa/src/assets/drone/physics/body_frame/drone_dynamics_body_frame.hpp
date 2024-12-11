@@ -262,7 +262,6 @@ public:
 
         if (use_quaternion) {
             this->quaternion_velocity = this->convert_q(this->angularVelocityBodyFrame);
-            this->quaternion = drone_physics::quaternion_from_euler(this->angle);
             this->integral(this->quaternion_velocity);
             this->angle = drone_physics::euler_from_quaternion(this->quaternion);
         }
