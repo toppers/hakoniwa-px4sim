@@ -36,7 +36,7 @@
   "components": {
       "droneDynamics": {
           "physicsEquation": "BodyFrame",
-          "useQuaternion": true,
+          "useQuaternion": false,
           "collision_detection": true,
           "enable_disturbance": false,
           "manual_control": false,
