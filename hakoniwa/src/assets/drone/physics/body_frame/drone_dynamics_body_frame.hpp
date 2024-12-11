@@ -40,7 +40,12 @@ private:
     DronePositionType position;
     DroneVelocityType velocity;
     DroneEulerType angle;
-    DroneEulerRateType angularVelocity;
+
+    //Quaternion
+    drone_physics::QuaternionType quaternion;
+    drone_physics::QuaternionVelocityType quaternion_velocity;
+
+    DroneEulerRateType eulerRate;
     DroneTorqueType torque;
     DroneThrustType thrust;
     /*
@@ -64,6 +69,18 @@ private:
         drone_physics::EulerRateType rate = drone_physics::euler_rate_from_body_angular_velocity(src, angle);
         drone_physics::EulerRateType dest = { rate.phi, rate.theta, rate.psi };
         return dest;
+    }
+    drone_physics::QuaternionVelocityType convert_q(const DroneAngularVelocityBodyFrameType& src)
+    {
+        drone_physics::QuaternionVelocityType qv = drone_physics::quaternion_velocity_from_body_angular_velocity(src, quaternion);
+        return qv;
+    }
+    void integral(drone_physics::QuaternionVelocityType &qv)
+    {
+        drone_physics::QuaternionType dq = qv * this->delta_time_sec;
+        this->quaternion += dq;
+        drone_physics::normalize(this->quaternion);
+        return;
     }
     glm::dvec3 integral(const glm::dvec3& p, const glm::dvec3& v)
     {
@@ -117,6 +134,7 @@ public:
         this->param_size_z = 0.1;
         this->param_collision_detection = false;
         this->param_manual_control = false;
+        quaternion = {1, 0, 0, 0};
         this->ground_height = 0;
     }
     virtual ~DroneDynamicsBodyFrame() {}
@@ -125,7 +143,9 @@ public:
         position = initial_position;
         angle = initial_angle;
         velocity = {0, 0, 0};
-        angularVelocity = {0, 0, 0};
+        eulerRate = {0, 0, 0};
+        quaternion = {1, 0, 0, 0};
+        quaternion_velocity = {0, 0, 0, 0};
         velocityBodyFrame = {0, 0, 0};
         angularVelocityBodyFrame = {0, 0, 0};
     }
@@ -188,9 +208,6 @@ public:
     bool has_collision_detection() override {
         return this->param_collision_detection;
     }
-    void set_angular_vel(const DroneEulerRateType &angularVel) override {
-        angularVelocity = angularVel;
-    }
 
     // Getters
     DronePositionType get_pos() const override {
@@ -205,9 +222,6 @@ public:
         return angle;
     }
 
-    DroneEulerRateType get_angular_vel() const override {
-        return angularVelocity;
-    }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return velocityBodyFrame;
     }
@@ -246,8 +260,16 @@ public:
         //convert to ground frame
         this->velocity = this->convert(this->velocityBodyFrame);
 
-
-        this->angularVelocity = this->convert(this->angularVelocityBodyFrame);
+        if (use_quaternion) {
+            this->quaternion_velocity = this->convert_q(this->angularVelocityBodyFrame);
+            this->quaternion = drone_physics::quaternion_from_euler(this->angle);
+            this->integral(this->quaternion_velocity);
+            this->angle = drone_physics::euler_from_quaternion(this->quaternion);
+        }
+        else {
+            this->eulerRate = this->convert(this->angularVelocityBodyFrame);
+            this->angle.data = integral(this->angle.data, this->eulerRate.data);
+        }
 
         //collision detection
         if (param_collision_detection) {
@@ -280,7 +302,6 @@ public:
 
         //integral to pos, angle on ground frame
         this->position.data = integral(this->position.data, this->velocity.data);
-        this->angle.data = integral(this->angle.data, this->angularVelocity.data);
 
         //boundary condition
         if (this->position.data.z > this->ground_height) {
@@ -313,7 +334,7 @@ public:
             std::to_string(position.data.x), std::to_string(position.data.y), std::to_string(position.data.z),
             std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z),
             std::to_string(velocity.data.x), std::to_string(velocity.data.y), std::to_string(velocity.data.z),
-            std::to_string(angularVelocity.data.x), std::to_string(angularVelocity.data.y), std::to_string(angularVelocity.data.z),
+            std::to_string(eulerRate.data.x), std::to_string(eulerRate.data.y), std::to_string(eulerRate.data.z),
             std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)
             };
     }
