@@ -134,7 +134,7 @@ Note that the euleer angles are not vectors, and cannot be added, scaled, or mul
 
 ## List of functions
 Functions(C++) are implemented in the following categories, with the referece to the book.
-As a naming policy, the function names represent the output of the function(omitting get_ prefix)
+As our naming policy, the function names represent the output of the function(omitting get_ prefix)
 and describe the source using _from if needed, and the input as the arguments, (maybe) 
 overly using function overloading by argument types.
 None of the functions have states(static variable) nor side effects.
@@ -147,6 +147,10 @@ All the arguments are passed by value(or const reference) and won't be changed i
 |`body_vector_from_ground`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
 |`euler_rate_from_body_angular_velocity` | (1.109) | Body angular velocity to euler rate |
 |`body_angular_velocity_from_euler_rate` | (1.106) | Euler rate to body angular velocity |
+|`euler_from_quaternion` | (1.66) | Quaternion to Euler angles |
+|`quaternion_from_euler` | (1.74)-(1.77) | Euler angles to Quaternion |
+|`quaternion_velocity_from_angular_velocity` | (1.86)(1.87) | Angular velocity to Quaternion velocity |
+
 
 ### Body dynamics(Acceleration):
 | Function | equations in the book | note |
@@ -154,7 +158,8 @@ All the arguments are passed by value(or const reference) and won't be changed i
 |`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame by force |
 |`angular_acceleration_in_body_frame` | (1.137),(2.31) | Angular acceleration in body frame by force |
 |`acceleration_in_ground_frame` | (2.46), (2.47) | Acceleration in ground frame by torque |
-|`euler_acceleration_in_ground_frame` | differential of (1.109) | Euler acceleration by torque |
+|`euler_acceleration_in_ground_frame` | differential of (1.109) | Euler acceleration by torque(not used) |
+
 
 
 ### Rotor dynamics(for one rotor, rotation speed and thrust):
@@ -398,12 +403,10 @@ $$
 The old coordinates $\bm{r}=(x, y, z)^T$ and the new coordinates $\bm{r}'=(x', y', z')^T$ have the following relationship (the both sides of the equation represent the same vector).
 
 $$
-\begin{array}{l}
 \begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} 
-\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} &=
+\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} =
 \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
 \begin{bmatrix} x \\ y \\ z \end{bmatrix}
-\end{array}
 $$
 
 From these two equations, the transformation equation for the coordinates is as follows (multiplying both sides of the first equation by $(x',y',z')^T$ from the right and using the second equation).
@@ -473,6 +476,83 @@ Note that this matrix is close to $I$(identity) when all the angles are small.
 The function name is `euler_rate_from_body_angular_velocity` ,
 and the inverse transformation is `body_angular_velocity_from_euler_rate`.
 
+### Euler angles and Quaternion(new release 12/12/2024)
+
+The attitude representation using Euler angles has a problem called "gimbal lock" 
+when the pitch angle is 90 degrees (the nose is vertical), and there are two Euler angle representations to represent the same attitude.
+For example, $(\phi, \theta, \psi) = (0,90 \degree, 0)$ and $(90 \degree, 90 \degree, 90 \degree)$ are the same attitude.
+Both can represent the same attitude, but at the same time, one degree of freedom is lost, and the attitude cannot move continuously around
+one axis from this attitude (gimbal lock).
+Specifically, in our implementation `euler_rate_from_body_angular_velocity`, a zero division occurs due to $\cos \theta = 0$,
+and the rate of change of the Euler angles cannot be obtained.
+
+This problem does not occur in normal flight with a small pitch angle like a passenger plane,
+but it becomes unstable when performing extreme movements such as drone racing or "aerobatics" in fighter jets.
+To solve this problem, quaternions are used as the attitude representation instead of Euler angles.
+
+In the implementation of the drone, the quaternion representing the attitude should be maintained internally
+while always updating it, and converting it to Euler angles as needed.
+But even if the attitude quaternion changes continuously, the Euler angles could jump discontinuously(the attitude is still correct in that case).
+
+#### Quaternions and Euler angles conversion
+
+Euler angles $(\phi, \theta, \psi)^T$ are converted to quaternions $(q_0, q_1, q_2, q_3)^T$ as follows(eq. 1.66).
+
+$$
+\begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix} = 
+\begin{bmatrix}
+\cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
+\cos \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2} - \sin \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2}\\
+\cos \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2}\\
+\sin \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} - \cos \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}
+\end{bmatrix}
+$$
+
+The function name is `quaternion_from_euler`.
+
+The inverse conversion, quaternion to Euler angles, is as follows(eq. 1.74-1.77).
+But the gimbal lock problem is not described in the book, and I referred to the article by [@aa_debdeb(Atsushi Asakura)](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf).
+
+$$
+\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix}
+\arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
+\arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
+\arctan \left(2(q_1 q_2 + q_0 q_3), 2(q_0^2 + q_1^2) - 1 \right)
+\end{bmatrix}
+$$
+
+$\arctan$ is calculated by the standard math library `std::atan2(y, x)`.
+In the implementation, first $\theta$ is obtained, and if $\cos \theta$ becomes zero, the calculation method
+is changed, and the solution with $\phi=0$ is obtained (the other solution with $\psi=0$ is also available).
+That is, if $\cos \theta = 0$, it becomes as follows.
+
+$$
+\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix}
+0 \\
+\arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
+\arctan \left(2(q_0 q_3 - q_1 q_2), 2(q_0^2 + q_1^2) - 1 \right)
+\end{bmatrix}
+$$
+
+The function name is `euler_from_quaternion`.
+
+#### time derivative of the quaternion
+
+The time derivative of the quaternion is obtained from the angular velocity $(p, q, r)^T$ as follows(eq. 1.86, 1.87).
+
+$$
+\begin{bmatrix} \dot{q}_0\\  \dot{q}_1\\ \dot{q}_2\\ \dot{q}_3 \end{bmatrix} =
+\begin{bmatrix}
+0 & -p & -q & -r \\
+p & 0 & r & -q \\
+q & -r & 0 & p \\
+r & q & -p & 0
+\end{bmatrix} \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix}
+$$
+
+The function name is `quaternion_velocity_from_angular_velocity`.
 
 ### One Rotor dynamics
 

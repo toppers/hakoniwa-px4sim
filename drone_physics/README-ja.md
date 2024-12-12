@@ -155,6 +155,9 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 |`body_vector_from_ground`  | (1.69), (1.124)の逆変換 | 地上座標のベクトルを機体座標に変換 |
 |`euler_rate_from_body_angular_velocity` | (1.109) | 機体角速度をオイラー角の変化率に変換 |
 |`body_angular_velocity_from_euler_rate` | (1.106) | オイラー角の変化率を機体各速度に変換 |
+|`euler_from_quaternion` | (1.66) | クォータニオンからオイラー角に変換 |
+|`quaternion_from_euler` | (1.74)-(1.77) | オイラー角からクォータニオンに変換 |
+|`quaternion_velocity_from_angular_velocity` | (1.86)(1.87) | 角速度からクォータニオンの変化率に変換 |
 
 ### 機体の力学(力と加速度)
 | 関数 | 数式 | 意味 |
@@ -162,8 +165,7 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 |`acceleration_in_body_frame` | (1.136),(2.31) | 力による機体座標系での加速度計算 |
 |`angular_acceleration_in_body_frame` | (1.137),(2.31) | 力による機体座標系での角加速度計算 |
 |`acceleration_in_ground_frame` | (2.46), (2.47) | 力による地上座標系での加速度計算 |
-|`euler_acceleration_in_ground_frame` | (1.109)の微分 | トルクによる地上座標系でのオイラー角2次変化率計算 |
-
+|`euler_acceleration_in_ground_frame` | (1.109)の微分 | トルクによる地上座標系でのオイラー角2次変化率計算(not used) |
 
 ### 1ロータの力学（回転数と推力）
 | 関数 | 数式 | 意味 |
@@ -400,12 +402,10 @@ $$
 と表される。旧座標 $\bm{r}=(x, y, z)^T$ と新しい座標 $\bm{r}'=(x', y', z')^T$ は次のような関係になる（両辺のベクトルはもともと同じものを表現している）。
 
 $$
-\begin{array}{l}
 \begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} 
 \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} &=
 \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
 \begin{bmatrix} x \\ y \\ z \end{bmatrix}
-\end{array}
 $$
 
 この2式から、座標についての変換式は次のようになる（最初の式の両辺に右から $(x',y',z')^T$を掛けて2式目を使う）。
@@ -432,9 +432,7 @@ $$
 すなわち、
 
 $$
-\begin{array}{l}
 \bm{r} = R_z(\psi) R_y(\theta) R_x(\phi) \bm{r}'''
-\end{array}
 $$
 
 となって、これが機体座標系から地上座標系への変換行列（DCM）になる。
@@ -472,6 +470,78 @@ $$
 この行列は3つの角が$0$に近いには，単位行列に近くなります．
 
 関数名は，`euler_rate_from_body_angular_velocity` ．逆変換は，`body_angular_velocity_from_euler_rate` ．
+
+### オイラー角とクオータニオン(new release 12/12/2024)
+
+オイラー角による姿勢表現は、pitch 角（ $\theta$ ）が90度になるとき（機首が鉛直方向を向く）、同じ姿勢を表現するのに二つのオイラー角表現が存在します。
+例えば、$(\phi, \theta, \psi) = (0,90 \degree, 0)$ と $(90 \degree, 90 \degree, 90 \degree)$ は同じ姿勢です。
+どちらを使っても同じ姿勢を表現できると同時に、回転の自由度が１つ失われ、この姿勢からある一つの軸回りには連続的に動けなくなります（ジンバルロック）。
+具体的には、本実装 `euler_rate_from_body_angular_velocity` 内で、$\cos \theta$ によるゼロ割演算が発生し、オイラー角の変化率が求まりません。
+
+ドローンのピッチ角が小さいような（旅客機のような）通常飛行では問題になりませんが、ドローンレースや戦闘機での「宙返り」のような過激な動きをする場合に不安定になります。
+この問題を解決するために、姿勢表現としてオイラー角の代わりにクォータニオンが使われます。
+
+ドローンの実装としては、姿勢を示すクォータニオンを内部で維持しながら常に更新し、必要に応じてオイラー角に変換して使うことになります。
+ただし、クオータニオンが連続的に変化しても、オイラー角は不連続にジャンプすることが起こります（その場合でも姿勢としては正しいオイラー角が求まります）。
+
+#### クォータニオンとオイラー角の変換
+
+オイラー角（ $(\phi, \theta, \psi)^T$ ）からクォータニオン（ $(q_0, q_1, q_2, q_3)^T=(q_w,q_x,q_y,q_z)^T$ で $q_0$ が実部）の変換は以下のようになります（式 1.66）．
+
+$$
+\begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix} = 
+\begin{bmatrix}
+\cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
+\cos \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2} - \sin \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2}\\
+\cos \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2}\\
+\sin \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} - \cos \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}
+\end{bmatrix}
+$$
+
+関数名は、`quaternion_from_euler` ．
+
+逆変換は以下のようになります（式 1.74-1.77）．
+ただし、ジンバルロック問題対応については本書に記載がなく、[@aa_debdeb(Atsushi Asakura)氏の記事](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf)を参考にしました。
+
+$$
+\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix}
+\arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
+\arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
+\arctan \left(2(q_1 q_2 + q_0 q_3), 2(q_0^2 + q_1^2) - 1 \right)
+\end{bmatrix}
+$$
+
+$\arctan$ は標準数学ライブラリ `std::atan2(y, x)` によって計算されます。
+実計算においては、まず $\theta$ を求め、 $\cos \theta$ がゼロになる場合には、計算方法を変えて $\phi=0$ とした解を求めます（ $\psi=0$ とするもう一つの解もあります）。
+すなわち、 $\cos \theta = 0$ の場合、以下のようになります。
+
+$$
+\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix}
+0 \\
+\arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
+\arctan \left(2(q_0 q_3 - q_1 q_2), 2(q_0^2 + q_1^2) - 1 \right)
+\end{bmatrix}
+$$
+
+関数名は、`euler_from_quaternion` ．
+
+#### クォータニオンの時間微分
+
+クォータニオンの時間微分は、角速度ベクトル $(p, q, r)^T$ から求めることができます（式 1.86, 1.87）。
+
+$$
+\begin{bmatrix} \dot{q}_0\\  \dot{q}_1\\ \dot{q}_2\\ \dot{q}_3 \end{bmatrix} =
+\begin{bmatrix}
+0 & -p & -q & -r \\
+p & 0 & r & -q \\
+q & -r & 0 & p \\
+r & q & -p & 0
+\end{bmatrix} \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix}
+$$
+
+関数名は、`quaternion_rate_from_body_angular_velocity` ．
 
 ### 1つのローターの力学
 
