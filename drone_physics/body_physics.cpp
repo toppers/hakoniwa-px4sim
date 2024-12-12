@@ -392,7 +392,7 @@ QuaternionType quaternion_from_euler(const EulerType& euler)
     /**
      * See eq.(1.66) in Nonami's book,
      * and also https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf
-     *  (rotation order is ZYX, watfh the quaternion is q0q1q3q4=XYZW)
+     *  (rotation order is ZYX, with the quaternion is [q0,q1,q2,q3]=[X,Y,Z,W])
      * - https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
      */
     auto cx = std::cos(0.5 * euler.phi);
@@ -453,6 +453,7 @@ EulerType euler_from_quaternion(const QuaternionType& quaternion)
     return {phi, theta, psi};
 }
 
+/* note: this changes the argument */
 void normalize(QuaternionType& quaternion)
 {
     double norm = length(quaternion);
