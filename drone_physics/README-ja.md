@@ -350,6 +350,7 @@ $$
 
 この行列は，方向余弦行列（DCM: Direction Cosine Matrix）と呼ばれ，
 3つの回転行列のこの順の積 $R_z(\psi)R_y(\theta)R_x(\phi)$ となります． DCM は常に直交行列であり，固有値として '1' を1つ持ちます．'1' に対応する固有ベクトルの方向が回転軸の方向（クォータニオンの虚数部）です．
+これは、DCM が「固有ベクトル軸回りの長さを保存する回転行列」であることを示しています．
 
 $$
 R_z(\psi) = \begin{bmatrix}
@@ -375,20 +376,20 @@ $R_z(\psi), R_y(\theta), R_x(\phi)$ はそれぞれ基底変換行列である�
 例えば、地上座標系を最初に回転する $R_z(\psi)$ は基底 $e_x, e_y, e_z$ を $z$ 軸周りに回転する。
 
 $$
-\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} = 
-  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} = 
+  \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
   \begin{bmatrix}
     \cos\psi & -\sin\psi & 0 \\
     \sin\psi & \cos\psi & 0 \\
     0 & 0 & 1
-  \end{bmatrix} = \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+  \end{bmatrix} = \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
 R_z(\psi)
 $$
 
-新しい $\bm{e}_x'$ に着目するとは古い基底の $\bm{e}_x, \bm{e}_y, \bm{e}_z$ を使って次のように表される（行列の一列目に注目）。
+新しい $e_x'$ に着目するとは古い基底の $e_x, e_y, e_z$ を使って次のように表される（行列の一列目に注目）。
 
 $$
-\bm{e}_x' = (\cos\psi) \bm{e}_x +(\sin\psi) \bm{e}_y + (0)\bm{e}_z
+e_x' = (\cos\psi) e_x +(\sin\psi) e_y + (0)e_z
 $$
 
 
@@ -396,16 +397,18 @@ $$
 さて、線形代数の一般論として、基底変換行列 $R$ を使って、基底変換は、
 
 $$
-\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} =  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}R
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} =  \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}R
 $$
 
-と表される。旧座標 $\bm{r}=(x, y, z)^T$ と新しい座標 $\bm{r}'=(x', y', z')^T$ は次のような関係になる（両辺のベクトルはもともと同じものを表現している）。
+と表される。旧座標 $r=(x, y, z)^T$ と新しい座標 $r'=(x', y', z')^T$ は次のような関係になる（両辺のベクトルはもともと同じものを表現している）。
 
 $$
-\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} 
-\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} &=
-\begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+\begin{array}{l}
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} 
+\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} =
+\begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
 \begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\end{array}
 $$
 
 この2式から、座標についての変換式は次のようになる（最初の式の両辺に右から $(x',y',z')^T$を掛けて2式目を使う）。
@@ -413,7 +416,7 @@ $$
 $$
 \begin{array}{l}
 \begin{bmatrix} x \\ y \\ z \end{bmatrix} &= R \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} \\ \\
-\bm{r} &= R \bm{r}'
+r &= R r'
 \end{array}
 $$
 
@@ -423,16 +426,16 @@ $$
 
 $$
 \begin{array}{l}
-\bm{r} &= R_z(\psi)\bm{r}' \\
-\bm{r}' &= R_y(\theta)\bm{r}'' \\
-\bm{r}'' &= R_x(\phi)\bm{r}'''
+r &= R_z(\psi)r' \\
+r' &= R_y(\theta)r'' \\
+r'' &= R_x(\phi)r'''
 \end{array}
 $$
 
 すなわち、
 
 $$
-\bm{r} = R_z(\psi) R_y(\theta) R_x(\phi) \bm{r}'''
+r = R_z(\psi) R_y(\theta) R_x(\phi) r'''
 $$
 
 となって、これが機体座標系から地上座標系への変換行列（DCM）になる。
@@ -450,6 +453,7 @@ $$
 機体座標系の角速度 $(p, q, r)^T$ からオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ への変換行列は以下のようになります．
 
 $$
+\begin{array}{l}
 \begin{bmatrix}
    \dot{\phi} \\ 
     \dot{\theta} \\
@@ -465,6 +469,7 @@ $$
     q \\ 
     r
 \end{bmatrix}
+\end{array}
 $$
 
 この行列は3つの角が$0$に近いには，単位行列に近くなります．
@@ -489,6 +494,7 @@ $$
 オイラー角（ $(\phi, \theta, \psi)^T$ ）からクォータニオン（ $(q_0, q_1, q_2, q_3)^T=(q_w,q_x,q_y,q_z)^T$ で $q_0$ が実部）の変換は以下のようになります（式 1.66）．
 
 $$
+\begin{array}{l}
 \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix} = 
 \begin{bmatrix}
 \cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
@@ -496,6 +502,7 @@ $$
 \cos \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2}\\
 \sin \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} - \cos \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}
 \end{bmatrix}
+\end{array}
 $$
 
 関数名は、`quaternion_from_euler` ．
@@ -504,12 +511,14 @@ $$
 ただし、ジンバルロック問題対応については本書に記載がなく、[@aa_debdeb(Atsushi Asakura)氏の記事](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf)を参考にしました。
 
 $$
+\begin{array}{l}
 \begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
 \begin{bmatrix}
 \arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
 \arctan \left(2(q_1 q_2 + q_0 q_3), 2(q_0^2 + q_1^2) - 1 \right)
 \end{bmatrix}
+\end{array}
 $$
 
 $\arctan$ は標準数学ライブラリ `std::atan2(y, x)` によって計算されます。
@@ -517,12 +526,14 @@ $\arctan$ は標準数学ライブラリ `std::atan2(y, x)` によって計算�
 すなわち、 $\cos \theta = 0$ の場合、以下のようになります。
 
 $$
+\begin{array}{l}
 \begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
 \begin{bmatrix}
 0 \\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
 \arctan \left(2(q_0 q_3 - q_1 q_2), 2(q_0^2 + q_1^2) - 1 \right)
 \end{bmatrix}
+\end{array}
 $$
 
 関数名は、`euler_from_quaternion` ．
@@ -532,6 +543,7 @@ $$
 クォータニオンの時間微分は、角速度ベクトル $(p, q, r)^T$ から求めることができます（式 1.86, 1.87）。
 
 $$
+\begin{array}{l}
 \begin{bmatrix} \dot{q}_0\\  \dot{q}_1\\ \dot{q}_2\\ \dot{q}_3 \end{bmatrix} =
 \begin{bmatrix}
 0 & -p & -q & -r \\
@@ -539,6 +551,7 @@ p & 0 & r & -q \\
 q & -r & 0 & p \\
 r & q & -p & 0
 \end{bmatrix} \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix}
+\end{array}
 $$
 
 関数名は、`quaternion_rate_from_body_angular_velocity` ．

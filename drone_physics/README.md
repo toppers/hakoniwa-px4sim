@@ -349,9 +349,12 @@ $$
 \right]
 $$
 
-This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices in the order $R_z(\psi)R_y(\theta)R_x(\phi)$. DCM is always orthogonal and has a '1' as its eigenvalues.
-The direction of the eigenvector corresponding to '1' is the direction of the rotation,
-which is the quaternion's imaginary part.
+This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices in the order $R_z(\psi)R_y(\theta)R_x(\phi)$.
+
+DCM is always orthogonal and has a '1' as its eigenvalue.
+The direction of the eigenvector corresponding to it is the direction of the rotation,
+which is the quaternion's imaginary part. This makes sense that the DCM is a rotation matrix
+around the eigenvector with the eigenvalue 1(length preserving).
 
 $$
 R_z(\psi) = \begin{bmatrix}
@@ -378,34 +381,34 @@ The rotation matrix is a basis transformation matrix, which transforms the basis
 $R_z(\psi), R_y(\theta), R_x(\phi)$ are the basis transformation matrices. For example, $R_z(\psi)$, which rotates the ground frame, namely, the basis $e_x, e_y, e_z$ around the z-axis.
 
 $$
-\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} = 
-  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} = 
+  \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
   \begin{bmatrix}
     \cos\psi & -\sin\psi & 0 \\
     \sin\psi & \cos\psi & 0 \\
     0 & 0 & 1
-  \end{bmatrix} = \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+  \end{bmatrix} = \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
 R_z(\psi)
 $$
 
-Focusing on the new $\bm{e}_x'$, it can be expressed using the old basis $\bm{e}_x, \bm{e}_y, \bm{e}_z$ as follows (looking at the first column of the matrix).
+Focusing on the new $e_x'$, it can be expressed using the old basis $e_x, e_y, e_z$ as follows (looking at the first column of the matrix).
 
 $$
-\bm{e}_x' = (\cos\psi) \bm{e}_x +(\sin\psi) \bm{e}_y + (0)\bm{e}_z
+e_x' = (\cos\psi) e_x +(\sin\psi) e_y + (0)e_z
 $$
 
 Now, as a general theory of linear algebra, using the basis transformation matrix $R$, the basis transformation is expressed as follows:
 
 $$
-\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} =  \begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}R
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} =  \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}R
 $$
 
-The old coordinates $\bm{r}=(x, y, z)^T$ and the new coordinates $\bm{r}'=(x', y', z')^T$ have the following relationship (the both sides of the equation represent the same vector).
+The old coordinates $r=(x, y, z)^T$ and the new coordinates $r'=(x', y', z')^T$ have the following relationship (the both sides of the equation represent the same vector).
 
 $$
-\begin{bmatrix} \bm{e}_x' & \bm{e}_y' & \bm{e}_z' \end{bmatrix} 
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} 
 \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} =
-\begin{bmatrix} \bm{e}_x & \bm{e}_y & \bm{e}_z \end{bmatrix}
+\begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
 \begin{bmatrix} x \\ y \\ z \end{bmatrix}
 $$
 
@@ -414,7 +417,7 @@ From these two equations, the transformation equation for the coordinates is as 
 $$
 \begin{array}{l}
 \begin{bmatrix} x \\ y \\ z \end{bmatrix} &= R \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} \\ \\
-\bm{r} &= R \bm{r}'
+r &= R r'
 \end{array}
 $$
 
@@ -424,9 +427,9 @@ Now, apply this to the three rotation matrices in this case, i.e., the transform
 
 $$
 \begin{array}{l}
-\bm{r} &= R_z(\psi)\bm{r}' \\
-\bm{r}' &= R_y(\theta)\bm{r}'' \\
-\bm{r}'' &= R_x(\phi)\bm{r}'''
+r &= R_z(\psi)r' \\
+r' &= R_y(\theta)r'' \\
+r'' &= R_x(\phi)r'''
 \end{array}
 $$
 
@@ -434,7 +437,7 @@ That is,
 
 $$
 \begin{array}{l}
-\bm{r} = R_z(\psi) R_y(\theta) R_x(\phi) \bm{r}'''
+r = R_z(\psi) R_y(\theta) R_x(\phi) r'''
 \end{array}
 $$
 
@@ -499,6 +502,7 @@ But even if the attitude quaternion changes continuously, the Euler angles could
 Euler angles $(\phi, \theta, \psi)^T$ are converted to quaternions $(q_0, q_1, q_2, q_3)^T$ as follows(eq. 1.66).
 
 $$
+\begin{array}{l}
 \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix} = 
 \begin{bmatrix}
 \cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
@@ -506,6 +510,7 @@ $$
 \cos \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2}\\
 \sin \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} - \cos \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}
 \end{bmatrix}
+\end{array}
 $$
 
 The function name is `quaternion_from_euler`.
@@ -514,12 +519,14 @@ The inverse conversion, quaternion to Euler angles, is as follows(eq. 1.74-1.77)
 But the gimbal lock problem is not described in the book, and I referred to the article by [@aa_debdeb(Atsushi Asakura)](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf).
 
 $$
+\begin{array}{l}
 \begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
 \begin{bmatrix}
 \arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
 \arctan \left(2(q_1 q_2 + q_0 q_3), 2(q_0^2 + q_1^2) - 1 \right)
 \end{bmatrix}
+\end{array}
 $$
 
 $\arctan$ is calculated by the standard math library `std::atan2(y, x)`.
@@ -528,12 +535,14 @@ is changed, and the solution with $\phi=0$ is obtained (the other solution with 
 That is, if $\cos \theta = 0$, it becomes as follows.
 
 $$
+\begin{array}{l}
 \begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
 \begin{bmatrix}
 0 \\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
 \arctan \left(2(q_0 q_3 - q_1 q_2), 2(q_0^2 + q_1^2) - 1 \right)
 \end{bmatrix}
+\end{array}
 $$
 
 The function name is `euler_from_quaternion`.
@@ -543,6 +552,7 @@ The function name is `euler_from_quaternion`.
 The time derivative of the quaternion is obtained from the angular velocity $(p, q, r)^T$ as follows(eq. 1.86, 1.87).
 
 $$
+\begin{array}{l}
 \begin{bmatrix} \dot{q}_0\\  \dot{q}_1\\ \dot{q}_2\\ \dot{q}_3 \end{bmatrix} =
 \begin{bmatrix}
 0 & -p & -q & -r \\
@@ -550,6 +560,7 @@ p & 0 & r & -q \\
 q & -r & 0 & p \\
 r & q & -p & 0
 \end{bmatrix} \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix}
+\end{array}
 $$
 
 The function name is `quaternion_velocity_from_angular_velocity`.
