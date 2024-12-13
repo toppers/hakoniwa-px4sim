@@ -132,6 +132,13 @@ Note that the euleer angles are not vectors, and cannot be added, scaled, or mul
 - `EulerRateType` - Change rate of the Euler angles
 - `EulerAccelerationType` - Acceleration of the Euler angles(2nd order differential)
 
+### Quaternions
+`QuaternionType` is a 4-dimensional vector $(w,x,y,z)^T=(q0,q1,q2,q3)^T$, used for the attitude representation of the drone(substitute for the Euler angles). The following subtypes are available.
+
+- `QuaternionType` - Quaternion
+- `QuaternionVelocityType` - Time derivative of the quaternion
+
+
 ## List of functions
 Functions(C++) are implemented in the following categories, with the referece to the book.
 As our naming policy, the function names represent the output of the function(omitting get_ prefix)
@@ -195,8 +202,10 @@ This is reasonable because the equations do not contain the position variables,
 and the position is obtained in the last step by integrating the velocity in the ground frame.
 
 The rotation order from the ground frame to the body frame
-is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$),
+is yaw : $z$-axis($\psi$), pitch: $y$-axis($\theta$) and roll: $x$-axis($\phi$),
 so that the ground frame axies are rotated to be aligned with the body frame.
+
+![yaw_pitch_roll](yaw_pitch_roll.png)
 
 Note $\phi, \theta, \psi$ are the bridge across the two frames and the same values are used in both frames.
 In other words, the angles are the same values in the equations of the ground frame and the body frame(not to be converted between one another).
@@ -515,7 +524,10 @@ Euler angles $(\phi, \theta, \psi)^T$ are converted to quaternions $(q_0, q_1, q
 
 $$
 \begin{array}{l}
-\begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix} = 
+\begin{bmatrix} q_0\\
+q_1\\
+q_2\\
+q_3 \end{bmatrix} = 
 \begin{bmatrix}
 \cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
 \cos \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2} - \sin \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2}\\
@@ -532,7 +544,9 @@ But the gimbal lock problem is not described in the book, and I referred to the 
 
 $$
 \begin{array}{l}
-\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix} \phi\\
+\theta\\
+\psi \end{bmatrix} =
 \begin{bmatrix}
 \arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
@@ -548,7 +562,9 @@ That is, if $\cos \theta = 0$, it becomes as follows.
 
 $$
 \begin{array}{l}
-\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix} \phi\\
+\theta\\
+\psi \end{bmatrix} =
 \begin{bmatrix}
 0 \\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
@@ -564,15 +580,21 @@ The function name is `euler_from_quaternion`.
 The time derivative of the quaternion is obtained from the angular velocity $(p, q, r)^T$ as follows(eq. 1.86, 1.87).
 
 $$
-\begin{array}{l}
-\begin{bmatrix} \dot{q}_0\\  \dot{q}_1\\ \dot{q}_2\\ \dot{q}_3 \end{bmatrix} =
+\begin{bmatrix}
+\dot{q}_0\\
+\dot{q}_1\\
+\dot{q}_2\\
+\dot{q}_3 \end{bmatrix} =
 \begin{bmatrix}
 0 & -p & -q & -r \\
 p & 0 & r & -q \\
 q & -r & 0 & p \\
 r & q & -p & 0
-\end{bmatrix} \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix}
-\end{array}
+\end{bmatrix} \begin{bmatrix}
+q_0\\
+q_1\\
+q_2\\
+q_3 \end{bmatrix}
 $$
 
 The function name is `quaternion_velocity_from_angular_velocity`.

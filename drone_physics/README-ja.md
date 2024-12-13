@@ -141,6 +141,12 @@ C言語ライブラリが，`libdrone_physics_c.a` として生成されます�
 - `EulerRateType` - オイラー角の変化率
 - `EulerAccelerationType` - オイラー角の2次変化率
 
+### クォータニオン
+`QuaternionType` は，4次元のベクトル $(w,x,y,z)^T=(q0,q1,q2,q3)^T$ です．ドローンの姿勢表現に使用されます（オイラー角の代替）．以下のサブタイプがあります．
+
+- `QuaternionType` - クォータニオン
+- `QuaternionVelocityType` - クォータニオンの変化率
+
 ## 関数リスト
 関数は以下のカテゴリから構成され，書籍の式番号が記載されています（C++）．
 命名方針として、関数名の先頭は関数の出力を表し（get_ プレフィックスを省略）、
@@ -198,7 +204,10 @@ C言語インターフェイスが，`drone_physics_c.h` に用意されてい�
 運動の方程式の中に速度と各速度，その時間微分が含まれていはいますが，位置についての変数が含まれていないからです．
 言い換えると，並進加速度による慣性力を考えずに立式できます（位置は，最終的に地上座標系での速度を積分して求めます）．
 
-オイラー角は，地上座標系の座標軸を機体座標へと， $z$ -軸($\psi$)， $y$ -軸($\theta$)， $x$ -軸($\phi$)の順に回転することで重ねられるように表現するとします．
+オイラー角は，地上座標系の座標軸を機体座標へと，ヨー角（ $z$ -軸回り($\psi$)　），ピッチ角（ $y$ -軸($\theta$)）， 
+ロール角（ $x$ -軸($\phi$)）の順に回転することで重ねられるように表現するとします．
+
+![yaw-pitch-roll](yaw-pitch-roll.png)
 
 $\phi, \theta, \psi$ は，2つの座標系の橋渡しとなるものであり，両方の座標系で同じ値が使用されます．別の言い方をすると，オイラー角は地上座標系と機体座標系の方程式で同じです（一方のオイラー角が他方のオイラー角に変換されるものではありません）．
 
@@ -481,14 +490,14 @@ $$
 \end{array}
 $$
 
-この行列は3つの角が$0$に近いには，単位行列に近くなります．
+この行列は3つの角が $0$ に近いときには、単位行列に近くなります（この $0$ 付近近似においては、角速度とオイラー角変化率が等しくなります）．
 
 関数名は，`euler_rate_from_body_angular_velocity` ．逆変換は，`body_angular_velocity_from_euler_rate` ．
 
 ### オイラー角とクオータニオン(new release 12/12/2024)
 
-オイラー角による姿勢表現は、pitch 角（ $\theta$ ）が90度になるとき（機首が鉛直方向を向く）、同じ姿勢を表現するのに二つのオイラー角表現が存在します。
-例えば、$(\phi, \theta, \psi) = (0,90 \degree, 0)$ と $(90 \degree, 90 \degree, 90 \degree)$ は同じ姿勢です。
+オイラー角による姿勢表現は、pitch 角（ $\theta$ ）が $90 \degree$ になるとき（機首が鉛直方向を向く）、同じ姿勢を表現するのに二つのオイラー角表現が存在します。
+例えば、 $(\phi, \theta, \psi) = (0,90 \degree, 0)$ と $(90 \degree, 90 \degree, 90 \degree)$ は同じ姿勢です。
 どちらを使っても同じ姿勢を表現できると同時に、回転の自由度が１つ失われ、この姿勢からある一つの軸回りには連続的に動けなくなります（ジンバルロック）。
 具体的には、本実装 `euler_rate_from_body_angular_velocity` 内で、$\cos \theta$ によるゼロ割演算が発生し、オイラー角の変化率が求まりません。
 
@@ -504,7 +513,10 @@ $$
 
 $$
 \begin{array}{l}
-\begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix} = 
+\begin{bmatrix} q_0\\
+q_1\\
+q_2\\
+q_3 \end{bmatrix} = 
 \begin{bmatrix}
 \cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
 \cos \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2} - \sin \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2}\\
@@ -521,7 +533,9 @@ $$
 
 $$
 \begin{array}{l}
-\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix} \phi\\
+\theta\\
+\psi \end{bmatrix} =
 \begin{bmatrix}
 \arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
@@ -534,9 +548,13 @@ $\arctan$ は標準数学ライブラリ `std::atan2(y, x)` によって計算�
 実計算においては、まず $\theta$ を求め、 $\cos \theta$ がゼロになる場合には、計算方法を変えて $\phi=0$ とした解を求めます（ $\psi=0$ とするもう一つの解もあります）。
 すなわち、 $\cos \theta = 0$ の場合、以下のようになります。
 
+
+
 $$
 \begin{array}{l}
-\begin{bmatrix} \phi\\  \theta\\ \psi \end{bmatrix} =
+\begin{bmatrix} \phi\\
+\theta\\
+\psi \end{bmatrix} =
 \begin{bmatrix}
 0 \\
 \arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
@@ -552,15 +570,21 @@ $$
 クォータニオンの時間微分は、角速度ベクトル $(p, q, r)^T$ から求めることができます（式 1.86, 1.87）。
 
 $$
-\begin{array}{l}
-\begin{bmatrix} \dot{q}_0\\  \dot{q}_1\\ \dot{q}_2\\ \dot{q}_3 \end{bmatrix} =
+\begin{bmatrix}
+\dot{q}_0\\
+\dot{q}_1\\
+\dot{q}_2\\
+\dot{q}_3 \end{bmatrix} =
 \begin{bmatrix}
 0 & -p & -q & -r \\
 p & 0 & r & -q \\
 q & -r & 0 & p \\
 r & q & -p & 0
-\end{bmatrix} \begin{bmatrix} q_0\\  q_1\\ q_2\\ q_3 \end{bmatrix}
-\end{array}
+\end{bmatrix} \begin{bmatrix}
+q_0\\
+q_1\\
+q_2\\
+q_3 \end{bmatrix}
 $$
 
 関数名は、`quaternion_rate_from_body_angular_velocity` ．
