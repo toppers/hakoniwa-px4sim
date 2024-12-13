@@ -323,7 +323,7 @@ $$
 
 機体座標系と地上座標系の変換は以下のようになります．
 
-#### ベクトルの座標変換（速度，加速度角加速度，力，トルク，など）の変換
+#### ベクトルの座標変換（速度，加速度、角加速度，力，トルク，など）の変換
 
 機体座標系 $v = (u, v, w)^T$ から地上座標系 $v_e = (u_e, v_e, w_e)^T$ への速度変換行列は以下のようになります．
 加速度，角速度，角加速度，力，トルクも同様で，
@@ -370,10 +370,12 @@ R_x(\phi) = \begin{bmatrix}
   \end{bmatrix}
 $$
 
+関数名は，`ground_vector_from_body` ．逆変換は，`body_vector_from_ground` ．
+
 ##### 線形代数のメモ
 
 $R_z(\psi), R_y(\theta), R_x(\phi)$ はそれぞれ基底変換行列である。
-例えば、地上座標系を最初に回転する $R_z(\psi)$ は基底 $e_x, e_y, e_z$ を $z$ 軸周りに回転する。
+例えば、地上座標系を最初に回転する $R_z(\psi)$ は基底ベクトル $e_x, e_y, e_z$ を $z$ 軸周りに回転する。
 
 $$
 \begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} = 
@@ -405,9 +407,13 @@ $$
 $$
 \begin{array}{l}
 \begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} 
-\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} =
+\begin{bmatrix} x' \\
+y' \\
+z' \end{bmatrix} =
 \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
-\begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\begin{bmatrix} x \\
+y \\
+z \end{bmatrix}
 \end{array}
 $$
 
@@ -415,7 +421,11 @@ $$
 
 $$
 \begin{array}{l}
-\begin{bmatrix} x \\ y \\ z \end{bmatrix} &= R \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} \\ \\
+\begin{bmatrix} x \\
+y \\
+z \end{bmatrix} &= R \begin{bmatrix} x'\\
+y' \\
+z' \end{bmatrix} \\ \\
 r &= R r'
 \end{array}
 $$
@@ -447,7 +457,6 @@ $$
 - [オイラー角とは？定義と性質、回転行列・角速度ベクトルとの関係（スカイ技術研究所ブログ）](https://www.sky-engin.jp/blog/eulerian-angles/)
 - [飛行力学における機体座標系の定義(@mtk_birdman)](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 
-関数名は，`ground_vector_from_body` ．逆変換は，`body_vector_from_ground` ．
 
 #### 角速度（回転）とオイラー角変化率の変換
 機体座標系の角速度 $(p, q, r)^T$ からオイラー角変化率 $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ への変換行列は以下のようになります．

@@ -374,6 +374,9 @@ R_x(\phi) = \begin{bmatrix}
   \end{bmatrix}
 $$
 
+The function name is `ground_vector_from_body`,
+and the inverse transformation is `body_vector_from_ground`.
+
 ##### Memo on linear algebra
 
 The rotation matrix is a basis transformation matrix, which transforms the basis vectors of the original space to the basis vectors of the new space. 
@@ -406,17 +409,28 @@ $$
 The old coordinates $r=(x, y, z)^T$ and the new coordinates $r'=(x', y', z')^T$ have the following relationship (the both sides of the equation represent the same vector).
 
 $$
+\begin{array}{l}
 \begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} 
-\begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} =
+\begin{bmatrix} x' \\
+y' \\
+z' \end{bmatrix} =
 \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
-\begin{bmatrix} x \\ y \\ z \end{bmatrix}
+\begin{bmatrix} x \\
+y \\
+z \end{bmatrix}
+\end{array}
 $$
 
 From these two equations, the transformation equation for the coordinates is as follows (multiplying both sides of the first equation by $(x',y',z')^T$ from the right and using the second equation).
 
 $$
 \begin{array}{l}
-\begin{bmatrix} x \\ y \\ z \end{bmatrix} &= R \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix} \\ \\
+\begin{bmatrix} x\\
+y\\
+z \end{bmatrix} &= R
+\begin{bmatrix} x'\\
+y'\\
+z' \end{bmatrix} \\ \\
 r &= R r'
 \end{array}
 $$
@@ -449,8 +463,6 @@ This becomes the transformation matrix (DCM) from the body frame coordinate syst
 - [Euler's Angles(Japanese) by Sky Engineering Laboratory Inc](https://www.sky-engin.jp/blog/eulerian-angles/)
 - [3D rotation in Quaterinon by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
 
-The function name is `ground_vector_from_body`,
-and the inverse transformation is `body_vector_from_ground`.
 
 #### Body angular velocity and Euler angles
 The body angular rate $\omega = (p, q, r)$ 
