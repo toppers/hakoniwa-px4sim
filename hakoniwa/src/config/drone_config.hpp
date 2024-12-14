@@ -19,9 +19,9 @@ namespace fs = std::filesystem;
 #define SHARED_LIB_EXT  ".dll"
 #endif
 
-//#define DRONE_PX4_RX_DEBUG_ENABLE
-//DRONE_PX4_TX_DEBUG_ENABLE
-//DRONE_PID_CONTROL_CPP
+/* #define DRONE_PX4_RX_DEBUG_ENABLE */
+/* DRONE_PX4_TX_DEBUG_ENABLE */
+/* DRONE_PID_CONTROL_CPP */
 struct RotorPosition {
     std::vector<double> position;
     double rotationDirection;
@@ -52,7 +52,7 @@ public:
         return true;
     }
 
-    // Simulation parameters
+    /* Simulation parameters */
     double getSimTimeStep() const {
         return configJson["simulation"]["timeStep"].get<double>();
     }
@@ -91,7 +91,7 @@ public:
                 std::cout << "ERROR: can not create directory: " << dirpath << std::endl;
             }
         } else {
-            //std::cout << "INFO: directory is already exist: " << dirpath << std::endl;
+            /* std::cout << "INFO: directory is already exist: " << dirpath << std::endl; */
         }
     }
     std::string getSimLogFullPathFromIndex(int index, const std::string& name) const
@@ -113,22 +113,22 @@ public:
         return path;
     }
 
-    // Log Output for Sensors
+    /* Log Output for Sensors */
     bool isSimSensorLogEnabled(const std::string& sensorName) const {
         return configJson["simulation"]["logOutput"]["sensors"][sensorName].get<bool>();
     }
 
-    // Log Output for MAVLINK
+    /* Log Output for MAVLINK */
     bool isMSimavlinkLogEnabled(const std::string& mavlinkMessage) const {
         return configJson["simulation"]["logOutput"]["mavlink"][mavlinkMessage].get<bool>();
     }
 
-    // MAVLINK Transmission Period
+    /* MAVLINK Transmission Period */
     int getSimMavlinkTransmissionPeriod(const std::string& mavlinkMessage) const {
         return configJson["simulation"]["mavlink_tx_period_msec"][mavlinkMessage].get<int>();
     }
 
-    // Location parameters
+    /* Location parameters */
     double getSimLatitude() const {
         return configJson["simulation"]["location"]["latitude"].get<double>();
     }
@@ -155,16 +155,11 @@ public:
         return field;
     }
 
-    // Drone Dynamics parameters
+    /* Drone Dynamics parameters */
     std::string getCompDroneDynamicsPhysicsEquation() const {
         return configJson["components"]["droneDynamics"]["physicsEquation"].get<std::string>();
     }
-    bool getCompDroneDynamicsUseQuaternion() const {
-        if (configJson["components"]["droneDynamics"].contains("useQuaternion")) {
-            return configJson["components"]["droneDynamics"]["useQuaternion"].get<bool>();
-        }
-        return false;
-    }
+
     std::vector<double> getCompDroneDynamicsAirFrictionCoefficient() const {
         std::vector<double> frictions;
         for (const auto& item : configJson["components"]["droneDynamics"]["airFrictionCoefficient"]) {
@@ -224,9 +219,9 @@ public:
             out_of_bounds_reset.position = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["position"].get<std::vector<bool>>();
             out_of_bounds_reset.velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["velocity"].get<std::vector<bool>>();
             out_of_bounds_reset.angular_velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["angular_velocity"].get<std::vector<bool>>();
-            return std::make_optional(out_of_bounds_reset);  // std::optional にラップして返す
+            return std::make_optional(out_of_bounds_reset);  /* std::optional にラップして返す */
         }
-        return std::nullopt;  // 未設定時
+        return std::nullopt;  /* 未設定時 */
     }
 
 
@@ -273,12 +268,12 @@ public:
     hako::assets::drone::RotorBatteryModelConstants getCompDroneDynamicsRotorDynamicsConstants() const {
         hako::assets::drone::RotorBatteryModelConstants constants = {};
         try {
-            // 必要な全てのキーが存在するかを確認
+            /* 必要な全てのキーが存在するかを確認 */
             if (configJson.contains("components") &&
                 configJson["components"].contains("rotor") &&
                 configJson["components"]["rotor"].contains("dynamics_constants")) {
                 
-                // 各定数を取得し、エラーハンドリングも考慮
+                /* 各定数を取得し、エラーハンドリングも考慮 */
                 constants.R  = configJson["components"]["rotor"]["dynamics_constants"]["R"].get<double>();
                 constants.Cq = configJson["components"]["rotor"]["dynamics_constants"]["Cq"].get<double>();
                 constants.K  = configJson["components"]["rotor"]["dynamics_constants"]["K"].get<double>();
@@ -297,7 +292,7 @@ public:
         return configJson["components"]["rotor"]["rpmMax"].get<int>();
     }
 
-    // Thruster parameters
+    /* Thruster parameters */
     std::vector<RotorPosition> getCompThrusterRotorPositions() const {
         std::vector<RotorPosition> positions;
         for (const auto& item : configJson["components"]["thruster"]["rotorPositions"]) {
@@ -308,6 +303,7 @@ public:
         }
         return positions;
     }
+
     double getCompThrusterParameter(const std::string& param_name) const {
         if (configJson["components"]["thruster"].contains(param_name)) {
             return configJson["components"]["thruster"][param_name].get<double>();
@@ -315,6 +311,7 @@ public:
             return 0.0;
         }
     }
+
     std::string getCompThrusterVendor() const {
         if (configJson["components"]["thruster"].contains("vendor")) {
             return configJson["components"]["thruster"]["vendor"].get<std::string>();
@@ -437,6 +434,7 @@ public:
         double Cq;
         double V_bat;
     };
+
     bool getControllerMixerInfo(MixerInfo& info) const
     {
         if (configJson["controller"].contains("mixer")) {
@@ -450,6 +448,7 @@ public:
             return false;
         }
     }
+
     bool getControllerDirectRotorControl() const
     {
         if (configJson["controller"].contains("direct_rotor_control")) {
@@ -464,7 +463,7 @@ public:
 #include <filesystem>
 #include <regex>
 #include <iostream>
-#include <algorithm> 
+#include <algorithm>
 
 class DroneConfigManager {
 private:
