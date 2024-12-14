@@ -1,6 +1,15 @@
 #ifndef _BODY_PHYSICS_HPP_
 #define _BODY_PHYSICS_HPP_
+
+
+#ifdef WIN32
+#define _USE_MATH_DEFINES
 #include <cmath>
+#else
+#include <cmath>
+#endif
+
+
 
 #ifdef BP_INCLUDE_IO /* for printint out */
 #include <iostream>
