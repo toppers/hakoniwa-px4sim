@@ -38,7 +38,7 @@
           "physicsEquation": "BodyFrame",
           "useQuaternion": false,
           "collision_detection": true,
-          "enable_disturbance": false,
+          "enable_disturbance": true,
           "manual_control": false,
           "airFrictionCoefficient": [
               0.2,
