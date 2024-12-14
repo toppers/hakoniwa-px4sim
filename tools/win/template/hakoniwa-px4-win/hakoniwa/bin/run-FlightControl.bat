@@ -1,9 +1,9 @@
 @echo off
 setlocal
 
-set "HAKO_CUSTOM_JSON_PATH=..\config_fc\custom.json"
+set "HAKO_CUSTOM_JSON_PATH=..\DroneAppWin\custom.json"
 set "DRONE_CONFIG_PATH=..\config_fc"
-set "HAKO_CONTROLLER_PARAM_FILE=..\drone_control\config\param-api.txt"
+set "HAKO_CONTROLLER_PARAM_FILE=..\drone_control\config\param-api-mixer.txt"
 
 if not exist "%HAKO_CUSTOM_JSON_PATH%" (
     echo ERROR: can not find "%HAKO_CUSTOM_JSON_PATH%"
