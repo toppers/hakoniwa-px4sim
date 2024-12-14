@@ -44,9 +44,12 @@ typedef struct {
 class IDroneDynamics: public ICsvLog {
 protected:
     DronePhysCalcCacheType cache;
+    bool use_quaternion = false;
 public:
     virtual ~IDroneDynamics() {}
-
+    virtual void set_use_quaternion(bool use) {
+        use_quaternion = use;
+    }
     virtual void reset() = 0;
     virtual void set_drag(double drag1, double drag2) = 0;
     virtual double get_drag() const = 0;
@@ -58,12 +61,10 @@ public:
     virtual void set_pos(const DronePositionType &pos) = 0;
     virtual void set_vel(const DroneVelocityType &vel) = 0;
     virtual void set_angle(const DroneEulerType &angle) = 0;
-    virtual void set_angular_vel(const DroneEulerRateType &angular_vel) = 0;
 
     virtual DronePositionType get_pos() const = 0;
     virtual DroneVelocityType get_vel() const = 0;
     virtual DroneEulerType get_angle() const = 0;
-    virtual DroneEulerRateType get_angular_vel() const = 0;
 
     virtual DroneVelocityBodyFrameType get_vel_body_frame() const = 0;
     virtual DroneAngularVelocityBodyFrameType get_angular_vel_body_frame() const = 0;

@@ -132,9 +132,16 @@ Note that the euleer angles are not vectors, and cannot be added, scaled, or mul
 - `EulerRateType` - Change rate of the Euler angles
 - `EulerAccelerationType` - Acceleration of the Euler angles(2nd order differential)
 
+### Quaternions
+`QuaternionType` is a 4-dimensional vector $(w,x,y,z)^T=(q0,q1,q2,q3)^T$, used for the attitude representation of the drone(substitute for the Euler angles). The following subtypes are available.
+
+- `QuaternionType` - Quaternion
+- `QuaternionVelocityType` - Time derivative of the quaternion
+
+
 ## List of functions
 Functions(C++) are implemented in the following categories, with the referece to the book.
-As a naming policy, the function names represent the output of the function(omitting get_ prefix)
+As our naming policy, the function names represent the output of the function(omitting get_ prefix)
 and describe the source using _from if needed, and the input as the arguments, (maybe) 
 overly using function overloading by argument types.
 None of the functions have states(static variable) nor side effects.
@@ -147,6 +154,10 @@ All the arguments are passed by value(or const reference) and won't be changed i
 |`body_vector_from_ground`  | (1.69), inverse of (1.124) | Ground velocity to body velocity |
 |`euler_rate_from_body_angular_velocity` | (1.109) | Body angular velocity to euler rate |
 |`body_angular_velocity_from_euler_rate` | (1.106) | Euler rate to body angular velocity |
+|`euler_from_quaternion` | (1.66) | Quaternion to Euler angles |
+|`quaternion_from_euler` | (1.74)-(1.77) | Euler angles to Quaternion |
+|`quaternion_velocity_from_angular_velocity` | (1.86)(1.87) | Angular velocity to Quaternion velocity |
+
 
 ### Body dynamics(Acceleration):
 | Function | equations in the book | note |
@@ -154,7 +165,8 @@ All the arguments are passed by value(or const reference) and won't be changed i
 |`acceleration_in_body_frame` | (1.136),(2.31) | Acceleration in body frame by force |
 |`angular_acceleration_in_body_frame` | (1.137),(2.31) | Angular acceleration in body frame by force |
 |`acceleration_in_ground_frame` | (2.46), (2.47) | Acceleration in ground frame by torque |
-|`euler_acceleration_in_ground_frame` | differential of (1.109) | Euler acceleration by torque |
+|`euler_acceleration_in_ground_frame` | differential of (1.109) | Euler acceleration by torque(not used) |
+
 
 
 ### Rotor dynamics(for one rotor, rotation speed and thrust):
@@ -190,8 +202,10 @@ This is reasonable because the equations do not contain the position variables,
 and the position is obtained in the last step by integrating the velocity in the ground frame.
 
 The rotation order from the ground frame to the body frame
-is $z$-axis($\psi$), $y$-axis($\theta$) and $x$-axis($\phi$),
+is yaw : $z$-axis($\psi$), pitch: $y$-axis($\theta$) and roll: $x$-axis($\phi$),
 so that the ground frame axies are rotated to be aligned with the body frame.
+
+![yaw_pitch_roll](yaw_pitch_roll.png)
 
 Note $\phi, \theta, \psi$ are the bridge across the two frames and the same values are used in both frames.
 In other words, the angles are the same values in the equations of the ground frame and the body frame(not to be converted between one another).
@@ -260,6 +274,9 @@ And the body angular velocity $(p,q,r)^T$ transformed to the euler
 rate $(\dot{\phi}, \dot{\theta}, \dot{\psi})^T$ is time-integrated to get
 the euler angles $(\phi, \theta, \psi)^T$ which is the body attitude, also
 described in the transformation section.
+
+The last part above can alternatively be implemented by quaternion, which is more stable than the euler angles.
+We will describe the quaternion-based implementation in the later section.
 
 ![plant-model](plant-model.png)
 
@@ -341,9 +358,12 @@ $$
 \right]
 $$
 
-This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices in the order $R_z(\psi)R_y(\theta)R_x(\phi)$. DCM is always orthogonal and has a '1' as its eigenvalues.
-The direction of the eigenvector corresponding to '1' is the direction of the rotation,
-which is the quaternion's imaginary part.
+This matrix is called the direction cosine matrix(DCM) and is the product of three rotation matrices in the order $R_z(\psi)R_y(\theta)R_x(\phi)$.
+
+DCM is always orthogonal and has a '1' as its eigenvalue.
+The direction of the eigenvector corresponding to it is the direction of the rotation,
+which is the quaternion's imaginary part. This makes sense that the DCM is a rotation matrix
+around the eigenvector with the eigenvalue 1(length preserving).
 
 $$
 R_z(\psi) = \begin{bmatrix}
@@ -363,13 +383,95 @@ R_x(\phi) = \begin{bmatrix}
   \end{bmatrix}
 $$
 
+The function name is `ground_vector_from_body`,
+and the inverse transformation is `body_vector_from_ground`.
+
+##### Memo on linear algebra
+
+The rotation matrix is a basis transformation matrix, which transforms the basis vectors of the original space to the basis vectors of the new space. 
+
+$R_z(\psi), R_y(\theta), R_x(\phi)$ are the basis transformation matrices. For example, $R_z(\psi)$, which rotates the ground frame, namely, the basis $e_x, e_y, e_z$ around the z-axis.
+
+$$
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} = 
+  \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
+  \begin{bmatrix}
+    \cos\psi & -\sin\psi & 0 \\
+    \sin\psi & \cos\psi & 0 \\
+    0 & 0 & 1
+  \end{bmatrix} = \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
+R_z(\psi)
+$$
+
+Focusing on the new $e_x'$, it can be expressed using the old basis $e_x, e_y, e_z$ as follows (looking at the first column of the matrix).
+
+$$
+e_x' = (\cos\psi) e_x +(\sin\psi) e_y + (0)e_z
+$$
+
+Now, as a general theory of linear algebra, using the basis transformation matrix $R$, the basis transformation is expressed as follows:
+
+$$
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} =  \begin{bmatrix} e_x & e_y & e_z \end{bmatrix}R
+$$
+
+The old coordinates $r=(x, y, z)^T$ and the new coordinates $r'=(x', y', z')^T$ have the following relationship (the both sides of the equation represent the same vector).
+
+$$
+\begin{array}{l}
+\begin{bmatrix} e_x' & e_y' & e_z' \end{bmatrix} 
+\begin{bmatrix} x' \\
+y' \\
+z' \end{bmatrix} =
+\begin{bmatrix} e_x & e_y & e_z \end{bmatrix}
+\begin{bmatrix} x \\
+y \\
+z \end{bmatrix}
+\end{array}
+$$
+
+From these two equations, the transformation equation for the coordinates is as follows (multiplying both sides of the first equation by $(x',y',z')^T$ from the right and using the second equation).
+
+$$
+\begin{array}{l}
+\begin{bmatrix} x\\
+y\\
+z \end{bmatrix} &= R
+\begin{bmatrix} x'\\
+y'\\
+z' \end{bmatrix} \\ \\
+r &= R r'
+\end{array}
+$$
+
+The right side is the product of the transformed "basis" and its "coordinate components", and the product doesn't change before and after the transformation.
+
+Now, apply this to the three rotation matrices in this case, i.e., the transformation from the ground frame coordinate system to the body frame coordinate system, rotated ($\psi, \theta, \phi$) in this order.
+
+$$
+\begin{array}{l}
+r &= R_z(\psi)r' \\
+r' &= R_y(\theta)r'' \\
+r'' &= R_x(\phi)r'''
+\end{array}
+$$
+
+That is,
+
+$$
+\begin{array}{l}
+r = R_z(\psi) R_y(\theta) R_x(\phi) r'''
+\end{array}
+$$
+
+This becomes the transformation matrix (DCM) from the body frame coordinate system to the ground frame coordinate system.
+(End of linear algebra memo)
+
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
 - [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 - [Euler's Angles(Japanese) by Sky Engineering Laboratory Inc](https://www.sky-engin.jp/blog/eulerian-angles/)
 - [3D rotation in Quaterinon by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
 
-The function name is `ground_vector_from_body`,
-and the inverse transformation is `body_vector_from_ground`.
 
 #### Body angular velocity and Euler angles
 The body angular rate $\omega = (p, q, r)$ 
@@ -398,6 +500,104 @@ Note that this matrix is close to $I$(identity) when all the angles are small.
 The function name is `euler_rate_from_body_angular_velocity` ,
 and the inverse transformation is `body_angular_velocity_from_euler_rate`.
 
+### Euler angles and Quaternion(new release 12/12/2024)
+
+The attitude representation using Euler angles has a problem called "gimbal lock" 
+when the pitch angle is 90 degrees (the nose is vertical), and there are two Euler angle representations to represent the same attitude.
+For example, $(\phi, \theta, \psi) = (0,90 \degree, 0)$ and $(90 \degree, 90 \degree, 90 \degree)$ are the same attitude.
+Both can represent the same attitude, but at the same time, one degree of freedom is lost, and the attitude cannot move continuously around
+one axis from this attitude (gimbal lock).
+Specifically, in our implementation `euler_rate_from_body_angular_velocity`, a zero division occurs due to $\cos \theta = 0$,
+and the rate of change of the Euler angles cannot be obtained.
+
+This problem does not occur in normal flight with a small pitch angle like a passenger plane,
+but it becomes unstable when performing extreme movements such as drone racing or "aerobatics" in fighter jets.
+To solve this problem, quaternions are used as the attitude representation instead of Euler angles.
+
+In the implementation of the drone, the quaternion representing the attitude should be maintained internally
+while always updating it, and converting it to Euler angles as needed.
+But even if the attitude quaternion changes continuously, the Euler angles could jump discontinuously(the attitude is still correct in that case).
+
+#### Quaternions and Euler angles conversion
+
+Euler angles $(\phi, \theta, \psi)^T$ are converted to quaternions $(q_0, q_1, q_2, q_3)^T$ as follows(eq. 1.66).
+
+$$
+\begin{array}{l}
+\begin{bmatrix} q_0\\
+q_1\\
+q_2\\
+q_3 \end{bmatrix} = 
+\begin{bmatrix}
+\cos \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}\\
+\cos \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2} - \sin \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2}\\
+\cos \frac{\psi}{2} \sin \frac{\theta}{2} \cos \frac{\phi}{2} + \sin \frac{\psi}{2} \cos \frac{\theta}{2} \sin \frac{\phi}{2}\\
+\sin \frac{\psi}{2} \cos \frac{\theta}{2} \cos \frac{\phi}{2} - \cos \frac{\psi}{2} \sin \frac{\theta}{2} \sin \frac{\phi}{2}
+\end{bmatrix}
+\end{array}
+$$
+
+The function name is `quaternion_from_euler`.
+
+The inverse conversion, quaternion to Euler angles, is as follows(eq. 1.74-1.77).
+But the gimbal lock problem is not described in the book, and I referred to the article by [@aa_debdeb(Atsushi Asakura)](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf).
+
+$$
+\begin{array}{l}
+\begin{bmatrix} \phi\\
+\theta\\
+\psi \end{bmatrix} =
+\begin{bmatrix}
+\arctan \left(2(q_2 q_3 + q_0 q_1), 2(q_0^2 + q_3^2) - 1 \right)\\
+\arcsin \left(2(q_0 q_2 - q_1 q_3) \right)\\
+\arctan \left(2(q_1 q_2 + q_0 q_3), 2(q_0^2 + q_1^2) - 1 \right)
+\end{bmatrix}
+\end{array}
+$$
+
+$\arctan$ is calculated by the standard math library `std::atan2(y, x)`.
+In the implementation, first $\theta$ is obtained, and if $\cos \theta$ becomes zero, the calculation method
+is changed, and the solution with $\phi=0$ is obtained (the other solution with $\psi=0$ is also available).
+That is, if $\cos \theta = 0$, it becomes as follows.
+
+$$
+\begin{array}{l}
+\begin{bmatrix} \phi\\
+\theta\\
+\psi \end{bmatrix} =
+\begin{bmatrix}
+0 \\
+\arcsin \left(2(q_0 q_2 - q_1 q_3) \right) \quad (\pm \pi/2) \\
+\arctan \left(2(q_0 q_3 - q_1 q_2), 2(q_0^2 + q_1^2) - 1 \right)
+\end{bmatrix}
+\end{array}
+$$
+
+The function name is `euler_from_quaternion`.
+
+#### time derivative of the quaternion
+
+The time derivative of the quaternion is obtained from the angular velocity $(p, q, r)^T$ as follows(eq. 1.86, 1.87).
+
+$$
+\begin{bmatrix}
+\dot{q}_0\\
+\dot{q}_1\\
+\dot{q}_2\\
+\dot{q}_3 \end{bmatrix} =
+\begin{bmatrix}
+0 & -p & -q & -r \\
+p & 0 & r & -q \\
+q & -r & 0 & p \\
+r & q & -p & 0
+\end{bmatrix} \begin{bmatrix}
+q_0\\
+q_1\\
+q_2\\
+q_3 \end{bmatrix}
+$$
+
+The function name is `quaternion_velocity_from_angular_velocity`.
 
 ### One Rotor dynamics
 
@@ -559,6 +759,7 @@ A lot of good references are available on the web. I list some of them here.
 - [Flight Dynamics in Body Axes Coordinate System(Japanese) by @mtk_birdman](https://mtkbirdman.com/flight-dynamics-body-axes-system)
 - [Basics of Multi-Copter(Japanese) by @Kouhei_Ito](https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343)
 - [Euler Angles and the Euler Rotation sequence(Christopher Lum)](https://github.com/clum/YouTube/blob/main/FlightMech07/lecture02c_euler_angles.pdf), [YouTube](https://youtu.be/GJBc6z6p0KQ)
+- - [Rotaion Matrix, Quaternion, and Euler Angle by Atsushi Asakura (@aa_debdeb)](https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf)
 - [3D rotation in Quaterinon by @kenjihiranabe](https://qiita.com/kenjihiranabe/items/945232fbde58fab45681)
 - [The art of Linear Algebra by @kenjihiranabe](https://github.com/kenjihiranabe/The-Art-of-Linear-Algebra/blob/main/The-Art-of-Linear-Algebra.pdf)
 

@@ -187,9 +187,6 @@ public:
     bool has_collision_detection() override {
         return this->param_collision_detection;
     }
-    void set_angular_vel(const DroneEulerRateType &angularVel) override {
-        angularVelocity = angularVel;
-    }
 
     // Getters
     DronePositionType get_pos() const override {
@@ -204,9 +201,6 @@ public:
         return angle;
     }
 
-    DroneEulerRateType get_angular_vel() const override {
-        return angularVelocity;
-    }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return velocityBodyFrame;
     }

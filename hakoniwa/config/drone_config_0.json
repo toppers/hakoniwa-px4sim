@@ -2,7 +2,7 @@
   "name": "DroneTransporter",
   "simulation": {
       "lockstep": true,
-      "timeStep": 0.001,
+      "timeStep": 0.003,
       "logOutputDirectory": ".",
       "logOutput": {
           "sensors": {
@@ -36,12 +36,13 @@
   "components": {
       "droneDynamics": {
           "physicsEquation": "BodyFrame",
+          "useQuaternion": false,
           "collision_detection": true,
           "enable_disturbance": false,
           "manual_control": false,
           "airFrictionCoefficient": [
-              0.05,
-              0
+              0.2,
+              0.0
           ],
           "inertia": [
               0.0061,
@@ -69,11 +70,11 @@
         "vendor": "None",
         "model": "constant",
         "BatteryModelCsvFilePath": "./tmp_battery_model.csv",
-        "VoltageLevelGreen": 11.1, 
-        "VoltageLevelYellow": 9.5,
-        "CapacityLevelYellow": 2.5, 
+        "VoltageLevelGreen": 12.1, 
+        "VoltageLevelYellow": 11.1,
+        "CapacityLevelYellow": 3, 
         "NominalVoltage": 14.8,
-        "NominalCapacity": 1000.0,
+        "NominalCapacity": 4.0,
         "EODVoltage": 3.0
       },
       "rotor": {
@@ -149,6 +150,12 @@
   },
   "controller": {
     "moduleDirectory": "../drone_control/cmake-build/workspace/RadioController",
-    "moduleName": "RadioController"
+    "moduleName": "RadioController",
+      "direct_rotor_control": false,
+      "mixer": {
+          "vendor": "None",
+          "enableDebugLog": false,
+          "enableErrorLog": false
+      }
   }
 }

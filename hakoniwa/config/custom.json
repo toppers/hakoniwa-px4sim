@@ -1,6 +1,44 @@
 {
   "robots": [
     {
+      "name": "Baggage1",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [],
+      "shm_pdu_writers": [
+        {
+          "type": "geometry_msgs/Twist",
+          "org_name": "pos",
+          "name": "Baggage1_pos",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 0,
+          "pdu_size": 112,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        }
+      ]
+    },
+    {
+      "name": "Baggage2",
+      "rpc_pdu_readers": [],
+      "rpc_pdu_writers": [],
+      "shm_pdu_readers": [],
+      "shm_pdu_writers": [
+        {
+          "type": "geometry_msgs/Twist",
+          "org_name": "pos",
+          "name": "Baggage2_pos",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
+          "channel_id": 0,
+          "pdu_size": 112,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        }
+      ]
+    },
+    {
       "name": "DroneTransporter",
       "rpc_pdu_readers": [],
       "rpc_pdu_writers": [],
@@ -35,6 +73,17 @@
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
           "channel_id": 3,
           "pdu_size": 80,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        },
+        {
+          "type": "hako_msgs/Disturbance",
+          "org_name": "drone_disturbance",
+          "name": "DroneTransporter_drone_disturbance",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter",
+          "channel_id": 4,
+          "pdu_size": 88,
           "write_cycle": 1,
           "method_type": "SHM"
         },
@@ -83,12 +132,23 @@
           "method_type": "SHM"
         },
         {
+          "type": "hako_msgs/HakoBatteryStatus",
+          "org_name": "hako_battery",
+          "name": "DroneTransporter_hako_battery",
+          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReader",
+          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduReaderConverter",
+          "channel_id": 9,
+          "pdu_size": 56,
+          "write_cycle": 1,
+          "method_type": "SHM"
+        },
+        {
           "type": "hako_msgs/HakoCmdCamera",
           "org_name": "hako_cmd_camera",
           "name": "DroneTransporter_hako_cmd_camera",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 9,
+          "channel_id": 10,
           "pdu_size": 44,
           "write_cycle": 1,
           "method_type": "SHM"
@@ -99,7 +159,7 @@
           "name": "DroneTransporter_hako_cmd_camera_move",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 11,
+          "channel_id": 12,
           "pdu_size": 64,
           "write_cycle": 1,
           "method_type": "SHM"
@@ -110,7 +170,7 @@
           "name": "DroneTransporter_hako_cmd_magnet_holder",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 13,
+          "channel_id": 14,
           "pdu_size": 40,
           "write_cycle": 1,
           "method_type": "SHM"
@@ -129,23 +189,12 @@
           "method_type": "SHM"
         },
         {
-          "type": "hako_msgs/Disturbance",
-          "org_name": "drone_disturbance",
-          "name": "DroneTransporter_drone_disturbance",
-          "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
-          "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 4,
-          "pdu_size": 32,
-          "write_cycle": 1,
-          "method_type": "SHM"
-        },
-        {
           "type": "hako_msgs/HakoCameraData",
           "org_name": "hako_camera_data",
           "name": "DroneTransporter_hako_camera_data",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 10,
+          "channel_id": 11,
           "pdu_size": 102968,
           "write_cycle": 1,
           "method_type": "SHM"
@@ -156,7 +205,7 @@
           "name": "DroneTransporter_hako_cmd_camera_info",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 12,
+          "channel_id": 13,
           "pdu_size": 56,
           "write_cycle": 1,
           "method_type": "SHM"
@@ -167,7 +216,7 @@
           "name": "DroneTransporter_hako_status_magnet_holder",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 14,
+          "channel_id": 15,
           "pdu_size": 32,
           "write_cycle": 1,
           "method_type": "SHM"
@@ -178,7 +227,7 @@
           "name": "DroneTransporter_lidar_points",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 15,
+          "channel_id": 16,
           "pdu_size": 177400,
           "write_cycle": 5,
           "method_type": "SHM"
@@ -189,7 +238,7 @@
           "name": "DroneTransporter_lidar_pos",
           "class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriter",
           "conv_class_name": "Hakoniwa.PluggableAsset.Communication.Pdu.Raw.RawPduWriterConverter",
-          "channel_id": 16,
+          "channel_id": 17,
           "pdu_size": 72,
           "write_cycle": 5,
           "method_type": "SHM"

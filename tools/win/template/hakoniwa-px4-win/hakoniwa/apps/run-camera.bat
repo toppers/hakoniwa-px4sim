@@ -1,4 +1,4 @@
 
 
-python camera.py ..\config_rc\custom.json
+python camera.py ..\DroneAppWin\custom.json
 

@@ -171,10 +171,6 @@ public:
         initial_angle = ang;
     }
 
-    void set_angular_vel(const DroneEulerRateType &angularVel) override {
-        angularVelocity = angularVel;
-    }
-
     // Getters
     DronePositionType get_pos() const override {
         return position;
@@ -188,9 +184,6 @@ public:
         return angle;
     }
 
-    DroneEulerRateType get_angular_vel() const override {
-        return angularVelocity;
-    }
     DroneVelocityBodyFrameType get_vel_body_frame() const override {
         return drone_physics::body_vector_from_ground(velocity, angle);
     }

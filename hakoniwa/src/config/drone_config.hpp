@@ -159,14 +159,12 @@ public:
     std::string getCompDroneDynamicsPhysicsEquation() const {
         return configJson["components"]["droneDynamics"]["physicsEquation"].get<std::string>();
     }
-
     bool getCompDroneDynamicsUseQuaternion() const {
-      if (configJson["components"]["droneDynamics"].contains("useQuaternion")) {
-        return configJson["components"]["droneDynamics"]["useQuaternion"].get<bool>();
-      }
-      return false;
+        if (configJson["components"]["droneDynamics"].contains("useQuaternion")) {
+            return configJson["components"]["droneDynamics"]["useQuaternion"].get<bool>();
+        }
+        return false;
     }
-
     std::vector<double> getCompDroneDynamicsAirFrictionCoefficient() const {
         std::vector<double> frictions;
         for (const auto& item : configJson["components"]["droneDynamics"]["airFrictionCoefficient"]) {

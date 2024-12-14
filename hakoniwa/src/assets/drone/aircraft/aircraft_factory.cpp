@@ -81,6 +81,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     }
     //auto drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
     HAKO_ASSERT(drone_dynamics != nullptr);
+    drone_dynamics->set_use_quaternion(drone_config.getCompDroneDynamicsUseQuaternion());
+    std::cout << "INFO: use_quaternion: " << drone_config.getCompDroneDynamicsUseQuaternion() << std::endl;
     auto drags = drone_config.getCompDroneDynamicsAirFrictionCoefficient();
     drone_dynamics->set_drag(drags[0], drags[1]);
     drone_dynamics->set_mass(drone_config.getCompDroneDynamicsMass());

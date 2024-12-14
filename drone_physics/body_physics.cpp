@@ -2,8 +2,6 @@
 #include <cassert>
 #include <cmath>
 
-const double eps = 1.0e-30; // for double values are ZERO for assertion. almost MIN_FLT.
-static bool is_zero(double a){return std::abs(a) < eps;}
 
 namespace hako::drone_physics {
 
@@ -19,58 +17,6 @@ namespace hako::drone_physics {
 /**
  *  Utility section (tried not to depend on other libraries, except for C++ std)
  */
-VectorType cross(const VectorType& u, const VectorType& v)
-{
-    return {
-        u.y * v.z - u.z * v.y,
-        u.z * v.x - u.x * v.z,
-        u.x * v.y - u.y * v.x
-    };
-}
-double dot(const VectorType& u, const VectorType& v)
-{
-    return u.x * v.x + u.y * v.y + u.z * v.z;
-}
-double length_squared(const VectorType& v)
-{
-    return dot(v, v);
-}
-double length(const VectorType& v)
-{
-    return std::sqrt(length_squared(v));
-}
-VectorType& operator += (VectorType& u, const VectorType& v)
-{
-    u.x += v.x;    u.y += v.y;    u.z += v.z;
-    return u;
-}
-VectorType operator + (const VectorType& u, const VectorType& v)
-{
-    VectorType result = u;
-    return result += v;
-}
-VectorType& operator -= (VectorType& u, const VectorType& v)
-{
-    u.x -= v.x;    u.y -= v.y;    u.z -= v.z;
-    return u;
-}
-VectorType operator - (const VectorType& u, const VectorType& v)
-{
-    VectorType result = u;
-    return result -= v;
-}
-VectorType operator * (double s, const VectorType& v)
-{
-    return {s*v.x, s*v.y, s*v.z};
-}
-VectorType operator * (const VectorType& v, double s)
-{
-    return {s*v.x, s*v.y, s*v.z};
-}
-VectorType operator / (const VectorType& v, double s)
-{
-    return {v.x/s, v.y/s, v.z/s};
-}
 
 
 /**
@@ -420,6 +366,101 @@ EulerAccelerationType euler_acceleration_in_ground_frame(
 
     return {dot_dot_phi, dot_dot_theta, dot_dot_psi};
 }
+
+/* Quaternion velocity(dq/dt) from body angllar velocity */
+/* Use this for euler_rate_from_body_angular_velocity() */
+QuaternionVelocityType quaternion_velocity_from_body_angular_velocity(
+    const AngularVelocityType& body_angular_velocity,
+    const QuaternionType& quaternion) 
+{
+    /**
+     * See eq.(1.87) in Nonami's book,
+     * https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
+     */
+    auto [p, q, r] = body_angular_velocity;
+    auto [q0, q1, q2, q3] = quaternion;
+    double dot_q0 = (-p*q1 - q*q2 - r*q3) / 2;
+    double dot_q1 = ( p*q0 - q*q3 + r*q2) / 2;
+    double dot_q2 = ( p*q3 + q*q0 - r*q1) / 2;
+    double dot_q3 = (-p*q2 + q*q1 + r*q0) / 2;
+    return {dot_q0, dot_q1, dot_q2, dot_q3};
+}
+
+/* Quaternion from euler angle */
+QuaternionType quaternion_from_euler(const EulerType& euler)
+{
+    /**
+     * See eq.(1.66) in Nonami's book,
+     * and also https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf
+     *  (rotation order is ZYX, with the quaternion is [q0,q1,q2,q3]=[X,Y,Z,W])
+     * - https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
+     */
+    auto cx = std::cos(0.5 * euler.phi);
+    auto sx = std::sin(0.5 * euler.phi);
+    auto cy = std::cos(0.5 * euler.theta);
+    auto sy = std::sin(0.5 * euler.theta);
+    auto cz = std::cos(0.5 * euler.psi);
+    auto sz = std::sin(0.5 * euler.psi);
+
+    auto q0 = cz * cy * cx  +  sz * sy * sx;
+    auto q1 = cz * cy * sx  -  sz * sy * cx;
+    auto q2 = cz * sy * cx  +  sz * cy * sx;
+    auto q3 = sz * cy * cx  -  cz * sy * sx;
+
+    return {q0, q1, q2, q3}; // [w, x, y, z], normalized by the creation process.
+}
+
+/* helper for the next function */
+static double clip(double value) {
+    using std::fmax; using std::fmin;
+    return fmax(-1.0, fmin(1.0, value));
+}
+
+
+/* Euler angle from Quaternion */
+EulerType euler_from_quaternion(const QuaternionType& quaternion)
+{ 
+    /**
+     * See eq.(1.74)-(1.77) in Nonami's book,
+     * 
+     * and also;
+     * - https://qiita.com/aa_debdeb/items/3d02e28fb9ebfa357eaf
+     *   (Gimbal lock case. Rotation order XYZ in this doc.)
+     * - https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
+     * - 
+     */
+    using std::atan2; using std::asin; using std::cos; using std::fabs;
+    auto [q0, q1, q2, q3] = quaternion; /* [w, x, y, z] aligned name with the book for reviewability */
+
+    // First, see theta,  asin is nearly 1.0, cos(theta) is nearly 0.0
+    double theta = asin(clip(2*(q0*q2 - q1*q3)));
+    double phi = 0, psi = 0;
+
+    /**
+     *  Treated cos(theta) = 0.0 case separately.
+     *  For example, the quaternion (-0.5, -0.5, -0.5, 0.5), euler angle should be (90, 90, 0) or (0, 90, -90).
+     *  Here, the gimbal lock happens, and the euler angle is not unique.
+     *  Choose the one with the phi = 0, namely (0, 90, -90).
+     **/
+    if (fabs(cos(theta)) < 0.0001) {
+        phi = 0;
+        psi = atan2(2*(q0*q3 - q1*q2), 2*(q0*q0 + q2*q2) - 1);
+    } else {
+        phi = atan2(2*(q2*q3 + q0*q1), 2*(q0*q0 + q3*q3) - 1);
+        psi = atan2(2*(q1*q2 + q0*q3), 2*(q0*q0 + q1*q1) - 1);
+    }
+
+    return {phi, theta, psi};
+}
+
+/* note: this changes the argument */
+void normalize(QuaternionType& quaternion)
+{
+    double norm = length(quaternion);
+    assert(!is_zero(norm));
+    quaternion /= norm;
+}
+
 
 /**
  * Collision section.
