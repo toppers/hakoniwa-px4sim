@@ -9,9 +9,9 @@
 
 namespace hako::assets::drone {
 
-// バッテリーの放電特性を決める要因データ
+/* バッテリーの放電特性を決める要因データ */
 struct BatteryModelFactor {
-    double temperature; // 温度 (℃)
+    double temperature; /* 温度 (℃) */
 };
 
 typedef struct {
