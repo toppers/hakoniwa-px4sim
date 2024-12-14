@@ -1,4 +1,4 @@
 
 
-python sample.py ..\config_fc\custom.json
+python sample.py ..\DroneAppWin\custom.json
 

@@ -1,4 +1,4 @@
 
 
-python rc.py ..\config_rc\custom.json
+python rc.py ..\DroneAppWin\custom.json
 
