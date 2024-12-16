@@ -9,11 +9,13 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/../hakoniwa")
 else()
     set(HAKONIWA_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../workspace")
 endif()
+set(PHYSICS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../drone_physics")
 
 include_directories(
     include
     common/include
     ${HAKONIWA_SOURCE_DIR}/src/utils
+    ${PHYSICS_SOURCE_DIR}
 )
 
 # workspaceディレクトリ内のサブディレクトリを自動的に追加

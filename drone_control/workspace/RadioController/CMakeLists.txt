@@ -10,8 +10,8 @@ set(SOURCE_FILES
 add_library(
     ${PROJECT_NAME} MODULE 
     ${SOURCE_FILES}
-    ../../common/src/frame_convertor.cpp
     ../hako_module_drone_controller.c
+    ${PHYSICS_SOURCE_DIR}/body_physics.cpp
 )
 # ヘッダーファイルのインクルードディレクトリ指定
 target_include_directories(
