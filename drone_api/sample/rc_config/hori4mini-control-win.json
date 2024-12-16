@@ -77,7 +77,12 @@
             "type": "switch",
             "off": "up",
             "on": "down"
+        },
+        "ReturnHome": {
+            "index": 3,
+            "type": "switch",
+            "off": "up",
+            "on": "down"
         }
-
     }
 }
