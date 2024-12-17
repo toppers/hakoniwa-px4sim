@@ -9,7 +9,8 @@
 
 #define BP_INCLUDE_IO /* for printint out support */
 
-#include "body_physics.hpp"
+#include "drone_frames.hpp"
 #include "rotor_physics.hpp"
+#include "body_physics.hpp"
 
 #endif /* _DRONE_PYHSICS_HPP_ */

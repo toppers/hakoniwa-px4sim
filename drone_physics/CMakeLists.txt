@@ -15,8 +15,9 @@ endif()
 
 add_library(
     drone_physics
-    body_physics.cpp
+    drone_frames.cpp
     rotor_physics.cpp
+    body_physics.cpp
 )
 
 add_library(
