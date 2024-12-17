@@ -3,13 +3,11 @@
 
 #ifdef WIN32
 #define _USE_MATH_DEFINES
-#include <cmath>
-#else
-#include <cmath>
 #endif
-//#ifndef M_PI
-//#define M_PI 3.14159265358979323846
-//#endif
+#include <cmath>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #define DEGREE2RADIAN(v)    ( (v) * M_PI / (180.0) )
 #define RADIAN2DEGREE(v)    ( (180.0 * (v)) / M_PI )
