@@ -23,6 +23,7 @@ add_library(
 add_library(
     drone_physics_c
     drone_physics_c.cpp
+    drone_frames.cpp
     body_physics.cpp
     rotor_physics.cpp
 )
