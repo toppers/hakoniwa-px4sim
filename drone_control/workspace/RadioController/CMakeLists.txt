@@ -11,7 +11,7 @@ add_library(
     ${PROJECT_NAME} MODULE 
     ${SOURCE_FILES}
     ../hako_module_drone_controller.c
-    ${PHYSICS_SOURCE_DIR}/body_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/drone_frames.cpp
 )
 # ヘッダーファイルのインクルードディレクトリ指定
 target_include_directories(
