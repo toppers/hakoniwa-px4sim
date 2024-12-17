@@ -28,6 +28,7 @@ set(SOURCE_FILES
 
     ${PHYSICS_SOURCE_DIR}/body_physics.cpp
     ${PHYSICS_SOURCE_DIR}/rotor_physics.cpp
+    ${PHYSICS_SOURCE_DIR}/drone_frames.cpp
     ${PHYSICS_SOURCE_DIR}/drone_physics_c.cpp
     
     assets/drone/controller/drone_pid_control.cpp
