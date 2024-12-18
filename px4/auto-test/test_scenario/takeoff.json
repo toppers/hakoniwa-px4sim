@@ -1,9 +1,0 @@
-{
-    "scenario": [
-        {
-            "operation": "takeoff",
-            "alt": 5,
-            "duration_sec": 20
-        }
-    ]
-}
