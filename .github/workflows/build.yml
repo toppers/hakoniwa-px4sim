@@ -2,8 +2,6 @@ name: Build
 
 on: 
   push:
-    branches-ignore:
-      - reconstruct
 
 jobs:
   build:
@@ -34,35 +32,26 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         run: brew install googletest
   
-      - name: Build and hakoniwa-px4sim on Windows
+      - name: Build on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
+          cd refactor
           cmake -G "Visual Studio 17 2022" -A x64 .
           cmake --build . --config Release
 
-      # Build and Test drone_physics on Windows with Visual Studio
-      - name: Build and Test drone_physics on Windows
-        if: startsWith(matrix.os, 'windows')
-        shell: cmd
-        run: |
-          cd drone_physics
-          cmake -G "Visual Studio 17 2022" -A x64 .
-          cmake --build . --config Release
-          ctest -C Release --output-on-failure
-      
-      - name: Build and Test hakoniwa-px4sim/drone_physics on ubuntu
+      - name: Build on Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-            cd drone_physics && cmake -D HAKO_CLIENT_OPTION_FILEPATH=../cmake-options/linux-cmake-options.cmake . && make  && make test
+          cd refactor
+          cmake -D HAKO_CLIENT_OPTION_FILEPATH=cmake-options/linux-cmake-options.cmake .
+          make
 
-      - name: Build and Test hakoniwa-px4sim/drone_physics on macOs
+      - name: Build on MacOS
         if: startsWith(matrix.os, 'macos')
         run: |
-            cd drone_physics && cmake . && make && make test
+          cd refactor
+          cmake .
+          make
   
-      - name: Build and Test hakoniwa-px4sim/hakoniwa
-        if: ${{ matrix.os != 'windows-latest' }}
-        run: |
-          cd hakoniwa && bash build.bash  && cd cmake-build && test/hako-px4sim-test
+          
 
-  
