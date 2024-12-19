@@ -2,11 +2,12 @@
 #include <cstring>
 
 #ifdef _WIN32
-#define close closesocket // Windowsではclosesocketを使用
+#define close_socket closesocket
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
 #else
+#define close_socket close
 #include <unistd.h>
 #include <arpa/inet.h>
 #endif
@@ -53,7 +54,7 @@ bool UdpCommIO::send(const char* data, int datalen, int* send_datalen) {
 
 bool UdpCommIO::close() {
     if(sockfd >= 0) {
-        ::close(sockfd);
+        close_socket(sockfd); // プラットフォームごとに正しい関数を使用
         sockfd = -1;
     }
     return true;
@@ -90,7 +91,7 @@ ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) 
     inet_pton(AF_INET, dst->ipaddr, &(remote_addr.sin_addr));
 
     if(bind(sockfd, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0) {
-        ::close(sockfd);
+        close_socket(sockfd);
         return nullptr;
     }
 
@@ -123,7 +124,7 @@ ICommIO* UdpServer::server_open(IcommEndpointType *endpoint) {
     inet_pton(AF_INET, endpoint->ipaddr, &(local_addr.sin_addr));
 
     if(bind(sockfd, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0) {
-        ::close(sockfd);
+        close_socket(sockfd);
         return nullptr;
     }
 
