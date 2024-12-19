@@ -3,7 +3,7 @@
 #include <unistd.h>     // for close
 #include <arpa/inet.h>  // for inet_pton
 
-namespace hako::px4::comm {
+namespace hako::comm {
 
 UdpCommIO::UdpCommIO(int sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
 

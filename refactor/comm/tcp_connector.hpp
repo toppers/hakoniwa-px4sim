@@ -3,7 +3,7 @@
 
 #include "icomm_connector.hpp"
 
-namespace hako::px4::comm {
+namespace hako::comm {
 
 class TcpCommIO : public ICommIO {
 private:

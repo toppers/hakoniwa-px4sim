@@ -12,6 +12,7 @@ else()
     include(cmake-options/default-cmake-options.cmake)
 endif()
 
+add_subdirectory(comm)
 #add_subdirectory(drone_physics)
 #add_subdirectory(matlab-if)
 #add_subdirectory(hakoniwa)

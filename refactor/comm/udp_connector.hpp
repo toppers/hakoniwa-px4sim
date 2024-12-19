@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-namespace hako::px4::comm {
+namespace hako::comm {
 
 class UdpCommIO : public ICommIO {
 private:

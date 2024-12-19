@@ -1,7 +1,7 @@
 #ifndef _ICOMM_CONNECTOR_HPP_
 #define _ICOMM_CONNECTOR_HPP_
 
-namespace hako::px4::comm {
+namespace hako::comm {
 
     typedef struct {
         const char *ipaddr;

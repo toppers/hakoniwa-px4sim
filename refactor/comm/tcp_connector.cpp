@@ -16,7 +16,7 @@
 #define MAX_ATTEMPTS 600
 #define RETRY_INTERVAL 3
 
-namespace hako::px4::comm {
+namespace hako::comm {
 
 
 #ifdef WIN32
