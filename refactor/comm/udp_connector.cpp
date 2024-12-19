@@ -7,7 +7,7 @@
 #include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")
 #else
-#define close_socket close
+#define close_socket ::close
 #include <unistd.h>
 #include <arpa/inet.h>
 #endif
