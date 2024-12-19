@@ -5,17 +5,18 @@ add_definitions(-DNOUSE_HAKO_MSTER)
 if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /EHsc")
+    add_compile_options(/wd4710 /wd4711) # Suppress warnings C4710 and C4711
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wunknown-pragmas -Wmissing-prototypes -Wtrigraphs -Wimplicit-int")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -fPIC")
 endif()
-add_compile_options(/wd4710 /wd4711)
+
 # C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Build type settings
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 else()
@@ -25,7 +26,7 @@ endif()
 # Platform-specific settings
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_compile_definitions(MACOSX TRUE)
-elseif(UNIX)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
     set(CMAKE_HAVE_THREADS_LIBRARY 1)
     set(CMAKE_USE_WIN32_THREADS_INIT 0)
