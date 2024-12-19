@@ -1,16 +1,24 @@
 #include "udp_connector.hpp"
-#include <cstring>      // for std::memset
-#include <unistd.h>     // for close
-#include <arpa/inet.h>  // for inet_pton
+#include <cstring>
+
+#ifdef _WIN32
+#define close closesocket // Windowsではclosesocketを使用
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
+#include <unistd.h>
+#include <arpa/inet.h>
+#endif
 
 namespace hako::comm {
 
+// ===== UdpCommIOクラス =====
 UdpCommIO::UdpCommIO(int sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
 
 UdpCommIO::~UdpCommIO() {
     close();
 }
-
 
 bool UdpCommIO::recv(char* data, int datalen, int* recv_datalen) {
     if(sockfd < 0 || !data || datalen <= 0) return false;
@@ -42,6 +50,7 @@ bool UdpCommIO::send(const char* data, int datalen, int* send_datalen) {
 
     return true;
 }
+
 bool UdpCommIO::close() {
     if(sockfd >= 0) {
         ::close(sockfd);
@@ -50,11 +59,20 @@ bool UdpCommIO::close() {
     return true;
 }
 
+// ===== UdpClientクラス =====
 UdpClient::UdpClient() {
+    #ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    #endif
     std::memset(&local_addr, 0, sizeof(local_addr));
 }
 
-UdpClient::~UdpClient() {}
+UdpClient::~UdpClient() {
+    #ifdef _WIN32
+    WSACleanup();
+    #endif
+}
 
 ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -79,11 +97,20 @@ ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) 
     return new UdpCommIO(sockfd, remote_addr);
 }
 
+// ===== UdpServerクラス =====
 UdpServer::UdpServer() {
+    #ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+    #endif
     std::memset(&local_addr, 0, sizeof(local_addr));
 }
 
-UdpServer::~UdpServer() {}
+UdpServer::~UdpServer() {
+    #ifdef _WIN32
+    WSACleanup();
+    #endif
+}
 
 ICommIO* UdpServer::server_open(IcommEndpointType *endpoint) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -104,4 +131,4 @@ ICommIO* UdpServer::server_open(IcommEndpointType *endpoint) {
     return new UdpCommIO(sockfd, remote_addr);
 }
 
-} // namespace hako::px4::comm
+} // namespace hako::comm

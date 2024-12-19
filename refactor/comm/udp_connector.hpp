@@ -2,15 +2,30 @@
 #define _UDPCONNECTOR_HPP_
 
 #include "icomm_connector.hpp"
+
+// プラットフォームごとのヘッダ
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+#pragma comment(lib, "ws2_32.lib") // Winsockライブラリをリンク
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#endif
 
 namespace hako::comm {
 
 class UdpCommIO : public ICommIO {
 private:
     int sockfd; // ソケットのディスクリプタ
+#ifdef _WIN32
     struct sockaddr_in remote_addr; // リモートのアドレス情報
+#else
+    struct sockaddr_in remote_addr;
+#endif
 
 public:
     UdpCommIO(int sockfd, const sockaddr_in& remote_addr);
