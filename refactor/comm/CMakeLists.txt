@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10...3.25)
 
 # プロジェクトの定義
 project(hakoniwa-drone-core-comm VERSION 1.0 LANGUAGES C CXX)

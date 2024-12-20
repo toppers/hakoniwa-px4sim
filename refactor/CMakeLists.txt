@@ -1,5 +1,4 @@
-set(HAKO_CMAKE_VERSION 3.5.1)
-cmake_minimum_required(VERSION ${HAKO_CMAKE_VERSION})
+cmake_minimum_required(VERSION 3.10...3.25)
 
 project(hakoniwa-px4sim-root
     VERSION 1.0.0
