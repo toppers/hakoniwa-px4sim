@@ -10,3 +10,6 @@
 [submodule "hakoniwa/third-party/hakoniwa-python-simasset-plugin"]
 	path = hakoniwa/third-party/hakoniwa-python-simasset-plugin
 	url = https://github.com/toppers/hakoniwa-python-simasset-plugin.git
+[submodule "thirdparty/mavlink_c_library_v2"]
+	path = thirdparty/mavlink_c_library_v2
+	url = https://github.com/mavlink/c_library_v2.git
