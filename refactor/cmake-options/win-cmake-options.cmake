@@ -15,13 +15,6 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Build type settings
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
-else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
-endif()
 
 # Platform-specific settings
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
