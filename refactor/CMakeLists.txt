@@ -7,8 +7,10 @@ project(hakoniwa-px4sim-root
     LANGUAGES C CXX
 )
 if (DEFINED HAKO_CLIENT_OPTION_FILEPATH)
+    message(STATUS "HAKO_CLIENT_OPTION_FILEPATH=${HAKO_CLIENT_OPTION_FILEPATH}")
     include(${HAKO_CLIENT_OPTION_FILEPATH})
 else()
+    message(STATUS "HAKO_CLIENT_OPTION_FILEPATH is not defined. Use default options.")
     include(cmake-options/default-cmake-options.cmake)
 endif()
 
