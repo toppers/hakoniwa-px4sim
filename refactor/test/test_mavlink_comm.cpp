@@ -36,8 +36,8 @@ std::vector<char> createMavlinkMessage(const char* payload, int payload_len) {
 
 TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
     const char* server_ip = "127.0.0.1";
-    const int server_port = 12345;
-    const int client_port = 54321;
+    const int server_port = 12346;
+    const int client_port = 54322;
     const char* payload = "Hello, MAVLink!";
     const int payload_len = strlen(payload);
 
@@ -93,8 +93,8 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
 #if 1
 TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
     const char* server_ip = "127.0.0.1";
-    const int server_port = 12345;
-    const int client_port = 54321;
+    const int server_port = 12346;
+    const int client_port = 54322;
     const char* payload = "Hello, MAVLink!";
     const int payload_len = strlen(payload);
 

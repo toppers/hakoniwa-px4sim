@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(googletest)
 # ソースファイルの定義
 set(SOURCE_FILES
     test_main.cpp
-    #test_comm.cpp
+    test_comm.cpp
     test_mavlink_comm.cpp
 )
 
