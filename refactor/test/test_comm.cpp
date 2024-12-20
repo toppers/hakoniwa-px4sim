@@ -66,7 +66,8 @@ TEST(TcpCommTest, SendReceiveData) {
     const char* server_ip = "127.0.0.1";
     const int server_port = 12345;
     const char* test_message = "Hello, TCP!";
-
+    hako::comm::comm_init();
+    
     // サーバーの設定
     IcommEndpointType server_endpoint = {server_ip, server_port};
     TcpServer server;
