@@ -14,6 +14,8 @@ message(STATUS "OS_TYPE=${OS_TYPE}")
 # ソースファイルの定義
 set(SOURCE_FILES
     mavlink_dump.cpp
+    mavlink_encoder.cpp
+    mavlink_decoder.cpp
 )
 add_library(hako_mavlink ${SOURCE_FILES})
 

@@ -32,25 +32,4 @@ typedef struct {
 } MavlinkDecodedMessage;
 
 
-typedef struct {
-    uint32_t dataLength;
-    uint32_t owner;
-    uint64_t relativeTimestamp;
-    uint8_t  data[8];
-} MavlinkCaptureDataType;
-
-typedef struct {
-    uint64_t start_time;
-    uint64_t packet_num;
-    uint64_t total_size;
-    int save_file;
-    uint64_t memsize;
-    uint64_t offset;
-    uint8_t *data;
-    uint64_t packets_since_last_save;
-    uint64_t last_save_offset;
-} MavlinkCaptureControllerType;
-
-#define MAVLINK_CAPTURE_INC_DATA_SIZE   8192
-
 #endif /* _MAVLIN_MSG_TYPES_HPP_ */

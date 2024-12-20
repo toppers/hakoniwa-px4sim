@@ -54,17 +54,17 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
                 message->data.command_long.param7
             );
             return true;
-        case MAVLINK_MSG_TYPE_ACK:
+        case MAVLINK_MSG_TYPE_COMMAND_ACK:
             mavlink_msg_command_ack_pack(
                 MAVLINK_CONFIG_SYSTEM_ID, 
                 MAVLINK_CONFIG_COMPONENT_ID, 
                 msg, 
-                message->data.ack.command,
-                message->data.ack.result,
-                message->data.ack.progress,
-                message->data.ack.target_system,
-                message->data.ack.target_component,
-                message->data.ack.result_param2
+                message->data.command_ack.command,
+                message->data.command_ack.result,
+                message->data.command_ack.progress,
+                message->data.command_ack.target_system,
+                message->data.command_ack.target_component,
+                message->data.command_ack.result_param2
             );
             return true;
         case MAVLINK_MSG_TYPE_HIL_SENSOR:
