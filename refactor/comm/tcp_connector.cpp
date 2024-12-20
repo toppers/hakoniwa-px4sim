@@ -39,36 +39,7 @@ TcpClient::TcpClient() {}
 TcpClient::~TcpClient() {}
 
 #ifdef WIN32
-ICommIO* TcpClient::client_open(IcommEndpointType*, IcommEndpointType* dst) {
-    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == INVALID_SOCKET) {
-        std::cerr << "Failed to create socket: " << WSAGetLastError() << std::endl;
-        WSACleanup();
-        return nullptr;
-    }
-
-    struct sockaddr_in remote_addr;
-    ZeroMemory(&remote_addr, sizeof(remote_addr));
-    remote_addr.sin_family = AF_INET;
-    inet_pton(AF_INET, dst->ipaddr, &remote_addr.sin_addr);
-    remote_addr.sin_port = (u_short)htons(dst->portno);
-
-    int attempt = 0;
-    while (connect(sockfd, (struct sockaddr*)&remote_addr, sizeof(remote_addr)) == SOCKET_ERROR) {
-        if (++attempt >= MAX_ATTEMPTS) {
-            std::cerr << "Failed to connect after " << MAX_ATTEMPTS << " attempts: " << WSAGetLastError() << std::endl;
-            closesocket(sockfd);
-            WSACleanup();
-            return nullptr;
-        }
-
-        std::cout << "Connection attempt " << attempt << " failed, retrying..." << std::endl;
-        Sleep(RETRY_INTERVAL * 1000);
-    }
-    return new TcpCommIO(sockfd);
-}
-#else
-ICommIO* TcpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
+ICommIO* TcpClient::client_open(IcommEndpointType* src, IcommEndpointType* dst) {
     if (dst == nullptr) {
         std::cerr << "Invalid destination endpoint" << std::endl;
         return nullptr;
@@ -76,34 +47,101 @@ ICommIO* TcpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) 
     if (src == nullptr) {
         std::cerr << "Warning: Source endpoint is null, proceeding without binding to a specific port." << std::endl;
     }
+
     ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-        std::cout << "Failed to create socket: " << strerror(errno) << std::endl;
+    if (sockfd == INVALID_SOCKET) {
+        std::cerr << "Failed to create socket: " << WSAGetLastError() << std::endl;
         return nullptr;
     }
+
+    // 任意のポートにバインド（srcがnullptrの場合）
     if (src != nullptr) {
-        //nothing to do
+        struct sockaddr_in local_addr;
+        ZeroMemory(&local_addr, sizeof(local_addr));
+        local_addr.sin_family = AF_INET;
+        local_addr.sin_port = htons(src->portno);
+        inet_pton(AF_INET, src->ipaddr, &local_addr.sin_addr);
+
+        if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) == SOCKET_ERROR) {
+            std::cerr << "Failed to bind socket: " << WSAGetLastError() << std::endl;
+            closesocket(sockfd);
+            return nullptr;
+        }
+    }
+
+    struct sockaddr_in remote_addr;
+    ZeroMemory(&remote_addr, sizeof(remote_addr));
+    remote_addr.sin_family = AF_INET;
+    inet_pton(AF_INET, dst->ipaddr, &remote_addr.sin_addr);
+    remote_addr.sin_port = htons(dst->portno);
+
+    int attempt = 0;
+    while (connect(sockfd, (struct sockaddr*)&remote_addr, sizeof(remote_addr)) == SOCKET_ERROR) {
+        if (++attempt >= MAX_ATTEMPTS) {
+            std::cerr << "Failed to connect after " << MAX_ATTEMPTS << " attempts: " << WSAGetLastError() << std::endl;
+            closesocket(sockfd);
+            return nullptr;
+        }
+
+        std::cout << "Connection attempt " << attempt << " failed, retrying..." << std::endl;
+        Sleep(RETRY_INTERVAL * 1000);
+    }
+
+    return new TcpCommIO(sockfd);
+}
+#else
+ICommIO* TcpClient::client_open(IcommEndpointType* src, IcommEndpointType* dst) {
+    if (dst == nullptr) {
+        std::cerr << "Invalid destination endpoint" << std::endl;
+        return nullptr;
+    }
+    if (src == nullptr) {
+        std::cerr << "Warning: Source endpoint is null, proceeding without binding to a specific port." << std::endl;
+    }
+
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0) {
+        std::cerr << "Failed to create socket: " << strerror(errno) << std::endl;
+        return nullptr;
+    }
+
+    // 任意のポートにバインド（srcがnullptrの場合）
+    if (src != nullptr) {
+        struct sockaddr_in local_addr;
+        memset(&local_addr, 0, sizeof(local_addr));
+        local_addr.sin_family = AF_INET;
+        local_addr.sin_port = htons(src->portno);
+        inet_pton(AF_INET, src->ipaddr, &local_addr.sin_addr);
+
+        if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
+            std::cerr << "Failed to bind socket: " << strerror(errno) << std::endl;
+            ::close(sockfd);
+            return nullptr;
+        }
     }
 
     struct sockaddr_in remote_addr;
     memset(&remote_addr, 0, sizeof(remote_addr));
     remote_addr.sin_family = AF_INET;
-    remote_addr.sin_addr.s_addr = inet_addr(dst->ipaddr);
     remote_addr.sin_port = htons(dst->portno);
+    inet_pton(AF_INET, dst->ipaddr, &remote_addr.sin_addr);
+
     int attempt = 0;
     while (connect(sockfd, (struct sockaddr*)&remote_addr, sizeof(remote_addr)) < 0) {
         if (++attempt >= MAX_ATTEMPTS) {
-            std::cout << "Failed to connect after " << MAX_ATTEMPTS << " attempts: " << strerror(errno) << std::endl;
+            std::cerr << "Failed to connect after " << MAX_ATTEMPTS << " attempts: " << strerror(errno) << std::endl;
             ::close(sockfd);
             return nullptr;
         }
 
         std::cout << "Connection attempt " << attempt << " failed, retrying..." << std::endl;
-        sleep(RETRY_INTERVAL); // リトライ間隔（秒単位）
+        sleep(RETRY_INTERVAL);
     }
+
     return new TcpCommIO(sockfd);
 }
 #endif
+
 
 
 TcpServer::TcpServer() {}
