@@ -199,91 +199,39 @@ ICommIO* TcpServer::server_open(IcommEndpointType *endpoint) {
 #define MAVLINK_HEADER_LEN  9
 #ifdef WIN32
 bool TcpCommIO::recv(char* data, int datalen, int* recv_datalen) {
-    char header[MAVLINK_HEADER_LEN];
     int received = 0;
-
-    // Receive header
-    while (received < MAVLINK_HEADER_LEN) {
-        int len = ::recv(sockfd, header + received, MAVLINK_HEADER_LEN - received, 0);
-        if (len > 0) {
-            received += len;
-        }
-        else if (len == 0 || (WSAGetLastError() != WSAEWOULDBLOCK)) {
-            std::cerr << "Failed to receive MAVLink header." << std::endl;
-            return false;
-        }
-    }
-    // Parse header to get packet length (assuming packet length is at offset 1)
-    int packetlen = static_cast<unsigned char>(header[1]) + 2 /* CRC */ + 1 /* Signature */;
-
-    // Check if datalen is sufficient to hold header and packet data
-    if (datalen < MAVLINK_HEADER_LEN + packetlen) {
-        std::cerr << "Provided data buffer is too small to hold the MAVLink message." << std::endl;
-        return false;
-    }
-
-    // Copy header data to output buffer
-    memcpy(data, header, MAVLINK_HEADER_LEN);
-
     // Receive packet data
-    received = 0;
-    while (received < packetlen) {
-        int len = ::recv(sockfd, data + MAVLINK_HEADER_LEN + received, packetlen - received, 0);
+    while (received < datalen) {
+        int len = ::recv(sockfd, data + received, datalen - received, 0);
         if (len > 0) {
             received += len;
         }
         else if (len == 0 || (WSAGetLastError() != WSAEWOULDBLOCK)) {
-            std::cerr << "Failed to receive MAVLink data." << std::endl;
+            std::cerr << "Failed to receive  data." << std::endl;
+            *recv_datalen = received;
             return false;
         }
     }
 
-    *recv_datalen = MAVLINK_HEADER_LEN + packetlen;
+    *recv_datalen = received;
     return true;
 }
 
 #else
 bool TcpCommIO::recv(char* data, int datalen, int* recv_datalen) {
-    // see: http://mavlink.io/en/guide/serialization.html
-
-    char header[MAVLINK_HEADER_LEN];
-    int received = 0;
-
-    // Receive header
-    while (received < MAVLINK_HEADER_LEN) {
-        int len = read(sockfd, header + received, MAVLINK_HEADER_LEN - received);
-        if (len > 0) {
-            received += len;
-        } else if (len == 0 || (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)) {
-            //std::cout << "Failed to receive MAVLink header: " << strerror(errno) << std::endl;
-            return false;
-        }
-    }
-    // Parse header to get packet length (assuming packet length is at offset 1)
-    int packetlen = static_cast<unsigned char>(header[1]) + 2 /* CRC */ + 1 /* Signature */;
-
-    // Check if datalen is sufficient to hold header and packet data
-    if (datalen < MAVLINK_HEADER_LEN + packetlen) {
-        std::cout << "Provided data buffer is too small to hold the MAVLink message." << std::endl;
-        return false;
-    }
-
-    // Copy header data to output buffer
-    memcpy(data, header, MAVLINK_HEADER_LEN);
-
     // Receive packet data
-    received = 0;
-    while (received < packetlen) {
-        int len = read(sockfd, data + MAVLINK_HEADER_LEN + received, packetlen - received);
+    int received = 0;
+    while (received < datalen) {
+        int len = read(sockfd, data + received, datalen - received);
         if (len > 0) {
             received += len;
         } else if (len == 0 || (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)) {
-            std::cout << "Failed to receive MAVLink data: " << strerror(errno) << std::endl;
+            std::cout << "Failed to receive data: " << strerror(errno) << std::endl;
+            *recv_datalen = received;
             return false;
         }
     }
-
-    *recv_datalen = MAVLINK_HEADER_LEN + packetlen;
+    *recv_datalen = received;
     return true;
 }
 #endif
