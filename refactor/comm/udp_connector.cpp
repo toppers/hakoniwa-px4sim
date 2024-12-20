@@ -14,12 +14,7 @@
 
 namespace hako::comm {
 
-// ===== UdpCommIOクラス =====
-#ifdef _WIN32
-UdpCommIO::UdpCommIO(SOCKET sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
-#else
-UdpCommIO::UdpCommIO(int sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
-#endif
+UdpCommIO::UdpCommIO(ICOMM_SOCKET sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
 UdpCommIO::~UdpCommIO() {
     close();
 }
@@ -80,12 +75,12 @@ UdpClient::~UdpClient() {
 
 ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
 #ifdef _WIN32
-    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd == INVALID_SOCKET) {
         return nullptr;
     }
 #else
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd < 0) {
         return nullptr;
     }
@@ -124,12 +119,12 @@ UdpServer::~UdpServer() {
 
 ICommIO* UdpServer::server_open(IcommEndpointType *endpoint) {
 #ifdef _WIN32
-    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd == INVALID_SOCKET) {
         return nullptr;
     }
 #else
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd < 0) {
         return nullptr;
     }

@@ -1,6 +1,8 @@
 #ifndef _ICOMM_CONNECTOR_HPP_
 #define _ICOMM_CONNECTOR_HPP_
 
+#include "icomm_osdep.hpp"
+
 namespace hako::comm {
 
     typedef struct {

@@ -1,16 +1,7 @@
+#include "tcp_connector.hpp"
 #include <iostream>
 #include <cstring>
 #include <errno.h>
-#include "tcp_connector.hpp"
-#include "tcp_connector.hpp"
-#ifdef WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#pragma comment(lib, "Ws2_32.lib")
-#else
-#include <arpa/inet.h>  // for inet_pton
-#include <unistd.h>
-#endif
 #include <string.h>
 
 #define MAX_ATTEMPTS 600
@@ -37,11 +28,7 @@ int comm_init()
 }
 #endif
 
-#ifdef _WIN32
-TcpCommIO::TcpCommIO(SOCKET sockfd) : sockfd(sockfd) {}
-#else
-TcpCommIO::TcpCommIO(int sockfd) : sockfd(sockfd) {}
-#endif
+TcpCommIO::TcpCommIO(ICOMM_SOCKET sockfd) : sockfd(sockfd) {}
 
 TcpCommIO::~TcpCommIO() {
     close();
@@ -53,7 +40,7 @@ TcpClient::~TcpClient() {}
 
 #ifdef WIN32
 ICommIO* TcpClient::client_open(IcommEndpointType*, IcommEndpointType* dst) {
-    SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == INVALID_SOCKET) {
         std::cerr << "Failed to create socket: " << WSAGetLastError() << std::endl;
         WSACleanup();
@@ -82,7 +69,7 @@ ICommIO* TcpClient::client_open(IcommEndpointType*, IcommEndpointType* dst) {
 }
 #else
 ICommIO* TcpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         std::cout << "Failed to create socket: " << strerror(errno) << std::endl;
         return nullptr;
@@ -119,7 +106,7 @@ TcpServer::~TcpServer() {}
 #ifdef WIN32
 ICommIO* TcpServer::server_open(IcommEndpointType* endpoint) {
 
-    SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == INVALID_SOCKET) {
         std::cerr << "Failed to create socket: " << WSAGetLastError() << std::endl;
         WSACleanup();
