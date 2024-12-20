@@ -29,6 +29,9 @@ else()
         /wd4200  # Zero-sized array
         /wd4706  # Assignment within conditional expression
         /wd4996  # Deprecated API
+        /wd4244  # 'double'から'float'への変換の警告を抑制
+        /wd4309  # 定数値の切り捨ての警告を抑制
+        /wd4996  # 非推奨APIの警告を抑制
     )
 endif()
 
