@@ -31,7 +31,11 @@ private:
 #endif
 
 public:
+#ifdef _WIN32
+    UdpCommIO(SOCKET sockfd, const sockaddr_in& remote_addr);
+#else
     UdpCommIO(int sockfd, const sockaddr_in& remote_addr);
+#endif
     ~UdpCommIO() override;
 
     bool send(const char* data, int datalen, int* send_datalen) override;

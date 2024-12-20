@@ -15,8 +15,11 @@
 namespace hako::comm {
 
 // ===== UdpCommIOクラス =====
+#ifdef _WIN32
+UdpCommIO::UdpCommIO(SOCKET sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
+#else
 UdpCommIO::UdpCommIO(int sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
-
+#endif
 UdpCommIO::~UdpCommIO() {
     close();
 }
