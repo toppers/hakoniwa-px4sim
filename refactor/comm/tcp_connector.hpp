@@ -26,7 +26,11 @@ private:
     int sockfd;    // 他のプラットフォームではintを使用
 #endif
 public:
+#ifdef _WIN32
+    TcpCommIO(SOCKET sockfd);
+#else
     TcpCommIO(int sockfd);
+#endif
     ~TcpCommIO() override;
 
     bool send(const char* data, int datalen, int* send_datalen) override;

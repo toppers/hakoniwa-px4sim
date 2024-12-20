@@ -37,7 +37,11 @@ int comm_init()
 }
 #endif
 
+#ifdef _WIN32
+TcpCommIO::TcpCommIO(SOCKET sockfd) : sockfd(sockfd) {}
+#else
 TcpCommIO::TcpCommIO(int sockfd) : sockfd(sockfd) {}
+#endif
 
 TcpCommIO::~TcpCommIO() {
     close();
