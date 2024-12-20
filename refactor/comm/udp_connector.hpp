@@ -20,7 +20,11 @@ namespace hako::comm {
 
 class UdpCommIO : public ICommIO {
 private:
-    int sockfd; // ソケットのディスクリプタ
+#ifdef _WIN32
+    SOCKET sockfd; // WindowsではSOCKETを使用
+#else
+    int sockfd;    // 他のプラットフォームではintを使用
+#endif
 #ifdef _WIN32
     struct sockaddr_in remote_addr; // リモートのアドレス情報
 #else

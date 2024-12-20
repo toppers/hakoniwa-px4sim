@@ -76,11 +76,17 @@ UdpClient::~UdpClient() {
 }
 
 ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
+#ifdef _WIN32
+    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if(sockfd == INVALID_SOCKET) {
+        return nullptr;
+    }
+#else
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd < 0) {
         return nullptr;
     }
-
+#endif
     local_addr.sin_family = AF_INET;
     local_addr.sin_port = htons(src->portno);
     inet_pton(AF_INET, src->ipaddr, &(local_addr.sin_addr));
@@ -114,11 +120,17 @@ UdpServer::~UdpServer() {
 }
 
 ICommIO* UdpServer::server_open(IcommEndpointType *endpoint) {
+#ifdef _WIN32
+    SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if(sockfd == INVALID_SOCKET) {
+        return nullptr;
+    }
+#else
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd < 0) {
         return nullptr;
     }
-
+#endif
     local_addr.sin_family = AF_INET;
     local_addr.sin_port = htons(endpoint->portno);
     inet_pton(AF_INET, endpoint->ipaddr, &(local_addr.sin_addr));

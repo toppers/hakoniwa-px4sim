@@ -7,8 +7,11 @@ namespace hako::comm {
 
 class TcpCommIO : public ICommIO {
 private:
-    int sockfd; // ソケットのディスクリプタ
-
+#ifdef _WIN32
+    SOCKET sockfd; // WindowsではSOCKETを使用
+#else
+    int sockfd;    // 他のプラットフォームではintを使用
+#endif
 public:
     TcpCommIO(int sockfd);
     ~TcpCommIO() override;
