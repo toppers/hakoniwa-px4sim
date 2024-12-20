@@ -42,7 +42,7 @@ jobs:
 
 
 
-      - name: Build on Ubuntu
+      - name: Build and Test on Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           cd refactor
@@ -51,7 +51,7 @@ jobs:
           cd test
           ctest --output-on-failure
 
-      - name: Build on MacOS
+      - name: Build and Test on MacOS
         if: startsWith(matrix.os, 'macos')
         run: |
           cd refactor

@@ -47,7 +47,7 @@ TEST(UdpCommTest, SendReceiveData) {
 
     // クライアントからデータ送信
     int sent_len = 0;
-    ASSERT_TRUE(client_io->send(test_message, static_cast<int>((strlen(test_message)), &sent_len));
+    ASSERT_TRUE(client_io->send(test_message, static_cast<int>(strlen(test_message)), &sent_len));
     ASSERT_EQ(sent_len, strlen(test_message));
 
     // クライアントで返信を受信
