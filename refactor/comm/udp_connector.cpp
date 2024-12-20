@@ -112,7 +112,13 @@ ICommIO* UdpClient::client_open(IcommEndpointType* src, IcommEndpointType* dst) 
     }
 
     if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
+#ifdef _WIN32
+        char error_msg[256];
+        strerror_s(error_msg, sizeof(error_msg), errno);
+        std::cerr << "Failed to bind socket: " << error_msg << std::endl;
+#else
         std::cerr << "Failed to bind socket: " << strerror(errno) << std::endl;
+#endif
         close_socket(sockfd);
         return nullptr;
     }
