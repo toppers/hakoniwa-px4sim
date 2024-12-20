@@ -74,41 +74,63 @@ UdpClient::~UdpClient() {
     #endif
 }
 
-ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
+ICommIO* UdpClient::client_open(IcommEndpointType* src, IcommEndpointType* dst) {
     if (dst == nullptr) {
         std::cerr << "Invalid destination endpoint" << std::endl;
         return nullptr;
     }
-    if (src == nullptr) {
-        std::cerr << "Warning: Source endpoint is null, proceeding without binding to a specific port." << std::endl;
-    }
+
 #ifdef _WIN32
     ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sockfd == INVALID_SOCKET) {
+    if (sockfd == INVALID_SOCKET) {
+        std::cerr << "Failed to create socket: " << WSAGetLastError() << std::endl;
         return nullptr;
     }
 #else
     ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sockfd < 0) {
+    if (sockfd < 0) {
+        std::cerr << "Failed to create socket: " << strerror(errno) << std::endl;
         return nullptr;
     }
 #endif
-    local_addr.sin_family = AF_INET;
-    local_addr.sin_port = htons(src->portno);
-    inet_pton(AF_INET, src->ipaddr, &(local_addr.sin_addr));
 
+    // ローカルアドレスの設定
+    struct sockaddr_in local_addr;
+    memset(&local_addr, 0, sizeof(local_addr));
+    local_addr.sin_family = AF_INET;
+
+    if (src != nullptr) {
+        local_addr.sin_port = htons(src->portno);
+        if (inet_pton(AF_INET, src->ipaddr, &local_addr.sin_addr) <= 0) {
+            std::cerr << "Invalid source IP address: " << src->ipaddr << std::endl;
+            close_socket(sockfd);
+            return nullptr;
+        }
+    } else {
+        local_addr.sin_port = 0; // 任意のポートを割り当てる
+        local_addr.sin_addr.s_addr = INADDR_ANY; // 任意のローカルアドレスを使用
+    }
+
+    if (bind(sockfd, (struct sockaddr*)&local_addr, sizeof(local_addr)) < 0) {
+        std::cerr << "Failed to bind socket: " << strerror(errno) << std::endl;
+        close_socket(sockfd);
+        return nullptr;
+    }
+
+    // リモートアドレスの設定
     struct sockaddr_in remote_addr;
+    memset(&remote_addr, 0, sizeof(remote_addr));
     remote_addr.sin_family = AF_INET;
     remote_addr.sin_port = htons(dst->portno);
-    inet_pton(AF_INET, dst->ipaddr, &(remote_addr.sin_addr));
-
-    if(bind(sockfd, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0) {
+    if (inet_pton(AF_INET, dst->ipaddr, &remote_addr.sin_addr) <= 0) {
+        std::cerr << "Invalid destination IP address: " << dst->ipaddr << std::endl;
         close_socket(sockfd);
         return nullptr;
     }
 
     return new UdpCommIO(sockfd, remote_addr);
 }
+
 
 // ===== UdpServerクラス =====
 UdpServer::UdpServer() {
