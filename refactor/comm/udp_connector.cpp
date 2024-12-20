@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #endif
+#include <iostream>
 
 namespace hako::comm {
 
@@ -74,6 +75,13 @@ UdpClient::~UdpClient() {
 }
 
 ICommIO* UdpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
+    if (dst == nullptr) {
+        std::cerr << "Invalid destination endpoint" << std::endl;
+        return nullptr;
+    }
+    if (src == nullptr) {
+        std::cerr << "Warning: Source endpoint is null, proceeding without binding to a specific port." << std::endl;
+    }
 #ifdef _WIN32
     ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd == INVALID_SOCKET) {

@@ -14,7 +14,7 @@ using namespace hako::comm;
 
 
 std::vector<char> createMavlinkMessage(const char* payload, int payload_len) {
-    std::vector<char> message(MAVLINK_HEADER_LEN + payload_len);
+    std::vector<char> message(MAVLINK_TOTAL_HEADER_LEN + payload_len);
 
     // ヘッダー作成 (ダミーデータ)
     message[0] = 0xFE; // スタートフレーム
@@ -25,8 +25,8 @@ std::vector<char> createMavlinkMessage(const char* payload, int payload_len) {
     message[5] = 0x01; // メッセージID (ダミー)
 
     // CRC（ダミーで設定）
-    message[MAVLINK_HEADER_LEN - 2] = 0x00; // CRC1
-    message[MAVLINK_HEADER_LEN - 1] = 0x00; // CRC2
+    message[MAVLINK_TOTAL_HEADER_LEN - 2] = 0x00; // CRC1
+    message[MAVLINK_TOTAL_HEADER_LEN - 1] = 0x00; // CRC2
 
     // ペイロードコピー
     memcpy(message.data() + MAVLINK_HEADER_LEN, payload, payload_len);
@@ -37,6 +37,7 @@ std::vector<char> createMavlinkMessage(const char* payload, int payload_len) {
 TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
     const char* server_ip = "127.0.0.1";
     const int server_port = 12345;
+    const int client_port = 54321;
     const char* payload = "Hello, MAVLink!";
     const int payload_len = strlen(payload);
 
@@ -47,6 +48,7 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
 
     // クライアントの設定
     UdpClient udp_client;
+    IcommEndpointType client_src = {server_ip, client_port};
     IcommEndpointType client_endpoint = {server_ip, server_port};
     MavLinkCommUdp mavlink_comm_udp;
 
@@ -54,7 +56,6 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
     std::thread server_thread([&]() {
         server_io = udp_server.server_open(&server_endpoint);
         ASSERT_NE(server_io, nullptr) << "Failed to open UDP server";
-
         char recv_buffer[1024] = {0};
         int recv_len = 0;
         ASSERT_TRUE(mavlink_comm_udp.receiveMessage(server_io, recv_buffer, sizeof(recv_buffer), &recv_len));
@@ -73,28 +74,27 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
 
     // クライアント処理
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // サーバーの準備待機
-    ICommIO* client_io = udp_client.client_open(nullptr, &client_endpoint);
+    ICommIO* client_io = udp_client.client_open(&client_src, &client_endpoint);
     ASSERT_NE(client_io, nullptr) << "Failed to open UDP client";
 
     // クライアントからメッセージ送信
     auto message = createMavlinkMessage(payload, payload_len);
     ASSERT_TRUE(mavlink_comm_udp.sendMessage(client_io, message.data(), message.size()));
-
     // クライアントで返信を受信
     char reply_buffer[1024] = {0};
     int recv_len = 0;
     ASSERT_TRUE(mavlink_comm_udp.receiveMessage(client_io, reply_buffer, sizeof(reply_buffer), &recv_len));
     ASSERT_GE(recv_len, MAVLINK_HEADER_LEN);
     ASSERT_STREQ(reply_buffer + MAVLINK_HEADER_LEN, "Reply from Server");
-
     client_io->close();
     server_thread.join();
 }
 
-
+#if 1
 TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
     const char* server_ip = "127.0.0.1";
     const int server_port = 12345;
+    const int client_port = 54321;
     const char* payload = "Hello, MAVLink!";
     const int payload_len = strlen(payload);
 
@@ -105,6 +105,7 @@ TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
 
     // クライアントの設定
     TcpClient tcp_client;
+    IcommEndpointType client_src = {server_ip, client_port};
     IcommEndpointType client_endpoint = {server_ip, server_port};
     MavLinkCommTcp mavlink_comm_tcp;
 
@@ -131,7 +132,7 @@ TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
 
     // クライアント処理
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // サーバーの準備待機
-    ICommIO* client_io = tcp_client.client_open(nullptr, &client_endpoint);
+    ICommIO* client_io = tcp_client.client_open(&client_src, &client_endpoint);
     ASSERT_NE(client_io, nullptr) << "Failed to open TCP client";
 
     // クライアントからメッセージ送信
@@ -148,3 +149,4 @@ TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
     client_io->close();
     server_thread.join();
 }
+#endif

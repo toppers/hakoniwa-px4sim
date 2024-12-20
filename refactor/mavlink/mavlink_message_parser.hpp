@@ -6,11 +6,16 @@
 
 namespace hako::mavlink {
 #define MAVLINK_HEADER_LEN  9
+#define MAVLINK_CRC_LEN  2
+#define MAVLINK_SIGNATURE_LEN  1
+#define MAVLINK_TOTAL_HEADER_LEN  (MAVLINK_HEADER_LEN + MAVLINK_CRC_LEN + MAVLINK_SIGNATURE_LEN)
 
 class MavLinkMessageParser {
 public:
     static int getMessageLength(const char* header) {
-        return static_cast<unsigned char>(header[1]) + 2 /* CRC */ + 1 /* Signature */;
+        return static_cast<unsigned char>(header[1]) 
+                + MAVLINK_CRC_LEN /* CRC */ 
+                + MAVLINK_SIGNATURE_LEN /* Signature */;
     }
 
     static bool verifyCRC(const char* data, int length) {

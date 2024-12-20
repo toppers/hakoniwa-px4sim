@@ -69,6 +69,13 @@ ICommIO* TcpClient::client_open(IcommEndpointType*, IcommEndpointType* dst) {
 }
 #else
 ICommIO* TcpClient::client_open(IcommEndpointType *src, IcommEndpointType *dst) {
+    if (dst == nullptr) {
+        std::cerr << "Invalid destination endpoint" << std::endl;
+        return nullptr;
+    }
+    if (src == nullptr) {
+        std::cerr << "Warning: Source endpoint is null, proceeding without binding to a specific port." << std::endl;
+    }
     ICOMM_SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         std::cout << "Failed to create socket: " << strerror(errno) << std::endl;
@@ -249,7 +256,9 @@ bool TcpCommIO::send(const char* data, int datalen, int* send_datalen) {
             return false;
         }
     }
-    *send_datalen = total_sent;
+    if (send_datalen != nullptr) {
+        *send_datalen = total_sent;
+    }
     return total_sent == datalen;
 }
 
@@ -265,7 +274,9 @@ bool TcpCommIO::send(const char* data, int datalen, int* send_datalen) {
             break;
         }
     }
-    *send_datalen = total_sent;
+    if (send_datalen != nullptr) {
+        *send_datalen = total_sent;
+    }
     return total_sent == datalen;
 }
 #endif
