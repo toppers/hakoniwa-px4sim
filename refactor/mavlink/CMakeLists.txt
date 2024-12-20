@@ -15,9 +15,23 @@ message(STATUS "OS_TYPE=${OS_TYPE}")
 set(SOURCE_FILES
     mavlink_dump.cpp
 )
-
-# ライブラリの作成
 add_library(hako_mavlink ${SOURCE_FILES})
+
+if(OS_TYPE STREQUAL "posix")
+    target_compile_options(hako_mavlink PRIVATE
+        -Wno-pedantic
+        -Wno-address-of-packed-member
+        -Wno-unused-function
+        -Wno-missing-field-initializers
+    )
+else()
+    target_compile_options(hako_mavlink PRIVATE
+        /wd4200  # Zero-sized array
+        /wd4706  # Assignment within conditional expression
+        /wd4996  # Deprecated API
+    )
+endif()
+
 
 target_include_directories(hako_mavlink PRIVATE ${MAVLINK_SOURCE_DIR}/all)
 target_compile_features(hako_mavlink PRIVATE cxx_std_17)
