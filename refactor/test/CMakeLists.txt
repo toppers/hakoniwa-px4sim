@@ -11,19 +11,25 @@ else()
 endif()
 message(STATUS "OS_TYPE=${OS_TYPE}")
 
+# Google Testの取得とビルド（Windows向け）
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/release-1.12.1.tar.gz
+)
+FetchContent_MakeAvailable(googletest)
+
 # ソースファイルの定義
 set(SOURCE_FILES
     test_main.cpp
     test_comm.cpp
 )
 
-find_package(GTest REQUIRED)
-
-include(GoogleTest)
-
+# 実行ファイルの定義
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE GTest::GTest
+    PRIVATE GTest::gtest
+    PRIVATE GTest::gtest_main
     PRIVATE hako_comm
 )
 target_include_directories(${PROJECT_NAME}
