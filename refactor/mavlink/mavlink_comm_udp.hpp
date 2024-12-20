@@ -2,7 +2,7 @@
 #define _MAVLINK_COMM_UDP_HPP_
 
 #include "imavlink_comm.hpp"
-#include "mavlink_message_parser.hpp"
+#include "mavlink_comm_message_parser.hpp"
 
 using namespace hako::comm;
 namespace hako::mavlink {
@@ -20,10 +20,10 @@ public:
             return false;
         }
         //std::cout << "len: " << len << std::endl;
-        int packet_length = MavLinkMessageParser::getMessageLength(data);
+        int packet_length = MavLinkCommMessageParser::getMessageLength(data);
         //std::cout << "packet_length: " << packet_length << std::endl;
 
-        if (!MavLinkMessageParser::parseMessage(data, len)) {
+        if (!MavLinkCommMessageParser::parseMessage(data, len)) {
             return false;
         }
 

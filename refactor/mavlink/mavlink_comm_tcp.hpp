@@ -2,7 +2,7 @@
 #define _MAVLINK_COMM_TCP_HPP_
 
 #include "imavlink_comm.hpp"
-#include "mavlink_message_parser.hpp"
+#include "mavlink_comm_message_parser.hpp"
 #include <vector>
 
 using namespace hako::comm;
@@ -27,7 +27,7 @@ public:
             return false;
         }
 
-        int packet_length = MavLinkMessageParser::getMessageLength(header);
+        int packet_length = MavLinkCommMessageParser::getMessageLength(header);
         // Check if datalen is sufficient to hold header and packet data
         if (datalen < MAVLINK_HEADER_LEN + packet_length) {
             std::cerr << "Provided data buffer is too small to hold the MAVLink message." << std::endl;

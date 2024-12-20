@@ -1,5 +1,5 @@
-#ifndef _MAVLINK_MESSAGE_PARSER_HPP_
-#define _MAVLINK_MESSAGE_PARSER_HPP_
+#ifndef _MAVLINK_COMM_MESSAGE_PARSER_HPP_
+#define _MAVLINK_COMM_MESSAGE_PARSER_HPP_
 
 #include <cstring>
 #include <iostream>
@@ -10,7 +10,7 @@ namespace hako::mavlink {
 #define MAVLINK_SIGNATURE_LEN  1
 #define MAVLINK_TOTAL_HEADER_LEN  (MAVLINK_HEADER_LEN + MAVLINK_CRC_LEN + MAVLINK_SIGNATURE_LEN)
 
-class MavLinkMessageParser {
+class MavLinkCommMessageParser {
 public:
     static int getMessageLength(const char* header) {
         return static_cast<unsigned char>(header[1]) 
@@ -50,4 +50,4 @@ public:
 
 } // namespace hako::comm
 
-#endif /* _MAVLINK_MESSAGE_PARSER_HPP_ */
+#endif /* _MAVLINK_COMM_MESSAGE_PARSER_HPP_ */
