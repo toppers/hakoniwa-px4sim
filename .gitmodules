@@ -1,5 +1,5 @@
-[submodule "hakoniwa/third-party/c_library_v2"]
-	path = hakoniwa/third-party/c_library_v2
+[submodule "c_library_v2"]
+	path = thirdparty/c_library_v2
 	url = https://github.com/mavlink/c_library_v2.git
 [submodule "hakoniwa/third-party/hakoniwa-core-cpp-client"]
 	path = hakoniwa/third-party/hakoniwa-core-cpp-client
