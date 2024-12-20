@@ -34,7 +34,7 @@ TEST(UdpCommTest, SendReceiveData) {
         // サーバー側でクライアントに返信
         const char* reply_message = "Hello, Client!";
         int sent_len = 0;
-        ASSERT_TRUE(server_io->send(reply_message, strlen(reply_message), &sent_len));
+        ASSERT_TRUE(server_io->send(reply_message, static_cast<int>(strlen(reply_message)), &sent_len));
         ASSERT_EQ(sent_len, strlen(reply_message));
 
         server_io->close();
@@ -47,7 +47,7 @@ TEST(UdpCommTest, SendReceiveData) {
 
     // クライアントからデータ送信
     int sent_len = 0;
-    ASSERT_TRUE(client_io->send(test_message, strlen(test_message), &sent_len));
+    ASSERT_TRUE(client_io->send(test_message, static_cast<int>((strlen(test_message)), &sent_len));
     ASSERT_EQ(sent_len, strlen(test_message));
 
     // クライアントで返信を受信
