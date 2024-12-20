@@ -38,6 +38,7 @@ jobs:
           cd refactor
           cmake -G "Visual Studio 17 2022" -A x64 -DHAKO_CLIENT_OPTION_FILEPATH="cmake-options/win-cmake-options.cmake" .
           cmake --build . --config Release
+          cd test
           ctest -C Release --output-on-failure
 
 
