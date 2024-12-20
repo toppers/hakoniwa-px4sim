@@ -39,7 +39,7 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
     const int server_port = 12346;
     const int client_port = 54322;
     const char* payload = "Hello, MAVLink!";
-    const int payload_len = strlen(payload);
+    const int payload_len = static_cast<int>(strlen(payload));
 
     // サーバーの設定
     IcommEndpointType server_endpoint = {server_ip, server_port};
@@ -67,8 +67,8 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
 
         // サーバーから返信
         const char* reply_payload = "Reply from Server";
-        auto reply_message = createMavlinkMessage(reply_payload, strlen(reply_payload));
-        ASSERT_TRUE(mavlink_comm_udp.sendMessage(server_io, reply_message.data(), reply_message.size()));
+        auto reply_message = createMavlinkMessage(reply_payload, static_cast<int>(strlen(reply_payload)));
+        ASSERT_TRUE(mavlink_comm_udp.sendMessage(server_io, reply_message.data(), static_cast<int>(reply_message.size())));
         server_io->close();
     });
 
@@ -79,7 +79,7 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
 
     // クライアントからメッセージ送信
     auto message = createMavlinkMessage(payload, payload_len);
-    ASSERT_TRUE(mavlink_comm_udp.sendMessage(client_io, message.data(), message.size()));
+    ASSERT_TRUE(mavlink_comm_udp.sendMessage(client_io, message.data(), static_cast<int>(message.size())));
     // クライアントで返信を受信
     char reply_buffer[1024] = {0};
     int recv_len = 0;
@@ -90,13 +90,13 @@ TEST(MavLinkCommUdpTest, SendReceiveDataWithMavlinkHeader) {
     server_thread.join();
 }
 
-#if 1
+
 TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
     const char* server_ip = "127.0.0.1";
     const int server_port = 12346;
     const int client_port = 54322;
     const char* payload = "Hello, MAVLink!";
-    const int payload_len = strlen(payload);
+    const int payload_len = static_cast<int>(strlen(payload));
 
     // サーバーの設定
     IcommEndpointType server_endpoint = {server_ip, server_port};
@@ -125,8 +125,8 @@ TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
 
         // サーバーから返信
         const char* reply_payload = "Reply from Server";
-        auto reply_message = createMavlinkMessage(reply_payload, strlen(reply_payload));
-        ASSERT_TRUE(mavlink_comm_tcp.sendMessage(server_io, reply_message.data(), reply_message.size()));
+        auto reply_message = createMavlinkMessage(reply_payload, static_cast<int>(strlen(reply_payload)));
+        ASSERT_TRUE(mavlink_comm_tcp.sendMessage(server_io, reply_message.data(), static_cast<int>(reply_message.size())));
         server_io->close();
     });
 
@@ -137,7 +137,7 @@ TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
 
     // クライアントからメッセージ送信
     auto message = createMavlinkMessage(payload, payload_len);
-    ASSERT_TRUE(mavlink_comm_tcp.sendMessage(client_io, message.data(), message.size()));
+    ASSERT_TRUE(mavlink_comm_tcp.sendMessage(client_io, message.data(), static_cast<int>(message.size())));
 
     // クライアントで返信を受信
     char reply_buffer[1024] = {0};
@@ -149,4 +149,3 @@ TEST(MavLinkCommTcpTest, SendReceiveDataWithMavlinkHeader) {
     client_io->close();
     server_thread.join();
 }
-#endif
