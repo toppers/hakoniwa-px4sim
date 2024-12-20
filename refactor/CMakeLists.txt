@@ -14,9 +14,11 @@ else()
 endif()
 
 set(HAKO_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
+set(MAVLINK_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/mavlink_c_library_v2")
 
 add_subdirectory(comm)
 add_subdirectory(test)
+add_subdirectory(mavlink)
 #add_subdirectory(drone_physics)
 #add_subdirectory(matlab-if)
 #add_subdirectory(hakoniwa)
