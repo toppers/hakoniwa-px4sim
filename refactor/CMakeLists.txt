@@ -13,7 +13,10 @@ else()
     include(cmake-options/default-cmake-options.cmake)
 endif()
 
+set(HAKO_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
+
 add_subdirectory(comm)
+add_subdirectory(test)
 #add_subdirectory(drone_physics)
 #add_subdirectory(matlab-if)
 #add_subdirectory(hakoniwa)
