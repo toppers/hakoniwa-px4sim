@@ -19,7 +19,7 @@ public:
         if (!io->recv(data, datalen, &len)) {
             return false;
         }
-        int packet_length = MavLinkMessageParser::getMessageLength(header);
+        int packet_length = MavLinkMessageParser::getMessageLength(data);
 
         if (!MavLinkMessageParser::parseMessage(data, len)) {
             return false;

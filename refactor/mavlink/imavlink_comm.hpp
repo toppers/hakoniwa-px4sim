@@ -1,7 +1,7 @@
 #ifndef _IMAVLINK_COMM_HPP_
 #define _IMAVLINK_COMM_HPP_
 
-#include "icomm_connector.hpp"
+#include "comm/icomm_connector.hpp"
 
 using namespace hako::comm;
 namespace hako::mavlink {

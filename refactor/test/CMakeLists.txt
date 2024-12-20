@@ -23,6 +23,7 @@ FetchContent_MakeAvailable(googletest)
 set(SOURCE_FILES
     test_main.cpp
     test_comm.cpp
+    test_mavlink_comm.cpp
 )
 
 # 実行ファイルの定義

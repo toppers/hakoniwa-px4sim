@@ -15,6 +15,8 @@ public:
 
     static bool verifyCRC(const char* data, int length) {
         //not supported
+        (void)data;
+        (void)length;
         return true;
     }
     static bool parseMessage(const char* data, int length) {
