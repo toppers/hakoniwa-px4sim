@@ -5,6 +5,7 @@
 #include "mavlink_comm_udp.hpp"
 #include "mavlink_encoder.hpp"
 #include "mavlink_decoder.hpp"
+#include "mavlink_comm_buffer.hpp"
 
 #include "hako_mavlink_msgs/pdu_ctype_conv_mavlink_HakoHilSensor.hpp"
 #include "hako_mavlink_msgs/pdu_ctype_conv_mavlink_HakoHilGps.hpp"
@@ -33,7 +34,7 @@ MavLinkService::MavLinkService(int index, MavlinkServiceIoType io_type, const Ic
     }
     server_endpoint_ = *server_endpoint;
     io_type_ = io_type;
-
+    MavlinkCommBuffer::init();
     switch (io_type)
     {
     case MAVLINK_SERVICE_IO_TYPE_TCP:
@@ -156,10 +157,9 @@ bool MavLinkService::sendCommandLongAck()
 
 bool MavLinkService::readMessage(MavlinkHakoMessage& message)
 {
-    (void)message;
-    //TODO
-    return true;
+    return MavlinkCommBuffer::read(index_, message);
 }
+
 void MavLinkService::receiver() {
     try {
         if (!comm_io_) {
@@ -178,6 +178,7 @@ void MavLinkService::receiver() {
                             sendCommandLongAck();
                         }
                     }
+                    MavlinkCommBuffer::write(index_, message);
                 }
             } else {
                 std::cerr << "Failed to receive message" << std::endl;

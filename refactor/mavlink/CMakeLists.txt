@@ -16,6 +16,7 @@ set(SOURCE_FILES
     mavlink_dump.cpp
     mavlink_encoder.cpp
     mavlink_decoder.cpp
+    mavlink_comm_buffer.cpp
     mavlink_service.cpp
 )
 add_library(hako_mavlink ${SOURCE_FILES})
