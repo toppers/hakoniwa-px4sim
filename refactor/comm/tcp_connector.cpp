@@ -286,9 +286,7 @@ bool TcpCommIO::close() {
 
 #else
 bool TcpCommIO::close() {
-#ifdef __linux__
     ::shutdown(sockfd, SHUT_RDWR);
-#endif
     if (::close(sockfd) < 0) {
         //std::cout << "Failed to close socket: " << strerror(errno) << std::endl;
         return false;
