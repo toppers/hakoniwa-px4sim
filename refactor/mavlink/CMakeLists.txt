@@ -16,6 +16,7 @@ set(SOURCE_FILES
     mavlink_dump.cpp
     mavlink_encoder.cpp
     mavlink_decoder.cpp
+    mavlink_service.cpp
 )
 add_library(hako_mavlink ${SOURCE_FILES})
 
@@ -38,5 +39,8 @@ else()
 endif()
 
 
-target_include_directories(hako_mavlink PRIVATE ${MAVLINK_SOURCE_DIR}/all)
+target_include_directories(hako_mavlink 
+    PRIVATE ${MAVLINK_SOURCE_DIR}/all
+    PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
+    PRIVATE ${HAKO_SOURCE_DIR})
 target_compile_features(hako_mavlink PRIVATE cxx_std_17)

@@ -15,6 +15,7 @@ endif()
 
 set(HAKO_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 set(MAVLINK_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/mavlink_c_library_v2")
+set(ROS2PDU_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/hakoniwa-ros2pdu")
 
 add_subdirectory(comm)
 add_subdirectory(test)

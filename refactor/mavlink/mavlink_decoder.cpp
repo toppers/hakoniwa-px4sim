@@ -40,7 +40,7 @@ bool mavlink_get_message(mavlink_message_t *msg, MavlinkDecodedMessage *message)
         case MAVLINK_MSG_ID_HIL_SENSOR:
         {
             message->type = MAVLINK_MSG_TYPE_HIL_SENSOR;
-            mavlink_msg_hil_sensor_decode(msg, &message->data.sensor);
+            mavlink_msg_hil_sensor_decode(msg, &message->data.hil_sensor);
             return true;
         }
         case MAVLINK_MSG_ID_SYSTEM_TIME:

@@ -33,23 +33,23 @@ static void dump_command_ack(const MavlinkDecodedMessage& message) {
 }
 static void dump_hil_sensor(const MavlinkDecodedMessage& message) {
     std::cout << "  Type: HIL_SENSOR" << std::endl;
-    std::cout << "  Time stamp: " << message.data.sensor.time_usec << std::endl;
-    std::cout << "  Xacc: " << message.data.sensor.xacc << std::endl;
-    std::cout << "  Yacc: " << message.data.sensor.yacc << std::endl;
-    std::cout << "  Zacc: " << message.data.sensor.zacc << std::endl;
-    std::cout << "  Xgyro: " << message.data.sensor.xgyro << std::endl;
-    std::cout << "  Ygyro: " << message.data.sensor.ygyro << std::endl;
-    std::cout << "  Zgyro: " << message.data.sensor.zgyro << std::endl;
-    std::cout << "  Xmag: " << message.data.sensor.xmag << std::endl;
-    std::cout << "  Ymag: " << message.data.sensor.ymag << std::endl;
-    std::cout << "  Zmag: " << message.data.sensor.zmag << std::endl;
-    std::cout << "  Abs_pressure: " << message.data.sensor.abs_pressure << std::endl;
-    std::cout << "  Diff_pressure: " << message.data.sensor.diff_pressure << std::endl;
-    std::cout << "  Pressure_Alt: " << message.data.sensor.pressure_alt << std::endl;
-    std::cout << "  temparature: " << message.data.sensor.temperature << std::endl;
-    std::cout << "  fileds_updated: " << message.data.sensor.fields_updated << std::endl;
+    std::cout << "  Time stamp: " << message.data.hil_sensor.time_usec << std::endl;
+    std::cout << "  Xacc: " << message.data.hil_sensor.xacc << std::endl;
+    std::cout << "  Yacc: " << message.data.hil_sensor.yacc << std::endl;
+    std::cout << "  Zacc: " << message.data.hil_sensor.zacc << std::endl;
+    std::cout << "  Xgyro: " << message.data.hil_sensor.xgyro << std::endl;
+    std::cout << "  Ygyro: " << message.data.hil_sensor.ygyro << std::endl;
+    std::cout << "  Zgyro: " << message.data.hil_sensor.zgyro << std::endl;
+    std::cout << "  Xmag: " << message.data.hil_sensor.xmag << std::endl;
+    std::cout << "  Ymag: " << message.data.hil_sensor.ymag << std::endl;
+    std::cout << "  Zmag: " << message.data.hil_sensor.zmag << std::endl;
+    std::cout << "  Abs_pressure: " << message.data.hil_sensor.abs_pressure << std::endl;
+    std::cout << "  Diff_pressure: " << message.data.hil_sensor.diff_pressure << std::endl;
+    std::cout << "  Pressure_Alt: " << message.data.hil_sensor.pressure_alt << std::endl;
+    std::cout << "  temparature: " << message.data.hil_sensor.temperature << std::endl;
+    std::cout << "  fileds_updated: " << message.data.hil_sensor.fields_updated << std::endl;
     //std::cout << "  id: " << message.data.sensor.id << std::endl;
-    printf(" id: 0x%x\n", message.data.sensor.id);
+    printf(" id: 0x%x\n", message.data.hil_sensor.id);
 }
 
 static void dump_hil_state_quaternion(const MavlinkDecodedMessage& message) {
