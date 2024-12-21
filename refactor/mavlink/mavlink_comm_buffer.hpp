@@ -7,7 +7,6 @@
 #include <utility>
 #include <iostream>
 #include <atomic>
-#include <unistd.h>
 #include "mavlink_msg_types.hpp"
 
 namespace hako::mavlink {
