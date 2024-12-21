@@ -14,7 +14,6 @@ endif()
 # C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-/wd4267  # Suppress warning C4267: size_t to int conversion
 
 # Platform-specific settings
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
