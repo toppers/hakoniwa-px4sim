@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <atomic>
+#include <thread>
 
 namespace hako::mavlink {
 

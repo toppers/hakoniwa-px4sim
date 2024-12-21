@@ -5,7 +5,6 @@
 #include "mavlink_comm_udp.hpp"
 #include "mavlink_encoder.hpp"
 #include "mavlink_decoder.hpp"
-#include <thread>
 
 #include "hako_mavlink_msgs/pdu_ctype_conv_mavlink_HakoHilSensor.hpp"
 #include "hako_mavlink_msgs/pdu_ctype_conv_mavlink_HakoHilGps.hpp"
