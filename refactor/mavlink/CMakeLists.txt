@@ -35,6 +35,7 @@ else()
         /wd4244  # 'double'から'float'への変換の警告を抑制
         /wd4309  # 定数値の切り捨ての警告を抑制
         /wd4996  # 非推奨APIの警告を抑制
+        /wd4267  # Suppress warning C4267: size_t to int conversion
     )
 endif()
 
