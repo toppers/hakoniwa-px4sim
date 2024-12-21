@@ -29,13 +29,12 @@ if(OS_TYPE STREQUAL "posix")
     )
 else()
     target_compile_options(hako_mavlink PRIVATE
-        /wd4200  # Zero-sized array
-        /wd4706  # Assignment within conditional expression
-        /wd4996  # Deprecated API
-        /wd4244  # 'double'から'float'への変換の警告を抑制
-        /wd4309  # 定数値の切り捨ての警告を抑制
-        /wd4996  # 非推奨APIの警告を抑制
-        /wd4267  # Suppress warning C4267: size_t to int conversion
+        "/wd4200"  # Zero-sized array
+        "/wd4706"  # Assignment within conditional expression
+        "/wd4996"  # Deprecated API
+        "/wd4244"  # 'double'から'float'への変換の警告を抑制
+        "/wd4309"  # 定数値の切り捨ての警告を抑制
+        "/wd4267"  # Suppress warning C4267: size_t to int conversion
     )
 endif()
 
