@@ -71,3 +71,62 @@ TEST(MavLinkSendTcpTest, SendSensor) {
     server_thread.join();
 }
 
+
+TEST(MavLinkSendUdpTest, SendSensor) {
+    const char* server_ip = "127.0.0.1";
+    const int server_port = 12347;
+    // クライアントの設定
+    UdpClient udp_client;
+    IcommEndpointType client_endpoint = {server_ip, server_port};
+
+    // クライアント処理
+    ICommIO* client_io = udp_client.client_open(nullptr, &client_endpoint);
+    ASSERT_NE(client_io, nullptr) << "Failed to open TCP client";
+
+    // サーバーの設定
+    IcommEndpointType server_endpoint = {server_ip, server_port};
+    auto service = MavLinkService(0, MAVLINK_SERVICE_IO_TYPE_UDP, &server_endpoint, nullptr);
+    // サーバースレッド
+    std::thread server_thread([&]() {
+        auto ret = service.startService();
+        ASSERT_TRUE(ret) << "Failed to start service";
+        //thread sleep
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        MavlinkHakoMessage message;
+        message.type = MAVLINK_MSG_TYPE_HIL_SENSOR;
+        message.data.hil_sensor.time_usec = 123456789;
+        message.data.hil_sensor.xacc = 1.0f;
+        message.data.hil_sensor.yacc = 2.0f;
+        message.data.hil_sensor.zacc = 3.0f;
+        message.data.hil_sensor.xgyro = 4.0f;
+        message.data.hil_sensor.ygyro = 5.0f;
+        message.data.hil_sensor.zgyro = 6.0f;
+        message.data.hil_sensor.xmag = 7.0f;
+        message.data.hil_sensor.ymag = 8.0f;
+        message.data.hil_sensor.zmag = 9.0f;
+        ret = service.sendMessage(message);
+        ASSERT_TRUE(ret) << "Failed to send message";
+    });
+
+    // クライアントからメッセージ送信
+    char buffer[1024] = {0};
+    mavlink_message_t msg;
+    MavlinkDecodedMessage message;
+    MavLinkCommUdp mavlink_comm_udp;
+    auto ret = mavlink_comm_udp.receiveMessage(client_io, buffer, sizeof(buffer), nullptr);
+    ASSERT_TRUE(ret) << "Failed to receive message";
+    
+    ret = mavlink_decode(0, buffer, sizeof(buffer), &msg);
+    ASSERT_TRUE(ret) << "Failed to decode message";
+    ret = mavlink_get_message(&msg, &message);
+    ASSERT_TRUE(ret) << "Failed to get message";
+
+    ASSERT_EQ(message.type, MAVLINK_MSG_TYPE_HIL_SENSOR) << "Invalid message type";
+    ASSERT_EQ(message.data.hil_sensor.time_usec, 123456789) << "Invalid time_usec";
+    service.stopService();
+
+    client_io->close();
+    server_thread.join();
+}
+

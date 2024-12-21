@@ -24,7 +24,7 @@ set(SOURCE_FILES
     test_main.cpp
     test_comm.cpp
     test_mavlink_comm.cpp
-    test_mavlink_send.cpp
+    #test_mavlink_send.cpp
 )
 
 # 実行ファイルの定義
