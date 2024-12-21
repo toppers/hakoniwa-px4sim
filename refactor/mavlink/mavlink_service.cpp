@@ -170,6 +170,7 @@ void MavLinkService::receiver() {
             char recvBuffer[1024];
             int recvDataLen;
             if (mavlink_comm_->receiveMessage(comm_io_.get(), recvBuffer, sizeof(recvBuffer), &recvDataLen)) {
+                //std::cout << "Received MAVLink message with length: " << recvDataLen << std::endl;
                 mavlink_message_t msg;
                 bool ret = mavlink_decode((uint8_t)index_, recvBuffer, recvDataLen, &msg);
                 if (ret) {
@@ -178,8 +179,14 @@ void MavLinkService::receiver() {
                         if (message.type == MAVLINK_MSG_TYPE_LONG) {
                             sendCommandLongAck();
                         }
+                        MavlinkCommBuffer::write(index_, message);
                     }
-                    MavlinkCommBuffer::write(index_, message);
+                    else {
+                        std::cerr << "Failed to get message: " << msg.msgid << std::endl;
+                    }
+                }
+                else {
+                    std::cerr << "Failed to decode message" << std::endl;
                 }
             } else {
                 //std::cerr << "Failed to receive message" << std::endl;

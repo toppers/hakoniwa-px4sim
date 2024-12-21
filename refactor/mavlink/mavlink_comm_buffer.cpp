@@ -35,9 +35,10 @@ bool MavlinkCommBuffer::write(int index, MavlinkDecodedMessage &message) {
                 message.data.hil_actuator_controls, 
                 out.data.hil_actuator_controls
             );
+            //std::cout << "Converted message type: " << message.type << std::endl;
             break;
         default:
-            std::cerr << "Unsupported message type: " << message.type << std::endl;
+            //std::cerr << "Unsupported message type: " << message.type << std::endl;
             return false;
     }
 
