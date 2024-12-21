@@ -4,6 +4,8 @@
 #include "mavlink_comm_tcp.hpp"
 #include "mavlink_comm_udp.hpp"
 #include "mavlink_encoder.hpp"
+#include "mavlink_decoder.hpp"
+#include <thread>
 
 #include "hako_mavlink_msgs/pdu_ctype_conv_mavlink_HakoHilSensor.hpp"
 #include "hako_mavlink_msgs/pdu_ctype_conv_mavlink_HakoHilGps.hpp"
@@ -13,8 +15,10 @@
 using namespace hako::comm;
 using namespace hako::mavlink;
 
-MavLinkService::MavLinkService(MavlinkServiceIoType io_type, const IcommEndpointType *server_endpoint, const IcommEndpointType *client_endpoint)
+MavLinkService::MavLinkService(int index, MavlinkServiceIoType io_type, const IcommEndpointType* server_endpoint, const IcommEndpointType* client_endpoint)
+    : comm_io_(nullptr), is_service_started_(false), index_(index), receiver_thread_(nullptr)
 {
+    index_ = index;
     is_service_started_ = false;
     if (server_endpoint == nullptr)
     {
@@ -45,6 +49,12 @@ MavLinkService::MavLinkService(MavlinkServiceIoType io_type, const IcommEndpoint
     default:
         std::cerr << "Invalid IO type" << std::endl;
         break;
+    }
+}
+MavLinkService::~MavLinkService() {
+    stopService();
+    if (receiver_thread_ && receiver_thread_->joinable()) {
+        receiver_thread_->join();
     }
 }
 bool MavLinkService::sendMessage(MavlinkHakoMessage& message)
@@ -151,14 +161,78 @@ bool MavLinkService::readMessage(MavlinkHakoMessage& message)
     //TODO
     return true;
 }
-bool MavLinkService::start_Service()
-{
-    //TODO
-    is_service_started_ = true;
-    return is_service_started_;
+void MavLinkService::receiver() {
+    try {
+        if (!comm_io_) {
+            throw std::runtime_error("Invalid comm io");
+        }
+        while (is_service_started_) {
+            char recvBuffer[1024];
+            int recvDataLen;
+            if (mavlink_comm_->receiveMessage(comm_io_.get(), recvBuffer, sizeof(recvBuffer), &recvDataLen)) {
+                mavlink_message_t msg;
+                bool ret = mavlink_decode((uint8_t)index_, recvBuffer, recvDataLen, &msg);
+                if (ret) {
+                    MavlinkDecodedMessage message;
+                    if (mavlink_get_message(&msg, &message)) {
+                        if (message.type == MAVLINK_MSG_TYPE_LONG) {
+                            sendCommandLongAck();
+                        }
+                    }
+                }
+            } else {
+                std::cerr << "Failed to receive message" << std::endl;
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in receiver thread: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Unknown exception in receiver thread" << std::endl;
+    }
 }
-void MavLinkService::stopService()
-{
-    //TODO
+
+bool MavLinkService::startService() {
+    if (is_service_started_) {
+        std::cerr << "Service is already started" << std::endl;
+        return false;
+    }
+    if (!comm_server_) {
+        std::cerr << "Invalid comm server" << std::endl;
+        return false;
+    }
+
+    auto io = comm_server_->server_open(&server_endpoint_);
+    if (!io) {
+        std::cerr << "Failed to open server" << std::endl;
+        return false;
+    }
+
+    comm_io_ = std::unique_ptr<ICommIO>(io);
+    is_service_started_ = true;
+
+    receiver_thread_ = std::make_unique<std::thread>(&MavLinkService::receiver, this);
+    if (!receiver_thread_ || !receiver_thread_->joinable()) {
+        std::cerr << "Failed to create receiver thread" << std::endl;
+        is_service_started_ = false;
+        comm_io_->close();
+        comm_io_ = nullptr;
+        return false;
+    }
+    return true;
+}
+void MavLinkService::stopService() {
+    if (!is_service_started_) {
+        std::cerr << "Service is not started" << std::endl;
+        return;
+    }
+
     is_service_started_ = false;
+
+    if (comm_io_) {
+        comm_io_->close();
+    }
+
+    if (receiver_thread_ && receiver_thread_->joinable()) {
+        receiver_thread_->join();
+    }
 }
