@@ -15,20 +15,23 @@
 
 namespace hako::comm {
 
-UdpCommIO::UdpCommIO(ICOMM_SOCKET sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr(remote_addr) {}
+UdpCommIO::UdpCommIO(ICOMM_SOCKET sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr_(remote_addr) 
+{
+    is_remote_addr_set = true;
+}
 UdpCommIO::~UdpCommIO() {
     close();
 }
 
 bool UdpCommIO::recv(char* data, int datalen, int* recv_datalen) {
     if(sockfd < 0 || !data || datalen <= 0) return false;
-
-    socklen_t addr_len = sizeof(remote_addr);
-    int bytes_received = recvfrom(sockfd, data, datalen, 0, (struct sockaddr*)&remote_addr, &addr_len);
+    is_remote_addr_set = false;
+    socklen_t addr_len = sizeof(remote_addr_);
+    int bytes_received = recvfrom(sockfd, data, datalen, 0, (struct sockaddr*)&remote_addr_, &addr_len);
     if(bytes_received < 0) {
         return false;
     }
-
+    is_remote_addr_set = true;
     if(recv_datalen) {
         *recv_datalen = bytes_received;
     }
@@ -38,8 +41,12 @@ bool UdpCommIO::recv(char* data, int datalen, int* recv_datalen) {
 
 bool UdpCommIO::send(const char* data, int datalen, int* send_datalen) {
     if(sockfd < 0 || !data || datalen <= 0) return false;
+    if (!is_remote_addr_set) {
+        std::cerr << "Remote address is not set" << std::endl;
+        return false;
+    }
 
-    int bytes_sent = sendto(sockfd, data, datalen, 0, (struct sockaddr*)&remote_addr, sizeof(remote_addr));
+    int bytes_sent = sendto(sockfd, data, datalen, 0, (struct sockaddr*)&remote_addr_, sizeof(remote_addr_));
     if(bytes_sent < 0) {
         return false;
     }
@@ -174,8 +181,7 @@ ICommIO* UdpServer::server_open(IcommEndpointType *endpoint) {
         return nullptr;
     }
 
-    struct sockaddr_in remote_addr;  // このアドレスは、recvfromで設定される
-    return new UdpCommIO(sockfd, remote_addr);
+    return new UdpCommIO(sockfd);
 }
 
 } // namespace hako::comm

@@ -8,9 +8,13 @@ namespace hako::comm {
 class UdpCommIO : public ICommIO {
 private:
     ICOMM_SOCKET sockfd;
-    struct sockaddr_in remote_addr;
+    bool is_remote_addr_set;
+    struct sockaddr_in remote_addr_;
 
 public:
+    UdpCommIO(ICOMM_SOCKET sockfd) : sockfd(sockfd) {
+        is_remote_addr_set = false;
+    }
     UdpCommIO(ICOMM_SOCKET sockfd, const sockaddr_in& remote_addr);
     ~UdpCommIO() override;
 
