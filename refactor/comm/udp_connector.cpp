@@ -70,7 +70,10 @@ bool UdpCommIO::send(const char* data, int datalen, int* send_datalen) {
 }
 
 bool UdpCommIO::close() {
+#ifdef _WIN32
+#else
     ::shutdown(sockfd, SHUT_RDWR);
+#endif
     if(sockfd >= 0) {
         close_socket(sockfd); // プラットフォームごとに正しい関数を使用
         sockfd = -1;
