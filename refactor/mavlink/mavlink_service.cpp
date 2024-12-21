@@ -70,6 +70,7 @@ bool MavLinkService::sendMessage(MavlinkHakoMessage& message)
         return false;
     }
     MavlinkDecodedMessage decoded_message;
+    decoded_message.type = message.type;
     switch (message.type) {
         case MAVLINK_MSG_TYPE_HIL_SENSOR:
         {
@@ -181,7 +182,7 @@ void MavLinkService::receiver() {
                     MavlinkCommBuffer::write(index_, message);
                 }
             } else {
-                std::cerr << "Failed to receive message" << std::endl;
+                //std::cerr << "Failed to receive message" << std::endl;
             }
         }
     } catch (const std::exception& e) {
@@ -222,7 +223,7 @@ bool MavLinkService::startService() {
 }
 void MavLinkService::stopService() {
     if (!is_service_started_) {
-        std::cerr << "Service is not started" << std::endl;
+        //std::cerr << "Service is not started" << std::endl;
         return;
     }
 

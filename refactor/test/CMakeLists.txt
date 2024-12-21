@@ -24,6 +24,7 @@ set(SOURCE_FILES
     test_main.cpp
     test_comm.cpp
     test_mavlink_comm.cpp
+    test_mavlink_send.cpp
 )
 
 # 実行ファイルの定義
@@ -31,10 +32,12 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
     PRIVATE GTest::gtest
     PRIVATE GTest::gtest_main
-    PRIVATE hako_comm
+    PRIVATE hako_mavlink
 )
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${HAKO_SOURCE_DIR}
+    PRIVATE ${MAVLINK_SOURCE_DIR}/all
+    PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
 )
 
 # C++標準設定

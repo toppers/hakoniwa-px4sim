@@ -21,7 +21,6 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
     if (!msg || !message) {
         return false;
     }
-
     switch (message->type) {
         case MAVLINK_MSG_TYPE_HEARTBEAT:
             mavlink_msg_heartbeat_pack(

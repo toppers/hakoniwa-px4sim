@@ -45,3 +45,5 @@ target_include_directories(hako_mavlink
     PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
     PRIVATE ${HAKO_SOURCE_DIR})
 target_compile_features(hako_mavlink PRIVATE cxx_std_17)
+
+target_link_libraries(hako_mavlink PRIVATE hako_comm)

@@ -17,7 +17,7 @@ public:
     }
 
     bool receiveMessage(ICommIO* io, char* data, int datalen, int* recv_datalen) override {
-        if (!io || !data || datalen <= 0 || !recv_datalen) {
+        if (!io || !data || datalen <= 0) {
             std::cerr << "Invalid arguments to receiveMessage (TCP)" << std::endl;
             return false;
         }
@@ -38,7 +38,9 @@ public:
         if (!io->recv(&data[MAVLINK_HEADER_LEN], packet_length, &len)) {
             return false;
         }
-        *recv_datalen = MAVLINK_HEADER_LEN + packet_length;
+        if (recv_datalen) {
+            *recv_datalen = MAVLINK_HEADER_LEN + packet_length;
+        }
         return true;
     }
 

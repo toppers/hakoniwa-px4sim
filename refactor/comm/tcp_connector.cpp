@@ -227,7 +227,7 @@ bool TcpCommIO::recv(char* data, int datalen, int* recv_datalen) {
         if (len > 0) {
             received += len;
         } else if (len == 0 || (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK)) {
-            std::cout << "Failed to receive data: " << strerror(errno) << std::endl;
+            //std::cout << "Failed to receive data: " << strerror(errno) << std::endl;
             *recv_datalen = received;
             return false;
         }
@@ -278,7 +278,7 @@ bool TcpCommIO::send(const char* data, int datalen, int* send_datalen) {
 #ifdef WIN32
 bool TcpCommIO::close() {
     if (closesocket(sockfd) == SOCKET_ERROR) {
-        std::cerr << "Failed to close socket: " << WSAGetLastError() << std::endl;
+        //std::cerr << "Failed to close socket: " << WSAGetLastError() << std::endl;
         return false;
     }
     return true;
@@ -287,7 +287,7 @@ bool TcpCommIO::close() {
 #else
 bool TcpCommIO::close() {
     if (::close(sockfd) < 0) {
-        std::cout << "Failed to close socket: " << strerror(errno) << std::endl;
+        //std::cout << "Failed to close socket: " << strerror(errno) << std::endl;
         return false;
     }
     return true;
