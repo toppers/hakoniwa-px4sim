@@ -26,6 +26,7 @@ public:
 
 private:
     bool sendMessage(MavlinkDecodedMessage &message);
+    bool sendCommandLongAck();
     std::unique_ptr<hako::comm::ICommClient> comm_client_;
     std::unique_ptr<hako::comm::ICommServer> comm_server_;
     std::unique_ptr<hako::mavlink::IMavLinkComm> mavlink_comm_;
