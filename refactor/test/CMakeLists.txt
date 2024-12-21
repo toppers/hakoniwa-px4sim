@@ -29,6 +29,23 @@ set(SOURCE_FILES
 
 # 実行ファイルの定義
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+if(OS_TYPE STREQUAL "posix")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wno-pedantic
+        -Wno-address-of-packed-member
+        -Wno-unused-function
+        -Wno-missing-field-initializers
+    )
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        /wd4200  # Zero-sized array
+        /wd4706  # Assignment within conditional expression
+        /wd4996  # Deprecated API
+        /wd4244  # 'double'から'float'への変換の警告を抑制
+        /wd4309  # 定数値の切り捨ての警告を抑制
+        /wd4267  # Suppress warning C4267: size_t to int conversion
+    )
+endif()
 target_link_libraries(${PROJECT_NAME}
     PRIVATE GTest::gtest
     PRIVATE GTest::gtest_main
