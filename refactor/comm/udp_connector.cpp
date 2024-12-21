@@ -17,7 +17,6 @@ namespace hako::comm {
 
 UdpCommIO::UdpCommIO(ICOMM_SOCKET sockfd, const sockaddr_in& remote_addr) : sockfd(sockfd), remote_addr_(remote_addr) 
 {
-    is_remote_addr_set = true;
 }
 UdpCommIO::~UdpCommIO() {
     close();
@@ -25,13 +24,19 @@ UdpCommIO::~UdpCommIO() {
 
 bool UdpCommIO::recv(char* data, int datalen, int* recv_datalen) {
     if(sockfd < 0 || !data || datalen <= 0) return false;
-    is_remote_addr_set = false;
     socklen_t addr_len = sizeof(remote_addr_);
-    int bytes_received = recvfrom(sockfd, data, datalen, 0, (struct sockaddr*)&remote_addr_, &addr_len);
+    struct sockaddr_in addr;
+    int bytes_received = recvfrom(sockfd, data, datalen, 0, (struct sockaddr*)&addr, &addr_len);
     if(bytes_received < 0) {
         return false;
     }
-    is_remote_addr_set = true;
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        remote_addr_ = addr;
+    }
+
+    //std::cout << "recv sockfd: " << sockfd << std::endl;
+    //std::cout << "Received message from " << inet_ntoa(remote_addr_.sin_addr) << ":" << ntohs(remote_addr_.sin_port) << std::endl;
     if(recv_datalen) {
         *recv_datalen = bytes_received;
     }
@@ -40,12 +45,18 @@ bool UdpCommIO::recv(char* data, int datalen, int* recv_datalen) {
 }
 
 bool UdpCommIO::send(const char* data, int datalen, int* send_datalen) {
+    //std::cout << "send sockfd: " << sockfd << std::endl;
+    //std::cout << "Remote  " << inet_ntoa(remote_addr_.sin_addr) << ":" << ntohs(remote_addr_.sin_port) << std::endl;
     if(sockfd < 0 || !data || datalen <= 0) return false;
-    if (!is_remote_addr_set) {
+    struct sockaddr_in addr;
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        addr = remote_addr_;
+    }
+    if (!addr.sin_port || !addr.sin_addr.s_addr) {
         std::cerr << "Remote address is not set" << std::endl;
         return false;
     }
-
     int bytes_sent = sendto(sockfd, data, datalen, 0, (struct sockaddr*)&remote_addr_, sizeof(remote_addr_));
     if(bytes_sent < 0) {
         return false;

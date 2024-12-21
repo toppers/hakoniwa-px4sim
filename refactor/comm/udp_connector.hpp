@@ -2,18 +2,17 @@
 #define _UDPCONNECTOR_HPP_
 
 #include "icomm_connector.hpp"
-
+#include <mutex>
 namespace hako::comm {
 
 class UdpCommIO : public ICommIO {
 private:
     ICOMM_SOCKET sockfd;
-    bool is_remote_addr_set;
-    struct sockaddr_in remote_addr_;
+    std::mutex mtx_;
+    struct sockaddr_in remote_addr_ = {};
 
 public:
     UdpCommIO(ICOMM_SOCKET sockfd) : sockfd(sockfd) {
-        is_remote_addr_set = false;
     }
     UdpCommIO(ICOMM_SOCKET sockfd, const sockaddr_in& remote_addr);
     ~UdpCommIO() override;
