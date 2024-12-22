@@ -25,6 +25,14 @@ add_library(
     rotor_physics.cpp
 )
 
+if(OS_TYPE STREQUAL "posix")
+    target_compile_options(drone_physics PRIVATE
+        -Wparentheses
+    )
+else()
+    MESSAGE(STATUS "Windows")
+endif()
+
 add_executable(utest utest.cpp)
 target_link_libraries(utest drone_physics)
 
