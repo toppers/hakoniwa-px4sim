@@ -31,13 +31,32 @@ using namespace hako::aircraft;
 #define MAG_SAMPLE_NUM              drone_config.getCompSensorSampleCount("mag")
 
 #define THRUST_PARAM_Ct              drone_config.getCompThrusterParameter("Ct")
-
 #define LOGPATH(index, name)        drone_config.getSimLogFullPathFromIndex(index, name)
-
 #define HAKO_ASSERT(cond)           if (!(cond)) { throw std::runtime_error("assertion failed: " #cond); }
 
 static inline std::unique_ptr<ILogFile> create_logfile(const std::string& path, ILog& entry) {
     return std::make_unique<CsvLogFile>(path, entry.log_head());
+}
+
+static void registerLogEntry(const DroneConfig& drone_config, AirCraft& aircraft, ILog& entry, const std::string& filename) {
+    aircraft.get_logger().add_entry(
+        entry, 
+        create_logfile(
+            drone_config.getSimLogFullPathFromIndex(aircraft.get_index(), filename), 
+            entry)
+    );
+}
+
+template <typename SensorType>
+SensorType* createSensor(const DroneConfig& config, const std::string& type, double deltaTime) {
+    auto sensor = new SensorType(deltaTime, config.getCompSensorSampleCount(type));
+    double variance = config.getCompSensorNoise(type);
+    if (variance > 0) {
+        auto noise = new SensorNoise(variance);
+        HAKO_ASSERT(noise != nullptr);
+        sensor->set_noise(noise);
+    }
+    return sensor;
 }
 
 
@@ -171,72 +190,32 @@ IAirCraft* hako::aircraft::create_aircraft(int index, const DroneConfig& drone_c
     }
 
     //sensor acc
-    auto acc = new SensorAcceleration(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
-    HAKO_ASSERT(acc != nullptr);
-    double variance = drone_config.getCompSensorNoise("acc");
-    if (variance > 0) {
-        auto noise = new SensorNoise(variance);
-        HAKO_ASSERT(noise != nullptr);
-        acc->set_noise(noise);
-    }
+    auto acc = createSensor<SensorAcceleration>(drone_config, "acc", DELTA_TIME_SEC);
+    registerLogEntry(drone_config, *drone, *acc, "log_acc.csv");
     drone->set_acc(acc);
-    drone->get_logger().add_entry(*acc, 
-        create_logfile(LOGPATH(drone->get_index(), "log_acc.csv"), *acc));
 
     //sensor gyro
-    auto gyro = new SensorGyro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
-    HAKO_ASSERT(gyro != nullptr);
-    variance = drone_config.getCompSensorNoise("gyro");
-    if (variance > 0) {
-        auto noise = new SensorNoise(variance);
-        HAKO_ASSERT(noise != nullptr);
-        gyro->set_noise(noise);
-    }
+    auto gyro = createSensor<SensorGyro>(drone_config, "gyro", DELTA_TIME_SEC);
+    registerLogEntry(drone_config, *drone, *gyro, "log_gyro.csv");
     drone->set_gyro(gyro);
-    drone->get_logger().add_entry(*gyro, 
-        create_logfile(LOGPATH(drone->get_index(), "log_gyro.csv"), *gyro));
 
     //sensor mag
-    auto mag = new SensorMag(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
-    HAKO_ASSERT(mag != nullptr);
-    variance = drone_config.getCompSensorNoise("mag");
-    if (variance > 0) {
-        auto noise = new SensorNoise(variance);
-        HAKO_ASSERT(noise != nullptr);
-        mag->set_noise(noise);
-    }
+    auto mag = createSensor<SensorMag>(drone_config, "mag", DELTA_TIME_SEC);
     mag->set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
     drone->set_mag(mag);
-    drone->get_logger().add_entry(*mag, 
-        create_logfile(LOGPATH(drone->get_index(), "log_mag.csv"), *mag));
+    registerLogEntry(drone_config, *drone, *mag, "log_mag.csv");
 
     //sensor baro
-    auto baro = new SensorBaro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
-    HAKO_ASSERT(baro != nullptr);
+    auto baro = createSensor<SensorBaro>(drone_config, "baro", DELTA_TIME_SEC);
     baro->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
-    variance = drone_config.getCompSensorNoise("baro");
-    if (variance > 0) {
-        auto noise = new SensorNoise(variance);
-        HAKO_ASSERT(noise != nullptr);
-        baro->set_noise(noise);
-    }
     drone->set_baro(baro);
-    drone->get_logger().add_entry(*baro, 
-        create_logfile(LOGPATH(drone->get_index(), "log_baro.csv"), *baro));
+    registerLogEntry(drone_config, *drone, *baro, "log_baro.csv");
 
     //sensor gps
-    auto gps = new SensorGps(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
-    HAKO_ASSERT(gps != nullptr);
-    variance = drone_config.getCompSensorNoise("gps");
-    if (variance > 0) {
-        auto noise = new SensorNoise(variance);
-        HAKO_ASSERT(noise != nullptr);
-        gps->set_noise(noise);
-    }
+    auto gps = createSensor<SensorGps>(drone_config, "gps", DELTA_TIME_SEC);
     gps->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     drone->set_gps(gps);
-    drone->get_logger().add_entry(*gps, 
-        create_logfile(LOGPATH(drone->get_index(), "log_gps.csv"), *gps));
+    registerLogEntry(drone_config, *drone, *gps, "log_gps.csv");
 
     return drone;
 }
