@@ -1,6 +1,8 @@
 #ifndef _ISENSOR_NOISE_HPP_
 #define _ISENSOR_NOISE_HPP_
 
+#include "aircraft/interfaces/primitive_types.hpp"
+
 namespace hako::aircraft {
 
 class ISensorNoise {
