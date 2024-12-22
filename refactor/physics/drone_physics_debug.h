@@ -93,13 +93,18 @@ static int AssertCount = 0;
 #define assert_almost_equal_euler(a, b) \
     assert(++AssertCount && diff_e(&(a), &(b)) <almost_tolerance || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
 #else
+#ifdef NDEBUG
+#define assert_almost_equal(a, b) ((void)(a), (void)(b))
+#define assert_almost_equal_euler(a, b) ((void)(a), (void)(b))
+#else
 #define assert_almost_equal(a, b) \
     assert(((++AssertCount) && (diff(&(a), &(b)) < almost_tolerance)) || \
            ((print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0)))
 #define assert_almost_equal_euler(a, b) \
     assert(((++AssertCount) && (diff_e(&(a), &(b)) < almost_tolerance)) || \
            ((print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0)))
-#endif
+#endif /* NDEBUG */
+#endif /* 0 */
 
 #define print_vec(v) \
     fprintf(stderr, "%s=(%g,%g,%g)", #v, v.x, v.y, v.z)
