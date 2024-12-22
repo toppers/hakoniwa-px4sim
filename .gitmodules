@@ -4,3 +4,6 @@
 [submodule "thirdparty/hakoniwa-ros2pdu"]
 	path = thirdparty/hakoniwa-ros2pdu
 	url = https://github.com/toppers/hakoniwa-ros2pdu.git
+[submodule "thirdparty/glm"]
+	path = thirdparty/glm
+	url = https://github.com/g-truc/glm.git
