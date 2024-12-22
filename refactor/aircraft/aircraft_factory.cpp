@@ -102,7 +102,7 @@ IAirCraft* hako::aircraft::create_aircraft(int index, const DroneConfig& drone_c
     double HoveringRadPerSec = sqrt(drone_dynamics->get_mass() * GRAVITY / (drone_config.getCompThrusterParameter("Ct") * ROTOR_NUM));
     double RadPerSecMax = HoveringRadPerSec * 2.0;
     double HoveringRpm = HoveringRadPerSec * 60.0 / (2 * M_PI);
-    HAKO_ASSERT(HoveringRpm != 0);
+    HAKO_ASSERT(HoveringRpm != 0.0);
     std::cout << "HoveringRadPerSec: " << HoveringRadPerSec << std::endl;
     std::cout << "HoveringRpm: " << HoveringRpm << std::endl;
     //Tr=J*Rm/(Dm*Rm+K*K+2*Rm*Cq*ω_0)
@@ -155,7 +155,7 @@ IAirCraft* hako::aircraft::create_aircraft(int index, const DroneConfig& drone_c
 
     RotorConfigType rotor_config[ROTOR_NUM];
     std::vector<RotorPosition> pos = drone_config.getCompThrusterRotorPositions();
-    HAKO_ASSERT(pos.size() == ROTOR_NUM);
+    HAKO_ASSERT((int)(pos.size()) == ROTOR_NUM);
     for (size_t i = 0; i < pos.size(); ++i) {
         rotor_config[i].ccw = pos[i].rotationDirection;
         rotor_config[i].data.x = pos[i].position[0];
