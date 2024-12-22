@@ -145,6 +145,7 @@ IAirCraft* hako::aircraft::create_aircraft(int index, const DroneConfig& drone_c
         {
             rotor = new RotorDynamics(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
+            rotor->set_battery_dynamics_constants(rotor_constants);
             static_cast<RotorDynamics*>(rotor)->set_params(RadPerSecMax, RotorTau, RadPerSecMax);
             drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), 
                 create_logfile(LOGPATH(drone->get_index(), logfilename), *static_cast<RotorDynamics*>(rotor)));

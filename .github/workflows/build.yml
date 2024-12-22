@@ -39,6 +39,10 @@ jobs:
           cmake -G "Visual Studio 17 2022" -A x64 -DHAKO_CLIENT_OPTION_FILEPATH="cmake-options/win-cmake-options.cmake" .
           cmake --build . --config Release
           cd test
+          set DRONE_CONFIG1_DIR=aircraft\\test-data\\drone-config1
+          set DRONE_CONFIG2_DIR=aircraft\\test-data\\drone-config2
+          echo DRONE_CONFIG1_DIR=%DRONE_CONFIG1_DIR%
+          echo DRONE_CONFIG2_DIR=%DRONE_CONFIG2_DIR%          
           ctest -C Release --output-on-failure
 
 
@@ -50,6 +54,10 @@ jobs:
           cmake -D HAKO_CLIENT_OPTION_FILEPATH=cmake-options/linux-cmake-options.cmake .
           make
           cd test
+          export DRONE_CONFIG1_DIR=aircraft/test-data/drone-config1
+          export DRONE_CONFIG2_DIR=aircraft/test-data/drone-config2
+          echo "DRONE_CONFIG1_DIR is $DRONE_CONFIG1_DIR"
+          echo "DRONE_CONFIG2_DIR is $DRONE_CONFIG2_DIR"          
           ctest --output-on-failure
 
       - name: Build and Test on MacOS
@@ -59,6 +67,10 @@ jobs:
           cmake .
           make
           cd test
+          export DRONE_CONFIG1_DIR=aircraft/test-data/drone-config1
+          export DRONE_CONFIG2_DIR=aircraft/test-data/drone-config2
+          echo "DRONE_CONFIG1_DIR is $DRONE_CONFIG1_DIR"
+          echo "DRONE_CONFIG2_DIR is $DRONE_CONFIG2_DIR"          
           ctest --output-on-failure
   
           

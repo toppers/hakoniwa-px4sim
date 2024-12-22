@@ -34,7 +34,7 @@ protected:
     }
 public:
     virtual ~IAirCraft() {}
-    virtual void run(DroneDynamicsInputType& input) = 0;
+    virtual void run(AircraftInputType& input) = 0;
     virtual void reset() = 0;
     void enable_disturb()
     {

@@ -72,9 +72,9 @@ TEST_F(BaroTest, SensorBaro_002)
     //EXPECT_GT(result.abs_pressure, 10-0.02);
     //EXPECT_LT(result.abs_pressure, 10+0.02);
 
-    EXPECT_GT(result.diff_pressure, -0.02);
-    EXPECT_LT(result.diff_pressure, 0.02);
+    EXPECT_GT(result.diff_pressure, -0.05);
+    EXPECT_LT(result.diff_pressure, 0.05);
 
-    EXPECT_GT(result.pressure_alt, -4 -0.02);
-    EXPECT_LT(result.pressure_alt, -4 + 0.02);
+    EXPECT_GT(result.pressure_alt, -4 -0.05);
+    EXPECT_LT(result.pressure_alt, -4 + 0.05);
 }

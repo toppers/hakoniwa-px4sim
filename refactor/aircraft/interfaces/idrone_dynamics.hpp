@@ -35,13 +35,13 @@ typedef struct {
 
 typedef struct {
     bool no_use_actuator;
-    double controls[MAX_ROTOR_NUM];
+    double controls[MAX_ROTOR_NUM]; // rotor duty rate
     DroneDynamicsManualControlType manual;
     DroneDynamicsCollisionType collision;
     DroneDynamicsDisturbanceType disturbance;
     DroneThrustType thrust;
     DroneTorqueType torque;
-} DroneDynamicsInputType;
+} AircraftInputType;
 
 
 class IDroneDynamics: public ILog {
@@ -75,7 +75,7 @@ public:
     virtual bool has_collision_detection() = 0;
     virtual bool has_manual_control() = 0;
 
-    virtual void run(const DroneDynamicsInputType &input) = 0;
+    virtual void run(const AircraftInputType &input) = 0;
 };
 
 }

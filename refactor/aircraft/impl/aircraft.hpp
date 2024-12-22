@@ -29,7 +29,7 @@ public:
         thrust_dynamis->reset();
         logger.reset();
     }
-    void run(DroneDynamicsInputType& input) override
+    void run(AircraftInputType& input) override
     {
         static const double vbat = 14.1;
         //actuators

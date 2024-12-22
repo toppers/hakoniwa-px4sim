@@ -35,6 +35,7 @@ set(SOURCE_FILES
     aircraft/test_thrust_dynamics.cpp
     aircraft/test_rotor_dynamics.cpp
     aircraft/test_body_dynamics.cpp
+    aircraft/test_aircraft.cpp
 )
 
 # 実行ファイルの定義
@@ -62,12 +63,14 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE hako_mavlink
     PRIVATE hako_logger
     PRIVATE drone_physics
+    PRIVATE hako_aircraft
 )
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${MAVLINK_SOURCE_DIR}/all
     PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
     PRIVATE ${GLM_SOURCE_DIR}
+    PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
 )
 
 # C++標準設定

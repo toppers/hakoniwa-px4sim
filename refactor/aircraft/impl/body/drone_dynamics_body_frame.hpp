@@ -231,7 +231,7 @@ public:
     }
 
     // Implementation for the run function is required
-    void run(const DroneDynamicsInputType &input) override 
+    void run(const AircraftInputType &input) override 
     {
         torque = input.torque;
         thrust = input.thrust;
