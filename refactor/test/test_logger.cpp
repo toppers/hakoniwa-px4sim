@@ -64,28 +64,24 @@ TEST(HakoLoggerTest, AddEntryAndRun) {
 
     // CsvLogFileを読み込んで確認 (1つ目のデータ)
     hako::logger::CsvLogFile csv_reader1(TEMP_FILE1);
+    csv_reader1.load(header);
     std::vector<hako::logger::LogDataType> read_data1;
     ASSERT_TRUE(csv_reader1.read(read_data1));
 
-    // デバッグ用: 読み取ったデータを出力
-    std::cout << "Read Data (string): " << std::get<std::string>(read_data1[0]) << std::endl;
-
     // データを型変換して検証
-    ASSERT_EQ(std::stoull(std::get<std::string>(read_data1[0])), std::get<uint64_t>(sample_data1[0]));
-    ASSERT_FLOAT_EQ(std::stof(std::get<std::string>(read_data1[1])), std::get<float>(sample_data1[1]));
+    ASSERT_EQ(std::get<uint64_t>(read_data1[0]), std::get<uint64_t>(sample_data1[0]));
+    ASSERT_FLOAT_EQ(std::get<float>(read_data1[1]), std::get<float>(sample_data1[1]));
     ASSERT_EQ(std::get<std::string>(read_data1[2]), std::get<std::string>(sample_data1[2]));
 
     // CsvLogFileを読み込んで確認 (2つ目のデータ)
     hako::logger::CsvLogFile csv_reader2(TEMP_FILE2);
+    csv_reader2.load(header);
     std::vector<hako::logger::LogDataType> read_data2;
     ASSERT_TRUE(csv_reader2.read(read_data2));
 
-    // デバッグ用: 読み取ったデータを出力
-    std::cout << "Read Data (string): " << std::get<std::string>(read_data2[0]) << std::endl;
-
     // データを型変換して検証
-    ASSERT_EQ(std::stoull(std::get<std::string>(read_data2[0])), std::get<uint64_t>(sample_data2[0]));
-    ASSERT_FLOAT_EQ(std::stof(std::get<std::string>(read_data2[1])), std::get<float>(sample_data2[1]));
+    ASSERT_EQ(std::get<uint64_t>(read_data2[0]), std::get<uint64_t>(sample_data2[0]));
+    ASSERT_FLOAT_EQ(std::get<float>(read_data2[1]), std::get<float>(sample_data2[1]));
     ASSERT_EQ(std::get<std::string>(read_data2[2]), std::get<std::string>(sample_data2[2]));
 }
 
@@ -111,6 +107,7 @@ TEST(HakoLoggerTest, ResetAndClose) {
     // リセット後にデータが消えていることを確認
     hako::logger::CsvLogFile csv_reader(TEMP_FILE);
     std::vector<hako::logger::LogDataType> read_data;
+    csv_reader.load(header);
     EXPECT_FALSE(csv_reader.read(read_data)); // データがないのでfalse
 
     // クローズ

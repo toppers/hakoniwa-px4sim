@@ -18,6 +18,14 @@ public:
      */
     virtual ~ILogFile() {}
 
+
+    /**
+     * Pure virtual method for setting the header information.
+     * Must be implemented in derived classes.
+     * @param header The header information for the log file.
+     */
+    virtual void load(const std::vector<LogHeaderType>& header) = 0;
+
     /**
      * Pure virtual method for writing log data.
      * Must be implemented in derived classes.

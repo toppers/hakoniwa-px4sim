@@ -47,9 +47,11 @@ public:
         if (!csv_read_file.is_open()) {
             throw std::runtime_error("Failed to open file for reading: " + file_name);
         }
+    }
+    void load(const std::vector<LogHeaderType>& header) override {
+        header_ = header;
         load_all_data();
     }
-
     /**
      * Destructor: Ensures files are properly closed.
      */
@@ -163,9 +165,9 @@ private:
         if (std::getline(csv_read_file, line)) {
             std::istringstream lineStream(line);
             std::string cell;
+            int i = 0;
             while (std::getline(lineStream, cell, ',')) {
-                // ヘッダー情報に基づいて型を設定（仮にすべてSTRING型）
-                header_.push_back({cell, LogType::LOG_TYPE_STRING});
+                header_.push_back({cell, header_[i++].type});
             }
         }
 
@@ -208,6 +210,7 @@ private:
      */
     LogDataType parse_cell(const std::string& cell, LogType type) const {
         try {
+            //std::cout << "cell: " << cell << " type: " << type << std::endl;
             switch (type) {
             case LogType::LOG_TYPE_BOOL:
                 return std::stoi(cell) != 0;
