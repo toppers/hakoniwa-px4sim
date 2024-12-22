@@ -1,7 +1,7 @@
 #ifndef _CSV_LOG_FILE_HPP_
 #define _CSV_LOG_FILE_HPP_
 
-#include "ilog_file.hpp"
+#include "logger/ilog_file.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -20,6 +20,7 @@ private:
     std::string file_name_; // File name for resetting the file
     std::ofstream csv_file;
     std::ifstream csv_read_file;
+    std::vector<LogHeaderType> header_;         // Header information for the CSV file
     std::vector<std::vector<std::string>> data; // Stores all rows for reading
     size_t current_index = 0;                   // Current reading position
 
@@ -30,10 +31,9 @@ public:
      * @param header Header information for the CSV file.
      */
     CsvLogFile(const std::string& file_name, const std::vector<LogHeaderType>& header)
-        : ILogFile(file_name, header) {
+        : ILogFile(file_name, header), header_(header) {
         file_name_ = file_name;
         reset(); // Initialize the log file
-        write_header(header);
     }
 
     /**
@@ -101,7 +101,7 @@ public:
 
             for (size_t i = 0; i < row.size(); ++i) {
                 try {
-                    value[i] = parse_cell(row[i], value[i]);
+                    value[i] = parse_cell(row[i], header_[i].type);
                 } catch (const std::exception& e) {
                     throw std::runtime_error("Error parsing cell [" + row[i] + "] at index " + std::to_string(i) + ": " + e.what());
                 }
@@ -119,6 +119,7 @@ public:
             data.pop_back();
         }
     }
+
     /**
      * Resets the log file by clearing its contents.
      */
@@ -134,6 +135,7 @@ public:
         // Reset reading-related states
         data.clear();
         current_index = 0;
+        write_header(header_);
     }
 
 private:
@@ -156,10 +158,22 @@ private:
      */
     void load_all_data() {
         std::string line;
+
+        // ヘッダーを読み込む
+        if (std::getline(csv_read_file, line)) {
+            std::istringstream lineStream(line);
+            std::string cell;
+            while (std::getline(lineStream, cell, ',')) {
+                // ヘッダー情報に基づいて型を設定（仮にすべてSTRING型）
+                header_.push_back({cell, LogType::LOG_TYPE_STRING});
+            }
+        }
+
+        // データを読み込む
         while (std::getline(csv_read_file, line)) {
             std::vector<std::string> row;
-            std::string cell;
             std::istringstream lineStream(line);
+            std::string cell;
             while (std::getline(lineStream, cell, ',')) {
                 row.push_back(cell);
             }
@@ -191,42 +205,41 @@ private:
 
     /**
      * Parses a single cell from a string and converts it to the appropriate type in LogDataType.
-     * @param cell The cell value as a string.
-     * @param current The current LogDataType instance to determine the type.
-     * @return The parsed LogDataType instance with the correct value.
      */
-    LogDataType parse_cell(const std::string& cell, const LogDataType& current) const {
+    LogDataType parse_cell(const std::string& cell, LogType type) const {
         try {
-            if (std::holds_alternative<bool>(current)) {
+            switch (type) {
+            case LogType::LOG_TYPE_BOOL:
                 return std::stoi(cell) != 0;
-            } else if (std::holds_alternative<int8_t>(current)) {
+            case LogType::LOG_TYPE_INT8:
                 return static_cast<int8_t>(std::stoi(cell));
-            } else if (std::holds_alternative<uint8_t>(current)) {
-                return static_cast<uint8_t>(std::stoi(cell));
-            } else if (std::holds_alternative<int16_t>(current)) {
+            case LogType::LOG_TYPE_UINT8:
+                return static_cast<uint8_t>(std::stoul(cell));
+            case LogType::LOG_TYPE_INT16:
                 return static_cast<int16_t>(std::stoi(cell));
-            } else if (std::holds_alternative<uint16_t>(current)) {
-                return static_cast<uint16_t>(std::stoi(cell));
-            } else if (std::holds_alternative<int32_t>(current)) {
+            case LogType::LOG_TYPE_UINT16:
+                return static_cast<uint16_t>(std::stoul(cell));
+            case LogType::LOG_TYPE_INT32:
                 return std::stoi(cell);
-            } else if (std::holds_alternative<uint32_t>(current)) {
+            case LogType::LOG_TYPE_UINT32:
                 return static_cast<uint32_t>(std::stoul(cell));
-            } else if (std::holds_alternative<int64_t>(current)) {
+            case LogType::LOG_TYPE_INT64:
                 return std::stoll(cell);
-            } else if (std::holds_alternative<uint64_t>(current)) {
+            case LogType::LOG_TYPE_UINT64:
                 return std::stoull(cell);
-            } else if (std::holds_alternative<float>(current)) {
+            case LogType::LOG_TYPE_FLOAT:
                 return std::stof(cell);
-            } else if (std::holds_alternative<double>(current)) {
+            case LogType::LOG_TYPE_DOUBLE:
                 return std::stod(cell);
-            } else if (std::holds_alternative<std::string>(current)) {
+            case LogType::LOG_TYPE_STRING:
                 return cell;
+            default:
+                throw std::runtime_error("Unsupported LogType");
             }
-            throw std::runtime_error("Unsupported type in LogDataType");
         } catch (const std::exception& e) {
             throw std::runtime_error(std::string("Failed to parse value: ") + e.what());
         }
-    }    
+    }
 };
 
 } // namespace hako::logger

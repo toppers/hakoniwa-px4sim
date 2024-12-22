@@ -25,6 +25,7 @@ set(SOURCE_FILES
     test_comm.cpp
     test_mavlink_comm.cpp
     test_mavlink.cpp
+    test_logger.cpp
 )
 
 # 実行ファイルの定義
@@ -50,6 +51,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE GTest::gtest
     PRIVATE GTest::gtest_main
     PRIVATE hako_mavlink
+    PRIVATE hako_logger
 )
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${HAKO_SOURCE_DIR}

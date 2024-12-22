@@ -33,7 +33,9 @@ public:
     ~HakoLogger() {
         close();
     }
-
+    std::vector<LogEntryType>& get_entries() {
+        return entries;
+    }
     void add_entry(ILog& log, std::unique_ptr<ILogFile> log_file) {
         std::lock_guard<std::mutex> lock(logger_mutex);
         log_file->flush();
@@ -78,6 +80,12 @@ public:
         } catch (const std::exception& e) {
             // 例外をキャッチしてログを記録するか、リカバリ処理を行う
             throw std::runtime_error(std::string("Error during logging: ") + e.what());
+        }
+    }
+    void flush() {
+        std::lock_guard<std::mutex> lock(logger_mutex);
+        for (auto& entry : entries) {
+            entry.log_file->flush();
         }
     }
 
