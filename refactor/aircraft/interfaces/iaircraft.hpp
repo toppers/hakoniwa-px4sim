@@ -1,15 +1,15 @@
 #ifndef _IAIRCRAFT_HPP_
 #define _IAIRCRAFT_HPP_
 
-#include "idrone_dynamics.hpp"
-#include "irotor_dynamics.hpp"
-#include "ibattery_dynamics.hpp"
-#include "ithrust_dynamics.hpp"
-#include "isensor_acceleration.hpp"
-#include "isensor_baro.hpp"
-#include "isensor_gps.hpp"
-#include "isensor_gyro.hpp"
-#include "isensor_mag.hpp"
+#include "aircraft/interfaces/idrone_dynamics.hpp"
+#include "aircraft/interfaces/irotor_dynamics.hpp"
+#include "aircraft/interfaces/ithrust_dynamics.hpp"
+#include "aircraft/interfaces/ibattery_dynamics.hpp"
+#include "aircraft/interfaces/isensor_acceleration.hpp"
+#include "aircraft/interfaces/isensor_baro.hpp"
+#include "aircraft/interfaces/isensor_gps.hpp"
+#include "aircraft/interfaces/isensor_gyro.hpp"
+#include "aircraft/interfaces/isensor_mag.hpp"
 
 namespace hako::aircraft {
 

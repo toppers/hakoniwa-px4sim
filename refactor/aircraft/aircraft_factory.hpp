@@ -1,30 +1,31 @@
 #ifndef _AIRCRAFT_FACTORY_HPP_
 #define _AIRCRAFT_FACTORY_HPP_
 
-#include "iaircraft.hpp"
-#include "idrone_dynamics.hpp"
-#include "isensor_acceleration.hpp"
-#include "isensor_baro.hpp"
-#include "isensor_gps.hpp"
-#include "isensor_gyro.hpp"
-#include "isensor_mag.hpp"
-#include "irotor_dynamics.hpp"
-#include "ithrust_dynamics.hpp"
+#include "aircraft/interfaces/iaircraft.hpp"
+#include "aircraft/interfaces/idrone_dynamics.hpp"
+#include "aircraft/interfaces/irotor_dynamics.hpp"
+#include "aircraft/interfaces/ithrust_dynamics.hpp"
+#include "aircraft/interfaces/ibattery_dynamics.hpp"
+#include "aircraft/interfaces/isensor_acceleration.hpp"
+#include "aircraft/interfaces/isensor_baro.hpp"
+#include "aircraft/interfaces/isensor_gps.hpp"
+#include "aircraft/interfaces/isensor_gyro.hpp"
+#include "aircraft/interfaces/isensor_mag.hpp"
 #include "config/drone_config.hpp"
-
-namespace hako::assets::drone {
-
-extern IAirCraft* create_aircraft(int index, const DroneConfig& drone_config);
 #include <vector>
 #include <memory>
 
-class AirCraftManager {
+namespace hako::aircraft {
+
+extern IAirCraft* create_aircraft(int index, const DroneConfig& drone_config);
+
+class AirCraftContainer {
 private:
     std::vector<std::unique_ptr<IAirCraft>> airCrafts;
 
 public:
-    AirCraftManager() {}
-    virtual ~AirCraftManager() {}
+    AirCraftContainer() {}
+    virtual ~AirCraftContainer() {}
     /*
      * create different aircrafts from config directory.
      */
@@ -33,7 +34,7 @@ public:
         for (size_t i = 0; i < configCount; ++i) {
             DroneConfig config;
             if (configManager.getConfig(i, config)) {
-                std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(i, config));
+                std::unique_ptr<IAirCraft> airCraft(hako::aircraft::create_aircraft(i, config));
                 if (airCraft) {
                     airCrafts.push_back(std::move(airCraft));
                 }
@@ -53,7 +54,7 @@ public:
             return false;
         }
         for (int i = 0; i < create_num; ++i) {
-            std::unique_ptr<IAirCraft> airCraft(hako::assets::drone::create_aircraft(i, config));
+            std::unique_ptr<IAirCraft> airCraft(hako::aircraft::create_aircraft(i, config));
             if (airCraft) {
                 airCrafts.push_back(std::move(airCraft));
             }
@@ -82,19 +83,5 @@ public:
 
 }
 
-using hako::assets::drone::IAirCraft;
-using hako::assets::drone::IDroneDynamics;
-using hako::assets::drone::ISensorAcceleration;
-using hako::assets::drone::ISensorBaro;
-using hako::assets::drone::ISensorGps;
-using hako::assets::drone::ISensorMag;
-using hako::assets::drone::ISensorGyro;
-using hako::assets::drone::IRotorDynamics;
-using hako::assets::drone::IThrustDynamics;
-
-using hako::assets::drone::DroneThrustType;
-using hako::assets::drone::DroneTorqueType;
-using hako::assets::drone::DronePositionType;
-using hako::assets::drone::DroneEulerType;
 
 #endif /* _AIRCRAFT_FACTORY_HPP_ */

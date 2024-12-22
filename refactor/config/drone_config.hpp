@@ -10,7 +10,7 @@
 
 #include <regex>
 #include <algorithm>
-#include "drone_config_types.hpp"
+#include "config/drone_config_types.hpp"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
@@ -221,10 +221,10 @@ public:
     double getCompDroneDynamicsMass() const {
         return configJson["components"]["droneDynamics"]["mass_kg"].get<double>();
     }
-    std::optional<hako::assets::drone::OutOfBoundsReset> getCompDroneDynamicsOutOfBoundsReset() const {
+    std::optional<hako::config::OutOfBoundsReset> getCompDroneDynamicsOutOfBoundsReset() const {
         if (configJson["components"]["droneDynamics"].contains("out_of_bounds_reset")) {
             std::cout << "out_of_bounds_reset values are enabled." << std::endl;
-            hako::assets::drone::OutOfBoundsReset out_of_bounds_reset;
+            hako::config::OutOfBoundsReset out_of_bounds_reset;
             out_of_bounds_reset.position = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["position"].get<std::vector<bool>>();
             out_of_bounds_reset.velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["velocity"].get<std::vector<bool>>();
             out_of_bounds_reset.angular_velocity = configJson["components"]["droneDynamics"]["out_of_bounds_reset"]["angular_velocity"].get<std::vector<bool>>();
@@ -242,8 +242,8 @@ public:
         }
     }
 
-    hako::assets::drone::BatteryModelParameters getComDroneDynamicsBattery() const {
-        hako::assets::drone::BatteryModelParameters params = {};
+    hako::config::BatteryModelParameters getComDroneDynamicsBattery() const {
+        hako::config::BatteryModelParameters params = {};
         try {
             if (configJson["components"].contains("battery")) {
                 params.vendor = configJson["components"]["battery"]["vendor"].get<std::string>();
@@ -274,8 +274,8 @@ public:
         return params;
     }
 
-    hako::assets::drone::RotorBatteryModelConstants getCompDroneDynamicsRotorDynamicsConstants() const {
-        hako::assets::drone::RotorBatteryModelConstants constants = {};
+    hako::config::RotorBatteryModelConstants getCompDroneDynamicsRotorDynamicsConstants() const {
+        hako::config::RotorBatteryModelConstants constants = {};
         try {
             /* 必要な全てのキーが存在するかを確認 */
             if (configJson.contains("components") &&

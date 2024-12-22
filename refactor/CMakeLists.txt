@@ -18,11 +18,12 @@ set(HAKO_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 set(MAVLINK_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/mavlink_c_library_v2")
 set(ROS2PDU_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/hakoniwa-ros2pdu")
 set(GLM_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/glm")
+set(NOLMAN_JSON_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/nolman/single_include")
 
 add_subdirectory(comm)
 add_subdirectory(mavlink)
 add_subdirectory(logger)
 add_subdirectory(physics)
-#add_subdirectory(aircraft)
+add_subdirectory(aircraft)
 
 add_subdirectory(test)

@@ -1,28 +1,22 @@
 #ifndef _AIRCRAFT_HPP_
 #define _AIRCRAFT_HPP_
 
-#include "iaircraft.hpp"
-#include "utils/csv_logger.hpp"
+#include "aircraft/interfaces/iaircraft.hpp"
+#include "logger/impl/hako_logger.hpp"
 
-namespace hako::assets::drone {
+using namespace hako::logger;
 
-class AirCraft : public hako::assets::drone::IAirCraft {
+namespace hako::aircraft {
+
+class AirCraft : public IAirCraft {
 private:
-    CsvLogger logger;
-    DroneMixer *mixer = nullptr;
+    HakoLogger logger;
 public:
     virtual ~AirCraft() 
     {
         logger.close();
     }
-    void set_mixer(DroneMixer *obj)
-    {
-        this->mixer = obj;
-    }
-    DroneMixer *get_mixer() override
-    {
-        return this->mixer;
-    }
+
     void reset() override
     {
         drone_dynamics->reset();
@@ -37,23 +31,12 @@ public:
     }
     void run(DroneDynamicsInputType& input) override
     {
-        double vbat = 0.0;
-        if (this->battery_dynamics != nullptr) {
-            BatteryModelFactor factor = { input.disturbance.values.d_temp.value }; //温度
-            this->battery_dynamics->set_current_factor(factor);
-            this->battery_dynamics->run();
-            vbat = this->battery_dynamics->get_vbat();
-        }
+        static const double vbat = 14.1;
         //actuators
         if (input.no_use_actuator == false) {
             DroneRotorSpeedType rotor_speed[ROTOR_NUM];
             for (int i = 0; i < ROTOR_NUM; i++) {
-                if (rotor_dynamics[i]->has_battery_dynamics()) {
-                    rotor_dynamics[i]->run(input.controls[i], vbat);
-                }
-                else {
-                    rotor_dynamics[i]->run(input.controls[i]);
-                }
+                rotor_dynamics[i]->run(input.controls[i], vbat);
                 rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
             }
             thrust_dynamis->run(rotor_speed);
@@ -67,18 +50,17 @@ public:
 
         //sensors
         acc->run(drone_dynamics->get_vel_body_frame());
-        gyro->run(drone_dynamics->get_angular_vel_body_frame(), input.disturbance);
+        gyro->run(drone_dynamics->get_angular_vel_body_frame());
         gps->run(drone_dynamics->get_pos(), drone_dynamics->get_vel());
         mag->run(drone_dynamics->get_angle());
         baro->run(drone_dynamics->get_pos());
 
         logger.run();
     }
-    CsvLogger& get_logger()
+    HakoLogger& get_logger()
     {
         return logger;
     }
-
 };
 }
 

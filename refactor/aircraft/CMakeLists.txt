@@ -13,7 +13,7 @@ message(STATUS "OS_TYPE=${OS_TYPE}")
 
 # ソースファイルの定義
 set(SOURCE_FILES
-
+    aircraft_factory.cpp
 )
 add_library(hako_aircraft ${SOURCE_FILES})
 
@@ -28,7 +28,8 @@ endif()
 
 target_include_directories(hako_aircraft 
     PRIVATE ${HAKO_SOURCE_DIR}
-    PRIVATE ${GLM_SOURCE_DIR})
+    PRIVATE ${GLM_SOURCE_DIR}
+    PRIVATE ${NOLMAN_JSON_SOURCE_DIR})
 
 target_compile_features(hako_aircraft PRIVATE cxx_std_17)
 

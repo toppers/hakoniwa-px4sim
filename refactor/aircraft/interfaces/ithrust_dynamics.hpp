@@ -21,7 +21,6 @@ public:
     virtual void run(const DroneRotorSpeedType rotor_speed[ROTOR_NUM]) = 0;
     virtual void reset() = 0;
 
-    virtual void print() = 0;
 };
 
 }

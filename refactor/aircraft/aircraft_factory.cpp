@@ -1,39 +1,20 @@
-#include "aircraft_factory.hpp"
-#include "utils/hako_utils.hpp"
-#include "assets/drone/physics/body_frame_matlab/drone_dynamics_body_frame_matlab.hpp"
-#include "assets/drone/physics/body_frame/drone_dynamics_body_frame.hpp"
-#include "assets/drone/physics/body_frame_rk4/drone_dynamics_body_frame_rk4.hpp"
-#include "assets/drone/physics/ground_frame/drone_dynamics_ground_frame.hpp"
-#include "assets/drone/physics/rotor/rotor_dynamics.hpp"
-#include "assets/drone/physics/battery/battery_dynamics.hpp"
-#include "assets/drone/physics/rotor/rotor_dynamics_jmavsim.hpp"
-#include "assets/drone/physics/thruster/thrust_dynamics_linear.hpp"
-#include "assets/drone/physics/thruster/thrust_dynamics_nonlinear.hpp"
-#include "assets/drone/sensors/acc/sensor_acceleration.hpp"
-#include "assets/drone/sensors/baro/sensor_baro.hpp"
-#include "assets/drone/sensors/gps/sensor_gps.hpp"
-#include "assets/drone/sensors/gyro/sensor_gyro.hpp"
-#include "assets/drone/sensors/mag/sensor_mag.hpp"
-#include "assets/drone/aircraft/aricraft.hpp"
-#include "assets/drone/utils/sensor_noise.hpp"
+#include "aircraft/aircraft.hpp"
+#include "aircraft/aircraft_factory.hpp"
+#include "aircraft/impl/body/drone_dynamics_body_frame.hpp"
+#include "aircraft/impl/thruster/thrust_dynamics_nonlinear.hpp"
+#include "aircraft/impl/rotor/rotor_dynamics.hpp"
+#include "aircraft/impl/sensors/sensor_acceleration.hpp"
+#include "aircraft/impl/sensors/sensor_baro.hpp"
+#include "aircraft/impl/sensors/sensor_gps.hpp"
+#include "aircraft/impl/sensors/sensor_gyro.hpp"
+#include "aircraft/impl/sensors/sensor_mag.hpp"
+#include "aircraft/impl/noise/sensor_data_assembler.hpp"
+#include "aircraft/impl/noise/sensor_noise.hpp"
 #include "config/drone_config.hpp"
 #include <math.h>
-#include "utils/hako_module_loader.hpp"
-#include "hako_module_drone_sensor_gyro.h"
+#include "logger/impl/csv_log_file.hpp"
 
-using hako::assets::drone::AirCraft;
-using hako::assets::drone::DroneDynamicsBodyFrameMatlab;
-using hako::assets::drone::DroneDynamicsBodyFrame;
-using hako::assets::drone::DroneDynamicsGroundFrame;
-using hako::assets::drone::SensorAcceleration;
-using hako::assets::drone::SensorBaro;
-using hako::assets::drone::SensorGps;
-using hako::assets::drone::SensorMag;
-using hako::assets::drone::SensorGyro;
-using hako::assets::drone::RotorDynamics;
-using hako::assets::drone::ThrustDynamicsLinear;
-using hako::assets::drone::ThrustDynamicsNonLinear;
-using hako::assets::drone::SensorNoise;
+using namespace hako::aircraft;
 
 #define DELTA_TIME_SEC              drone_config.getSimTimeStep()
 #define REFERENCE_LATITUDE          drone_config.getSimLatitude()
@@ -53,7 +34,14 @@ using hako::assets::drone::SensorNoise;
 
 #define LOGPATH(index, name)        drone_config.getSimLogFullPathFromIndex(index, name)
 
-IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& drone_config)
+#define HAKO_ASSERT(cond)           if (!(cond)) { throw std::runtime_error("assertion failed: " #cond); }
+
+static inline std::unique_ptr<ILogFile> create_logfile(const std::string& path, ILog& entry) {
+    return std::make_unique<CsvLogFile>(path, entry.log_head());
+}
+
+
+IAirCraft* hako::aircraft::create_aircraft(int index, const DroneConfig& drone_config)
 {
 
     auto drone = new AirCraft();
@@ -67,17 +55,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         std::cout << "DroneDynamicType: BodyFrame" << std::endl;
         drone_dynamics = new DroneDynamicsBodyFrame(DELTA_TIME_SEC);
     }
-    else if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrameMatlab") {
-        std::cout << "DroneDynamicType: BodyFrameMatlab" << std::endl;
-        drone_dynamics = new DroneDynamicsBodyFrameMatlab(DELTA_TIME_SEC);
-    }
-    else if (drone_config.getCompDroneDynamicsPhysicsEquation() == "BodyFrameRK4") {
-        std::cout << "DroneDynamicType: BodyFrameRK4" << std::endl;
-        drone_dynamics = new DroneDynamicsBodyFrameRK4(DELTA_TIME_SEC);
-    }
     else {
-        std::cout << "DroneDynamicType: GroundFrame" << std::endl;
-        drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
+        throw std::runtime_error("unsupported drone dynamics type");
     }
     //auto drone_dynamics = new DroneDynamicsGroundFrame(DELTA_TIME_SEC);
     HAKO_ASSERT(drone_dynamics != nullptr);
@@ -108,18 +87,13 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     drone_dynamics->set_out_of_bounds_reset(out_of_bounds_reset);
     drone->set_drone_dynamics(drone_dynamics);
     std::cout << "INFO: logpath: " << LOGPATH(drone->get_index(), "drone_dynamics.csv") << std::endl;
-    drone->get_logger().add_entry(*drone_dynamics, LOGPATH(drone->get_index(), "drone_dynamics.csv"));
-
+    drone->get_logger().add_entry(*drone_dynamics, 
+        create_logfile(LOGPATH(drone->get_index(), "drone_dynamics.csv"), *drone_dynamics));
 
     //battery dynamics
     BatteryModelParameters battery_config = drone_config.getComDroneDynamicsBattery();
-    IBatteryDynamics *battery = nullptr;
     if (battery_config.vendor == "None") {
-        battery = new BatteryDynamics(DELTA_TIME_SEC);
-        HAKO_ASSERT(battery != nullptr);
-        battery->set_params(battery_config);
-        drone->set_battery_dynamics(battery);
-        drone->get_logger().add_entry(*static_cast<BatteryDynamics*>(battery), LOGPATH(drone->get_index(), "log_battery.csv"));
+        //not supported
     }
     else {
         std::cout << "INFO: battery is not enabled." << std::endl;
@@ -143,32 +117,18 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
                     );
     std::cout << "RotorTau: " << RotorTau << std::endl;
     //rotor dynamics
-    IRotorDynamics* rotors[hako::assets::drone::ROTOR_NUM];
+    IRotorDynamics* rotors[hako::aircraft::ROTOR_NUM];
     auto rotor_vendor = drone_config.getCompRotorVendor();
     std::cout<< "Rotor vendor: " << rotor_vendor << std::endl;
-    for (int i = 0; i < hako::assets::drone::ROTOR_NUM; i++) {
+    for (int i = 0; i < hako::aircraft::ROTOR_NUM; i++) {
         IRotorDynamics *rotor = nullptr;
         std::string logfilename= "log_rotor_" + std::to_string(i) + ".csv";
-        if (rotor_vendor == "jmavsim") {
-            rotor = new RotorDynamicsJmavsim(DELTA_TIME_SEC);
-            HAKO_ASSERT(rotor != nullptr);
-            static_cast<RotorDynamicsJmavsim*>(rotor)->set_params(RadPerSecMax, RotorTau, RadPerSecMax);
-            drone->get_logger().add_entry(*static_cast<RotorDynamicsJmavsim*>(rotor), LOGPATH(drone->get_index(), logfilename));
-        }
-        else if (rotor_vendor == "BatteryModel") {
-            rotor = new RotorDynamics(DELTA_TIME_SEC);
-            HAKO_ASSERT(rotor != nullptr);
-            rotor->set_battery_dynamics_constants(rotor_constants);
-            static_cast<RotorDynamics*>(rotor)->set_params(RadPerSecMax, 0, RadPerSecMax);
-            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(drone->get_index(), logfilename));
-            HAKO_ASSERT(battery != nullptr);
-            battery->add_device(*static_cast<RotorDynamics*>(rotor));
-        }
-        else {
+        {
             rotor = new RotorDynamics(DELTA_TIME_SEC);
             HAKO_ASSERT(rotor != nullptr);
             static_cast<RotorDynamics*>(rotor)->set_params(RadPerSecMax, RotorTau, RadPerSecMax);
-            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), LOGPATH(drone->get_index(), logfilename));
+            drone->get_logger().add_entry(*static_cast<RotorDynamics*>(rotor), 
+                create_logfile(LOGPATH(drone->get_index(), logfilename), *static_cast<RotorDynamics*>(rotor)));
         }
         rotors[i] = rotor;
     }
@@ -183,21 +143,13 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     double param_Cq = rotor_constants.Cq;
     std::cout << "param_Ct: " << param_Ct << std::endl;
     std::cout << "param_Cq: " << param_Cq << std::endl;
-    if (thrust_vendor == "linear") {
-        thrust = new ThrustDynamicsLinear(DELTA_TIME_SEC);
-        HAKO_ASSERT(thrust != nullptr);
-        static_cast<ThrustDynamicsLinear*>(thrust)->set_params(
-            param_Ct,
-            param_Cq
-        );
-        drone->get_logger().add_entry(*static_cast<ThrustDynamicsLinear*>(thrust), LOGPATH(drone->get_index(), "log_thrust.csv"));
-    }
-    else {
+    {
         thrust = new ThrustDynamicsNonLinear(DELTA_TIME_SEC);
         HAKO_ASSERT(thrust != nullptr);
         std::cout << "param_J: " << rotor_constants.J << std::endl;
         static_cast<ThrustDynamicsNonLinear*>(thrust)->set_params(param_Ct, param_Cq, rotor_constants.J);
-        drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), LOGPATH(drone->get_index(), "log_thrust.csv"));
+        drone->get_logger().add_entry(*static_cast<ThrustDynamicsNonLinear*>(thrust), 
+            create_logfile(LOGPATH(drone->get_index(), "log_thrust.csv"), *static_cast<ThrustDynamicsNonLinear*>(thrust)));
     }
     drone->set_thrus_dynamics(thrust);
 
@@ -213,24 +165,6 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
 
     thrust->set_rotor_config(rotor_config);
 
-    // mixer
-    DroneConfig::MixerInfo mixer_info;
-    if (drone_config.getControllerMixerInfo(mixer_info)) {
-        std::cout << "INFO: mixer is enabled" << std::endl;
-        DroneMixer *mixer = new DroneMixer(RadPerSecMax, param_Ct, param_Cq, rotor_config);
-        HAKO_ASSERT(mixer != nullptr);
-        bool inv_m = mixer->calculate_M_inv();
-        HAKO_ASSERT(inv_m == true);
-        mixer_info.K = rotor_constants.K;
-        mixer_info.R = rotor_constants.R;
-        mixer_info.Cq = rotor_constants.Cq;
-        mixer_info.V_bat = battery_config.NominalVoltage;
-        mixer->setMixerInfo(mixer_info);
-        drone->set_mixer(mixer);
-    }
-    else {
-        std::cout << "INFO: mixer is not enabled" << std::endl;
-    }
     // rotor control
     if (drone_config.getControllerDirectRotorControl()) {
         drone->set_rotor_control_enabled();
@@ -246,7 +180,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         acc->set_noise(noise);
     }
     drone->set_acc(acc);
-    drone->get_logger().add_entry(*acc, LOGPATH(drone->get_index(), "log_acc.csv"));
+    drone->get_logger().add_entry(*acc, 
+        create_logfile(LOGPATH(drone->get_index(), "log_acc.csv"), *acc));
 
     //sensor gyro
     auto gyro = new SensorGyro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -257,37 +192,9 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         HAKO_ASSERT(noise != nullptr);
         gyro->set_noise(noise);
     }
-    auto module_path = drone_config.getCompSensorVendor("gyro");
-    if (!module_path.empty()) {
-        std::cout << "INFO: now loading gyro vendor model " << module_path << std::endl;
-        void *handle;
-        HakoModuleHeaderType *header = nullptr;
-        HakoModuleDroneSensorGyroType *gyro_model = nullptr;
-        handle = hako_module_handle(module_path.c_str(), &header);
-        HAKO_ASSERT(handle != nullptr);
-        gyro_model = (HakoModuleDroneSensorGyroType*)hako_module_load_symbol(handle, HAKO_MODULE_DRONE_SENSOR_GYRO_SYMBOLE_NAME);
-        HAKO_ASSERT(gyro_model != nullptr);
-        //std::cout << "gyro_model addr: " << gyro_model << std::endl;
-        std::cout << "SUCCESS: Loaded module name: " << header->get_name() << std::endl;
-        std::string filepath = drone_config.getCompSensorContext("gyro", "file");
-        std::cout << "filepath:" << filepath <<std::endl;
-        mi_drone_sensor_gyro_context_t* context = new mi_drone_sensor_gyro_context_t();
-        HAKO_ASSERT(context != nullptr);
-        if (filepath.empty()) {
-            context->filepath = nullptr;
-        }
-        else {
-            context->filepath = new char[filepath.size() + 1];
-            std::strcpy(context->filepath, filepath.c_str());
-        }
-        std::cout << "gyro_model: index = " << index << std::endl;
-        context->index = index;
-        auto v = gyro_model->init(context);
-        HAKO_ASSERT(v == 0);
-        gyro->set_vendor(gyro_model, (void*)context);
-    }
     drone->set_gyro(gyro);
-    drone->get_logger().add_entry(*gyro, LOGPATH(drone->get_index(), "log_gyro.csv"));
+    drone->get_logger().add_entry(*gyro, 
+        create_logfile(LOGPATH(drone->get_index(), "log_gyro.csv"), *gyro));
 
     //sensor mag
     auto mag = new SensorMag(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -300,7 +207,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     }
     mag->set_params(PARAMS_MAG_F, PARAMS_MAG_I, PARAMS_MAG_D);
     drone->set_mag(mag);
-    drone->get_logger().add_entry(*mag, LOGPATH(drone->get_index(), "log_mag.csv"));
+    drone->get_logger().add_entry(*mag, 
+        create_logfile(LOGPATH(drone->get_index(), "log_mag.csv"), *mag));
 
     //sensor baro
     auto baro = new SensorBaro(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -313,7 +221,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
         baro->set_noise(noise);
     }
     drone->set_baro(baro);
-    drone->get_logger().add_entry(*baro, LOGPATH(drone->get_index(), "log_baro.csv"));
+    drone->get_logger().add_entry(*baro, 
+        create_logfile(LOGPATH(drone->get_index(), "log_baro.csv"), *baro));
 
     //sensor gps
     auto gps = new SensorGps(DELTA_TIME_SEC, ACC_SAMPLE_NUM);
@@ -326,7 +235,8 @@ IAirCraft* hako::assets::drone::create_aircraft(int index, const DroneConfig& dr
     }
     gps->init_pos(REFERENCE_LATITUDE, REFERENCE_LONGTITUDE, REFERENCE_ALTITUDE);
     drone->set_gps(gps);
-    drone->get_logger().add_entry(*gps, LOGPATH(drone->get_index(), "log_gps.csv"));
+    drone->get_logger().add_entry(*gps, 
+        create_logfile(LOGPATH(drone->get_index(), "log_gps.csv"), *gps));
 
     return drone;
 }
