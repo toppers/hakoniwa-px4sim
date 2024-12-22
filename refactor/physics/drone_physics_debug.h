@@ -31,8 +31,14 @@ inline double diff(const hako::drone_physics::QuaternionType& a, const hako::dro
 }
 
 static int AssertCount = 0;
+#if 0 /* TODO temp fix */
 #define assert_almost_equal(a, b) (++AssertCount, (diff((a), (b)) <almost_tolerance) ? true : (std::cerr << std::endl << "Failed: " #a "=" << (a) << "<=!!!!=>" #b "=" << (b) << std::endl, assert((diff((a), (b)) <almost_tolerance)), false))
-
+#else
+#define assert_almost_equal(a, b) \
+    (++AssertCount, ((diff((a), (b)) < almost_tolerance) ? true : \
+    ((std::cerr << std::endl << "Failed: " #a "=" << (a) << " <=!!!!=> " #b "=" << (b) << std::endl), \
+     (assert((diff((a), (b)) < almost_tolerance))), false)))
+#endif
 #define print_vec(v) std::cerr << #v "=" << v << std::endl
 
 /* for testing. use like T(test_func_name). */
@@ -75,11 +81,20 @@ static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
 
 static int AssertCount = 0;
 
+#if 0 /* TODO temp fix */
 #define assert_almost_equal(a, b) \
     assert(++AssertCount && diff(&(a), &(b)) <almost_tolerance || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
 
 #define assert_almost_equal_euler(a, b) \
     assert(++AssertCount && diff_e(&(a), &(b)) <almost_tolerance || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
+#else
+#define assert_almost_equal(a, b) \
+    assert(((++AssertCount) && (diff(&(a), &(b)) < almost_tolerance)) || \
+           ((print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0)))
+#define assert_almost_equal_euler(a, b) \
+    assert(((++AssertCount) && (diff_e(&(a), &(b)) < almost_tolerance)) || \
+           ((print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0)))
+#endif
 
 #define print_vec(v) \
     fprintf(stderr, "%s=(%g,%g,%g)", #v, v.x, v.y, v.z)
