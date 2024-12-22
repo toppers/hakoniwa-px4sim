@@ -1,5 +1,4 @@
-set(HAKO_CMAKE_VERSION 3.5.1)
-cmake_minimum_required(VERSION ${HAKO_CMAKE_VERSION})
+cmake_minimum_required(VERSION 3.10...3.25)
 
 project(drone_physics
     VERSION 1.0.0
@@ -52,6 +51,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
     foreach(target IN LISTS TARGETS)
     if (TARGET ${target})
+        MESSAGE(STATUS "target=${target}")
         target_compile_options(${target} PRIVATE -Wparentheses)
     else()
         message(WARNING "Target ${target} does not exist!")
