@@ -9,8 +9,10 @@ if(WIN32)
     set(OS_TYPE "win")
 endif(WIN32)
 MESSAGE(STATUS "OS_TYPE=" ${OS_TYPE})
+
 include(FetchContent)
-FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz     DOWNLOAD_EXTRACT_TIMESTAMP ON
+)
 FetchContent_MakeAvailable(json)
 
 set(SOURCE_FILES
