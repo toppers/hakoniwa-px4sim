@@ -155,7 +155,7 @@ IAirCraft* hako::aircraft::create_aircraft(int index, const DroneConfig& drone_c
 
     RotorConfigType rotor_config[ROTOR_NUM];
     std::vector<RotorPosition> pos = drone_config.getCompThrusterRotorPositions();
-    HAKO_ASSERT((int)(pos.size()) == ROTOR_NUM);
+    HAKO_ASSERT(static_cast<size_t>(ROTOR_NUM) == pos.size());
     for (size_t i = 0; i < pos.size(); ++i) {
         rotor_config[i].ccw = pos[i].rotationDirection;
         rotor_config[i].data.x = pos[i].position[0];
