@@ -7,9 +7,8 @@ project(drone_physics
     LANGUAGES C CXX
 )
 
-if (DEFINED HAKO_CLIENT_OPTION_FILEPATH)
-    include(${HAKO_CLIENT_OPTION_FILEPATH})
-else()
+if (NOT DEFINED HAKO_CLIENT_OPTION_FILEPATH)
+    MESSAGE(STATUS "HAKO_CLIENT_OPTION_FILEPATH is not defined. Use default options.")
     include(default-cmake-options.cmake)
 endif()
 
