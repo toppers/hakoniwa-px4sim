@@ -13,7 +13,7 @@ message(STATUS "OS_TYPE=${OS_TYPE}")
 
 # ソースファイルの定義
 set(SOURCE_FILES
-    impl/logger.cpp
+    impl/hako_logger.cpp
 )
 add_library(hako_logger ${SOURCE_FILES})
 
