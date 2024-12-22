@@ -1,8 +1,8 @@
 #ifndef _LOGGER_HPP_
 #define _LOGGER_HPP_
 
-#include "ilog.hpp"
-#include "ilog_file.hpp"
+#include "logger/ilog.hpp"
+#include "logger/ilog_file.hpp"
 #include <vector>
 #include <string>
 #include <memory>      // For smart pointers

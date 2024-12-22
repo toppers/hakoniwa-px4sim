@@ -57,13 +57,19 @@ protected:
      * @param file_name The name of the file.
      * @param header The header information for the log file.
      */
-    ILogFile(const std::string& file_name, const std::vector<LogHeaderType>& header) {}
+    ILogFile(const std::string& file_name, const std::vector<LogHeaderType>& header) 
+    {
+        (void)file_name;
+        (void)header;
+    }
 
     /**
      * Constructor for loading an existing log file.
      * @param file_name The name of the file to load.
      */
-    ILogFile(const std::string& file_name) {}
+    ILogFile(const std::string& file_name) {
+        (void)file_name;
+    }
 };
 
 } // namespace hako::logger
