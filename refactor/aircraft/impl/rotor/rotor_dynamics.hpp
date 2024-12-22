@@ -1,17 +1,18 @@
 #ifndef _ROTOR_DYNAMICS_HPP_
 #define _ROTOR_DYNAMICS_HPP_
 
-#include "drone_primitive_types.hpp"
-#include "irotor_dynamics.hpp"
-#include "icurrent_dynamics.hpp"
-#include "utils/icsv_log.hpp"
-#include "rotor_physics.hpp"
+#include "physics/rotor_physics.hpp"
+#include "aircraft/interfaces/irotor_dynamics.hpp"
+#include "aircraft/interfaces/icurrent_dynamics.hpp"
+#include "logger/ilog.hpp"
+#include "logger/impl/hako_logger.hpp"
 #include <math.h>
 
-namespace hako::assets::drone {
+using namespace hako::logger;
 
+namespace hako::aircraft {
 
-class RotorDynamics : public hako::assets::drone::IRotorDynamics, public hako::assets::drone::ICurrentDynamics, public ICsvLog {
+class RotorDynamics : public IRotorDynamics, public ICurrentDynamics, public ILog {
 private:
     double param_rad_per_sec_max = 6000.0;
     double param_tr = 1.0;
@@ -123,14 +124,26 @@ public:
     {
         return this->current;
     }
-    const std::vector<std::string> log_head() override
+    const std::vector<LogHeaderType>& log_head() override
     {
-        return { "timestamp", "Duty", "RadPerSec", "Current" };
+        static const std::vector<LogHeaderType> headers = {
+            {"timestamp", LOG_TYPE_UINT64}, // timestamp: unsigned 64-bit integer
+            {"Duty", LOG_TYPE_DOUBLE},         // X: double
+            {"RadPerSec", LOG_TYPE_DOUBLE},         // Y: double
+            {"Current", LOG_TYPE_DOUBLE}          // Z: double
+        };
+        return headers;
     }
-    const std::vector<std::string> log_data() override
+    const std::vector<LogDataType>& log_data() override
     {
         DroneRotorSpeedType v = get_rotor_speed();
-        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(this->duty), std::to_string(v.data), std::to_string(this->current)};
+        static std::vector<LogDataType> data;
+        data.clear();
+        data.push_back(HakoLogger::get_time_usec()); // timestamp (uint64_t)
+        data.push_back(duty);
+        data.push_back(v.data); 
+        data.push_back(current); 
+        return data;
     }
 };
 

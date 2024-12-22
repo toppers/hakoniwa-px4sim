@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "utils/csv_logger.hpp"
-#include "rotor/rotor_dynamics.hpp"
+#include "aircraft/impl/rotor/rotor_dynamics.hpp"
+
+using namespace hako::aircraft;
+using namespace hako::logger;
 
 class RotorDynamicsTest : public ::testing::Test {
 protected:
@@ -19,8 +21,7 @@ protected:
     }
 
 };
-using hako::assets::drone::RotorDynamics;
-using hako::assets::drone::DroneRotorSpeedType;
+
 
 #define DELTA_TIME_SEC 0.001
 TEST_F(RotorDynamicsTest, test_01)

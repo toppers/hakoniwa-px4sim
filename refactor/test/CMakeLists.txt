@@ -31,6 +31,8 @@ set(SOURCE_FILES
     aircraft/test_gps.cpp
     aircraft/test_gyro.cpp
     aircraft/test_mag.cpp
+    aircraft/test_thrust_dynamics.cpp
+    aircraft/test_rotor_dynamics.cpp
 )
 
 # 実行ファイルの定義
@@ -57,6 +59,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE GTest::gtest_main
     PRIVATE hako_mavlink
     PRIVATE hako_logger
+    PRIVATE drone_physics
 )
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${HAKO_SOURCE_DIR}

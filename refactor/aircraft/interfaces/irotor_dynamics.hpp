@@ -4,6 +4,8 @@
 #include "primitive_types.hpp"
 #include "config/drone_config_types.hpp"
 
+using namespace hako::config;
+
 namespace hako::aircraft {
 
 

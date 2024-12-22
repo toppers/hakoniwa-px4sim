@@ -1,16 +1,19 @@
 #ifndef _THRUST_DYNAMICS_NONLINEAR_HPP_
 #define _THRUST_DYNAMICS_NONLINEAR_HPP_
 
-#include "drone_primitive_types.hpp"
-#include "ithrust_dynamics.hpp"
-#include "utils/icsv_log.hpp"
-#include "rotor_physics.hpp"
+#include "physics/rotor_physics.hpp"
+#include "aircraft/interfaces/ithrust_dynamics.hpp"
+#include "logger/ilog.hpp"
+#include "logger/impl/hako_logger.hpp"
+
 #include <glm/glm.hpp>
 #include <iostream>
 
-namespace hako::assets::drone {
+using namespace hako::logger;
 
-class ThrustDynamicsNonLinear : public hako::assets::drone::IThrustDynamics, public ICsvLog {
+namespace hako::aircraft {
+
+class ThrustDynamicsNonLinear : public IThrustDynamics, public ILog {
 private:
     double delta_time_sec;
     double total_time_sec = 0;
@@ -30,12 +33,8 @@ public:
     ThrustDynamicsNonLinear(double dt)
     {
         this->delta_time_sec = dt;
-        // 1kg の機体が 6000 rpm でホバリングする定数
-        // A = mg / (Ω0^2 * ROTOR_NUM)
-        this->param_Ct =  GRAVITY / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
-        // 1kg の機体が 6000 rpm でホバリングする場合に、1Nmで反トルクがかかる定数
-        // B = 1 / (Ω0^2 * ROTOR_NUM)
-        this->param_Cq = 1.0 / (ROTOR_NUM * HOVERING_ROTOR_RPM * HOVERING_ROTOR_RPM);
+        this->param_Ct = 0;
+        this->param_Cq = 0;
         this->param_J = 0.1;
 
         this->rotor_config[0].ccw = -1;
@@ -109,24 +108,30 @@ public:
         total_time_sec = 0;
     }
 
-    void print() override
+    const std::vector<LogHeaderType>& log_head() override
     {
-        std::cout << "thrust: " << this->thrust.data << std::endl;
-        std::cout << "torque( " << this->torque.data.x 
-                  << " , " << this->torque.data.y
-                  << " , " << this->torque.data.z 
-                  << " )" << std::endl;
+        static const std::vector<LogHeaderType> headers = {
+            {"timestamp", LOG_TYPE_UINT64}, // timestamp: unsigned 64-bit integer
+            {"Thrust", LOG_TYPE_DOUBLE},         // Thrust: double
+            {"Tx", LOG_TYPE_DOUBLE},         // Tx: double
+            {"Ty", LOG_TYPE_DOUBLE},         // Ty: double
+            {"Tz", LOG_TYPE_DOUBLE}          // Tz: double
+        };
+        return headers;
     }
-    const std::vector<std::string> log_head() override
-    {
-        return { "timestamp", "Thrust", "Tx", "Ty", "Tz" };
-    }
-    const std::vector<std::string> log_data() override
+    const std::vector<LogDataType>& log_data() override
     {
         DroneThrustType _thrust = get_thrust();
         DroneTorqueType _torque = get_torque();
+        static std::vector<LogDataType> data;
+        data.clear();
+        data.push_back(HakoLogger::get_time_usec()); // timestamp (uint64_t)
+        data.push_back(_thrust.data);
+        data.push_back(_torque.data.x); 
+        data.push_back(_torque.data.y); 
+        data.push_back(_torque.data.z); 
+        return data;
 
-        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(_thrust.data), std::to_string(_torque.data.x), std::to_string(_torque.data.y), std::to_string(_torque.data.z)};
     }
 
 };
