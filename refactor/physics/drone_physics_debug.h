@@ -34,11 +34,16 @@ static int AssertCount = 0;
 #if 0 /* TODO temp fix */
 #define assert_almost_equal(a, b) (++AssertCount, (diff((a), (b)) <almost_tolerance) ? true : (std::cerr << std::endl << "Failed: " #a "=" << (a) << "<=!!!!=>" #b "=" << (b) << std::endl, assert((diff((a), (b)) <almost_tolerance)), false))
 #else
+#ifdef NDEBUG
+#define assert_almost_equal(a, b) ((void)(a), (void)(b))
+#define assert_almost_equal_euler(a, b) ((void)(a), (void)(b))
+#else
 #define assert_almost_equal(a, b) \
     (++AssertCount, ((diff((a), (b)) < almost_tolerance) ? true : \
     ((std::cerr << std::endl << "Failed: " #a "=" << (a) << " <=!!!!=> " #b "=" << (b) << std::endl), \
      (assert((diff((a), (b)) < almost_tolerance))), false)))
-#endif
+#endif /* NDEBUG */
+#endif /* 0 */
 #define print_vec(v) std::cerr << #v "=" << v << std::endl
 
 /* for testing. use like T(test_func_name). */
