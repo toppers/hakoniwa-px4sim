@@ -1,14 +1,13 @@
-#ifndef _DRONE_DATA_TYPES_HPP_
-#define _DRONE_DATA_TYPES_HPP_
+#ifndef _PRIMITIVE_TYPES_HPP_
+#define _PRIMITIVE_TYPES_HPP_
 
 #include <glm/vec3.hpp>
 #include <math.h>
-#include "body_physics.hpp"
+#include "physics/body_physics.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
 const double GRAVITY = 9.81;
-const int HOVERING_ROTOR_RPM = 6000;
 
 /*
  * Coordinate System: Ground Coordinate System (NED)
@@ -386,30 +385,5 @@ typedef struct {
  */
 #define NT_TO_G(nT) ((nT) * 1e-5)
 
-typedef struct {
-    double cos_phi;
-    double cos_theta;
-    double cos_psi;
-    double sin_phi;
-    double sin_theta;
-    double sin_psi;
-    double tan_theta;
-    double sec_theta;
-} DronePhysCalcCacheType;
-
-static inline DronePhysCalcCacheType drone_phys_calc_cache(DroneEulerType angle)
-{
-    DronePhysCalcCacheType cache;
-    cache.cos_phi = cos(angle.data.x);
-    cache.cos_theta = cos(angle.data.y);
-    cache.cos_psi = cos(angle.data.z);
-    cache.sin_phi = sin(angle.data.x);
-    cache.sin_theta = sin(angle.data.y);
-    cache.sin_psi = sin(angle.data.z);
-    cache.tan_theta = tan(angle.data.y);
-    cache.sec_theta = 1 / cos(angle.data.y);
-    return cache;
 }
-
-}
-#endif /* _DRONE_DATA_TYPES_HPP_ */
+#endif /* _PRIMITIVE_TYPES_HPP_ */
