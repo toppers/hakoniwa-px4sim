@@ -26,6 +26,11 @@ set(SOURCE_FILES
     test_mavlink_comm.cpp
     test_mavlink.cpp
     test_logger.cpp
+    aircraft/test_acc.cpp
+    aircraft/test_baro.cpp
+    aircraft/test_gps.cpp
+    aircraft/test_gyro.cpp
+    aircraft/test_mag.cpp
 )
 
 # 実行ファイルの定義
@@ -57,6 +62,7 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${MAVLINK_SOURCE_DIR}/all
     PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
+    PRIVATE ${GLM_SOURCE_DIR}
 )
 
 # C++標準設定

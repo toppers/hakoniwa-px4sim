@@ -1,7 +1,7 @@
 #ifndef _ISENSOR_DATA_ASSEMBLER_HPP_
 #define _ISENSOR_DATA_ASSEMBLER_HPP_
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
 class ISensorDataAssembler {
 protected:

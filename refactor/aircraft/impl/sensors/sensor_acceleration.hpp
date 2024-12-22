@@ -1,21 +1,22 @@
 #ifndef _SENSOR_ACCELERATION_HPP_
 #define _SENSOR_ACCELERATION_HPP_
 
+#include "aircraft/interfaces/isensor_acceleration.hpp"
+#include "aircraft/impl/sensors/sensor_acceleration.hpp"
+#include "aircraft/impl/noise/sensor_data_assembler.hpp"
+#include "logger/ilog.hpp"
+#include "logger/impl/hako_logger.hpp"
 
-#include "isensor_acceleration.hpp"
-#include "utils/icsv_log.hpp"
-#include "utils/csv_logger.hpp"
-#include "../../utils/sensor_data_assembler.hpp"
+using namespace hako::logger;
+namespace hako::aircraft {
 
-namespace hako::assets::drone {
-
-class SensorAcceleration : public hako::assets::drone::ISensorAcceleration, public ICsvLog {
+class SensorAcceleration : public ISensorAcceleration, public ILog {
 private:
     double delta_time_sec;
     double total_time_sec;
-    hako::assets::drone::SensorDataAssembler acc_x;
-    hako::assets::drone::SensorDataAssembler acc_y;
-    hako::assets::drone::SensorDataAssembler acc_z;
+    SensorDataAssembler acc_x;
+    SensorDataAssembler acc_y;
+    SensorDataAssembler acc_z;
 public:
     SensorAcceleration(double dt, int sample_num) : delta_time_sec(dt), acc_x(sample_num), acc_y(sample_num), acc_z(sample_num) 
     {
@@ -51,29 +52,26 @@ public:
         return value;
     }
 
-    void print() override
-    {
-        auto result = sensor_value();
-        std::cout << "acc( "
-                    << result.data.x
-                    << ", "
-                    << result.data.y
-                    << ", "
-                    << result.data.z
-                    << " )" 
-                    << std::endl;
+    const std::vector<LogHeaderType>& log_head() override {
+        static const std::vector<LogHeaderType> headers = {
+            {"timestamp", LOG_TYPE_UINT64}, // timestamp: unsigned 64-bit integer
+            {"X", LOG_TYPE_DOUBLE},         // X: double
+            {"Y", LOG_TYPE_DOUBLE},         // Y: double
+            {"Z", LOG_TYPE_DOUBLE}          // Z: double
+        };
+        return headers;
     }
-    const std::vector<std::string> log_head() override
-    {
-        return { "timestamp", "X", "Y", "Z" };
-    }
-    const std::vector<std::string> log_data() override
-    {
+
+    const std::vector<LogDataType>& log_data() override {
+        static std::vector<LogDataType> data;
+        data.clear();
         DroneAccelerationBodyFrameType v = sensor_value();
-
-        return {std::to_string(CsvLogger::get_time_usec()), std::to_string(v.data.x), std::to_string(v.data.y), std::to_string(v.data.z)};
+        data.push_back(HakoLogger::get_time_usec()); // timestamp (uint64_t)
+        data.push_back(v.data.x);                  // X (double)
+        data.push_back(v.data.y);                  // Y (double)
+        data.push_back(v.data.z);                  // Z (double)
+        return data;
     }
-
 };
 
 }

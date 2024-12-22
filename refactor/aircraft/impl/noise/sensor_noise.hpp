@@ -1,15 +1,15 @@
 #ifndef _SENSOR_NOISE_HPP_
 #define _SENSOR_NOISE_HPP_
 
-#include "isensor_noise.hpp"
+#include "aircraft/interfaces/isensor_noise.hpp"
 #include <random>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
-class SensorNoise : public hako::assets::drone::ISensorNoise {
+class SensorNoise : public ISensorNoise {
 private:
     double stdDev;
     SensorNoise() {}

@@ -7,6 +7,9 @@
 #include <vector>
 #include <filesystem>
 #include <optional>
+
+#include <regex>
+#include <algorithm>
 #include "drone_config_types.hpp"
 
 using json = nlohmann::json;
@@ -19,6 +22,7 @@ namespace fs = std::filesystem;
 #define SHARED_LIB_EXT  ".dll"
 #endif
 
+namespace hako::config {
 /* #define DRONE_PX4_RX_DEBUG_ENABLE */
 /* DRONE_PX4_TX_DEBUG_ENABLE */
 /* DRONE_PID_CONTROL_CPP */
@@ -465,10 +469,6 @@ public:
     }
 };
 
-#include <filesystem>
-#include <regex>
-#include <iostream>
-#include <algorithm>
 
 class DroneConfigManager {
 private:
@@ -547,4 +547,5 @@ public:
 
 extern class DroneConfigManager drone_config_manager;
 
+}
 #endif /* _DRONE_CONFIG_HPP_ */

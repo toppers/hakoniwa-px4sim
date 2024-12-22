@@ -1,10 +1,10 @@
 #ifndef _IROTOR_DYNAMICS_HPP_
 #define _IROTOR_DYNAMICS_HPP_
 
-#include "drone_primitive_types.hpp"
+#include "primitive_types.hpp"
 #include "config/drone_config_types.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
 
 class IRotorDynamics {

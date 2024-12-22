@@ -4,7 +4,7 @@
 #include <vector>
 #include <optional>
 
-namespace hako::assets::drone {
+namespace hako::config {
     struct OutOfBoundsReset {
         std::vector<bool> position; /* X, Y, Z */
         std::vector<bool> velocity; /* X, Y, Z */

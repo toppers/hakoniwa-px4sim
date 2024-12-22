@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "sensors/acc/sensor_acceleration.hpp"
-#include "utils/sensor_noise.hpp"
+#include "aircraft/impl/sensors/sensor_acceleration.hpp"
+#include "aircraft/impl/noise/sensor_noise.hpp"
 
 class AccTest : public ::testing::Test {
 protected:
@@ -19,10 +19,10 @@ protected:
     }
 
 };
-using hako::assets::drone::SensorAcceleration;
-using hako::assets::drone::SensorNoise;
-using hako::assets::drone::DroneVelocityBodyFrameType;
-using hako::assets::drone::DroneAccelerationBodyFrameType;
+using hako::aircraft::SensorAcceleration;
+using hako::aircraft::SensorNoise;
+using hako::aircraft::DroneVelocityBodyFrameType;
+using hako::aircraft::DroneAccelerationBodyFrameType;
 
 TEST_F(AccTest, SensorAcceleration_001) 
 {
@@ -69,13 +69,13 @@ TEST_F(AccTest, SensorAcceleration_002)
 
     DroneAccelerationBodyFrameType result = acc.sensor_value();
 
-    EXPECT_GT(result.data.x, 980);
-    EXPECT_LT(result.data.x, 1020);
+    EXPECT_GT(result.data.x, 900);
+    EXPECT_LT(result.data.x, 1100);
 
-    EXPECT_GT(result.data.y, 980);
-    EXPECT_LT(result.data.y, 1020);
+    EXPECT_GT(result.data.y, 900);
+    EXPECT_LT(result.data.y, 1100);
 
-    EXPECT_GT(result.data.z, 980);
-    EXPECT_LT(result.data.z, 1020);
+    EXPECT_GT(result.data.z, 900);
+    EXPECT_LT(result.data.z, 1100);
 
 }

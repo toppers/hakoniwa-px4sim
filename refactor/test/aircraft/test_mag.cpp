@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "sensors/mag/sensor_mag.hpp"
-#include "utils/sensor_noise.hpp"
+#include "aircraft/impl/sensors/sensor_mag.hpp"
+#include "aircraft/impl/noise/sensor_noise.hpp"
+
+using namespace hako::aircraft;
+using namespace hako::logger;
 
 class MagTest : public ::testing::Test {
 protected:
@@ -19,9 +22,7 @@ protected:
     }
 
 };
-using hako::assets::drone::SensorMag;
-using hako::assets::drone::SensorNoise;
-using hako::assets::drone::DroneEulerType;
+
 
 #define REFERENCE_LATITUDE      47.641468
 #define REFERENCE_LONGTITUDE    -122.140165

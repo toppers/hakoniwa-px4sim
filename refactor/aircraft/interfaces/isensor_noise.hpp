@@ -1,7 +1,7 @@
 #ifndef _ISENSOR_NOISE_HPP_
 #define _ISENSOR_NOISE_HPP_
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
 class ISensorNoise {
 public:

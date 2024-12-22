@@ -4,9 +4,9 @@
 
 #include "isensor.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
-class ISensorBaro : public hako::assets::drone::ISensor {
+class ISensorBaro : public ISensor {
 protected:
     double ref_lat;
     double ref_lon;

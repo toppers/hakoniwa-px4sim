@@ -1,9 +1,9 @@
 #ifndef _ITHRUST_DYNAMICS_HPP_
 #define _ITHRUST_DYNAMICS_HPP_
 
-#include "drone_primitive_types.hpp"
+#include "primitive_types.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
 const int ROTOR_NUM = 4;
 

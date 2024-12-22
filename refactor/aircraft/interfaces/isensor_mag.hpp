@@ -3,9 +3,9 @@
 
 #include "isensor.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
-class ISensorMag : public hako::assets::drone::ISensor {
+class ISensorMag : public ISensor {
 protected:
     double params_F;
     double params_I;

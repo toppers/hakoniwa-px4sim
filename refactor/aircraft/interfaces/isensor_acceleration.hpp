@@ -1,11 +1,11 @@
 #ifndef _ISENSOR_ACCELERATION_HPP_
 #define _ISENSOR_ACCELERATION_HPP_
 
-#include "isensor.hpp"
+#include "aircraft/interfaces/isensor.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
-class ISensorAcceleration : public hako::assets::drone::ISensor {
+class ISensorAcceleration : public ISensor {
 protected:
     bool has_prev_data;
     DroneVelocityBodyFrameType prev_data;

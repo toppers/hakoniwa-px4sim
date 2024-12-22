@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "sensors/baro/sensor_baro.hpp"
-#include "utils/sensor_noise.hpp"
+#include "aircraft/impl/sensors/sensor_baro.hpp"
+#include "aircraft/impl/noise/sensor_noise.hpp"
+
+using namespace hako::aircraft;
+using namespace hako::logger;
 
 class BaroTest : public ::testing::Test {
 protected:
@@ -19,11 +22,7 @@ protected:
     }
 
 };
-using hako::assets::drone::SensorBaro;
-using hako::assets::drone::SensorNoise;
-using hako::assets::drone::DronePositionType;
-using hako::assets::drone::DroneBarometricPressureType;
-using hako::assets::drone::DronePositionType;
+
 
 TEST_F(BaroTest, SensorBaro_001) 
 {

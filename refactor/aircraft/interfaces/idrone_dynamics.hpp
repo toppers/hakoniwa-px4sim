@@ -1,12 +1,14 @@
 #ifndef _IDRONE_DYNAMICS_HPP_
 #define _IDRONE_DYNAMICS_HPP_
 
-#include "drone_primitive_types.hpp"
-#include "utils/icsv_log.hpp"
-#include "hako_module_drone_sensor.h"
+#include "primitive_types.hpp"
+#include "logger/ilog.hpp"
 #include "config/drone_config_types.hpp"
 
-namespace hako::assets::drone {
+using namespace hako::logger;
+using namespace hako::config;
+
+namespace hako::aircraft {
 
 #define MAX_CONTAT_NUM 10
 #define MAX_ROTOR_NUM  16
@@ -41,9 +43,8 @@ typedef struct {
 } DroneDynamicsInputType;
 
 
-class IDroneDynamics: public ICsvLog {
+class IDroneDynamics: public ILog {
 protected:
-    DronePhysCalcCacheType cache;
     bool use_quaternion = false;
 public:
     virtual ~IDroneDynamics() {}

@@ -1,13 +1,13 @@
 #ifndef _SENSOR_DATA_ASSEMBLER_HPP_
 #define _SENSOR_DATA_ASSEMBLER_HPP_
 
-#include "isensor_data_assembler.hpp"
+#include "aircraft/interfaces/isensor_data_assembler.hpp"
 #include <vector>
 #include <numeric> 
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
-class SensorDataAssembler : public hako::assets::drone::ISensorDataAssembler {
+class SensorDataAssembler : public ISensorDataAssembler {
 private:
     std::vector<double> data_vector;
     SensorDataAssembler() {}
