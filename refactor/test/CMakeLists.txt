@@ -26,6 +26,7 @@ set(SOURCE_FILES
     test_mavlink_comm.cpp
     test_mavlink.cpp
     test_logger.cpp
+    aircraft/test_sensor_assembler.cpp
     aircraft/test_acc.cpp
     aircraft/test_baro.cpp
     aircraft/test_gps.cpp
@@ -33,6 +34,7 @@ set(SOURCE_FILES
     aircraft/test_mag.cpp
     aircraft/test_thrust_dynamics.cpp
     aircraft/test_rotor_dynamics.cpp
+    aircraft/test_body_dynamics.cpp
 )
 
 # 実行ファイルの定義

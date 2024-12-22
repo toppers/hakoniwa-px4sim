@@ -27,28 +27,6 @@ public:
         this->noise = nullptr;
     }
     virtual ~SensorGyro() {}
-    void run(const DroneAngularVelocityBodyFrameType& data, DroneDynamicsDisturbanceType& disturbance) override
-    {
-        if (this->vendor_model) {
-            mi_drone_sensor_gyro_out_t out = {};
-            mi_drone_sensor_gyro_in_t in = {};
-            HakoModuleDroneSensorGyroType* module = static_cast<HakoModuleDroneSensorGyroType*>(this->vendor_model);
-            in.context = (mi_drone_sensor_gyro_context_t*)this->context;
-            in.disturbance = disturbance.values;
-            in.angular_velocity_x = data.data.x;
-            in.angular_velocity_y = data.data.y;
-            in.angular_velocity_z = data.data.z;
-            out = module->run(&in);
-            DroneAngularVelocityBodyFrameType s_in;
-            s_in.data.x = out.angular_velocity_x;
-            s_in.data.y = out.angular_velocity_y;
-            s_in.data.z = out.angular_velocity_z;
-            this->run(s_in);
-        }
-        else {
-            this->run(data);
-        }
-    }
     void run(const DroneAngularVelocityBodyFrameType& data) override
     {
         this->gyro_x.add_data(data.data.x);

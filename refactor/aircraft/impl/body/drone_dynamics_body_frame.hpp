@@ -1,16 +1,17 @@
 #ifndef _DRON_DYNAMICS_BODY_FRAME_HPP_
 #define _DRON_DYNAMICS_BODY_FRAME_HPP_
 
-#include "idrone_dynamics.hpp"
-#include "config/drone_config_types.hpp"
 #include <math.h>
 #include <iostream>
-#include "utils/csv_logger.hpp"
+#include "config/drone_config_types.hpp"
+#include "aircraft/interfaces/idrone_dynamics.hpp"
+#include "logger/ilog.hpp"
+#include "logger/impl/hako_logger.hpp"
 
-namespace hako::assets::drone {
+namespace hako::aircraft {
 
 
-class DroneDynamicsBodyFrame : public hako::assets::drone::IDroneDynamics {
+class DroneDynamicsBodyFrame : public IDroneDynamics {
 private:
     /*
      * parameters
@@ -234,7 +235,6 @@ public:
     {
         torque = input.torque;
         thrust = input.thrust;
-        this->cache = drone_phys_calc_cache(this->angle);
 
         // ADD WIND CONDITION HERE. (wind vector, in ground frame)
         hako::drone_physics::VectorType wind_disturbance = {input.disturbance.values.d_wind.x, 
@@ -322,20 +322,53 @@ public:
         }
         this->total_time_sec += this->delta_time_sec;
     }
-    const std::vector<std::string> log_head() override
-    {
-        return { "timestamp", "X", "Y", "Z", "Rx", "Ry", "Rz", "Vx", "Vy", "Vz", "VRx", "VRy", "VRz", "Thrust", "Tx", "Ty", "Tz" };
+    const std::vector<LogHeaderType>& log_head() override {
+        static const std::vector<LogHeaderType> headers = {
+            {"timestamp", LOG_TYPE_UINT64},
+            {"X", LOG_TYPE_DOUBLE}, {"Y", LOG_TYPE_DOUBLE}, {"Z", LOG_TYPE_DOUBLE},
+            {"Rx", LOG_TYPE_DOUBLE}, {"Ry", LOG_TYPE_DOUBLE}, {"Rz", LOG_TYPE_DOUBLE},
+            {"Vx", LOG_TYPE_DOUBLE}, {"Vy", LOG_TYPE_DOUBLE}, {"Vz", LOG_TYPE_DOUBLE},
+            {"VRx", LOG_TYPE_DOUBLE}, {"VRy", LOG_TYPE_DOUBLE}, {"VRz", LOG_TYPE_DOUBLE},
+            {"Thrust", LOG_TYPE_DOUBLE},
+            {"Tx", LOG_TYPE_DOUBLE}, {"Ty", LOG_TYPE_DOUBLE}, {"Tz", LOG_TYPE_DOUBLE}
+        };
+        return headers;
     }
-    const std::vector<std::string> log_data() override
-    {
-        return {
-            std::to_string(CsvLogger::get_time_usec()), 
-            std::to_string(position.data.x), std::to_string(position.data.y), std::to_string(position.data.z),
-            std::to_string(angle.data.x), std::to_string(angle.data.y), std::to_string(angle.data.z),
-            std::to_string(velocity.data.x), std::to_string(velocity.data.y), std::to_string(velocity.data.z),
-            std::to_string(eulerRate.data.x), std::to_string(eulerRate.data.y), std::to_string(eulerRate.data.z),
-            std::to_string(thrust.data), std::to_string(torque.data.x), std::to_string(torque.data.y), std::to_string(torque.data.z)
-            };
+
+    const std::vector<LogDataType>& log_data() override {
+        static std::vector<LogDataType> data;
+        data.clear();
+
+        // Add timestamp
+        data.push_back(HakoLogger::get_time_usec()); // Assuming this returns uint64_t
+
+        // Add positional data
+        data.push_back(position.data.x);
+        data.push_back(position.data.y);
+        data.push_back(position.data.z);
+
+        // Add angular data
+        data.push_back(angle.data.x);
+        data.push_back(angle.data.y);
+        data.push_back(angle.data.z);
+
+        // Add velocity data
+        data.push_back(velocity.data.x);
+        data.push_back(velocity.data.y);
+        data.push_back(velocity.data.z);
+
+        // Add angular rate data
+        data.push_back(eulerRate.data.x);
+        data.push_back(eulerRate.data.y);
+        data.push_back(eulerRate.data.z);
+
+        // Add thrust and torque data
+        data.push_back(thrust.data);
+        data.push_back(torque.data.x);
+        data.push_back(torque.data.y);
+        data.push_back(torque.data.z);
+
+        return data;
     }
 
 };

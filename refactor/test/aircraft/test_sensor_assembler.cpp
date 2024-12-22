@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include "utils/sensor_data_assembler.hpp"
-#include "utils/sensor_noise.hpp"
+#include "aircraft/impl/noise/sensor_noise.hpp"
+#include "aircraft/impl/noise/sensor_data_assembler.hpp"
+
+using namespace hako::aircraft;
 
 class UtilsTest : public ::testing::Test {
 protected:
@@ -19,8 +21,6 @@ protected:
     }
 
 };
-using hako::assets::drone::SensorNoise;
-using hako::assets::drone::SensorDataAssembler;
 
 TEST_F(UtilsTest, NoiseStatisticsTest_001) 
 {

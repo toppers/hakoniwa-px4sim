@@ -3,6 +3,7 @@
 
 #include "primitive_types.hpp"
 #include "logger/ilog.hpp"
+#include "aircraft/interfaces/idisturbance.hpp"
 #include "config/drone_config_types.hpp"
 
 using namespace hako::logger;
