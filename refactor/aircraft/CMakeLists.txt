@@ -13,7 +13,7 @@ message(STATUS "OS_TYPE=${OS_TYPE}")
 
 # ソースファイルの定義
 set(SOURCE_FILES
-    aircraft_factory.cpp
+    impl/aircraft_factory.cpp
 )
 add_library(hako_aircraft ${SOURCE_FILES})
 

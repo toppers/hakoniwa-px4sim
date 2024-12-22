@@ -1,30 +1,18 @@
-#ifndef _AIRCRAFT_FACTORY_HPP_
-#define _AIRCRAFT_FACTORY_HPP_
+#ifndef _AIRCRAFT_CONTAINER_HPP_
+#define _AIRCRAFT_CONTAINER_HPP_
 
-#include "aircraft/interfaces/iaircraft.hpp"
-#include "aircraft/interfaces/idrone_dynamics.hpp"
-#include "aircraft/interfaces/irotor_dynamics.hpp"
-#include "aircraft/interfaces/ithrust_dynamics.hpp"
-#include "aircraft/interfaces/ibattery_dynamics.hpp"
-#include "aircraft/interfaces/isensor_acceleration.hpp"
-#include "aircraft/interfaces/isensor_baro.hpp"
-#include "aircraft/interfaces/isensor_gps.hpp"
-#include "aircraft/interfaces/isensor_gyro.hpp"
-#include "aircraft/interfaces/isensor_mag.hpp"
+#include "aircraft/iaircraft.hpp"
+#include "aircraft/iaircraft_container.hpp"
+#include "aircraft/impl/aircraft_factory.hpp"
 #include "config/drone_config.hpp"
 #include <vector>
-#include <memory>
 
 namespace hako::aircraft {
-
-extern IAirCraft* create_aircraft(int index, const DroneConfig& drone_config);
 
 class AirCraftContainer {
 private:
     std::vector<std::unique_ptr<IAirCraft>> airCrafts;
-
 public:
-    AirCraftContainer() {}
     virtual ~AirCraftContainer() {}
     /*
      * create different aircrafts from config directory.
@@ -80,8 +68,6 @@ public:
     }
 
 };
-
 }
 
-
-#endif /* _AIRCRAFT_FACTORY_HPP_ */
+#endif /* _AIRCRAFT_CONTAINER_HPP_ */

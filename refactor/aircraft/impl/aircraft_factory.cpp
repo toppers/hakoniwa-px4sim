@@ -1,5 +1,5 @@
-#include "aircraft/aircraft.hpp"
-#include "aircraft/aircraft_factory.hpp"
+#include "aircraft/impl/aircraft.hpp"
+#include "aircraft/impl/aircraft_factory.hpp"
 #include "aircraft/impl/body/drone_dynamics_body_frame.hpp"
 #include "aircraft/impl/thruster/thrust_dynamics_nonlinear.hpp"
 #include "aircraft/impl/rotor/rotor_dynamics.hpp"

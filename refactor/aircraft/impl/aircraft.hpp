@@ -1,7 +1,7 @@
 #ifndef _AIRCRAFT_HPP_
 #define _AIRCRAFT_HPP_
 
-#include "aircraft/interfaces/iaircraft.hpp"
+#include "aircraft/iaircraft.hpp"
 #include "logger/impl/hako_logger.hpp"
 
 using namespace hako::logger;
