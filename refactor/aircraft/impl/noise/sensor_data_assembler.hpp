@@ -39,7 +39,7 @@ public:
     }
     int size() override
     {
-        return data_vector.size();
+        return (int)data_vector.size();
     }
 };
 

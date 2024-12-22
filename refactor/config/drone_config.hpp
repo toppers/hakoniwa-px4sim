@@ -374,7 +374,7 @@ public:
         return "";
     }
 
-    double getCompSensorSampleCount(const std::string& sensor_name) const {
+    int getCompSensorSampleCount(const std::string& sensor_name) const {
         return configJson["components"]["sensors"][sensor_name]["sampleCount"].get<double>();
     }
     double getCompSensorNoise(const std::string& sensor_name) const {
@@ -541,7 +541,7 @@ public:
         return true;
     }
     int getConfigCount() {
-        return configs.size();
+        return (int)configs.size();
     }
 };
 
