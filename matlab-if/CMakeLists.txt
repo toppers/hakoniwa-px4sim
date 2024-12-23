@@ -1,4 +1,4 @@
-set(HAKO_CMAKE_VERSION 3.5.1)
+set(HAKO_CMAKE_VERSION 3.20)
 cmake_minimum_required(VERSION ${HAKO_CMAKE_VERSION})
 include_directories(PUBLIC ../drone_physics)
 
