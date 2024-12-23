@@ -30,6 +30,7 @@ public:
     }
     void resetService() override;
     uint64_t getSimulationTimeUsec(uint32_t index) override;
+    uint64_t getSitlTimeUsec(uint32_t index) override;
 
     virtual bool write_pdu(uint32_t index, HakoniwaPduDataType& pdu) override;
     virtual bool read_pdu(uint32_t index, HakoniwaPduDataType& message) override;
@@ -40,13 +41,14 @@ private:
     uint64_t delta_time_usec_ = 0;
     uint64_t activated_time_usec_ = 0;
     std::vector<uint64_t> send_count_;
+    std::vector<uint64_t> sitl_simulation_time_usec_;
     MavLinkServiceContainer& mavlink_service_container_;
     AirCraftContainer& aircraft_container_;
     std::vector<AircraftInputType> aircraft_inputs_;
 
     void send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec);
-    void advanceTimeStepLockStep(uint32_t index);
-    void advanceTimeStepFreeRun(uint32_t index);
+    void advanceTimeStepLockStep(uint32_t index, uint64_t& sitl_time_usec);
+    void advanceTimeStepFreeRun(uint32_t index, uint64_t& sitl_time_usec);
 };
 } // namespace hako::service
 #endif /* _AIRCRAFT_SERVICE_HPP_ */

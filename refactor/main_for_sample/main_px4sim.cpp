@@ -34,8 +34,7 @@ int main(int argc, const char* argv[])
     HakoLogger::enable();
 
     while (true) {
-        uint64_t time_usec = aircraft_service->getSimulationTimeUsec(0);
-        HakoLogger::set_time_usec(time_usec);
+        HakoLogger::set_time_usec(aircraft_service->getSitlTimeUsec(0));
         //std::cout << "INFO: simulation time(usec)=" << time_usec << std::endl;
         aircraft_service->advanceTimeStep(0);
         //sleep for real time
