@@ -103,7 +103,7 @@ void hako::service::impl::AircraftService::resetService()
 
 bool hako::service::impl::AircraftService::write_pdu(uint32_t index, HakoniwaPduDataType& pdu)
 {
-    if (index < 0 || index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
+    if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
 
@@ -135,7 +135,7 @@ bool hako::service::impl::AircraftService::write_pdu(uint32_t index, HakoniwaPdu
 
 bool hako::service::impl::AircraftService::read_pdu(uint32_t index, HakoniwaPduDataType& pdu)
 {
-    if (index < 0 || index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
+    if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
     switch (pdu.id) {
