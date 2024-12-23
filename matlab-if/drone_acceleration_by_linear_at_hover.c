@@ -5,13 +5,13 @@
 mi_drone_acceleration_out_t drone_acceleration_by_linear_at_hover(const mi_drone_acceleration_in_t* in) {
     double phi = in->phi;
     double theta = in->theta;
-    double psi = in->psi;
+    // double psi = in->psi; // unused
     double u = in->u;
     double v = in->v;
     double w = in->w;
-    double p = in->p;
-    double q = in->q;
-    double r = in->r;
+    // double p = in->p;     // unused
+    // double q = in->q;     // unused
+    // double r = in->r;     // unused
     double T = in->thrust;
     double tx = in->torque_x;
     double ty = in->torque_y;
@@ -38,4 +38,3 @@ mi_drone_acceleration_out_t drone_acceleration_by_linear_at_hover(const mi_drone
         .dr = tz/Izz
     };
 }
-
