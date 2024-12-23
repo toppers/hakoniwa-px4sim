@@ -24,7 +24,10 @@ public:
 
     bool startService(bool lockStep, uint64_t deltaTimeUsec) override;
     void advanceTimeStep(int index) override;
-    void stopService() override;
+    void stopService() override
+    {
+        throw std::runtime_error("Not implemented");
+    }
     void resetService() override;
     uint64_t getSimulationTimeUsec(int index) override;
 

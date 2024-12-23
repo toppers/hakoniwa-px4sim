@@ -28,3 +28,5 @@ add_subdirectory(aircraft)
 add_subdirectory(service)
 
 add_subdirectory(test)
+
+add_subdirectory(main_for_sample)

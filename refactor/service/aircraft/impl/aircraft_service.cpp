@@ -14,14 +14,17 @@ bool hako::service::impl::AircraftService::startService(bool lockStep, uint64_t 
     aircraft_inputs_.resize(aircraft_container_.getAllAirCrafts().size());
     int index = 0;
     for (std::reference_wrapper<MavLinkService> mavlink_service: mavlink_service_container_.getServices()) {
+        std::cout << "INFO: AircraftService startService wait for connection : " << index << std::endl;
         if (!mavlink_service.get().startService()) {
             throw std::runtime_error("Failed to start mavlink service");
         }
+        std::cout << "INFO: AircraftService startService is returned : " << index << std::endl;
         aircraft_inputs_[index] = {};
         aircraft_container_.getAllAirCrafts()[index]->set_delta_time_usec(deltaTimeUsec);
         aircraft_container_.getAllAirCrafts()[index]->reset();
         index++;
     }
+    std::cout << "INFO: AircraftService started" << std::endl;
     return true;
 }
 
@@ -30,7 +33,7 @@ void hako::service::impl::AircraftService::advanceTimeStep(int index)
     if (index < 0 || index >= static_cast<int>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for advanceTimeStep : " + std::to_string(index));
     }
-    std::cout << "INFO: advanceTimeStep : " << index  << std::endl;
+    //std::cout << "INFO: advanceTimeStep : " << index  << std::endl;
 
     /*
      * Setup input data for each aircraft
@@ -52,9 +55,14 @@ void hako::service::impl::AircraftService::advanceTimeStep(int index)
              */
             aircraft->run(aircraft_inputs_[aircraft->get_index()]);
         }
+        send_sensor_data(*aircraft, activated_time_usec_);
     }
-    send_sensor_data(*aircraft, activated_time_usec_);
+    else {
+        aircraft->run(aircraft_inputs_[aircraft->get_index()]);
+        send_sensor_data(*aircraft, activated_time_usec_);
+    }
 }
+ 
 uint64_t hako::service::impl::AircraftService::getSimulationTimeUsec(int index)
 {
     if (index < 0 || index >= static_cast<int>(aircraft_container_.getAllAirCrafts().size())) {
@@ -95,7 +103,7 @@ void hako::service::impl::AircraftService::resetService()
 
 bool hako::service::impl::AircraftService::write_pdu(uint32_t index, HakoniwaPduDataType& pdu)
 {
-    if (index < 0 || index >= static_cast<int>(aircraft_inputs_.size())) {
+    if (index < 0 || index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
 
@@ -127,7 +135,7 @@ bool hako::service::impl::AircraftService::write_pdu(uint32_t index, HakoniwaPdu
 
 bool hako::service::impl::AircraftService::read_pdu(uint32_t index, HakoniwaPduDataType& pdu)
 {
-    if (index < 0 || index >= static_cast<int>(aircraft_inputs_.size())) {
+    if (index < 0 || index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
     switch (pdu.id) {
