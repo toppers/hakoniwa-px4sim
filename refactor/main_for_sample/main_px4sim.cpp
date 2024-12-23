@@ -1,6 +1,9 @@
 #include "service/aircraft/impl/aircraft_service.hpp"
+#include "logger/impl/hako_logger.hpp"
 
 using namespace hako::service;
+using namespace hako::logger;
+
 
 int main(int argc, const char* argv[])
 {
@@ -20,17 +23,17 @@ int main(int argc, const char* argv[])
     AirCraftContainer aircraft_container;
     aircraft_container.createAirCrafts(configManager);
 
-    std::unique_ptr<IAircraftService> aircraft_service = std::make_unique<hako::service::impl::AircraftService>(mavlink_service_container, aircraft_container);
+    auto aircraft_service = std::make_unique<hako::service::impl::AircraftService>(mavlink_service_container, aircraft_container);
     aircraft_service->startService(true, 3000);
+    HakoLogger::enable();
 
     while (true) {
-        aircraft_service->advanceTimeStep(0);
-
         uint64_t time_usec = aircraft_service->getSimulationTimeUsec(0);
+        HakoLogger::set_time_usec(time_usec);
         std::cout << "INFO: simulation time(usec)=" << time_usec << std::endl;
+        aircraft_service->advanceTimeStep(0);
         //sleep 3msec
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-
     return 0;
 }
