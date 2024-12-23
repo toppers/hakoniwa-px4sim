@@ -8,6 +8,7 @@ using namespace hako::mavlink;
 
 std::unordered_map<std::pair<int, MavlinkMsgType>, std::unique_ptr<MavlinkHakoMessage>, MavlinkCommBuffer::PairHash> MavlinkCommBuffer::cache_;
 std::atomic<bool> MavlinkCommBuffer::is_busy_{false};
+std::atomic<bool> MavlinkCommBuffer::is_dirty_[MAVLINK_INSTNACE_MAX_NUM][MAVLINK_MSG_TYPE_NUM]{{false}};
 
 void MavlinkCommBuffer::init() {
     set_busy();
@@ -50,14 +51,15 @@ bool MavlinkCommBuffer::write(int index, MavlinkDecodedMessage &message) {
         entry = std::make_unique<MavlinkHakoMessage>();
     }
     *entry = out;
+    is_dirty_[index][message.type].store(true);
     unset_busy();
 
     return true;
 }
 
-bool MavlinkCommBuffer::read(int index, MavlinkHakoMessage &message) {
+bool MavlinkCommBuffer::read(int index, MavlinkHakoMessage &message, bool &is_dirty) {
     auto key = std::make_pair(index, message.type);
-
+    is_dirty = false;
     set_busy();
     auto it = cache_.find(key);
     if (it == cache_.end()) {
@@ -65,6 +67,8 @@ bool MavlinkCommBuffer::read(int index, MavlinkHakoMessage &message) {
         return false;
     }
     message = *(it->second);
+    is_dirty = is_dirty_[index][message.type].load();
+    is_dirty_[index][message.type].store(false);
     unset_busy();
 
     return true;

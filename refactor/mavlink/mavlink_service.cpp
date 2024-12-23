@@ -156,9 +156,9 @@ bool MavLinkService::sendCommandLongAck()
     return ret;
 }
 
-bool MavLinkService::readMessage(MavlinkHakoMessage& message)
+bool MavLinkService::readMessage(MavlinkHakoMessage& message, bool& is_dirty)
 {
-    return MavlinkCommBuffer::read(index_, message);
+    return MavlinkCommBuffer::read(index_, message, is_dirty);
 }
 
 void MavLinkService::receiver() {

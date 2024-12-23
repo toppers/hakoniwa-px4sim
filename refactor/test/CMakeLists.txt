@@ -61,8 +61,6 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE GTest::gtest
     PRIVATE GTest::gtest_main
     PRIVATE hako_mavlink
-    PRIVATE hako_logger
-    PRIVATE drone_physics
     PRIVATE hako_aircraft
 )
 target_include_directories(${PROJECT_NAME}

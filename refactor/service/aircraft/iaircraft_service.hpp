@@ -32,9 +32,10 @@ class IAircraftService {
 public:
     virtual ~IAircraftService() = default;
     virtual bool startService(bool lockStep, uint64_t deltaTimeUsec) = 0;
-    virtual void advanceTimeStep() = 0;
+    virtual void advanceTimeStep(int index) = 0;
     virtual void stopService() = 0;
     virtual void resetService() = 0;
+    virtual uint64_t getSimulationTimeUsec(int index) = 0;
 
     virtual bool write_pdu(uint32_t index, HakoniwaPduDataType& pdu) = 0;
     virtual bool read_pdu(uint32_t index, HakoniwaPduDataType& pdu) = 0;

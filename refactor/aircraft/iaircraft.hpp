@@ -32,10 +32,20 @@ protected:
     double radPerSecToRPM(double rad_per_sec) {
         return rad_per_sec * (60.0 / (2 * M_PI));
     }
+    uint64_t simulation_time_usec = 0;
+    uint64_t delta_time_usec = 0;
 public:
     virtual ~IAirCraft() {}
     virtual void run(AircraftInputType& input) = 0;
     virtual void reset() = 0;
+    void set_delta_time_usec(uint64_t d_time_usec)
+    {
+        this->delta_time_usec = d_time_usec;
+    }
+    uint64_t get_simulation_time_usec()
+    {
+        return simulation_time_usec;
+    }
     void enable_disturb()
     {
         this->enable_disturbance = true;

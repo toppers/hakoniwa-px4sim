@@ -22,7 +22,7 @@ public:
     ~MavLinkService();
 
     bool sendMessage(MavlinkHakoMessage& message);
-    bool readMessage(MavlinkHakoMessage& message);
+    bool readMessage(MavlinkHakoMessage& message, bool &is_dirty);
     bool startService();
     void stopService();
 

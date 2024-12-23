@@ -15,9 +15,10 @@ class MavlinkCommBuffer {
 public:
     static void init();
     static bool write(int index, MavlinkDecodedMessage &message);
-    static bool read(int index, MavlinkHakoMessage &message);
+    static bool read(int index, MavlinkHakoMessage &message, bool &is_dirty);
 
 private:
+    static const int MAVLINK_INSTNACE_MAX_NUM = 1024;
     struct PairHash {
         template <class T1, class T2>
         std::size_t operator()(const std::pair<T1, T2>& p) const {
@@ -29,6 +30,7 @@ private:
     static void set_busy();
     static void unset_busy();
     static std::atomic<bool>  is_busy_;
+    static std::atomic<bool>  is_dirty_[MAVLINK_INSTNACE_MAX_NUM][MAVLINK_MSG_TYPE_NUM];
     static std::unordered_map<std::pair<int, MavlinkMsgType>, std::unique_ptr<MavlinkHakoMessage>, PairHash> cache_;
 };
 

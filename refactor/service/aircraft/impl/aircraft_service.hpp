@@ -23,19 +23,25 @@ public:
     ~AircraftService() = default;
 
     bool startService(bool lockStep, uint64_t deltaTimeUsec) override;
-    void advanceTimeStep() override;
+    void advanceTimeStep(int index) override;
     void stopService() override;
     void resetService() override;
+    uint64_t getSimulationTimeUsec(int index) override;
 
     virtual bool write_pdu(uint32_t index, HakoniwaPduDataType& pdu) override;
     virtual bool read_pdu(uint32_t index, HakoniwaPduDataType& message) override;
 
 private:
+    static const uint64_t gps_send_cycle = 10;
     bool lock_step_ = false;
     uint64_t delta_time_usec_ = 0;
+    uint64_t activated_time_usec_ = 0;
+    std::vector<uint64_t> send_count_;
     MavLinkServiceContainer& mavlink_service_container_;
     AirCraftContainer& aircraft_container_;
     std::vector<AircraftInputType> aircraft_inputs_;
+
+    void send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec);
 };
 } // namespace hako::service
 #endif /* _AIRCRAFT_SERVICE_HPP_ */

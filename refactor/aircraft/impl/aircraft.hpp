@@ -28,6 +28,7 @@ public:
         }
         thrust_dynamis->reset();
         logger.reset();
+        simulation_time_usec = 0;
     }
     void run(AircraftInputType& input) override
     {
@@ -56,6 +57,7 @@ public:
         baro->run(drone_dynamics->get_pos());
 
         logger.run();
+        simulation_time_usec += delta_time_usec;
     }
     HakoLogger& get_logger()
     {

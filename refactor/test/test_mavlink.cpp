@@ -28,7 +28,8 @@ TEST(MavLinkSendTcpTest, SendReceive) {
         MavlinkHakoMessage actuator_message;
         actuator_message.type = MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS;
         while (true) {
-            ret = service.readMessage(actuator_message);
+            bool is_dirty;
+            ret = service.readMessage(actuator_message, is_dirty);
             if (ret) {
                 std::cout << "Received message: " << actuator_message.type << std::endl;
                 break;
@@ -133,7 +134,8 @@ TEST(MavLinkSendUdpTest, SendSensor) {
         MavlinkHakoMessage actuator_message;
         actuator_message.type = MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS;
         while (true) {
-            ret = service.readMessage(actuator_message);
+            bool is_dirty;
+            ret = service.readMessage(actuator_message, is_dirty);
             if (ret) {
                 std::cout << "Received message: " << actuator_message.type << std::endl;
                 break;
