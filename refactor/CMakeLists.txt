@@ -25,5 +25,6 @@ add_subdirectory(mavlink)
 add_subdirectory(logger)
 add_subdirectory(physics)
 add_subdirectory(aircraft)
+add_subdirectory(service)
 
 add_subdirectory(test)
