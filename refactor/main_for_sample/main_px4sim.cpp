@@ -10,6 +10,12 @@ int main(int argc, const char* argv[])
     const char* server_ip = "127.0.0.1";
     const int server_port = 4560;
 
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <real_sleep_msec>" << std::endl;
+        return 1;
+    }
+    int real_sleep_msec = std::stoi(argv[1]);
+
     // MAVLINK サーバーの設定
     IcommEndpointType server_endpoint = {server_ip, server_port};
     auto mavlink_service = MavLinkService(0, MAVLINK_SERVICE_IO_TYPE_TCP, &server_endpoint, nullptr);
@@ -30,10 +36,10 @@ int main(int argc, const char* argv[])
     while (true) {
         uint64_t time_usec = aircraft_service->getSimulationTimeUsec(0);
         HakoLogger::set_time_usec(time_usec);
-        std::cout << "INFO: simulation time(usec)=" << time_usec << std::endl;
+        //std::cout << "INFO: simulation time(usec)=" << time_usec << std::endl;
         aircraft_service->advanceTimeStep(0);
-        //sleep 3msec
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        //sleep for real time
+        std::this_thread::sleep_for(std::chrono::milliseconds(real_sleep_msec));
     }
     return 0;
 }

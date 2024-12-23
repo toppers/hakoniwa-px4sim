@@ -23,13 +23,13 @@ public:
     ~AircraftService() = default;
 
     bool startService(bool lockStep, uint64_t deltaTimeUsec) override;
-    void advanceTimeStep(int index) override;
+    void advanceTimeStep(uint32_t index) override;
     void stopService() override
     {
         throw std::runtime_error("Not implemented");
     }
     void resetService() override;
-    uint64_t getSimulationTimeUsec(int index) override;
+    uint64_t getSimulationTimeUsec(uint32_t index) override;
 
     virtual bool write_pdu(uint32_t index, HakoniwaPduDataType& pdu) override;
     virtual bool read_pdu(uint32_t index, HakoniwaPduDataType& message) override;
@@ -45,6 +45,8 @@ private:
     std::vector<AircraftInputType> aircraft_inputs_;
 
     void send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec);
+    void advanceTimeStepLockStep(uint32_t index);
+    void advanceTimeStepFreeRun(uint32_t index);
 };
 } // namespace hako::service
 #endif /* _AIRCRAFT_SERVICE_HPP_ */

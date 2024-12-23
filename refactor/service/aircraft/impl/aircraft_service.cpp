@@ -28,13 +28,51 @@ bool hako::service::impl::AircraftService::startService(bool lockStep, uint64_t 
     return true;
 }
 
-void hako::service::impl::AircraftService::advanceTimeStep(int index)
+void hako::service::impl::AircraftService::advanceTimeStep(uint32_t index)
 {
-    if (index < 0 || index >= static_cast<int>(aircraft_container_.getAllAirCrafts().size())) {
+    if (index >= static_cast<uint32_t>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for advanceTimeStep : " + std::to_string(index));
     }
-    //std::cout << "INFO: advanceTimeStep : " << index  << std::endl;
 
+    if (lock_step_) {
+        advanceTimeStepLockStep(index);
+    }
+    else {
+        advanceTimeStepFreeRun(index);
+    }
+}
+void hako::service::impl::AircraftService::advanceTimeStepLockStep(uint32_t index)
+{
+    /*
+     * Setup input data for each aircraft
+     */
+    auto aircraft = aircraft_container_.getAllAirCrafts()[index];
+    MavlinkHakoMessage message;
+    message.type = MAVLINK_MSG_TYPE_HIL_ACTUATOR_CONTROLS;
+    bool is_dirty = false;
+    if (mavlink_service_container_.getServices()[index].get().readMessage(message, is_dirty)) {
+        aircraft_inputs_[index].no_use_actuator = false;
+        aircraft_inputs_[index].manual.control = false;
+        for (int i = 0; i < hako::aircraft::ROTOR_NUM; i++) {
+            aircraft_inputs_[index].controls[i] = message.data.hil_actuator_controls.controls[i];
+        }
+        if (is_dirty) {
+            //lock_step and dirty
+            /*
+             * Run the aircraft
+             */
+            aircraft->run(aircraft_inputs_[aircraft->get_index()]);
+            send_sensor_data(*aircraft, activated_time_usec_);
+        }
+    }
+    else {
+        aircraft->run(aircraft_inputs_[aircraft->get_index()]);
+        send_sensor_data(*aircraft, activated_time_usec_);
+    }
+}
+
+void hako::service::impl::AircraftService::advanceTimeStepFreeRun(uint32_t index)
+{
     /*
      * Setup input data for each aircraft
      */
@@ -62,10 +100,10 @@ void hako::service::impl::AircraftService::advanceTimeStep(int index)
         send_sensor_data(*aircraft, activated_time_usec_);
     }
 }
- 
-uint64_t hako::service::impl::AircraftService::getSimulationTimeUsec(int index)
+
+uint64_t hako::service::impl::AircraftService::getSimulationTimeUsec(uint32_t index)
 {
-    if (index < 0 || index >= static_cast<int>(aircraft_container_.getAllAirCrafts().size())) {
+    if (index >= static_cast<uint32_t>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for advanceTimeStep : " + std::to_string(index));
     }
     return aircraft_container_.getAllAirCrafts()[index]->get_simulation_time_usec();
