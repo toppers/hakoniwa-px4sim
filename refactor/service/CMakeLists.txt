@@ -16,13 +16,25 @@ set(SOURCE_FILES
 )
 add_library(hako_service ${SOURCE_FILES})
 
+
 if(OS_TYPE STREQUAL "posix")
     target_compile_options(hako_service PRIVATE
+        -Wno-pedantic
+        -Wno-address-of-packed-member
+        -Wno-unused-function
+        -Wno-missing-field-initializers
     )
 else()
     target_compile_options(hako_service PRIVATE
+        /wd4200  # Zero-sized array
+        /wd4706  # Assignment within conditional expression
+        /wd4996  # Deprecated API
+        /wd4244  # 'double'から'float'への変換の警告を抑制
+        /wd4309  # 定数値の切り捨ての警告を抑制
+        /wd4267  # Suppress warning C4267: size_t to int conversion
     )
 endif()
+
 
 
 target_include_directories(hako_service 
