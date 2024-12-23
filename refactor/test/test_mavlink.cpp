@@ -116,6 +116,8 @@ TEST(MavLinkSendTcpTest, SendReceive) {
 
     client_io->close();
     server_thread.join();
+
+    MavLinkService::finalize();
 }
 
 #if 1
@@ -222,6 +224,8 @@ TEST(MavLinkSendUdpTest, SendSensor) {
 
     client_io->close();
     server_thread.join();
+
+    MavLinkService::finalize();
 }
 
 #endif

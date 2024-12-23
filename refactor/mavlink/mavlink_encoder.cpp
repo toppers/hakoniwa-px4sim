@@ -16,16 +16,18 @@ int mavlink_get_packet(char* packet, int packet_len, const mavlink_message_t *ms
     }
 }
 
-bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage *message) 
+bool mavlink_encode_message(int index, mavlink_message_t *msg, const MavlinkDecodedMessage *message) 
 {
     if (!msg || !message) {
         return false;
     }
+    int system_id = MAVLINK_CONFIG_SYSTEM_ID;
+    int commponent_id = MAVLINK_CONFIG_COMPONENT_ID + index;
     switch (message->type) {
         case MAVLINK_MSG_TYPE_HEARTBEAT:
             mavlink_msg_heartbeat_pack(
-                MAVLINK_CONFIG_SYSTEM_ID, 
-                MAVLINK_CONFIG_COMPONENT_ID, 
+                system_id, 
+                commponent_id, 
                 msg, 
                 message->data.heartbeat.type,
                 message->data.heartbeat.autopilot, 
@@ -37,8 +39,8 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
         
         case MAVLINK_MSG_TYPE_LONG:
             mavlink_msg_command_long_pack(
-                MAVLINK_CONFIG_SYSTEM_ID, 
-                MAVLINK_CONFIG_COMPONENT_ID, 
+                system_id, 
+                commponent_id, 
                 msg, 
                 message->data.command_long.target_system,
                 message->data.command_long.target_component, 
@@ -55,8 +57,8 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
             return true;
         case MAVLINK_MSG_TYPE_COMMAND_ACK:
             mavlink_msg_command_ack_pack(
-                MAVLINK_CONFIG_SYSTEM_ID, 
-                MAVLINK_CONFIG_COMPONENT_ID, 
+                system_id, 
+                commponent_id, 
                 msg, 
                 message->data.command_ack.command,
                 message->data.command_ack.result,
@@ -68,8 +70,8 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
             return true;
         case MAVLINK_MSG_TYPE_HIL_SENSOR:
             mavlink_msg_hil_sensor_pack(
-                MAVLINK_CONFIG_SYSTEM_ID, 
-                MAVLINK_CONFIG_COMPONENT_ID, 
+                system_id, 
+                commponent_id, 
                 msg, 
                 message->data.hil_sensor.time_usec,
                 message->data.hil_sensor.xacc,
@@ -91,8 +93,8 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
             return true;
         case MAVLINK_MSG_TYPE_HIL_STATE_QUATERNION:
             mavlink_msg_hil_state_quaternion_pack(
-                MAVLINK_CONFIG_SYSTEM_ID, 
-                MAVLINK_CONFIG_COMPONENT_ID, 
+                system_id, 
+                commponent_id, 
                 msg, 
                 message->data.hil_state_quaternion.time_usec,
                 message->data.hil_state_quaternion.attitude_quaternion,
@@ -114,8 +116,8 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
             return true;
         case MAVLINK_MSG_TYPE_SYSTEM_TIME:
             mavlink_msg_system_time_pack(
-                MAVLINK_CONFIG_SYSTEM_ID,
-                MAVLINK_CONFIG_COMPONENT_ID,
+                system_id,
+                commponent_id,
                 msg,
                 message->data.system_time.time_unix_usec,
                 message->data.system_time.time_boot_ms
@@ -123,8 +125,8 @@ bool mavlink_encode_message(mavlink_message_t *msg, const MavlinkDecodedMessage 
             return true;
         case MAVLINK_MSG_TYPE_HIL_GPS:
             mavlink_msg_hil_gps_pack(
-                MAVLINK_CONFIG_SYSTEM_ID,
-                MAVLINK_CONFIG_COMPONENT_ID,
+                system_id,
+                commponent_id,
                 msg,
                 message->data.hil_gps.time_usec,
                 message->data.hil_gps.fix_type,

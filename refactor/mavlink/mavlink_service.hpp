@@ -21,6 +21,9 @@ public:
     explicit MavLinkService(int index, MavlinkServiceIoType io_type, const IcommEndpointType *server_endpoint, const IcommEndpointType *client_endpoint);
     ~MavLinkService();
 
+    static void init();
+    static void finalize();
+
     bool sendMessage(MavlinkHakoMessage& message);
     bool readMessage(MavlinkHakoMessage& message, bool &is_dirty);
     bool startService();
@@ -40,6 +43,7 @@ private:
     std::atomic<bool> is_service_started_;
     int index_;
     std::unique_ptr<std::thread> receiver_thread_;
+    static bool is_initialized_;
 };
 
 } // namespace hako::mavlink

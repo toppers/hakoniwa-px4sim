@@ -15,9 +15,26 @@
 using namespace hako::comm;
 using namespace hako::mavlink;
 
+bool MavLinkService::is_initialized_ = false;
+
+void MavLinkService::init() {
+    if (is_initialized_) {
+        return;
+    }
+    MavlinkCommBuffer::init();
+    hako::comm::comm_init();
+    is_initialized_ = true;
+    std::cout << "MavLinkService initialized" << std::endl;
+}
+void MavLinkService::finalize() {
+    is_initialized_ = false;
+    std::cout << "MavLinkService finalized" << std::endl;
+}
+
 MavLinkService::MavLinkService(int index, MavlinkServiceIoType io_type, const IcommEndpointType* server_endpoint, const IcommEndpointType* client_endpoint)
     : comm_io_(nullptr), is_service_started_(false), index_(index), receiver_thread_(nullptr)
 {
+    MavLinkService::init();
     index_ = index;
     is_service_started_ = false;
     if (server_endpoint == nullptr)
@@ -34,11 +51,9 @@ MavLinkService::MavLinkService(int index, MavlinkServiceIoType io_type, const Ic
     }
     server_endpoint_ = *server_endpoint;
     io_type_ = io_type;
-    MavlinkCommBuffer::init();
     switch (io_type)
     {
     case MAVLINK_SERVICE_IO_TYPE_TCP:
-        hako::comm::comm_init();
         comm_server_ = std::make_unique<TcpServer>();
         mavlink_comm_ = std::make_unique<MavLinkCommTcp>();
         break;
@@ -106,7 +121,7 @@ bool MavLinkService::sendMessage(MavlinkDecodedMessage& message)
         return false;
     }
     mavlink_message_t mavlinkMsg;
-    if (mavlink_encode_message(&mavlinkMsg, &message)) 
+    if (mavlink_encode_message(index_, &mavlinkMsg, &message)) 
     {
         char packet[MAVLINK_MAX_PACKET_LEN];
         int packetLen = mavlink_get_packet(packet, sizeof(packet), &mavlinkMsg);
