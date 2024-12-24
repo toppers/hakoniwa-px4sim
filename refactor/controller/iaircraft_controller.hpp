@@ -2,7 +2,6 @@
 #define _IAIRCRAFT_CONTROLLER_HPP_
 
 #include "controller/aircraft_controller_types.h"
-#include "physics/drone_physics.hpp"
 
 namespace hako::controller {
 class IAircraftController {
