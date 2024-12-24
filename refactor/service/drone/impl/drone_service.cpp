@@ -26,13 +26,27 @@ void DroneService::advanceTimeStep()
 
 void DroneService::setup_controller_inputs()
 {
-    //TODO setup controller inputs
-    if (controller_.is_radio_control()) {
+    controller_inputs_ = {};
+    controller_outputs_ = {};
+    DronePositionType pos = aircraft_.get_drone_dynamics().get_pos();
+    DroneEulerType angle = aircraft_.get_drone_dynamics().get_angle();
+    DroneVelocityBodyFrameType velocity = aircraft_.get_drone_dynamics().get_vel_body_frame();
+    DroneAngularVelocityBodyFrameType angular_velocity = aircraft_.get_gyro().sensor_value();
 
-    }
-    else {
-        
-    }
+    drone_service_operation_->setup_controller_inputs(controller_inputs_, pdu_data_);
+    controller_inputs_.max_rpm = aircraft_.get_rpm_max(0);
+    controller_inputs_.pos_x = pos.data.x;
+    controller_inputs_.pos_y = pos.data.y;
+    controller_inputs_.pos_z = pos.data.z;
+    controller_inputs_.euler_x = angle.data.x;
+    controller_inputs_.euler_y = angle.data.y;
+    controller_inputs_.euler_z = angle.data.z;
+    controller_inputs_.u = velocity.data.x;
+    controller_inputs_.v = velocity.data.y;
+    controller_inputs_.w = velocity.data.z;
+    controller_inputs_.p = angular_velocity.data.x;
+    controller_inputs_.q = angular_velocity.data.y;
+    controller_inputs_.r = angular_velocity.data.z;
 }
 
 void DroneService::setup_aircraft_inputs()
