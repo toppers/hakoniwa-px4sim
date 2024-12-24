@@ -11,6 +11,7 @@
 #include "hako_msgs/pdu_cpptype_Disturbance.hpp"
 #include "hako_msgs/pdu_cpptype_HakoBatteryStatus.hpp"
 #include "hako_msgs/pdu_cpptype_HakoStatusMagnetHolder.hpp"
+#include "hako_mavlink_msgs/pdu_cpptype_HakoHilActuatorControls.hpp"
 #include "geometry_msgs/pdu_cpptype_Twist.hpp"
 
 namespace hako::service {
@@ -26,6 +27,7 @@ typedef enum {
     HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_BATTERY_STATUS,
     HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_STATUS_MAGNET,
     HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION,
+    HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_ACTUATOR_CONTROLS,
     HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM,
 } HakoniwaDronePduDataIdType;
 
@@ -42,21 +44,24 @@ typedef struct {
         HakoCpp_HakoBatteryStatus battery_status;
         HakoCpp_HakoStatusMagnetHolder status_magnet;
         HakoCpp_Twist position;
+        HakoCpp_HakoHilActuatorControls actuator_controls;
     } pdu;
 } HakoniwaDronePduDataType;
+
 
 class IDroneService {
 public:
     virtual ~IDroneService() = default;
     virtual bool startService(uint64_t deltaTimeUsec) = 0;
-    virtual void advanceTimeStep(uint32_t index) = 0;
+    virtual void advanceTimeStep() = 0;
     virtual void stopService() = 0;
     virtual void resetService() = 0;
-    virtual uint64_t getSimulationTimeUsec(uint32_t index) = 0;
+    virtual uint64_t getSimulationTimeUsec() = 0;
 
-    virtual bool write_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
-    virtual bool read_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
+    virtual bool write_pdu(HakoniwaDronePduDataType& pdu) = 0;
+    virtual bool read_pdu(HakoniwaDronePduDataType& pdu) = 0;
 };
+
 }
 
 #endif /* _IDRONE_SERVICE_HPP_ */

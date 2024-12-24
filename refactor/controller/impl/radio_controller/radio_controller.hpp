@@ -9,6 +9,9 @@ class RadioController : public IAircraftController {
 public:
     RadioController();
     virtual ~RadioController() {}
+    virtual bool is_radio_control() override {
+        return true;
+    }
     virtual void reset() override;
     virtual mi_aircraft_control_out_t run(mi_aircraft_control_in_t& in) override;
 private:

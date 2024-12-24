@@ -1,0 +1,4 @@
+#ifndef _DRONE_SERVICE_API_HPP_
+#define _DRONE_SERVICE_API_HPP_
+
+#endif /* _DRONE_SERVICE_API_HPP_ */
