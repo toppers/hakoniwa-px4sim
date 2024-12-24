@@ -6,6 +6,11 @@
 #include <array>
 
 namespace hako::service::impl {
+typedef struct {
+    std::atomic<bool> is_busy;
+    std::atomic<bool> is_dirty;
+    HakoniwaDronePduDataType data;
+} HakoniwaDronePduDataControlType;
 
 class IDroneServiceOperation {
 public:
@@ -15,7 +20,7 @@ public:
     virtual void reset() = 0;
 
     // コントローラー入力のセットアップ
-    virtual void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) = 0;
+    virtual void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) = 0;
 
     // コントローラーのPDUを書き込む
     virtual void write_controller_pdu() = 0;

@@ -35,8 +35,6 @@ typedef enum {
 
 typedef struct {
     HakoniwaDronePduDataIdType id;
-    std::atomic<bool> is_busy;
-    std::atomic<bool> is_dirty;
     union {
         HakoCpp_HakoDroneCmdTakeoff takeoff;
         HakoCpp_HakoDroneCmdLand land;

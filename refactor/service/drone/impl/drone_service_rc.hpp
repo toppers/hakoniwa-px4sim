@@ -30,7 +30,7 @@ public:
             lastButtonState[i] = false;
         }
     }
-    void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override
+    void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override
     {
         auto& pdu_entry = pdu_data[HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_GAME_CTRL];
 
@@ -46,7 +46,7 @@ public:
         }
 
         // データを取得
-        const auto& game_in = pdu_entry.pdu.game_ctrl;
+        const auto& game_in = pdu_entry.data.pdu.game_ctrl;
 
         // ボタン状態の変更をチェック
         if (is_button_state_change(game_in.button[GAME_CTRL_BUTTON_RADIO_CONTROL], GAME_CTRL_BUTTON_RADIO_CONTROL)) {

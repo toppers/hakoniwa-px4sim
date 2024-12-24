@@ -16,6 +16,7 @@ using namespace hako::controller;
 
 namespace hako::service::impl {
 
+
 class DroneService : public IDroneService {
 public:
     DroneService(IAirCraft& aircraft, IAircraftController& controller, IAircraftMixer& mixer)
@@ -59,7 +60,7 @@ public:
         while (pdu_data_[pdu.id].is_busy.exchange(true)) {
             std::this_thread::yield();
         }
-        pdu_data_[pdu.id].pdu = pdu.pdu;
+        pdu_data_[pdu.id].data.pdu = pdu.pdu;
         pdu_data_[pdu.id].is_dirty.store(true);
         pdu_data_[pdu.id].is_busy.store(false);
         return true;
@@ -72,7 +73,7 @@ public:
         while (pdu_data_[pdu.id].is_busy.exchange(true)) {
             std::this_thread::yield();
         }
-        pdu.pdu = pdu_data_[pdu.id].pdu;
+        pdu.pdu = pdu_data_[pdu.id].data.pdu;
         pdu_data_[pdu.id].is_dirty.store(false);
         pdu_data_[pdu.id].is_busy.store(false);
         return true;
@@ -84,7 +85,7 @@ private:
     IAirCraft& aircraft_;
     IAircraftController& controller_;
     IAircraftMixer& mixer_;
-    std::array<HakoniwaDronePduDataType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM> pdu_data_ = {};
+    std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM> pdu_data_ = {};
     AircraftInputType aircraft_inputs_ = {};
     mi_aircraft_control_in_t controller_inputs_ = {};
     mi_aircraft_control_out_t controller_outputs_ = {};
