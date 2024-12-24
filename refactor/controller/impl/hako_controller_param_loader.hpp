@@ -8,37 +8,63 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
-#include "flight_controller_types.hpp"
+
+#ifdef _WIN32
+#include <cstdlib> // For _dupenv_s
+#endif
 
 class HakoControllerParamLoader {
 public:
     static bool is_exist_envpath() {
+#ifdef _WIN32
+        char* env_p = nullptr;
+        size_t len = 0;
+        _dupenv_s(&env_p, &len, "HAKO_CONTROLLER_PARAM_FILE");
+        bool exists = (env_p != nullptr && env_p[0] != '\0');
+        free(env_p); // メモリ解放
+        return exists;
+#else
         const char* env_p = std::getenv("HAKO_CONTROLLER_PARAM_FILE");
         return env_p != nullptr && env_p[0] != '\0';
+#endif
     }
-    static std::string get_controller_param_filedata()
-    {
+
+    static std::string get_controller_param_filedata() {
+#ifdef _WIN32
+        char* env_p = nullptr;
+        size_t len = 0;
+        _dupenv_s(&env_p, &len, "HAKO_CONTROLLER_PARAM_FILE");
+        if (env_p == nullptr || env_p[0] == '\0') {
+            throw std::runtime_error("Environment variable HAKO_CONTROLLER_PARAM_FILE is not set or is empty");
+        }
+        std::string env_path(env_p);
+        free(env_p); // メモリ解放
+#else
         const char* env_p = std::getenv("HAKO_CONTROLLER_PARAM_FILE");
         if (env_p == nullptr || env_p[0] == '\0') {
             throw std::runtime_error("Environment variable HAKO_CONTROLLER_PARAM_FILE is not set or is empty");
         }
-        std::ifstream file(env_p);
+        std::string env_path(env_p);
+#endif
+
+        std::ifstream file(env_path);
         if (!file.is_open()) {
-            throw std::runtime_error("Failed to open file: " + std::string(env_p));
+            throw std::runtime_error("Failed to open file: " + env_path);
         }
         std::string filedata((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
         return filedata;
     }
-    HakoControllerParamLoader() {
-    }
+
+    HakoControllerParamLoader() {}
     HakoControllerParamLoader(const std::string& input) {
         loadParametersFromString(input);
     }
 
-    void reload(const std::string &input) {
+    void reload(const std::string& input) {
         std::cout << "Reloading parameters from string" << std::endl;
         loadParametersFromString(input);
     }
+
     double getParameter(const std::string& paramName) const {
         auto it = parameters.find(paramName);
         if (it != parameters.end()) {
@@ -73,7 +99,8 @@ private:
         std::istringstream iss(input);
         parameters.clear();
         parseStream(iss);
-    }    
+    }
+
     void validateAndParseStream(std::istream& stream) {
         std::string line;
         int lineNumber = 0;
@@ -113,7 +140,6 @@ private:
 
         return true;
     }
-
 };
 
 #endif // HAKO_CONTROLLER_PARAM_LOADER_HPP
