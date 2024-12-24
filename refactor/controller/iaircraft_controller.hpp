@@ -4,6 +4,7 @@
 #include "controller/aircraft_controller_types.h"
 
 namespace hako::controller {
+
 class IAircraftController {
 public:
     virtual ~IAircraftController() {}
