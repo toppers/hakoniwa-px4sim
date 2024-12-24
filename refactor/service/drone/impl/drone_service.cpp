@@ -42,7 +42,8 @@ void DroneService::advanceTimeStep()
 
     //TODO run drone service operation
     
-    //TODO write pdu
+    //write pdu
+    write_back_pdu();
 
     simulation_time_usec_ += delta_time_usec_;
 }
@@ -95,7 +96,6 @@ void DroneService::setup_aircraft_inputs()
             }
         }
         debug_print_drone_collision(aircraft_inputs_.collision);
-        //TODO Write collision false
     }
     if (aircraft_.is_enabled_disturbance()) {
         HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE };
@@ -111,7 +111,8 @@ void DroneService::setup_aircraft_inputs()
 
 void DroneService::write_back_pdu()
 {
-    //TODO
+    //TODO write game control pdu
+    
     // collision write back
     HakoniwaDronePduDataType col_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
     col_pdu_data.pdu.collision.collision = false;
