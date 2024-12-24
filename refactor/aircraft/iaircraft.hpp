@@ -16,16 +16,16 @@ namespace hako::aircraft {
 class IAirCraft {
 protected:
     bool            enable_disturbance = false;
-    IDroneDynamics *drone_dynamics;
+    IDroneDynamics *drone_dynamics = nullptr;
     IRotorDynamics *rotor_dynamics[ROTOR_NUM];
-    IThrustDynamics *thrust_dynamis;
-    IBatteryDynamics *battery_dynamics;
+    IThrustDynamics *thrust_dynamis = nullptr;
+    IBatteryDynamics *battery_dynamics = nullptr;
 
-    ISensorAcceleration *acc;
-    ISensorBaro *baro;
-    ISensorGps *gps;
-    ISensorGyro *gyro;
-    ISensorMag *mag;
+    ISensorAcceleration *acc = nullptr;
+    ISensorBaro *baro = nullptr;
+    ISensorGps *gps = nullptr;
+    ISensorGyro *gyro = nullptr;
+    ISensorMag *mag = nullptr;
     std::string robo_name;
     int index = 0;
     bool enable_rotor_control = false;

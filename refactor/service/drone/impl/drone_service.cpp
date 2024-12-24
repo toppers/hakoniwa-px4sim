@@ -108,3 +108,52 @@ void DroneService::setup_aircraft_inputs()
         aircraft_inputs_.disturbance.values.d_wind.z = pdu_data.pdu.disturbance.d_wind.value.z;
     }
 }
+
+void DroneService::write_back_pdu()
+{
+    //TODO
+    // collision write back
+    HakoniwaDronePduDataType col_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
+    col_pdu_data.pdu.collision.collision = false;
+    write_pdu(col_pdu_data);
+
+    // battery write back
+    HakoniwaDronePduDataType bat_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_BATTERY_STATUS };
+    auto battery = aircraft_.get_battery_dynamics();
+    if (battery != nullptr) {
+        auto status = battery->get_status();
+        bat_pdu_data.pdu.battery_status.full_voltage = status.full_voltage;
+        bat_pdu_data.pdu.battery_status.curr_voltage = status.curr_voltage;
+        bat_pdu_data.pdu.battery_status.curr_temp = status.temperature;
+        bat_pdu_data.pdu.battery_status.cycles = status.cycles;
+        bat_pdu_data.pdu.battery_status.status = status.status;
+    }
+    else {
+        bat_pdu_data.pdu.battery_status.full_voltage = 0;
+        bat_pdu_data.pdu.battery_status.curr_voltage = 0;
+        bat_pdu_data.pdu.battery_status.curr_temp = 0;
+        bat_pdu_data.pdu.battery_status.cycles = 0;
+        bat_pdu_data.pdu.battery_status.status = 0;
+    }
+    write_pdu(bat_pdu_data);
+    
+    // control write back
+    HakoniwaDronePduDataType actuator_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_ACTUATOR_CONTROLS };
+    for (int i = 0; i < ROTOR_NUM; i++) {
+        actuator_pdu_data.pdu.actuator_controls.controls[i] = pwm_duty_.d[i];
+    }
+    write_pdu(actuator_pdu_data);
+
+    // position write back
+    HakoniwaDronePduDataType pos_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+    DronePositionType dpos = aircraft_.get_drone_dynamics().get_pos();
+    DroneEulerType dangle = aircraft_.get_drone_dynamics().get_angle();
+    pos_pdu_data.pdu.position.linear.x = dpos.data.x;
+    pos_pdu_data.pdu.position.linear.y = -dpos.data.y;
+    pos_pdu_data.pdu.position.linear.z = -dpos.data.z;
+    pos_pdu_data.pdu.position.angular.x = dangle.data.x;
+    pos_pdu_data.pdu.position.angular.y = -dangle.data.y;
+    pos_pdu_data.pdu.position.angular.z = -dangle.data.z;
+    write_pdu(pos_pdu_data);
+
+}

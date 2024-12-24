@@ -95,6 +95,7 @@ private:
 
     void setup_aircraft_inputs();
     void setup_controller_inputs();
+    void write_back_pdu();
 };
 
 }
