@@ -1,6 +1,8 @@
 #ifndef _OPERATION_STATUS_HPP_
 #define _OPERATION_STATUS_HPP_
 
+namespace hako::service::impl {
+
 typedef enum {
     OPERATION_STATUS_DONE = 0,
     OPERATION_STATUS_DOING,
@@ -74,6 +76,6 @@ public:
         }
     }
 };
-
+}
 
 #endif /* _OPERATION_STATUS_HPP_ */

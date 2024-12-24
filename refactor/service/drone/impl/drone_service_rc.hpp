@@ -55,6 +55,7 @@ public:
         }
 
         // ラジオコントロールが有効な場合、入力を更新
+        in.radio_control = (radio_control_on_ == false) ? 0 : 1;
         if (radio_control_on_) {
             in.target.attitude.roll = game_in.axis[GAME_CTRL_AXIS_LEFT_RIGHT];
             in.target.attitude.pitch = game_in.axis[GAME_CTRL_AXIS_FORWARD_BACK];

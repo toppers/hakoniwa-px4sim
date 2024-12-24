@@ -4,6 +4,8 @@
 #include "service/drone/impl/operation_status.hpp"
 #include <iostream>
 
+namespace hako::service::impl {
+
 typedef enum {
     MAIN_STATUS_LANDED = 0,
     MAIN_STATUS_TAKINGOFF,
@@ -138,5 +140,6 @@ public:
         return false;
     }
 };
+}
 
 #endif /* _MAIN_STATUS_HPP_ */
