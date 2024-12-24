@@ -27,6 +27,12 @@ void DroneService::advanceTimeStep()
 void DroneService::setup_controller_inputs()
 {
     //TODO setup controller inputs
+    if (controller_.is_radio_control()) {
+
+    }
+    else {
+        
+    }
 }
 
 void DroneService::setup_aircraft_inputs()
