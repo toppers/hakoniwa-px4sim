@@ -13,6 +13,7 @@ endif()
 # ソースファイルの定義
 set(SOURCE_FILES
     aircraft/impl/aircraft_service.cpp
+    drone/impl/drone_service.cpp
 )
 add_library(hako_service ${SOURCE_FILES})
 
@@ -49,5 +50,6 @@ target_compile_features(hako_service PRIVATE cxx_std_17)
 
 target_link_libraries(hako_service PRIVATE 
     hako_aircraft
+    hako_controller
     hako_mavlink
     )

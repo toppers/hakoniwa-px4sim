@@ -29,5 +29,6 @@ target_include_directories(hako_controller
 
 target_compile_features(hako_controller PRIVATE cxx_std_17)
 
-target_link_libraries(hako_controller PRIVATE hako_physics
+target_link_libraries(hako_controller PRIVATE 
+    drone_physics
 )
