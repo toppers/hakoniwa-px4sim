@@ -39,7 +39,7 @@ private:
         pos_control_cycle = loader.getParameter("POS_CONTROL_CYCLE");
         max_roll_deg = loader.getParameter("PID_POS_MAX_ROLL");
         max_pitch_deg = loader.getParameter("PID_POS_MAX_PITCH");
-        int a_ctrl_enable = loader.getParameter("ANGLE_CONTROL_ENABLE");
+        int a_ctrl_enable = loader.getParameterInteger("ANGLE_CONTROL_ENABLE");
         if (a_ctrl_enable == 1) {
             std::cout << "Angle control is enabled" << std::endl;
             angle_control_enable = true;

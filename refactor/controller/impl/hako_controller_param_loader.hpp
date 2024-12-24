@@ -74,6 +74,15 @@ public:
             throw std::runtime_error("Parameter not found: " + paramName);
         }
     }
+    int getParameterInteger(const std::string& paramName) const {
+        auto it = parameters.find(paramName);
+        if (it != parameters.end()) {
+            std::cout << paramName << ": " << it->second << std::endl;
+            return it->second;
+        } else {
+            throw std::runtime_error("Parameter not found: " + paramName);
+        }
+    }
 
 private:
     std::unordered_map<std::string, double> parameters;
