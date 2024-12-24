@@ -21,7 +21,8 @@ public:
         loader() 
     {
         if (HakoControllerParamLoader::is_exist_envpath()) {
-            loader.loadParameters();
+            auto param_data = HakoControllerParamLoader::get_controller_param_filedata();
+            loader.reload(param_data);
         } else {
             throw std::runtime_error("Parameter file is not found on HAKO_CONTROLLER_PARAM_FILE");
         }
@@ -31,7 +32,10 @@ public:
         angle = std::make_unique<DroneAngleController>(loader);
     }
     void reset() {
-        this->loader.reload();
+        if (HakoControllerParamLoader::is_exist_envpath()) {
+            auto param_data = HakoControllerParamLoader::get_controller_param_filedata();
+            this->loader.reload(param_data);
+        }
         alt->reset();
         pos->reset();
         head->reset();

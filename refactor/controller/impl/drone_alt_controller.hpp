@@ -3,7 +3,7 @@
 
 #include "drone_pid_control.hpp"
 #include "flight_controller_types.hpp"
-#include "frame_convertor.hpp"
+#include "body_physics.hpp"
 #include "hako_controller_param_loader.hpp"
 #include <memory>
 
@@ -100,9 +100,9 @@ public:
              * speed control
              */
             //機体座標系の速度を地上座標系に変換
-            EulerType  e = {in.euler.x, in.euler.y, in.euler.z};
-            VectorType v = {in.spd.u, in.spd.v, in.spd.w};
-            VectorType g_v = ground_vector_from_body(v, e);
+            hako::drone_physics::EulerType  e = {in.euler.x, in.euler.y, in.euler.z};
+            hako::drone_physics::VectorType v = {in.spd.u, in.spd.v, in.spd.w};
+            auto g_v = hako::drone_physics::ground_vector_from_body(v, e);
             //地上座標系の速度でPID制御
             double throttle_power = spd_control->calculate(in.target_spd, g_v.z);
             throttle_power = flight_controller_get_limit_value(throttle_power, 0, -max_power, max_power);

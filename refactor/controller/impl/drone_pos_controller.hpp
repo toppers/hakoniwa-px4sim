@@ -2,7 +2,7 @@
 #define _DRONE_POS_CONTROLLER_HPP_
 
 #include "drone_pid_control.hpp"
-#include "frame_convertor.hpp"
+#include "body_physics.hpp"
 #include "flight_controller_types.hpp"
 #include "hako_controller_param_loader.hpp"
 #include <memory>
@@ -70,7 +70,7 @@ private:
             target_vy = flight_controller_get_limit_value(target_vy, 0, -max_spd, max_spd);
 
             // convert ground frame to body frame
-            VectorType val = body_vector_from_ground({ target_vx, target_vy, 0 }, { 0, 0, in.euler.z });
+            auto val = hako::drone_physics::body_vector_from_ground({ target_vx, target_vy, 0 }, { 0, 0, in.euler.z });
 
             // Normalize val.x and val.y with in.target_spd
             double magnitude = sqrt(val.x * val.x + val.y * val.y);

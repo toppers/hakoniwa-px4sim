@@ -62,7 +62,8 @@ public:
         loader() 
     {
         if (HakoControllerParamLoader::is_exist_envpath()) {
-            loader.loadParameters();
+            auto param_data = HakoControllerParamLoader::get_controller_param_filedata();
+            loader.reload(param_data);
         } else {
             throw std::runtime_error("Parameter file is not found on HAKO_CONTROLLER_PARAM_FILE");
         }
@@ -74,7 +75,10 @@ public:
         this->loadParameters();
     }
     void reset() {
-        this->loader.reload();
+        if (HakoControllerParamLoader::is_exist_envpath()) {
+            auto param_data = HakoControllerParamLoader::get_controller_param_filedata();
+            this->loader.reload(param_data);
+        }
         r_altitude_initialized = false;
         r_altitude = 0;
         alt_time = 0;
