@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
+#include <cmath>
 
 #ifdef _WIN32
 #include <cstdlib> // For _dupenv_s
@@ -78,11 +79,12 @@ public:
         auto it = parameters.find(paramName);
         if (it != parameters.end()) {
             std::cout << paramName << ": " << it->second << std::endl;
-            return it->second;
+            return static_cast<int>(std::round(it->second)); // 四捨五入
         } else {
             throw std::runtime_error("Parameter not found: " + paramName);
         }
     }
+
 
 private:
     std::unordered_map<std::string, double> parameters;
