@@ -34,8 +34,8 @@
     - [1.3.5. 箱庭ドローン Unityアプリのセットアップ](#135-箱庭ドローン-unityアプリのセットアップ)
     - [1.3.6. フライトコントローラ PX4のビルド](#136-フライトコントローラ-px4のビルド)
       - [1.3.6.1. 機体情報の書き換え](#1361-機体情報の書き換え)
-    - [1.3.7. PX4のビルド](#137-px4のビルド)
-    - [1.3.8. QGC(QGroundContorl)ソフトウェアのインストール](#138-qgcqgroundcontorlソフトウェアのインストール)
+      - [1.3.6.2. PX4のビルド](#1362-px4のビルド)
+    - [1.3.7. QGC(QGroundContorl)ソフトウェアのインストール](#138-qgcqgroundcontorlソフトウェアのインストール)
   - [1.4. 箱庭ドローンシミュレータの動作確認](#14-箱庭ドローンシミュレータの動作確認)
     - [1.4.1. PX4の起動](#141-px4の起動)
     - [1.4.2. 箱庭コア機能の起動](#142-箱庭コア機能の起動)
@@ -260,7 +260,7 @@ $ cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posi
 $ cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
 ```
 
-### 1.3.7. PX4のビルド
+#### 1.3.6.1 PX4のビルド
 
 以下の手順でビルドを実行します。
 
@@ -270,7 +270,7 @@ $ bash Tools/setup/ubuntu.sh --no-nuttx --no-sim-tools
 $ make px4_sitl_default
 ```
 
-### 1.3.8. QGC(QGroundContorl)ソフトウェアのインストール
+### 1.3.7. QGC(QGroundContorl)ソフトウェアのインストール
 
 QGC(QGroundControl)は、地上からドローンを操作するための運行管理用のソフトウェアになります。箱庭ドローンシミュレータでは、PX4とQGCを連携させて、QGCから箱庭上のドローンを操作することをできるようにします。
 
