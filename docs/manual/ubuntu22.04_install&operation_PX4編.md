@@ -260,7 +260,7 @@ $ cp hakoniwa-apps/10016_none_iris PX4-Autopilot/ROMFS/px4fmu_common/init.d-posi
 $ cp hakoniwa-apps/rcS PX4-Autopilot/ROMFS/px4fmu_common/init.d-posix/rcS
 ```
 
-#### 1.3.6.1 PX4のビルド
+#### 1.3.6.2 PX4のビルド
 
 以下の手順でビルドを実行します。
 
