@@ -10,7 +10,8 @@ void DroneService::advanceTimeStep()
     //run controller
     controller_outputs_ = controller_.run(controller_inputs_);
 
-    //TODO run mixer
+    //run mixer
+    pwm_duty_ = mixer_.run(controller_outputs_);
 
     //setup input data for aircraft
     setup_aircraft_inputs();

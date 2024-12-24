@@ -3,6 +3,7 @@
 
 #include "service/drone/idrone_service.hpp"
 #include "aircraft/iaircraft_container.hpp"
+#include "controller/iaircraft_mixer.hpp"
 #include "controller/aircraft_controller_container.hpp"
 
 using namespace hako::aircraft;
@@ -12,7 +13,7 @@ namespace hako::service::impl {
 
 class DroneService : IDroneService {
 public:
-    DroneService(IAirCraft& aircraft, IAircraftController& controller): aircraft_(aircraft), controller_(controller) {
+    DroneService(IAirCraft& aircraft, IAircraftController& controller, IAircraftMixer& mixer): aircraft_(aircraft), controller_(controller), mixer_(mixer) {
         simulation_time_usec_ = 0;
         delta_time_usec_ = 0;
     };
@@ -59,10 +60,12 @@ private:
     uint64_t delta_time_usec_ = 0;
     IAirCraft& aircraft_;
     IAircraftController& controller_;
+    IAircraftMixer& mixer_;
     HakoniwaDronePduDataType pdu_data[HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM] = {};
     AircraftInputType aircraft_inputs_ = {};
     mi_aircraft_control_in_t controller_inputs_ = {};
     mi_aircraft_control_out_t controller_outputs_ = {};
+    PwmDuty pwm_duty_ = {};
 
     void setup_aircraft_inputs();
     void setup_controller_inputs();
