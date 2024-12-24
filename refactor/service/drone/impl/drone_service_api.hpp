@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <thread>
 
+using namespace hako::aircraft;
+
 namespace hako::service::impl {
 
 
@@ -30,10 +32,16 @@ private:
 public:
     DroneServiceAPI(IAirCraft& aircraft): aircraft_(aircraft)
     {
+        home_pos_x = aircraft_.get_drone_dynamics().get_pos().data.x;
+        home_pos_y = aircraft_.get_drone_dynamics().get_pos().data.y;
+        home_pos_z = aircraft_.get_drone_dynamics().get_pos().data.z;
         reset();
     }
     ~DroneServiceAPI() {}
-
+    bool can_advanceTimeStep_for_controller() override 
+    { 
+        return (state.get_status() != MAIN_STATUS_LANDED);
+    }
     void reset() override
     {
         drone_pos.id = HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION;
@@ -124,7 +132,7 @@ private:
         // 更新がなければ処理をスキップ
         if (!pdu_entry.is_dirty) {
             pdu_entry.is_busy.store(false);
-            return;
+            return false;
         }
         // データを取得
         const auto& source_pdu = pdu_entry.data;

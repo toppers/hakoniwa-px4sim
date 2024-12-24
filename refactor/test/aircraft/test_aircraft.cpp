@@ -40,7 +40,6 @@ TEST_F(UtilsTest, CreateAirCrafts1)
 
     for (int i = 0; i < 10; i++) {
         AircraftInputType aircraft_input = {};
-        aircraft_input.no_use_actuator = false;
         aircraft_input.manual.control = false;
         for (auto* aircraft : container.getAllAirCrafts()) {
             aircraft->run(aircraft_input);
@@ -65,7 +64,6 @@ TEST_F(UtilsTest, CreateAirCrafts2)
 
     for (int i = 0; i < 10; i++) {
         AircraftInputType aircraft_input = {};
-        aircraft_input.no_use_actuator = false;
         aircraft_input.manual.control = false;
         for (auto* aircraft : container.getAllAirCrafts()) {
             aircraft->run(aircraft_input);

@@ -30,6 +30,7 @@ public:
             lastButtonState[i] = false;
         }
     }
+    bool can_advanceTimeStep_for_controller() override { return radio_control_on_; }
     void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override
     {
         auto& pdu_entry = pdu_data[HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_GAME_CTRL];

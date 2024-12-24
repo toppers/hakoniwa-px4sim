@@ -59,6 +59,7 @@ mi_aircraft_control_out_t FlightController::run(mi_aircraft_control_in_t& in)
     /*
      * 出力
      */
+    out.mass = in.mass;
     out.thrust = alt_out.thrust;
     out.torque_x = angle_out.p;
     out.torque_y = angle_out.q;

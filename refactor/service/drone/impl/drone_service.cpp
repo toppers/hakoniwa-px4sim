@@ -1,17 +1,38 @@
 #include "service/drone/impl/drone_service.hpp"
 
 using namespace hako::service::impl;
+static void debug_print_drone_collision(DroneDynamicsCollisionType& drone_collision)
+{
+    std::cout << "Collision: " << (drone_collision.collision ? "Yes" : "No") << std::endl;
+    std::cout << "Contact Number: " << drone_collision.contact_num << std::endl;
+    std::cout << "Relative Velocity: (" 
+                    << drone_collision.relative_velocity.x << ", " 
+                    << drone_collision.relative_velocity.y << "," 
+                    << drone_collision.relative_velocity.z << ")"
+                    << std::endl;
 
+    for (int i = 0; i < drone_collision.contact_num; ++i) {
+        std::cout << "Contact Positions[" << i << "]: (" 
+                    << drone_collision.contact_position[i].x << ", " 
+                    << drone_collision.contact_position[i].y << "," 
+                    << drone_collision.contact_position[i].z << ")"
+                    << std::endl;
+    }
+    std::cout << "Restitution Coefficient: " << drone_collision.restitution_coefficient << std::endl;
+}
 void DroneService::advanceTimeStep() 
 {
     //setup input data for controller
     setup_controller_inputs();
 
     //run controller
-    controller_outputs_ = controller_.run(controller_inputs_);
+    if (drone_service_operation_->can_advanceTimeStep_for_controller()) {
+        controller_outputs_ = controller_.run(controller_inputs_);
+        //TODO do control
 
-    //run mixer
-    pwm_duty_ = mixer_.run(controller_outputs_);
+        //run mixer
+        pwm_duty_ = mixer_.run(controller_outputs_);
+    }
 
     //setup input data for aircraft
     setup_aircraft_inputs();
@@ -21,6 +42,8 @@ void DroneService::advanceTimeStep()
 
     //TODO run drone service operation
     
+    //TODO write pdu
+
     simulation_time_usec_ += delta_time_usec_;
 }
 
@@ -51,5 +74,37 @@ void DroneService::setup_controller_inputs()
 
 void DroneService::setup_aircraft_inputs()
 {
-    //TODO setup aircraft inputs
+    for (int i = 0; i < ROTOR_NUM; i++) {
+        aircraft_inputs_.controls[i] = pwm_duty_.d[i];
+    }
+    aircraft_inputs_.manual.control = false;
+    if (aircraft_.get_drone_dynamics().has_collision_detection()) {
+        HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
+        read_pdu(pdu_data);
+        aircraft_inputs_.collision.collision = pdu_data.pdu.collision.collision;
+        if (aircraft_inputs_.collision.collision) {
+            aircraft_inputs_.collision.contact_num = pdu_data.pdu.collision.contact_num;
+            aircraft_inputs_.collision.relative_velocity.x = pdu_data.pdu.collision.relative_velocity.x;
+            aircraft_inputs_.collision.relative_velocity.y = -pdu_data.pdu.collision.relative_velocity.y;
+            aircraft_inputs_.collision.relative_velocity.z = -pdu_data.pdu.collision.relative_velocity.z;
+            aircraft_inputs_.collision.restitution_coefficient = pdu_data.pdu.collision.restitution_coefficient;
+            for (int i = 0; i < aircraft_inputs_.collision.contact_num; i++) {
+                aircraft_inputs_.collision.contact_position[i].x = pdu_data.pdu.collision.contact_position[i].x;
+                aircraft_inputs_.collision.contact_position[i].y = -pdu_data.pdu.collision.contact_position[i].y;
+                aircraft_inputs_.collision.contact_position[i].z = -pdu_data.pdu.collision.contact_position[i].z;
+            }
+        }
+        debug_print_drone_collision(aircraft_inputs_.collision);
+        //TODO Write collision false
+    }
+    if (aircraft_.is_enabled_disturbance()) {
+        HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE };
+        read_pdu(pdu_data);
+        //temperature
+        aircraft_inputs_.disturbance.values.d_temp.value = pdu_data.pdu.disturbance.d_temp.value;
+        //wind
+        aircraft_inputs_.disturbance.values.d_wind.x = pdu_data.pdu.disturbance.d_wind.value.x;
+        aircraft_inputs_.disturbance.values.d_wind.y = pdu_data.pdu.disturbance.d_wind.value.y;
+        aircraft_inputs_.disturbance.values.d_wind.z = pdu_data.pdu.disturbance.d_wind.value.z;
+    }
 }

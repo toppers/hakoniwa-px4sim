@@ -56,7 +56,6 @@ void hako::service::impl::AircraftService::advanceTimeStepLockStep(uint32_t inde
     bool is_dirty = false;
     if (mavlink_service_container_.getServices()[index].get().readMessage(message, is_dirty)) {
         sitl_time_usec = message.data.hil_actuator_controls.time_usec;
-        aircraft_inputs_[index].no_use_actuator = false;
         aircraft_inputs_[index].manual.control = false;
         for (int i = 0; i < hako::aircraft::ROTOR_NUM; i++) {
             aircraft_inputs_[index].controls[i] = message.data.hil_actuator_controls.controls[i];
@@ -88,7 +87,6 @@ void hako::service::impl::AircraftService::advanceTimeStepFreeRun(uint32_t index
     bool is_dirty = false;
     if (mavlink_service_container_.getServices()[index].get().readMessage(message, is_dirty)) {
         sitl_time_usec = message.data.hil_actuator_controls.time_usec;
-        aircraft_inputs_[index].no_use_actuator = false;
         aircraft_inputs_[index].manual.control = false;
         for (int i = 0; i < hako::aircraft::ROTOR_NUM; i++) {
             aircraft_inputs_[index].controls[i] = message.data.hil_actuator_controls.controls[i];

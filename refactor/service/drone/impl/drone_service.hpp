@@ -4,6 +4,7 @@
 #include "service/drone/idrone_service.hpp"
 #include "service/drone/impl/idrone_service_operation.hpp"
 #include "service/drone/impl/drone_service_rc.hpp"
+#include "service/drone/impl/drone_service_api.hpp"
 
 #include "aircraft/iaircraft_container.hpp"
 #include "controller/iaircraft_mixer.hpp"
@@ -27,7 +28,7 @@ public:
             drone_service_operation_ = std::make_unique<DroneServiceRC>();
         }
         else {
-            //TODO
+            drone_service_operation_ = std::make_unique<DroneServiceAPI>(aircraft_);
         }
     }
     ~DroneService() override = default;

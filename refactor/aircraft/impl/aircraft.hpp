@@ -34,16 +34,15 @@ public:
     {
         static const double vbat = 14.1;
         //actuators
-        if (input.no_use_actuator == false) {
-            DroneRotorSpeedType rotor_speed[ROTOR_NUM];
-            for (int i = 0; i < ROTOR_NUM; i++) {
-                rotor_dynamics[i]->run(input.controls[i], vbat);
-                rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
-            }
-            thrust_dynamis->run(rotor_speed);
-            input.thrust = thrust_dynamis->get_thrust();
-            input.torque = thrust_dynamis->get_torque();
+        DroneRotorSpeedType rotor_speed[ROTOR_NUM];
+        for (int i = 0; i < ROTOR_NUM; i++) {
+            rotor_dynamics[i]->run(input.controls[i], vbat);
+            rotor_speed[i] = rotor_dynamics[i]->get_rotor_speed();
         }
+        thrust_dynamis->run(rotor_speed);
+        input.thrust = thrust_dynamis->get_thrust();
+        input.torque = thrust_dynamis->get_torque();
+        
         drone_dynamics->run(input);
         if (input.manual.control) {
             drone_dynamics->set_angle(input.manual.angle);

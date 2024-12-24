@@ -105,6 +105,20 @@ namespace hako::controller {
             }
             return duty;
         }
+        PwmDuty run(double mass, double thrust, double torque_x, double torque_y, double torque_z)
+        {
+            PwmDuty duty = {};
+            if (mixer_info.enable) {
+                if (mixer_info.vendor == "linear") {
+                    return run_linear(mass, thrust, torque_x, torque_y, torque_z);
+                }
+                else {
+                    return run_default(mass, thrust, torque_x, torque_y, torque_z);
+                }
+            }
+            return duty;
+        }
+
     public: 
         virtual ~AircraftMixer() {}
         AircraftMixer(double Kr, double a, double b, RotorConfigType rotor[ROTOR_NUM])
@@ -139,20 +153,10 @@ namespace hako::controller {
                 std::cout << std::endl;
             }
         }
-        PwmDuty run(double mass, double thrust, double torque_x, double torque_y, double torque_z)
+        PwmDuty run(mi_aircraft_control_out_t& in) override
         {
-            PwmDuty duty = {};
-            if (mixer_info.enable) {
-                if (mixer_info.vendor == "linear") {
-                    return run_linear(mass, thrust, torque_x, torque_y, torque_z);
-                }
-                else {
-                    return run_default(mass, thrust, torque_x, torque_y, torque_z);
-                }
-            }
-            return duty;
+            return run(in.mass, in.thrust, in.torque_x, in.torque_y, in.torque_z);
         }
-
         glm::vec4 reconstructControlInput(const PwmDuty& duty) {
             glm::dvec4 Omega2;
             for (int i = 0; i < ROTOR_NUM; i++) {
