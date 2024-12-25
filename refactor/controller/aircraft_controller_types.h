@@ -21,12 +21,6 @@ typedef struct {
 } mi_aircraft_control_in_altitude_t;
 
 #define HAKO_AIRCRAFT_MAX_ROTOR_NUM    16
-#if 0 //TODO
-typedef struct {
-    int num;
-    double controls[HAKO_AIRCRAFT_MAX_ROTOR_NUM];
-} mi_aircraft_control_rotor_t;
-#endif
 
 typedef struct {
     int radio_control; /* 0: off, 1: on */
@@ -91,12 +85,6 @@ typedef struct {
     double torque_x;
     double torque_y;
     double torque_z;
-#if 0 //TODO
-    /*
-     * Rotor control
-     */
-    mi_aircraft_control_rotor_t rotor;
-#endif
 } mi_aircraft_control_out_t;
 
 

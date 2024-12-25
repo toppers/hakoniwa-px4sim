@@ -34,9 +34,6 @@ typedef struct {
 } DroneDynamicsDisturbanceType;
 
 typedef struct {
-#if 0 //TODO
-    bool no_use_actuator;
-#endif
     double controls[MAX_ROTOR_NUM]; // rotor duty rate
     DroneDynamicsManualControlType manual;
     DroneDynamicsCollisionType collision;
