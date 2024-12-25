@@ -37,6 +37,11 @@ public:
         }
         drone_services_[index].advanceTimeStep();
     }
+    void advanceTimeStep() override {
+        for (auto& drone_service : drone_services_) {
+            drone_service.advanceTimeStep();
+        }
+    }
 
     void stopService() override {
         for (auto& drone_service : drone_services_) {
