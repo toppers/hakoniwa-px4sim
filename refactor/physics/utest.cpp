@@ -4,6 +4,8 @@
 
 using namespace hako::drone_physics;
 
+#undef NDEBUG // force assert to work even if release bulid.
+
 const double PI = M_PI;
 
 void test_frame_all_unit_vectors_with_angle0() {
@@ -45,18 +47,18 @@ void test_frame_matrix_is_unitary() {
     for (int i = -180; i < 180; i+=30) {
         VelocityType v2 = ground_vector_from_body(v1, EulerType{i * (PI/180), 0, 0});
         double len = length_squared(v2);
-        assert(fabs(len - 1.0) < 0.0001);
+        assert(std::abs(len - 1.0) < 0.0001);
     }
     for (int i = 0; i < 90; i+=30) {
         VelocityType v2 = ground_vector_from_body(v1, EulerType{0, i * (PI/180), 0});
         double len = length_squared(v2);
-        assert(fabs(len - 1.0) < 0.0001);
+        assert(std::abs(len - 1.0) < 0.0001);
     }
   
     for (int i = -180; i < 360; i+=30) {
         VelocityType v2 = ground_vector_from_body(v1, EulerType{0, 0, i * (PI/180)});
         double len = length_squared(v2);
-        assert(fabs(len - 1.0) < 0.0001);
+        assert(std::abs(len - 1.0) < 0.0001);
     }
 
     // conbinations
@@ -67,16 +69,16 @@ void test_frame_matrix_is_unitary() {
             for (int k = -180; k < 180; k+=30) {
                 VelocityType V = ground_vector_from_body(v1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 double len = length_squared(V);
-                assert(fabs(len - 1.0) < 0.0001);
+                assert(std::abs(len - 1.0) < 0.0001);
 
                 // bug #89 indicated that need testing (0,1,0) and (0,0,1) vectors.
                 V = ground_vector_from_body(u1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 len = length_squared(V);
-                assert(fabs(len - 1.0) < 0.0001);
+                assert(std::abs(len - 1.0) < 0.0001);
 
                 V = ground_vector_from_body(w1, EulerType{i * (PI/180), j * (PI/180), k * (PI/180)});
                 len = length_squared(V);
-                assert(fabs(len - 1.0) < 0.0001);
+                assert(std::abs(len - 1.0) < 0.0001);
 
             }
         }
@@ -329,7 +331,7 @@ void test_ground_angular_acceleration()
 void test_rotor_omega_acceleration() {
     double Kr = 2896, Tr = 4.5e-2, duty_rate = 1, omega = 0;
     double a = rotor_omega_acceleration(Kr, Tr, omega, duty_rate);
-    assert(std::fabs(a - (Kr * duty_rate - omega) / Tr) < 0.0001);
+    assert(std::abs(a - (Kr * duty_rate - omega) / Tr) < 0.0001);
 
     std::ofstream ofs;
     ofs.open("omega_times_series.csv", std::ios::out);
@@ -349,7 +351,7 @@ void test_rotor_omega_acceleration() {
         double a = rotor_omega_acceleration(Kr, Tr, omega_a, duty_rate);
         double b = rotor_omega_acceleration(Vbat, R, Cq, J, K, D, omega_b, duty_rate);
         
-        assert(std::fabs(a - (Kr * duty_rate - omega_a) / Tr) < 0.0001);
+        assert(std::abs(a - (Kr * duty_rate - omega_a) / Tr) < 0.0001);
         omega_a += a*time;
         omega_b += b*time;
 
@@ -358,7 +360,7 @@ void test_rotor_omega_acceleration() {
          *  if duty_rate is a constant, the solution is
          *  Omega = Kr * (1 - exp(-t/Tr) * (duty rate))
          */
-//        assert(std::fabs(omega_a -  Kr*(1 - std::exp(-time/Tr)*duty_rate) < 10));
+//        assert(std::std::abs(omega_a -  Kr*(1 - std::exp(-time/Tr)*duty_rate) < 10));
         ofs << time << "," << a*time << "," << omega_a << ", " << b*time << ", " << omega_b << std::endl;
     }
     ofs.close();

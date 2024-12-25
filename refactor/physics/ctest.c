@@ -1,6 +1,8 @@
 #include "drone_physics_debug.h"
 #include "drone_physics_osdep.h"
 
+#undef NDEBUG // force assert to work even if release bulid.
+
 const double PI = M_PI;
 
 void static test_frame_all_unit_vectors_with_some_angles() {
