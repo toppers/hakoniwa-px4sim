@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <cmath>
 
-#define assert_almost_equal_dvec4(u, v) assert(std::fabs(u[0]-v[0]) < 0.001 && std::fabs(u[1]-v[1]) < 0.001 && std::fabs(u[2]-v[2]) < 0.001 && std::fabs(u[3]-v[3]) < 0.001 || (out("dvec4 different! u=", u, " "), out("v=", v), false))
+#define assert_almost_equal_dvec4(u, v) assert(std::abs(u[0]-v[0]) < 0.001 && std::abs(u[1]-v[1]) < 0.001 && std::abs(u[2]-v[2]) < 0.001 && std::abs(u[3]-v[3]) < 0.001 || (out("dvec4 different! u=", u, " "), out("v=", v), false))
 
 void out(const char* msg, const glm::dvec4& v, const char* cont = "\n") {
     std::cout << msg << "(" << v[0] << "," << v[1] << "," << v[2] << "," << v[3] << ")" << cont;
@@ -76,7 +76,7 @@ void mixer_test() {
     for (int i = 0; i < ROTOR_NUM; i++) {
         double ratio = delta_omega[i]/omega0; 
 
-        if (std::fabs(ratio) >  0.8) {
+        if (std::abs(ratio) >  0.8) {
             if (debugEnabled) {
                     std::cout << "WARNING: thrust:" << thrust << " tx: " << torque_x << " ty: " << torque_y << " tz: " << torque_z << std::endl;
                     std::cout << "WARNING: delta_omega("<< i << ") is too big(" << delta_omega[i]/omega0 << "%)...limited to 80%." << std::endl;

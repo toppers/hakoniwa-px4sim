@@ -126,9 +126,9 @@ AccelerationType acceleration_in_body_frame(
     double air_v = v - wind.y;
     double air_w = w - wind.z;
 
-    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (air_u) - d2.x/m * air_u * std::fabs(air_u);
-    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (air_v) - d2.y/m * air_v * std::fabs(air_v);
-    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (air_w) - d2.z/m * air_w * std::fabs(air_w);
+    double dot_u =       - g * s_theta            - (q*w - r*v) - d1.x/m * (air_u) - d2.x/m * air_u * std::abs(air_u);
+    double dot_v =       + g * c_theta * s_phi    - (r*u - p*w) - d1.y/m * (air_v) - d2.y/m * air_v * std::abs(air_v);
+    double dot_w = -T/m  + g * c_theta * c_phi    - (p*v - q*u) - d1.z/m * (air_w) - d2.z/m * air_w * std::abs(air_w);
     /*****************************************************************/  
 
     return {dot_u, dot_v, dot_w};
@@ -354,7 +354,7 @@ EulerType euler_from_quaternion(const QuaternionType& quaternion)
      * - https://www.docswell.com/s/Kouhei_Ito/KDVNVK-2022-06-15-193343#p3
      * - 
      */
-    using std::atan2; using std::asin; using std::cos; using std::fabs;
+    using std::atan2; using std::asin; using std::cos;
     auto [q0, q1, q2, q3] = quaternion; /* [w, x, y, z] aligned name with the book for reviewability */
 
     // First, see theta,  asin is nearly 1.0, cos(theta) is nearly 0.0
@@ -367,7 +367,7 @@ EulerType euler_from_quaternion(const QuaternionType& quaternion)
      *  Here, the gimbal lock happens, and the euler angle is not unique.
      *  Choose the one with the phi = 0, namely (0, 90, -90).
      **/
-    if (fabs(cos(theta)) < 0.0001) {
+    if (std::abs(cos(theta)) < 0.0001) {
         phi = 0;
         psi = atan2(2*(q0*q3 - q1*q2), 2*(q0*q0 + q2*q2) - 1);
     } else {
