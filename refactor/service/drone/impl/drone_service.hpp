@@ -11,6 +11,7 @@
 #include "controller/aircraft_controller_container.hpp"
 #include <array>
 #include <stdexcept>
+#include <memory>
 
 using namespace hako::aircraft;
 using namespace hako::controller;
@@ -20,15 +21,18 @@ namespace hako::service::impl {
 
 class DroneService : public IDroneService {
 public:
-    DroneService(IAirCraft& aircraft, IAircraftController& controller, IAircraftMixer& mixer)
-        : aircraft_(aircraft), controller_(controller), mixer_(mixer) {
+    DroneService(std::shared_ptr<IAirCraft> aircraft, std::shared_ptr<IAircraftController> controller)
+        : aircraft_(aircraft), controller_(controller) {
         simulation_time_usec_ = 0;
         delta_time_usec_ = 0;
-        if (controller_.is_radio_control()) {
+        if (controller_->is_radio_control()) {
             drone_service_operation_ = std::make_unique<DroneServiceRC>();
         }
         else {
             drone_service_operation_ = std::make_unique<DroneServiceAPI>(aircraft_);
+        }
+        if (drone_service_operation_ == nullptr) {
+            throw std::runtime_error("Failed to create drone service operation");
         }
     }
     ~DroneService() override = default;
@@ -46,7 +50,7 @@ public:
     }
 
     void resetService() override {
-        controller_.reset();
+        controller_->reset();
         aircraft_.reset();
         reset();
         drone_service_operation_->reset();
@@ -85,9 +89,8 @@ public:
 private:
     uint64_t simulation_time_usec_ = 0;
     uint64_t delta_time_usec_ = 0;
-    IAirCraft& aircraft_;
-    IAircraftController& controller_;
-    IAircraftMixer& mixer_;
+    std::shared_ptr<IAirCraft> aircraft_;
+    std::shared_ptr<IAircraftController> controller_;
     std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM> pdu_data_ = {};
     AircraftInputType aircraft_inputs_ = {};
     mi_aircraft_control_in_t controller_inputs_ = {};

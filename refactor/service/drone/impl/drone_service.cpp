@@ -27,17 +27,17 @@ void DroneService::advanceTimeStep()
 
     //run controller
     if (drone_service_operation_->can_advanceTimeStep_for_controller()) {
-        controller_outputs_ = controller_.run(controller_inputs_);
+        controller_outputs_ = controller_->run(controller_inputs_);
 
         //run mixer
-        pwm_duty_ = mixer_.run(controller_outputs_);
+        pwm_duty_ = controller_->mixer()->run(controller_outputs_);
     }
 
     //setup input data for aircraft
     setup_aircraft_inputs();
 
     //run aircraft
-    aircraft_.run(aircraft_inputs_);
+    aircraft_->run(aircraft_inputs_);
     
     //write pdu
     write_back_pdu();
@@ -49,16 +49,16 @@ void DroneService::setup_controller_inputs()
 {
     controller_inputs_ = {};
     controller_outputs_ = {};
-    controller_inputs_.mass = aircraft_.get_drone_dynamics().get_mass();
-    controller_inputs_.drag = aircraft_.get_drone_dynamics().get_drag();
+    controller_inputs_.mass = aircraft_->get_drone_dynamics().get_mass();
+    controller_inputs_.drag = aircraft_->get_drone_dynamics().get_drag();
 
-    DronePositionType pos = aircraft_.get_drone_dynamics().get_pos();
-    DroneEulerType angle = aircraft_.get_drone_dynamics().get_angle();
-    DroneVelocityBodyFrameType velocity = aircraft_.get_drone_dynamics().get_vel_body_frame();
-    DroneAngularVelocityBodyFrameType angular_velocity = aircraft_.get_gyro().sensor_value();
+    DronePositionType pos = aircraft_->get_drone_dynamics().get_pos();
+    DroneEulerType angle = aircraft_->get_drone_dynamics().get_angle();
+    DroneVelocityBodyFrameType velocity = aircraft_->get_drone_dynamics().get_vel_body_frame();
+    DroneAngularVelocityBodyFrameType angular_velocity = aircraft_->get_gyro().sensor_value();
 
     drone_service_operation_->setup_controller_inputs(controller_inputs_, pdu_data_);
-    controller_inputs_.max_rpm = aircraft_.get_rpm_max(0);
+    controller_inputs_.max_rpm = aircraft_->get_rpm_max(0);
     controller_inputs_.pos_x = pos.data.x;
     controller_inputs_.pos_y = pos.data.y;
     controller_inputs_.pos_z = pos.data.z;
@@ -79,7 +79,7 @@ void DroneService::setup_aircraft_inputs()
         aircraft_inputs_.controls[i] = pwm_duty_.d[i];
     }
     aircraft_inputs_.manual.control = false;
-    if (aircraft_.get_drone_dynamics().has_collision_detection()) {
+    if (aircraft_->get_drone_dynamics().has_collision_detection()) {
         HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
         read_pdu(pdu_data);
         aircraft_inputs_.collision.collision = pdu_data.pdu.collision.collision;
@@ -97,7 +97,7 @@ void DroneService::setup_aircraft_inputs()
         }
         debug_print_drone_collision(aircraft_inputs_.collision);
     }
-    if (aircraft_.is_enabled_disturbance()) {
+    if (aircraft_->is_enabled_disturbance()) {
         HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE };
         read_pdu(pdu_data);
         //temperature
@@ -123,7 +123,7 @@ void DroneService::write_back_pdu()
 
     // battery write back
     HakoniwaDronePduDataType bat_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_BATTERY_STATUS };
-    auto battery = aircraft_.get_battery_dynamics();
+    auto battery = aircraft_->get_battery_dynamics();
     if (battery != nullptr) {
         auto status = battery->get_status();
         bat_pdu_data.pdu.battery_status.full_voltage = status.full_voltage;
@@ -150,8 +150,8 @@ void DroneService::write_back_pdu()
 
     // position write back
     HakoniwaDronePduDataType pos_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
-    DronePositionType dpos = aircraft_.get_drone_dynamics().get_pos();
-    DroneEulerType dangle = aircraft_.get_drone_dynamics().get_angle();
+    DronePositionType dpos = aircraft_->get_drone_dynamics().get_pos();
+    DroneEulerType dangle = aircraft_->get_drone_dynamics().get_angle();
     pos_pdu_data.pdu.position.linear.x = dpos.data.x;
     pos_pdu_data.pdu.position.linear.y = -dpos.data.y;
     pos_pdu_data.pdu.position.linear.z = -dpos.data.z;

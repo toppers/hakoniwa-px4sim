@@ -11,7 +11,7 @@ namespace hako::aircraft {
 
 class AirCraftContainer {
 private:
-    std::vector<std::unique_ptr<IAirCraft>> airCrafts;
+    std::vector<std::shared_ptr<IAirCraft>> airCrafts;
 public:
     virtual ~AirCraftContainer() {}
     /*
@@ -52,19 +52,15 @@ public:
         }
         return true;
     }
-    IAirCraft* getAirCraft(size_t index) {
+    std::shared_ptr<IAirCraft> getAirCraft(size_t index) {
         if (index < airCrafts.size()) {
-            return airCrafts[index].get();
+            return airCrafts[index];
         } else {
             return nullptr;
         }
     }
-    std::vector<IAirCraft*> getAllAirCrafts() {
-        std::vector<IAirCraft*> list;
-        for (auto& airCraft : airCrafts) {
-            list.push_back(airCraft.get());
-        }
-        return list;
+    std::vector<std::shared_ptr<IAirCraft>> getAllAirCrafts() {
+        return airCrafts;
     }
 
 };

@@ -17,7 +17,7 @@ namespace hako::service::impl {
 
 class DroneServiceAPI: public IDroneServiceOperation {
 private:
-    IAirCraft& aircraft_;
+    std::shared_ptr<IAirCraft> aircraft_;
     MainStatus state;
     MainStatusType prev_status;
 
@@ -37,11 +37,11 @@ private:
     HakoniwaDronePduDataType cmd_magnet = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MAGNET };
 
 public:
-    DroneServiceAPI(IAirCraft& aircraft): aircraft_(aircraft)
+    DroneServiceAPI(std::shared_ptr<IAirCraft> aircraft): aircraft_(aircraft)
     {
-        home_pos_x = aircraft_.get_drone_dynamics().get_pos().data.x;
-        home_pos_y = aircraft_.get_drone_dynamics().get_pos().data.y;
-        home_pos_z = aircraft_.get_drone_dynamics().get_pos().data.z;
+        home_pos_x = aircraft_->get_drone_dynamics().get_pos().data.x;
+        home_pos_y = aircraft_->get_drone_dynamics().get_pos().data.y;
+        home_pos_z = aircraft_->get_drone_dynamics().get_pos().data.z;
         reset();
     }
     ~DroneServiceAPI() {}
@@ -88,8 +88,8 @@ public:
                 state.land();
                 prev_status = state.get_status();
                 in.target_pos_z = -cmd_land.pdu.land.height;
-                in.target_pos_x = aircraft_.get_drone_dynamics().get_pos().data.x;
-                in.target_pos_y = aircraft_.get_drone_dynamics().get_pos().data.y;
+                in.target_pos_x = aircraft_->get_drone_dynamics().get_pos().data.x;
+                in.target_pos_y = aircraft_->get_drone_dynamics().get_pos().data.y;
                 in.target_velocity = cmd_land.pdu.land.speed;
                 in.target_yaw_deg = -cmd_land.pdu.land.yaw_deg;
                 std::cout << "land: z = " << in.target_pos_z << std::endl;

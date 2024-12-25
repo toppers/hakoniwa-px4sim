@@ -18,15 +18,16 @@ public:
         if (aircraft_container.getAllAirCrafts().size() != controller_container.getControllers().size()) {
             throw std::runtime_error("aircraft and controller size mismatch");
         }
-        for (auto& aircraft : aircraft_container.getAllAirCrafts()) {
-            drone_services_.push_back(DroneService(*aircraft, controller_container.getControllers()[aircraft->get_index()]));
+        for (std::shared_ptr<IAirCraft> aircraft : aircraft_container.getAllAirCrafts()) {
+            std::shared_ptr<DroneService> drone_service = std::make_shared<DroneService>(aircraft, controller_container.getControllers()[aircraft->get_index()]);
+            drone_services_.push_back(drone_service);
         }
     };
     ~DroneServiceContainer() = default;
 
     bool startService(uint64_t deltaTimeUsec) override {
         for (auto& drone_service : drone_services_) {
-            drone_service.startService(deltaTimeUsec);
+            drone_service->startService(deltaTimeUsec);
         }
         return true;
     }
@@ -35,23 +36,23 @@ public:
         if (index >= drone_services_.size()) {
             throw std::runtime_error("advanceTimeStep index out of range");
         }
-        drone_services_[index].advanceTimeStep();
+        drone_services_[index]->advanceTimeStep();
     }
     void advanceTimeStep() override {
         for (auto& drone_service : drone_services_) {
-            drone_service.advanceTimeStep();
+            drone_service->advanceTimeStep();
         }
     }
 
     void stopService() override {
         for (auto& drone_service : drone_services_) {
-            drone_service.stopService();
+            drone_service->stopService();
         }
     }
 
     void resetService() override {
         for (auto& drone_service : drone_services_) {
-            drone_service.resetService();
+            drone_service->resetService();
         }
     }
 
@@ -59,24 +60,24 @@ public:
         if (index >= drone_services_.size()) {
             throw std::runtime_error("getSimulationTimeUsec index out of range");
         }
-        return drone_services_[index].getSimulationTimeUsec();
+        return drone_services_[index]->getSimulationTimeUsec();
     }
 
     bool write_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) override {
         if (index >= drone_services_.size()) {
             throw std::runtime_error("write_pdu index out of range");
         }
-        return drone_services_[index].write_pdu(pdu);
+        return drone_services_[index]->write_pdu(pdu);
     }
 
     bool read_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) override {
         if (index >= drone_services_.size()) {
             throw std::runtime_error("read_pdu index out of range");
         }
-        return drone_services_[index].read_pdu(pdu);
+        return drone_services_[index]->read_pdu(pdu);
     };
 private:
-    std::vector<DroneService> drone_services_;
+    std::vector<std::shared_ptr<DroneService>> drone_services_;
 };
 }
 

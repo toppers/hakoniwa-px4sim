@@ -148,7 +148,7 @@ void hako::service::impl::AircraftService::send_sensor_data(IAirCraft& aircraft,
 
 void hako::service::impl::AircraftService::resetService()
 {
-    for (IAirCraft* aircraft : aircraft_container_.getAllAirCrafts()) {
+    for (auto aircraft : aircraft_container_.getAllAirCrafts()) {
         aircraft->reset();
     }
 }

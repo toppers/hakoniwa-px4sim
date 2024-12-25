@@ -16,8 +16,8 @@ public:
      * create same air crafts from config 0.
      */
     virtual bool createSameAirCrafts(DroneConfigManager& configManager, int create_num) = 0;
-    virtual IAirCraft* getAirCraft(size_t index) = 0;
-    virtual std::vector<IAirCraft*> getAllAirCrafts() = 0;
+    virtual std::shared_ptr<IAirCraft> getAirCraft(size_t index) = 0;
+    virtual std::vector<std::shared_ptr<IAirCraft>> getAllAirCrafts() = 0;
 };
 
 }
