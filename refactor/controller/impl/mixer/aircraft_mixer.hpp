@@ -34,17 +34,7 @@ namespace hako::controller {
             double d = e / mixer_info.V_bat;
             return d;
         }
-        bool calculate_M_inv()
-        {
-            float det = glm::determinant(this->M);
-            if (std::abs(det) < 0.0001) {
-                std::cout << "The matrix is singular and does not have an inverse." << std::endl;
-                return false;
-            }
-            this->M_inv = glm::inverse(M);
-            this->MA_inv= M_inv * A_inv;
-            return true;
-        }
+
         PwmDuty run_default(double mass, double thrust, double torque_x, double torque_y, double torque_z)
         {
             (void)mass;
@@ -141,6 +131,17 @@ namespace hako::controller {
             this->A = glm::transpose(this->A);
             this->A_inv = glm::inverse(A);
         }
+        bool calculate_M_inv()
+        {
+            float det = glm::determinant(this->M);
+            if (std::abs(det) < 0.0001) {
+                std::cout << "The matrix is singular and does not have an inverse." << std::endl;
+                return false;
+            }
+            this->M_inv = glm::inverse(M);
+            this->MA_inv= M_inv * A_inv;
+            return true;
+        }        
         void setMixerInfo(DroneConfig::MixerInfo& info)
         {
             mixer_info = info;

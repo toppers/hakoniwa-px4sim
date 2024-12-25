@@ -26,6 +26,7 @@ endif()
 target_include_directories(hako_controller 
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${HAKO_SOURCE_DIR}/physics
+    PRIVATE ${GLM_SOURCE_DIR}
     PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
 )
 
