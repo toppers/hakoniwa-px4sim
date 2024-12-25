@@ -246,7 +246,7 @@ private:
         const auto& source_pdu = pdu_entry.data;
 
         // deep copy
-        bool ret = drone_pdu_data_deep_copy(source_pdu, dest);
+        bool ret = hako::service::drone_pdu_data_deep_copy(source_pdu, dest);
         if (!ret) {
             throw std::runtime_error("read_cmd: deep copy failed");
         }
@@ -267,7 +267,7 @@ private:
         }
 
         // deep copy
-        bool ret = drone_pdu_data_deep_copy(src, pdu_entry.data);
+        bool ret = hako::service::drone_pdu_data_deep_copy(src, pdu_entry.data);
         if (!ret) {
             throw std::runtime_error("write_cmd: deep copy failed");
         }

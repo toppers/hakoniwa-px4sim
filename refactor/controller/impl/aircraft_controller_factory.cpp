@@ -6,7 +6,7 @@
 using namespace hako::controller;
 using namespace hako::controller::impl;
 
-std::shared_ptr<IAircraftController> create_aircraft_controller(int index, const DroneConfig& drone_config)
+std::shared_ptr<IAircraftController> hako::controller::create_aircraft_controller(int index, const DroneConfig& drone_config)
 {
     std::string module_name = drone_config.getControllerModuleName();
     std::shared_ptr<IAircraftController> controller = nullptr;

@@ -1,6 +1,51 @@
 #include "service/drone/impl/drone_service.hpp"
 
 using namespace hako::service::impl;
+
+bool hako::service::drone_pdu_data_deep_copy(const HakoniwaDronePduDataType& source, HakoniwaDronePduDataType& dest)
+{
+    dest.id = source.id;
+    switch (source.id) {
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF:
+            dest.pdu.takeoff = source.pdu.takeoff;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND:
+            dest.pdu.land = source.pdu.land;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE:
+            dest.pdu.move = source.pdu.move;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_GAME_CTRL:
+            dest.pdu.game_ctrl = source.pdu.game_ctrl;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MAGNET:
+            dest.pdu.magnet = source.pdu.magnet;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION:
+            dest.pdu.collision = source.pdu.collision;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE:
+            dest.pdu.disturbance = source.pdu.disturbance;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_BATTERY_STATUS:
+            dest.pdu.battery_status = source.pdu.battery_status;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_STATUS_MAGNET:
+            dest.pdu.status_magnet = source.pdu.status_magnet;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION:
+            dest.pdu.position = source.pdu.position;
+            break;
+        case HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_ACTUATOR_CONTROLS:
+            dest.pdu.actuator_controls = source.pdu.actuator_controls;
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
+
 static void debug_print_drone_collision(DroneDynamicsCollisionType& drone_collision)
 {
     std::cout << "Collision: " << (drone_collision.collision ? "Yes" : "No") << std::endl;

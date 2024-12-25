@@ -9,7 +9,7 @@
 
 namespace hako::aircraft {
 
-class AirCraftContainer {
+class AirCraftContainer : public IAirCraftContainer {
 private:
     std::vector<std::shared_ptr<IAirCraft>> airCrafts;
 public:
