@@ -51,12 +51,12 @@ jobs:
       - name: Build and Test hakoniwa-px4sim/drone_physics on ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-            cd drone_physics && cmake -D HAKO_CLIENT_OPTION_FILEPATH=../cmake-options/linux-cmake-options.cmake . && make  && make test
+            cd drone_physics && cmake -D HAKO_CLIENT_OPTION_FILEPATH=../cmake-options/linux-cmake-options.cmake . && make  && make vtest
 
       - name: Build and Test hakoniwa-px4sim/drone_physics on macOs
         if: startsWith(matrix.os, 'macos')
         run: |
-            cd drone_physics && cmake . && make && make test
+            cd drone_physics && cmake . && make && make vtest
   
       - name: Build and Test hakoniwa-px4sim/hakoniwa
         if: ${{ matrix.os != 'windows-latest' }}
