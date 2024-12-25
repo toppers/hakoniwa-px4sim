@@ -4,6 +4,8 @@
 #include "controller/iaircraft_controller.hpp"
 #include "controller/impl/drone_controller.hpp"
 
+using namespace hako::controller;
+
 namespace hako::controller::impl {
 class FlightController : public IAircraftController {
 public:

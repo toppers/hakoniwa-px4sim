@@ -14,6 +14,7 @@ endif()
 set(SOURCE_FILES
     impl/flight_controller/flight_controller.cpp
     impl/radio_controller/radio_controller.cpp
+    impl/aircraft_controller_factory.cpp
 )
 add_library(hako_controller ${SOURCE_FILES})
 
@@ -25,6 +26,7 @@ endif()
 target_include_directories(hako_controller 
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${HAKO_SOURCE_DIR}/physics
+    PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
 )
 
 target_compile_features(hako_controller PRIVATE cxx_std_17)

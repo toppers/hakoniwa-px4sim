@@ -1,5 +1,5 @@
-#ifndef _FLIGHT_CONTROLLER_HPP_
-#define _FLIGHT_CONTROLLER_HPP_
+#ifndef _RADIO_CONTROLLER_HPP_
+#define _RADIO_CONTROLLER_HPP_
 
 #include "controller/iaircraft_controller.hpp"
 #include "controller/impl/drone_radio_controller.hpp"
@@ -19,4 +19,4 @@ private:
 };
 } // namespace hako::controller::impl
 
-#endif /* _FLIGHT_CONTROLLER_HPP_ */
+#endif /* _RADIO_CONTROLLER_HPP_ */
