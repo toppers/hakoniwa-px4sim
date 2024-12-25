@@ -25,7 +25,7 @@ public:
     virtual bool can_advanceTimeStep_for_controller() = 0;
 
     // コントローラーのPDUを書き込む
-    virtual void write_controller_pdu() = 0;
+    virtual void write_controller_pdu(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) = 0;
 };
 
 }

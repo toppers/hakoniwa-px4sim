@@ -48,6 +48,8 @@ public:
     void resetService() override {
         controller_.reset();
         aircraft_.reset();
+        reset();
+        drone_service_operation_->reset();
     }
 
     uint64_t getSimulationTimeUsec() override {
@@ -92,6 +94,21 @@ private:
     mi_aircraft_control_out_t controller_outputs_ = {};
     PwmDuty pwm_duty_ = {};
     std::unique_ptr<IDroneServiceOperation> drone_service_operation_;
+
+    void reset()
+    {
+        aircraft_inputs_ = {};
+        controller_inputs_ = {};
+        controller_outputs_ = {};
+        pwm_duty_ = {};
+
+        for (int i = 0; i < HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM; i++) {
+            pdu_data_[i].is_busy.store(false);
+            pdu_data_[i].data.id = static_cast<HakoniwaDronePduDataIdType>(i);
+            pdu_data_[i].data.pdu = {};
+            pdu_data_[i].is_dirty.store(false);
+        }
+    }
 
     void setup_aircraft_inputs();
     void setup_controller_inputs();

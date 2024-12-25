@@ -69,7 +69,11 @@ public:
         pdu_entry.is_busy.store(false);
     }
 
-    void write_controller_pdu() override {}
+    void write_controller_pdu(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override 
+    {
+        // nothing to do
+        (void)pdu_data;
+    }
 private:
     bool radio_control_on_ = false;
     int button_check_count[GAME_CTRL_BUTTON_NUM] = {};

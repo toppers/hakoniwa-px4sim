@@ -28,7 +28,6 @@ void DroneService::advanceTimeStep()
     //run controller
     if (drone_service_operation_->can_advanceTimeStep_for_controller()) {
         controller_outputs_ = controller_.run(controller_inputs_);
-        //TODO do control
 
         //run mixer
         pwm_duty_ = mixer_.run(controller_outputs_);
@@ -39,8 +38,6 @@ void DroneService::advanceTimeStep()
 
     //run aircraft
     aircraft_.run(aircraft_inputs_);
-
-    //TODO run drone service operation
     
     //write pdu
     write_back_pdu();
@@ -52,6 +49,9 @@ void DroneService::setup_controller_inputs()
 {
     controller_inputs_ = {};
     controller_outputs_ = {};
+    controller_inputs_.mass = aircraft_.get_drone_dynamics().get_mass();
+    controller_inputs_.drag = aircraft_.get_drone_dynamics().get_drag();
+
     DronePositionType pos = aircraft_.get_drone_dynamics().get_pos();
     DroneEulerType angle = aircraft_.get_drone_dynamics().get_angle();
     DroneVelocityBodyFrameType velocity = aircraft_.get_drone_dynamics().get_vel_body_frame();
@@ -111,7 +111,10 @@ void DroneService::setup_aircraft_inputs()
 
 void DroneService::write_back_pdu()
 {
-    //TODO write game control pdu
+    //write game control pdu
+    if (drone_service_operation_->can_advanceTimeStep_for_controller()) {
+        drone_service_operation_->write_controller_pdu(pdu_data_);
+    }
     
     // collision write back
     HakoniwaDronePduDataType col_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
