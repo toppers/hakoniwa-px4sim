@@ -76,10 +76,7 @@ static double diff_a(const dp_euler_t* a, const dp_euler_t* b) {
 static int AssertCount = 0;
 
 #define assert_almost_equal(a, b) \
-    assert((++AssertCount && diff(&(a), &(b)) <almost_tolerance) || (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0))
-
-#define assert_almost_equal_euler(a, b) \
-    assert((++AssertCount && diff_e(&(a), &(b)) <almost_tolerance) || (print_ang(a), fprintf(stderr, " <-?-> "), print_ang(b), fprintf(stderr, "!!\n"), 0))
+    (++AssertCount, (diff(&(a), &(b)) <almost_tolerance) ?  1 : (print_vec(a), fprintf(stderr, " <-?-> "), print_vec(b), fprintf(stderr, "!!\n"), 0), assert ((diff(&(a), &(b)) <almost_tolerance)), 0)
 
 #define print_vec(v) \
     fprintf(stderr, "%s=(%g,%g,%g)", #v, v.x, v.y, v.z)

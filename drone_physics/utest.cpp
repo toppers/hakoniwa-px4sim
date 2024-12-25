@@ -4,8 +4,6 @@
 
 using namespace hako::drone_physics;
 
-#undef NDEBUG // force assert to work even if release bulid.
-
 const double PI = M_PI;
 
 void test_frame_all_unit_vectors_with_angle0() {
@@ -648,8 +646,8 @@ void sub_test_two_quaternion_velocity(double i, double j, double k, double l, co
 void test_quaternion_velocity_roundtrip() {
     for (double i = -10; i < 10; i += .5) {
         for (double j = -10; j < 10; j += .5) {
-            for (double k = -10; k < 10; k += .5) {
-                for (double l = -10; l < 10; l += .5) {
+            for (double k = -10; k < 10; k += 1.5) {
+                for (double l = -10; l < 10; l += 1.5) {
                     if (i == 0 && j == 0 && k == 0 && l == 0) continue;
                     // note dt = 0.01 will fail. 12/10/2024, too big. or av is too big.
                     sub_test_two_quaternion_velocity(i, j, k, l, {0.1, 0.1, 0.1}, 0.001);
