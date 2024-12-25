@@ -10,46 +10,36 @@ if (NOT DEFINED HAKO_CLIENT_OPTION_FILEPATH)
     MESSAGE(STATUS "HAKO_CLIENT_OPTION_FILEPATH is not defined. Use default options.")
     include(default-cmake-options.cmake)
 endif()
-set(TARGETS "")
 
 add_library(
     drone_physics
-    body_physics.cpp
+    drone_frames.cpp
     rotor_physics.cpp
+    body_physics.cpp
 )
-list(APPEND TARGETS drone_physics)
 
 add_library(
     drone_physics_c
     drone_physics_c.cpp
+    drone_frames.cpp
     body_physics.cpp
     rotor_physics.cpp
 )
-list(APPEND TARGETS drone_physics_c)
-
 
 add_executable(utest utest.cpp)
-list(APPEND TARGETS utest)
 target_link_libraries(utest drone_physics)
 
 #if (NOT CMAKE_SYSTEM_NAME MATCHES "Linux")
 add_executable(ctest ctest.c)
-list(APPEND TARGETS ctest)
 target_link_libraries(ctest drone_physics_c)
 #endif()
 
 add_executable(examples examples.cpp)
-list(APPEND TARGETS examples)
 target_link_libraries(examples drone_physics)
 
 add_executable(cexamples cexamples.c)
-list(APPEND TARGETS cexamples)
 target_link_libraries(cexamples drone_physics_c)
 
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-else()
-endif()
 
 enable_testing()
 add_test(NAME utest COMMAND ./utest)
