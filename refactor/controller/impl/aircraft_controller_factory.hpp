@@ -3,12 +3,13 @@
 
 #include "config/drone_config.hpp"
 #include "controller/iaircraft_controller.hpp"
+#include <memory>
 
 using namespace hako::config;
 
 namespace hako::controller {
 
-extern IAircraftController* create_aircraft_controller(int index, const DroneConfig& drone_config);
+extern std::shared_ptr<IAircraftController> create_aircraft_controller(int index, const DroneConfig& drone_config);
 
 }
 

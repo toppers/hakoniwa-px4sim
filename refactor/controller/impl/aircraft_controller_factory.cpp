@@ -6,15 +6,15 @@
 using namespace hako::controller;
 using namespace hako::controller::impl;
 
-IAircraftController* create_aircraft_controller(int index, const DroneConfig& drone_config)
+std::shared_ptr<IAircraftController> create_aircraft_controller(int index, const DroneConfig& drone_config)
 {
     std::string module_name = drone_config.getControllerModuleName();
-    IAircraftController* controller = nullptr;
+    std::shared_ptr<IAircraftController> controller = nullptr;
     if (module_name == "RadioController") {
-        controller = new RadioController();
+        controller = std::make_shared<RadioController>();
     }
     else if (module_name == "FlightController") {
-        controller = new FlightController();
+        controller = std::make_shared<FlightController>();
     }
     else {
         throw std::runtime_error("Unknown controller module name: " + module_name);
@@ -65,5 +65,5 @@ IAircraftController* create_aircraft_controller(int index, const DroneConfig& dr
     else {
         throw std::runtime_error("Failed to get mixer info");
     }
-    return nullptr;
+    return controller;
 }
