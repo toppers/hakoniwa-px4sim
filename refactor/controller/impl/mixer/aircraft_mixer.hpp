@@ -133,7 +133,7 @@ namespace hako::controller {
         }
         bool calculate_M_inv()
         {
-            float det = glm::determinant(this->M);
+            auto det = glm::determinant(this->M);
             if (std::abs(det) < 0.0001) {
                 std::cout << "The matrix is singular and does not have an inverse." << std::endl;
                 return false;
