@@ -1,7 +1,7 @@
-#include "service/aircraft/impl/aircraft_service.hpp"
+#include "service/aircraft/impl/aircraft_service_container.hpp"
 #include "service/aircraft/impl/aricraft_mavlink_message_buider.hpp"
 
-bool hako::service::impl::AircraftService::startService(bool lockStep, uint64_t deltaTimeUsec)
+bool hako::service::impl::AircraftServiceContainer::startService(bool lockStep, uint64_t deltaTimeUsec)
 {
     lock_step_ = lockStep;
     delta_time_usec_ = deltaTimeUsec;
@@ -29,7 +29,7 @@ bool hako::service::impl::AircraftService::startService(bool lockStep, uint64_t 
     return true;
 }
 
-void hako::service::impl::AircraftService::advanceTimeStep(uint32_t index)
+void hako::service::impl::AircraftServiceContainer::advanceTimeStep(uint32_t index)
 {
     if (index >= static_cast<uint32_t>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for advanceTimeStep : " + std::to_string(index));
@@ -45,7 +45,7 @@ void hako::service::impl::AircraftService::advanceTimeStep(uint32_t index)
         sitl_simulation_time_usec_[index] = sitl_time_usec;
     }
 }
-void hako::service::impl::AircraftService::advanceTimeStepLockStep(uint32_t index, uint64_t& sitl_time_usec)
+void hako::service::impl::AircraftServiceContainer::advanceTimeStepLockStep(uint32_t index, uint64_t& sitl_time_usec)
 {
     /*
      * Setup input data for each aircraft
@@ -76,7 +76,7 @@ void hako::service::impl::AircraftService::advanceTimeStepLockStep(uint32_t inde
     }
 }
 
-void hako::service::impl::AircraftService::advanceTimeStepFreeRun(uint32_t index, uint64_t& sitl_time_usec)
+void hako::service::impl::AircraftServiceContainer::advanceTimeStepFreeRun(uint32_t index, uint64_t& sitl_time_usec)
 {
     /*
      * Setup input data for each aircraft
@@ -107,7 +107,7 @@ void hako::service::impl::AircraftService::advanceTimeStepFreeRun(uint32_t index
     }
 }
 
-uint64_t hako::service::impl::AircraftService::getSimulationTimeUsec(uint32_t index)
+uint64_t hako::service::impl::AircraftServiceContainer::getSimulationTimeUsec(uint32_t index)
 {
     if (index >= static_cast<uint32_t>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for getSimulationTimeUsec : " + std::to_string(index));
@@ -115,7 +115,7 @@ uint64_t hako::service::impl::AircraftService::getSimulationTimeUsec(uint32_t in
     return aircraft_container_.getAllAirCrafts()[index]->get_simulation_time_usec();
 }
 
-uint64_t hako::service::impl::AircraftService::getSitlTimeUsec(uint32_t index)
+uint64_t hako::service::impl::AircraftServiceContainer::getSitlTimeUsec(uint32_t index)
 {
     if (index >= static_cast<uint32_t>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for getSitlTimeUsec : " + std::to_string(index));
@@ -123,7 +123,7 @@ uint64_t hako::service::impl::AircraftService::getSitlTimeUsec(uint32_t index)
     return sitl_simulation_time_usec_[index];
 }
 
-void hako::service::impl::AircraftService::send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec)
+void hako::service::impl::AircraftServiceContainer::send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec)
 {
     uint64_t time_usec = aircraft.get_simulation_time_usec() + activated_time_usec;
     int index = aircraft.get_index();
@@ -146,14 +146,14 @@ void hako::service::impl::AircraftService::send_sensor_data(IAirCraft& aircraft,
     send_count_[index]++;
 }
 
-void hako::service::impl::AircraftService::resetService()
+void hako::service::impl::AircraftServiceContainer::resetService()
 {
     for (auto aircraft : aircraft_container_.getAllAirCrafts()) {
         aircraft->reset();
     }
 }
 
-bool hako::service::impl::AircraftService::write_pdu(uint32_t index, ServicePduDataType& pdu)
+bool hako::service::impl::AircraftServiceContainer::write_pdu(uint32_t index, ServicePduDataType& pdu)
 {
     if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
@@ -185,7 +185,7 @@ bool hako::service::impl::AircraftService::write_pdu(uint32_t index, ServicePduD
     return true;
 }
 
-bool hako::service::impl::AircraftService::read_pdu(uint32_t index, ServicePduDataType& pdu)
+bool hako::service::impl::AircraftServiceContainer::read_pdu(uint32_t index, ServicePduDataType& pdu)
 {
     if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;

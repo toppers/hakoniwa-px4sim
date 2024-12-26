@@ -9,7 +9,7 @@
 
 using namespace hako::service;
 
-namespace hako::pdu {
+namespace hako::drone::pdu {
 
 struct CompositeKey {
     std::string strKey;

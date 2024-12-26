@@ -12,7 +12,7 @@ endif()
 
 # ソースファイルの定義
 set(SOURCE_FILES
-    aircraft/impl/aircraft_service.cpp
+    aircraft/impl/aircraft_service_container.cpp
     drone/impl/drone_service.cpp
 )
 add_library(hako_service ${SOURCE_FILES})

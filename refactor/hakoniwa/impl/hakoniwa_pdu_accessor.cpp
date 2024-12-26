@@ -15,7 +15,7 @@
 #include "include/hako_asset.h"
 #include "include/hako_asset_pdu.hpp"
 
-using namespace hako::pdu;
+using namespace hako::drone::pdu;
 
 bool HakoniwaPduAccessor::init()
 {

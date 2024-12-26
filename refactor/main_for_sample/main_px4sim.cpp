@@ -1,4 +1,4 @@
-#include "service/aircraft/impl/aircraft_service.hpp"
+#include "service/aircraft/impl/aircraft_service_container.hpp"
 #include "logger/impl/hako_logger.hpp"
 
 using namespace hako::service;
@@ -32,7 +32,7 @@ int main(int argc, const char* argv[])
         mavlink_service_container.addService(*mavlink_service);
     }
 
-    auto aircraft_service = std::make_unique<hako::service::impl::AircraftService>(mavlink_service_container, aircraft_container);
+    auto aircraft_service = std::make_unique<hako::service::impl::AircraftServiceContainer>(mavlink_service_container, aircraft_container);
     aircraft_service->startService(true, 3000);
     HakoLogger::enable();
 
