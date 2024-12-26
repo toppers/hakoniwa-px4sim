@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <memory>
 #include "service/iservice_container.hpp"
 
 using namespace hako::service;
