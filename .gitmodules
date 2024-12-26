@@ -10,3 +10,6 @@
 [submodule "thirdparty/nolman"]
 	path = thirdparty/nolman
 	url = https://github.com/nlohmann/json.git
+[submodule "thirdparty/hakoniwa-core-cpp-client"]
+	path = thirdparty/hakoniwa-core-cpp-client
+	url = https://github.com/toppers/hakoniwa-core-cpp-client.git
