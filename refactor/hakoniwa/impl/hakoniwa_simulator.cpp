@@ -24,8 +24,8 @@ static int my_on_simulation_step(hako_asset_context_t*)
 }
 static hako_asset_callbacks_t my_callback = {
     .on_initialize = my_on_initialize,
-    .on_manual_timing_control = NULL,
     .on_simulation_step = my_on_simulation_step,
+    .on_manual_timing_control = NULL,
     .on_reset = my_on_reset
 };
 
