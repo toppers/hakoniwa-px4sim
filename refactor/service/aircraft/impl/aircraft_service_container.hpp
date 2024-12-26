@@ -51,6 +51,14 @@ public:
         throw std::runtime_error("Not implemented");
     }
 
+    uint32_t getNumServices() override
+    {
+        return aircraft_container_.getAllAirCrafts().size();
+    }
+    std::string getRobotName(uint32_t index) override
+    {
+        return aircraft_container_.getAirCraft(index)->get_name();
+    }
 private:
     static const uint64_t gps_send_cycle = 10;
     bool lock_step_ = false;

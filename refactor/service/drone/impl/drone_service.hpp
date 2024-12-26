@@ -100,7 +100,9 @@ public:
         pdu.pdu = pdu_data_[pdu.id].data.pdu;
         pdu_data_[pdu.id].is_busy.store(false);
     }
-
+    std::string getRobotName() const {
+        return aircraft_->get_name();
+    }
 private:
     uint64_t simulation_time_usec_ = 0;
     uint64_t delta_time_usec_ = 0;

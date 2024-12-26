@@ -15,6 +15,7 @@ set(SOURCE_FILES
     impl/hakoniwa_pdu_accessor.cpp
     impl/hakoniwa_conductor.cpp
     impl/hakoniwa_simulator.cpp
+    impl/hakoniwa_drone_service.cpp
 )
 add_library(hako_drone_core ${SOURCE_FILES})
 

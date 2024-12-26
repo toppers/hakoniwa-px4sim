@@ -1,7 +1,7 @@
-#include "hakoniwa/hakoniwa_conductor.hpp"
+#include "hakoniwa/impl/hakoniwa_conductor.hpp"
 #include "include/hako_conductor.h"
 
-using namespace hako::drone;
+using namespace hako::drone::impl;
 
 bool HakoniwaConductor::isStarted_ = false;
 

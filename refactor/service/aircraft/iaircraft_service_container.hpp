@@ -19,6 +19,9 @@ public:
     virtual bool write_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
     virtual bool read_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
     virtual void peek_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
+
+    virtual uint32_t getNumServices() = 0;
+    virtual std::string getRobotName(uint32_t index) = 0;
 };
 
 } // namespace hako::service::aircraft

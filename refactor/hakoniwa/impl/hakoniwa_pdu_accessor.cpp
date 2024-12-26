@@ -1,4 +1,4 @@
-#include "hakoniwa/hakoniwa_pdu_accessor.hpp"
+#include "hakoniwa/impl/hakoniwa_pdu_accessor.hpp"
 
 #include "hako_msgs/pdu_cpptype_conv_HakoDroneCmdTakeoff.hpp"
 #include "hako_msgs/pdu_cpptype_conv_HakoDroneCmdLand.hpp"
@@ -15,7 +15,10 @@
 #include "include/hako_asset.h"
 #include "include/hako_asset_pdu.hpp"
 
-using namespace hako::drone;
+using namespace hako::drone::impl;
+
+std::map<CompositeKey, int> HakoniwaPduAccessor::pdu_map_;
+std::vector<hako::asset::Robot> HakoniwaPduAccessor::robots_;
 
 bool HakoniwaPduAccessor::init()
 {

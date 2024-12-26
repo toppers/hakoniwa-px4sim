@@ -90,6 +90,16 @@ public:
         }
         drone_services_[index]->peek_pdu(pdu);
     }
+
+    uint32_t getNumServices() override {
+        return drone_services_.size();
+    }
+    std::string getRobotName(uint32_t index) override {
+        if (index >= drone_services_.size()) {
+            throw std::runtime_error("getRobotName index out of range");
+        }
+        return drone_services_[index]->getRobotName();
+    }
 private:
     std::vector<std::shared_ptr<DroneService>> drone_services_;
 };
