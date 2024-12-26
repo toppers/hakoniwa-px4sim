@@ -15,6 +15,10 @@ public:
      * Writers
      */
     bool write(std::string& robot_name, int channel_id, ServicePduDataType& pdu_data);
+    /*
+     * Readers
+     */
+    bool read(std::string& robot_name, int channel_id, ServicePduDataType& pdu_data);
 
 };
 } // namespace hako::pdu
