@@ -57,6 +57,7 @@ public:
     virtual bool startService(uint64_t deltaTimeUsec) = 0;
     virtual void advanceTimeStep() = 0;
     virtual void stopService() = 0;
+    virtual bool isServiceAvailable() = 0;
     virtual void resetService() = 0;
     virtual uint64_t getSimulationTimeUsec() = 0;
 

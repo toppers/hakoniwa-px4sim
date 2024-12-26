@@ -92,7 +92,6 @@ void DroneService::advanceTimeStep()
 
 void DroneService::setup_controller_inputs()
 {
-    controller_inputs_ = {};
     controller_outputs_ = {};
     controller_inputs_.mass = aircraft_->get_drone_dynamics().get_mass();
     controller_inputs_.drag = aircraft_->get_drone_dynamics().get_drag();

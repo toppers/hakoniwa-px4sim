@@ -29,7 +29,11 @@ private:
             if (!pdu.pdu.takeoff.header.request) {
                 break;
             }
-            std::this_thread::yield();
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            auto pos = get_position(index);
+            std::cout << "INFO: position x=" << std::fixed << std::setprecision(1) << pos.x << " y=" << pos.y << " z=" << pos.z << std::endl;
+
+
         }
     }
 public:

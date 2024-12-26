@@ -13,6 +13,7 @@ public:
     virtual void advanceTimeStep() = 0;
     virtual void stopService() = 0;
     virtual void resetService() = 0;
+    virtual bool isServiceAvailable() = 0;
     virtual uint64_t getSimulationTimeUsec(uint32_t index) = 0;
 
     virtual bool write_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;

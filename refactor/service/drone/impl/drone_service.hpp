@@ -41,6 +41,7 @@ public:
     bool startService(uint64_t deltaTimeUsec) override {
         delta_time_usec_ = deltaTimeUsec;
         simulation_time_usec_ = 0;
+        is_service_available_ = true;
         return true;
     }
 
@@ -48,6 +49,7 @@ public:
 
     void stopService() override {
         // Nothing to do
+        is_service_available_ = false;
     }
 
     void resetService() override {
@@ -56,7 +58,9 @@ public:
         reset();
         drone_service_operation_->reset();
     }
-
+    bool isServiceAvailable() override {
+        return is_service_available_;
+    }
     uint64_t getSimulationTimeUsec() override {
         return simulation_time_usec_;
     }
@@ -100,6 +104,7 @@ public:
 private:
     uint64_t simulation_time_usec_ = 0;
     uint64_t delta_time_usec_ = 0;
+    bool is_service_available_ = false;
     std::shared_ptr<IAirCraft> aircraft_;
     std::shared_ptr<IAircraftController> controller_;
     std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM> pdu_data_ = {};

@@ -43,6 +43,14 @@ public:
             drone_service->advanceTimeStep();
         }
     }
+    bool isServiceAvailable() override {
+        for (auto& drone_service : drone_services_) {
+            if (!drone_service->isServiceAvailable()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     void stopService() override {
         for (auto& drone_service : drone_services_) {
