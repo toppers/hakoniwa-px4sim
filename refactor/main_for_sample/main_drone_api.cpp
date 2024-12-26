@@ -1,8 +1,9 @@
 #include "service/drone/impl/drone_service_container.hpp"
 #include "service/aircraft/impl/aircraft_service.hpp"
+#include "service/drone/drone_service_api_protocol.hpp"
 #include "logger/impl/hako_logger.hpp"
 #include <iostream>
-
+#include <thread>
 using namespace hako::aircraft;
 using namespace hako::service;
 using namespace hako::service::impl;
@@ -20,7 +21,6 @@ int main(int argc, const char* argv[])
     // Aircraft サービスの設定
     DroneConfigManager configManager;
     configManager.loadConfigsFromDirectory(drone_config_dir_path);
-    int aircraft_num = configManager.getConfigCount();
 
     AirCraftContainer aircraft_container;
     aircraft_container.createAirCrafts(configManager);
@@ -30,5 +30,27 @@ int main(int argc, const char* argv[])
     controller_container.createAircraftControllers(configManager);
 
     DroneServiceContainer service_container(aircraft_container, controller_container);
+
+    auto ret = service_container.startService(1000);
+    if (!ret) {
+        std::cerr << "Failed to start service" << std::endl;
+        return 1;
+    }
+    HakoLogger::enable();
+    //以下の処理をスレッドで実行する
+    std::thread th([&service_container, real_sleep_msec]() {
+        while (true) {
+            HakoLogger::set_time_usec(service_container.getSimulationTimeUsec(0));
+            service_container.advanceTimeStep();
+            std::this_thread::sleep_for(std::chrono::milliseconds(real_sleep_msec * 1000));
+        }
+    });
+    DroneServiceApiProtocol api(service_container);
+    std::cout << "INFO: takeoff start" << std::endl;
+    api.takeoff(0, 10.0);
+    std::cout << "INFO: takeoff done" << std::endl;
+    auto pos = api.get_position(0);
+    std::cout << "INFO: position=(" << pos.x << "," << pos.y << "," << pos.z << ")" << std::endl;
+    th.join();
     return 0;
 }

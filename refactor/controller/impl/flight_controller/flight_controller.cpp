@@ -6,6 +6,7 @@ using namespace hako::controller::impl;
 
 FlightController::FlightController()
 {
+    std::cout << "FlightController::FlightController()" << std::endl;
     ctrl_.reset();
 }
 

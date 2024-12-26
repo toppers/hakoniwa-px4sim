@@ -8,7 +8,12 @@ namespace hako::service {
 inline double radian_to_degree(double radian) {
     return radian * (180.0 / M_PI);
 }
-class IDroneServiceApiProtocol {
+typedef struct {
+    double x;
+    double y;
+    double z;
+} Vector3Type;
+class DroneServiceApiProtocol {
 private:
     IDroneServiceContainer& drone_service_container_;
     void set_header(HakoniwaDronePduDataType& pdu, bool request, bool result, int result_code)
@@ -20,16 +25,16 @@ private:
     void wait_response(int index, HakoniwaDronePduDataType& pdu)
     {
         while (true) {
-            drone_service_container_.advanceTimeStep(index);
-            drone_service_container_.read_pdu(index, pdu);
+            drone_service_container_.peek_pdu(index, pdu);
             if (!pdu.pdu.takeoff.header.request) {
                 break;
             }
+            std::this_thread::yield();
         }
     }
 public:
-    IDroneServiceApiProtocol(IDroneServiceContainer& drone_service_container) : drone_service_container_(drone_service_container) {}
-    virtual ~IDroneServiceApiProtocol() = default;
+    DroneServiceApiProtocol(IDroneServiceContainer& drone_service_container) : drone_service_container_(drone_service_container) {}
+    virtual ~DroneServiceApiProtocol() = default;
     bool takeoff(int index, double height) 
     {
         HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
@@ -39,6 +44,8 @@ public:
         pdu.pdu.takeoff.speed = 5.0;
         pdu.pdu.takeoff.yaw_deg = get_yaw_deg(index);
         drone_service_container_.write_pdu(index, pdu);
+
+        std::cout << "INFO: takeoff write done" << std::endl;
         //do wait
         wait_response(index, pdu);
         //done
@@ -84,22 +91,22 @@ public:
     double get_yaw_deg(int index)
     {
         HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
-        drone_service_container_.read_pdu(index, pdu);
+        drone_service_container_.peek_pdu(index, pdu);
         return radian_to_degree(pdu.pdu.position.angular.z);
     }
 
-    bool get_position(int index, double& x, double& y, double& z, double& roll, double& pitch, double& yaw)
+    Vector3Type get_position(int index)
     {
         HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
-        drone_service_container_.read_pdu(index, pdu);
-        x = pdu.pdu.position.linear.x;
-        y = pdu.pdu.position.linear.y;
-        z = pdu.pdu.position.linear.z;
-        roll = pdu.pdu.position.angular.x;
-        pitch = pdu.pdu.position.angular.y;
-        yaw = pdu.pdu.position.angular.z;
-        return true;
+        drone_service_container_.peek_pdu(index, pdu);
+        return { pdu.pdu.position.linear.x, pdu.pdu.position.linear.y, pdu.pdu.position.linear.z };
     }
+    Vector3Type get_attitude(int index)
+    {
+        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        drone_service_container_.peek_pdu(index, pdu);
+        return { pdu.pdu.position.angular.x, pdu.pdu.position.angular.y, pdu.pdu.position.angular.z };
+    }   
 };
 } // namespace hako::service
 

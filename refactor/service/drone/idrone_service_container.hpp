@@ -17,6 +17,7 @@ public:
 
     virtual bool write_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
     virtual bool read_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
+    virtual void peek_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
 };
 }
 

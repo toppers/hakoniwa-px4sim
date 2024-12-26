@@ -12,7 +12,7 @@ using namespace hako::controller;
 
 namespace hako::service::impl {
 
-class DroneServiceContainer : IDroneServiceContainer {
+class DroneServiceContainer : public IDroneServiceContainer {
 public:
     DroneServiceContainer(IAirCraftContainer& aircraft_container, AircraftControllerContainer& controller_container) {
         if (aircraft_container.getAllAirCrafts().size() != controller_container.getControllers().size()) {
@@ -76,6 +76,12 @@ public:
         }
         return drone_services_[index]->read_pdu(pdu);
     };
+    void peek_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) override {
+        if (index >= drone_services_.size()) {
+            throw std::runtime_error("peek_pdu index out of range");
+        }
+        drone_services_[index]->peek_pdu(pdu);
+    }
 private:
     std::vector<std::shared_ptr<DroneService>> drone_services_;
 };

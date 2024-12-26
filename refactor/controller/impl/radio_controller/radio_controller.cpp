@@ -6,6 +6,7 @@ using namespace hako::controller::impl;
 
 RadioController::RadioController()
 {
+    std::cout << "RadioController::RadioController()" << std::endl;
     ctrl_.reset();
 }
 

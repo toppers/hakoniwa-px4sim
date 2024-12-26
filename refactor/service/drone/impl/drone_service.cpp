@@ -139,8 +139,8 @@ void DroneService::setup_aircraft_inputs()
                 aircraft_inputs_.collision.contact_position[i].y = -pdu_data.pdu.collision.contact_position[i].y;
                 aircraft_inputs_.collision.contact_position[i].z = -pdu_data.pdu.collision.contact_position[i].z;
             }
+            debug_print_drone_collision(aircraft_inputs_.collision);
         }
-        debug_print_drone_collision(aircraft_inputs_.collision);
     }
     if (aircraft_->is_enabled_disturbance()) {
         HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE };
