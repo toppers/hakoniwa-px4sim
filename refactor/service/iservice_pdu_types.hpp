@@ -1,6 +1,8 @@
 #ifndef _ISERVICE_PDU_TYPES_HPP_
 #define _ISERVICE_PDU_TYPES_HPP_
 
+#include <cstdint>
+
 #include "hako_msgs/pdu_cpptype_HakoDroneCmdTakeoff.hpp"
 #include "hako_msgs/pdu_cpptype_HakoDroneCmdLand.hpp"
 #include "hako_msgs/pdu_cpptype_HakoDroneCmdMove.hpp"

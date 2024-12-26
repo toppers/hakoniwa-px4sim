@@ -1,7 +1,6 @@
 #ifndef _ISERVICE_CONTAINER_HPP_
 #define _ISERVICE_CONTAINER_HPP_
 
-#include <cstdint>
 #include "service/iservice_pdu_types.hpp"
 
 namespace hako::service {

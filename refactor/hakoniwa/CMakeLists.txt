@@ -13,19 +13,20 @@ endif()
 # ソースファイルの定義
 set(SOURCE_FILES
     impl/hakoniwa_pdu_accessor.cpp
+    impl/hakoniwa_conductor.cpp
 )
-add_library(hako_core ${SOURCE_FILES})
+add_library(hako_drone_core ${SOURCE_FILES})
 
 
 if(OS_TYPE STREQUAL "posix")
-    target_compile_options(hako_core PRIVATE
+    target_compile_options(hako_drone_core PRIVATE
         -Wno-pedantic
         -Wno-address-of-packed-member
         -Wno-unused-function
         -Wno-missing-field-initializers
     )
 else()
-    target_compile_options(hako_core PRIVATE
+    target_compile_options(hako_drone_core PRIVATE
         /wd4200  # Zero-sized array
         /wd4706  # Assignment within conditional expression
         /wd4996  # Deprecated API
@@ -37,14 +38,14 @@ endif()
 
 
 
-target_include_directories(hako_core 
+target_include_directories(hako_drone_core 
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${HAKO_CORE_SOURCE_DIR}
     PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
     )
 
-target_compile_features(hako_core PRIVATE cxx_std_17)
+target_compile_features(hako_drone_core PRIVATE cxx_std_17)
 
-target_link_libraries(hako_core PRIVATE 
+target_link_libraries(hako_drone_core PRIVATE 
     hako_service
     )
