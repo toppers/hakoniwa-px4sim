@@ -16,9 +16,9 @@ public:
     virtual bool isServiceAvailable() = 0;
     virtual uint64_t getSimulationTimeUsec(uint32_t index) = 0;
 
-    virtual bool write_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
-    virtual bool read_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
-    virtual void peek_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) = 0;
+    virtual bool write_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
+    virtual bool read_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
+    virtual void peek_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
 };
 }
 

@@ -30,11 +30,11 @@ private:
     double target_pos_z = 0;
     double target_yaw_deg = 0;
 
-    HakoniwaDronePduDataType drone_pos = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
-    HakoniwaDronePduDataType cmd_takeoff = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
-    HakoniwaDronePduDataType cmd_land = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND };
-    HakoniwaDronePduDataType cmd_move = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE };
-    HakoniwaDronePduDataType cmd_magnet = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MAGNET };
+    ServicePduDataType drone_pos = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+    ServicePduDataType cmd_takeoff = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
+    ServicePduDataType cmd_land = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND };
+    ServicePduDataType cmd_move = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE };
+    ServicePduDataType cmd_magnet = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MAGNET };
 
 public:
     DroneServiceAPI(std::shared_ptr<IAirCraft> aircraft): aircraft_(aircraft)
@@ -229,7 +229,7 @@ private:
             -drone_pos.pdu.position.linear.z, 
             RADIAN2DEGREE(drone_pos.pdu.position.angular.z));
     }
-    bool read_cmd(HakoniwaDronePduDataType& dest, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data)
+    bool read_cmd(ServicePduDataType& dest, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data)
     {
         auto& pdu_entry = pdu_data[dest.id];
 
@@ -257,7 +257,7 @@ private:
 
         return true;
     }
-    void write_cmd(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data, const HakoniwaDronePduDataType& src)
+    void write_cmd(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data, const ServicePduDataType& src)
     {
         auto& pdu_entry = pdu_data[src.id];
 

@@ -71,20 +71,20 @@ public:
         return drone_services_[index]->getSimulationTimeUsec();
     }
 
-    bool write_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) override {
+    bool write_pdu(uint32_t index, ServicePduDataType& pdu) override {
         if (index >= drone_services_.size()) {
             throw std::runtime_error("write_pdu index out of range");
         }
         return drone_services_[index]->write_pdu(pdu);
     }
 
-    bool read_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) override {
+    bool read_pdu(uint32_t index, ServicePduDataType& pdu) override {
         if (index >= drone_services_.size()) {
             throw std::runtime_error("read_pdu index out of range");
         }
         return drone_services_[index]->read_pdu(pdu);
     };
-    void peek_pdu(uint32_t index, HakoniwaDronePduDataType& pdu) override {
+    void peek_pdu(uint32_t index, ServicePduDataType& pdu) override {
         if (index >= drone_services_.size()) {
             throw std::runtime_error("peek_pdu index out of range");
         }

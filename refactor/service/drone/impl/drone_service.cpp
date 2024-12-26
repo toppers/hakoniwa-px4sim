@@ -2,7 +2,7 @@
 
 using namespace hako::service::impl;
 
-bool hako::service::drone_pdu_data_deep_copy(const HakoniwaDronePduDataType& source, HakoniwaDronePduDataType& dest)
+bool hako::service::drone_pdu_data_deep_copy(const ServicePduDataType& source, ServicePduDataType& dest)
 {
     dest.id = source.id;
     switch (source.id) {
@@ -124,7 +124,7 @@ void DroneService::setup_aircraft_inputs()
     }
     aircraft_inputs_.manual.control = false;
     if (aircraft_->get_drone_dynamics().has_collision_detection()) {
-        HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
+        ServicePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
         read_pdu(pdu_data);
         aircraft_inputs_.collision.collision = pdu_data.pdu.collision.collision;
         if (aircraft_inputs_.collision.collision) {
@@ -142,7 +142,7 @@ void DroneService::setup_aircraft_inputs()
         }
     }
     if (aircraft_->is_enabled_disturbance()) {
-        HakoniwaDronePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE };
+        ServicePduDataType pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_DISTURBANCE };
         read_pdu(pdu_data);
         //temperature
         aircraft_inputs_.disturbance.values.d_temp.value = pdu_data.pdu.disturbance.d_temp.value;
@@ -161,12 +161,12 @@ void DroneService::write_back_pdu()
     }
     
     // collision write back
-    HakoniwaDronePduDataType col_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
+    ServicePduDataType col_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_COLLISION };
     col_pdu_data.pdu.collision.collision = false;
     write_pdu(col_pdu_data);
 
     // battery write back
-    HakoniwaDronePduDataType bat_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_BATTERY_STATUS };
+    ServicePduDataType bat_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_BATTERY_STATUS };
     auto battery = aircraft_->get_battery_dynamics();
     if (battery != nullptr) {
         auto status = battery->get_status();
@@ -186,14 +186,14 @@ void DroneService::write_back_pdu()
     write_pdu(bat_pdu_data);
     
     // control write back
-    HakoniwaDronePduDataType actuator_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_ACTUATOR_CONTROLS };
+    ServicePduDataType actuator_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_ACTUATOR_CONTROLS };
     for (int i = 0; i < ROTOR_NUM; i++) {
         actuator_pdu_data.pdu.actuator_controls.controls[i] = pwm_duty_.d[i];
     }
     write_pdu(actuator_pdu_data);
 
     // position write back
-    HakoniwaDronePduDataType pos_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+    ServicePduDataType pos_pdu_data = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
     DronePositionType dpos = aircraft_->get_drone_dynamics().get_pos();
     DroneEulerType dangle = aircraft_->get_drone_dynamics().get_angle();
     pos_pdu_data.pdu.position.linear.x = dpos.data.x;

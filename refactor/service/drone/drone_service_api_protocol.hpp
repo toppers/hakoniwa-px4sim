@@ -16,13 +16,13 @@ typedef struct {
 class DroneServiceApiProtocol {
 private:
     IDroneServiceContainer& drone_service_container_;
-    void set_header(HakoniwaDronePduDataType& pdu, bool request, bool result, int result_code)
+    void set_header(ServicePduDataType& pdu, bool request, bool result, int result_code)
     {
         pdu.pdu.takeoff.header.request = request;
         pdu.pdu.takeoff.header.result = result;
         pdu.pdu.takeoff.header.result_code = result_code;
     }
-    void wait_response(int index, HakoniwaDronePduDataType& pdu)
+    void wait_response(int index, ServicePduDataType& pdu)
     {
         while (true) {
             drone_service_container_.peek_pdu(index, pdu);
@@ -41,7 +41,7 @@ public:
     virtual ~DroneServiceApiProtocol() = default;
     bool takeoff(int index, double height) 
     {
-        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
+        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
         //prepare
         set_header(pdu, true, false, 0);
         pdu.pdu.takeoff.height = height;
@@ -59,7 +59,7 @@ public:
     }
     bool land(int index)
     {
-        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND };
+        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND };
         //prepare
         set_header(pdu, true, false, 0);
         pdu.pdu.land.height = 0.0;
@@ -75,7 +75,7 @@ public:
     }
     bool move(int index, float x, float y, float z)
     {
-        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE };
+        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE };
         //prepare
         set_header(pdu, true, false, 0);
         pdu.pdu.move.x = x;
@@ -94,20 +94,20 @@ public:
     }
     double get_yaw_deg(int index)
     {
-        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
         drone_service_container_.peek_pdu(index, pdu);
         return radian_to_degree(pdu.pdu.position.angular.z);
     }
 
     Vector3Type get_position(int index)
     {
-        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
         drone_service_container_.peek_pdu(index, pdu);
         return { pdu.pdu.position.linear.x, pdu.pdu.position.linear.y, pdu.pdu.position.linear.z };
     }
     Vector3Type get_attitude(int index)
     {
-        HakoniwaDronePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
         drone_service_container_.peek_pdu(index, pdu);
         return { pdu.pdu.position.angular.x, pdu.pdu.position.angular.y, pdu.pdu.position.angular.z };
     }   

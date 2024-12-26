@@ -65,7 +65,7 @@ public:
         return simulation_time_usec_;
     }
 
-    bool write_pdu(HakoniwaDronePduDataType& pdu) override {
+    bool write_pdu(ServicePduDataType& pdu) override {
         if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
             throw std::out_of_range("write_pdu id out of range");
         }
@@ -78,7 +78,7 @@ public:
         return true;
     }
 
-    bool read_pdu(HakoniwaDronePduDataType& pdu) override {
+    bool read_pdu(ServicePduDataType& pdu) override {
         if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
             throw std::out_of_range("read_pdu id out of range");
         }
@@ -90,7 +90,7 @@ public:
         pdu_data_[pdu.id].is_busy.store(false);
         return true;
     }
-    void peek_pdu(HakoniwaDronePduDataType& pdu) override {
+    void peek_pdu(ServicePduDataType& pdu) override {
         if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
             throw std::out_of_range("peek_pdu id out of range");
         }
@@ -123,7 +123,7 @@ private:
 
         for (int i = 0; i < HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM; i++) {
             pdu_data_[i].is_busy.store(false);
-            pdu_data_[i].data.id = static_cast<HakoniwaDronePduDataIdType>(i);
+            pdu_data_[i].data.id = static_cast<ServicePduDataIdType>(i);
             pdu_data_[i].data.pdu = {};
             pdu_data_[i].is_dirty.store(false);
         }
