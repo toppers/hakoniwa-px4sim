@@ -32,8 +32,8 @@ public:
     uint64_t getSimulationTimeUsec(uint32_t index) override;
     uint64_t getSitlTimeUsec(uint32_t index) override;
 
-    virtual bool write_pdu(uint32_t index, HakoniwaPduDataType& pdu) override;
-    virtual bool read_pdu(uint32_t index, HakoniwaPduDataType& message) override;
+    virtual bool write_pdu(uint32_t index, ServicePduDataType& pdu) override;
+    virtual bool read_pdu(uint32_t index, ServicePduDataType& message) override;
 
 private:
     static const uint64_t gps_send_cycle = 10;

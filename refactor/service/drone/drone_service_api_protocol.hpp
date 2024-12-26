@@ -41,7 +41,7 @@ public:
     virtual ~DroneServiceApiProtocol() = default;
     bool takeoff(int index, double height) 
     {
-        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
+        ServicePduDataType pdu = { SERVICE_PDU_DATA_ID_TYPE_TAKEOFF };
         //prepare
         set_header(pdu, true, false, 0);
         pdu.pdu.takeoff.height = height;
@@ -59,7 +59,7 @@ public:
     }
     bool land(int index)
     {
-        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND };
+        ServicePduDataType pdu = { SERVICE_PDU_DATA_ID_TYPE_LAND };
         //prepare
         set_header(pdu, true, false, 0);
         pdu.pdu.land.height = 0.0;
@@ -75,7 +75,7 @@ public:
     }
     bool move(int index, float x, float y, float z)
     {
-        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE };
+        ServicePduDataType pdu = { SERVICE_PDU_DATA_ID_TYPE_MOVE };
         //prepare
         set_header(pdu, true, false, 0);
         pdu.pdu.move.x = x;
@@ -94,20 +94,20 @@ public:
     }
     double get_yaw_deg(int index)
     {
-        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        ServicePduDataType pdu = { SERVICE_PDU_DATA_ID_TYPE_POSITION };
         drone_service_container_.peek_pdu(index, pdu);
         return radian_to_degree(pdu.pdu.position.angular.z);
     }
 
     Vector3Type get_position(int index)
     {
-        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        ServicePduDataType pdu = { SERVICE_PDU_DATA_ID_TYPE_POSITION };
         drone_service_container_.peek_pdu(index, pdu);
         return { pdu.pdu.position.linear.x, pdu.pdu.position.linear.y, pdu.pdu.position.linear.z };
     }
     Vector3Type get_attitude(int index)
     {
-        ServicePduDataType pdu = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
+        ServicePduDataType pdu = { SERVICE_PDU_DATA_ID_TYPE_POSITION };
         drone_service_container_.peek_pdu(index, pdu);
         return { pdu.pdu.position.angular.x, pdu.pdu.position.angular.y, pdu.pdu.position.angular.z };
     }   

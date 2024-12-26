@@ -153,29 +153,29 @@ void hako::service::impl::AircraftService::resetService()
     }
 }
 
-bool hako::service::impl::AircraftService::write_pdu(uint32_t index, HakoniwaPduDataType& pdu)
+bool hako::service::impl::AircraftService::write_pdu(uint32_t index, ServicePduDataType& pdu)
 {
     if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
 
-    if (pdu.id == HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_DISTURBANCE) {
-        aircraft_inputs_[index].disturbance.values.d_temp.value = pdu.data.disturbance.d_temp.value;
-        aircraft_inputs_[index].disturbance.values.d_wind.x = pdu.data.disturbance.d_wind.value.x;
-        aircraft_inputs_[index].disturbance.values.d_wind.y = pdu.data.disturbance.d_wind.value.y;
-        aircraft_inputs_[index].disturbance.values.d_wind.z = pdu.data.disturbance.d_wind.value.z;
+    if (pdu.id == SERVICE_PDU_DATA_ID_TYPE_DISTURBANCE) {
+        aircraft_inputs_[index].disturbance.values.d_temp.value = pdu.pdu.disturbance.d_temp.value;
+        aircraft_inputs_[index].disturbance.values.d_wind.x = pdu.pdu.disturbance.d_wind.value.x;
+        aircraft_inputs_[index].disturbance.values.d_wind.y = pdu.pdu.disturbance.d_wind.value.y;
+        aircraft_inputs_[index].disturbance.values.d_wind.z = pdu.pdu.disturbance.d_wind.value.z;
     }
-    else if (pdu.id == HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_COLLISION) {
-        aircraft_inputs_[index].collision.collision = pdu.data.collision.collision;
-        aircraft_inputs_[index].collision.contact_num = pdu.data.collision.contact_num;
-        aircraft_inputs_[index].collision.relative_velocity.x = pdu.data.collision.relative_velocity.x;
-        aircraft_inputs_[index].collision.relative_velocity.y = pdu.data.collision.relative_velocity.y;
-        aircraft_inputs_[index].collision.relative_velocity.z = pdu.data.collision.relative_velocity.z;
-        aircraft_inputs_[index].collision.restitution_coefficient = pdu.data.collision.restitution_coefficient;
+    else if (pdu.id == SERVICE_PDU_DATA_ID_TYPE_COLLISION) {
+        aircraft_inputs_[index].collision.collision = pdu.pdu.collision.collision;
+        aircraft_inputs_[index].collision.contact_num = pdu.pdu.collision.contact_num;
+        aircraft_inputs_[index].collision.relative_velocity.x = pdu.pdu.collision.relative_velocity.x;
+        aircraft_inputs_[index].collision.relative_velocity.y = pdu.pdu.collision.relative_velocity.y;
+        aircraft_inputs_[index].collision.relative_velocity.z = pdu.pdu.collision.relative_velocity.z;
+        aircraft_inputs_[index].collision.restitution_coefficient = pdu.pdu.collision.restitution_coefficient;
         for (int i = 0; i < MAX_CONTAT_NUM; i++) {
-            aircraft_inputs_[index].collision.contact_position[i].x = pdu.data.collision.contact_position[i].x;
-            aircraft_inputs_[index].collision.contact_position[i].y = pdu.data.collision.contact_position[i].y;
-            aircraft_inputs_[index].collision.contact_position[i].z = pdu.data.collision.contact_position[i].z;
+            aircraft_inputs_[index].collision.contact_position[i].x = pdu.pdu.collision.contact_position[i].x;
+            aircraft_inputs_[index].collision.contact_position[i].y = pdu.pdu.collision.contact_position[i].y;
+            aircraft_inputs_[index].collision.contact_position[i].z = pdu.pdu.collision.contact_position[i].z;
         }
     }
     else {
@@ -185,25 +185,25 @@ bool hako::service::impl::AircraftService::write_pdu(uint32_t index, HakoniwaPdu
     return true;
 }
 
-bool hako::service::impl::AircraftService::read_pdu(uint32_t index, HakoniwaPduDataType& pdu)
+bool hako::service::impl::AircraftService::read_pdu(uint32_t index, ServicePduDataType& pdu)
 {
     if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
     switch (pdu.id) {
-        case HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_CONTROLS:
-            pdu.data.aircraft_controls.controls[0] = aircraft_inputs_[index].controls[0];
-            pdu.data.aircraft_controls.controls[1] = aircraft_inputs_[index].controls[1];
-            pdu.data.aircraft_controls.controls[2] = aircraft_inputs_[index].controls[2];
-            pdu.data.aircraft_controls.controls[3] = aircraft_inputs_[index].controls[3];
+        case SERVICE_PDU_DATA_ID_TYPE_ACTUATOR_CONTROLS:
+            pdu.pdu.actuator_controls.controls[0] = aircraft_inputs_[index].controls[0];
+            pdu.pdu.actuator_controls.controls[1] = aircraft_inputs_[index].controls[1];
+            pdu.pdu.actuator_controls.controls[2] = aircraft_inputs_[index].controls[2];
+            pdu.pdu.actuator_controls.controls[3] = aircraft_inputs_[index].controls[3];
             break;
-        case HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_POSITION:
-            pdu.data.aircraft_position.linear.x = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[0];
-            pdu.data.aircraft_position.linear.y = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[1];
-            pdu.data.aircraft_position.linear.z = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[2];
-            pdu.data.aircraft_position.angular.x = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[0];
-            pdu.data.aircraft_position.angular.y = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[1];
-            pdu.data.aircraft_position.angular.z = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[2];
+        case SERVICE_PDU_DATA_ID_TYPE_POSITION:
+            pdu.pdu.position.linear.x = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[0];
+            pdu.pdu.position.linear.y = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[1];
+            pdu.pdu.position.linear.z = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[2];
+            pdu.pdu.position.angular.x = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[0];
+            pdu.pdu.position.angular.y = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[1];
+            pdu.pdu.position.angular.z = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[2];
             break;
         default:
             std::cerr << "ERROR: read_pdu() Invalid PDU ID: " << pdu.id  << std::endl;

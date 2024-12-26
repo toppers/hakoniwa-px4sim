@@ -30,11 +30,11 @@ private:
     double target_pos_z = 0;
     double target_yaw_deg = 0;
 
-    ServicePduDataType drone_pos = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION };
-    ServicePduDataType cmd_takeoff = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF };
-    ServicePduDataType cmd_land = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND };
-    ServicePduDataType cmd_move = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE };
-    ServicePduDataType cmd_magnet = { HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MAGNET };
+    ServicePduDataType drone_pos = { SERVICE_PDU_DATA_ID_TYPE_POSITION };
+    ServicePduDataType cmd_takeoff = { SERVICE_PDU_DATA_ID_TYPE_TAKEOFF };
+    ServicePduDataType cmd_land = { SERVICE_PDU_DATA_ID_TYPE_LAND };
+    ServicePduDataType cmd_move = { SERVICE_PDU_DATA_ID_TYPE_MOVE };
+    ServicePduDataType cmd_magnet = { SERVICE_PDU_DATA_ID_TYPE_MAGNET };
 
 public:
     DroneServiceAPI(std::shared_ptr<IAirCraft> aircraft): aircraft_(aircraft)
@@ -51,15 +51,15 @@ public:
     }
     void reset() override
     {
-        drone_pos.id = HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_POSITION;
+        drone_pos.id = SERVICE_PDU_DATA_ID_TYPE_POSITION;
         drone_pos.pdu = {};
-        cmd_takeoff.id = HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_TAKEOFF;
+        cmd_takeoff.id = SERVICE_PDU_DATA_ID_TYPE_TAKEOFF;
         cmd_takeoff.pdu = {};
-        cmd_land.id = HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_LAND;
+        cmd_land.id = SERVICE_PDU_DATA_ID_TYPE_LAND;
         cmd_land.pdu = {};
-        cmd_move.id = HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MOVE;
+        cmd_move.id = SERVICE_PDU_DATA_ID_TYPE_MOVE;
         cmd_move.pdu = {};
-        cmd_magnet.id = HAKONIWA_DRONE_PDU_DATA_ID_TYPE_DRONE_MAGNET;
+        cmd_magnet.id = SERVICE_PDU_DATA_ID_TYPE_MAGNET;
         cmd_magnet.pdu = {};
         cmd_magnet.pdu.magnet.header.request = true;
         cmd_magnet.pdu.magnet.magnet_on = false;

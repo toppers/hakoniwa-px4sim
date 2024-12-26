@@ -7,26 +7,9 @@
 #include "hako_msgs/pdu_cpptype_Disturbance.hpp"
 #include "hako_msgs/pdu_cpptype_Collision.hpp"
 #include "geometry_msgs/pdu_cpptype_Twist.hpp"
+#include "service/iservice_pdu_types.hpp"
 
 namespace hako::service {
-
-typedef enum {
-    HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_DISTURBANCE,
-    HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_COLLISION,
-    HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_POSITION,
-    HAKONIWA_PDU_DATA_ID_TYPE_AIRCRAFT_CONTROLS,
-    HAKONIWA_PDU_DATA_ID_TYPE_NUM,
-} HakoniwaPduDataIdType;
-
-typedef struct {
-    HakoniwaPduDataIdType id;
-    union {
-        HakoCpp_Disturbance disturbance;
-        HakoCpp_Collision collision;
-        HakoCpp_Twist aircraft_position;
-        HakoCpp_HakoHilActuatorControls aircraft_controls;
-    } data;
-} HakoniwaPduDataType;
 
 class IAircraftService {
 public:
@@ -38,8 +21,8 @@ public:
     virtual uint64_t getSimulationTimeUsec(uint32_t index) = 0;
     virtual uint64_t getSitlTimeUsec(uint32_t index) = 0;
 
-    virtual bool write_pdu(uint32_t index, HakoniwaPduDataType& pdu) = 0;
-    virtual bool read_pdu(uint32_t index, HakoniwaPduDataType& pdu) = 0;
+    virtual bool write_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
+    virtual bool read_pdu(uint32_t index, ServicePduDataType& pdu) = 0;
 };
 
 } // namespace hako::service::aircraft
