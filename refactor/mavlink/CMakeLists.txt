@@ -9,7 +9,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
     set(OS_TYPE "posix")
 endif()
-message(STATUS "OS_TYPE=${OS_TYPE}")
 
 # ソースファイルの定義
 set(SOURCE_FILES
