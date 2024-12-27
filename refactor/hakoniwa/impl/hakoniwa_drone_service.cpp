@@ -14,9 +14,15 @@ bool HakoniwaDroneService::registerService(std::string& asset_name, std::string&
     if (HakoniwaConductor::isStarted()) {
         return false;
     }
+    service_container->setPduSyncher(simulator_);
+    std::cout << "conductor start" << std::endl;
     HakoniwaConductor::startService(delta_time_usec, max_delay_usec);
-    std::this_thread::sleep_for(std::chrono::microseconds(500));
-    if (HakoniwaSimulator::registerService(asset_name, config_path, delta_time_usec, service_container)) {
+    std::cout << "conductor start done" << std::endl;
+
+    //std::this_thread::sleep_for(std::chrono::microseconds(500));
+    std::cout << "simulator register" << std::endl;
+    if (simulator_->registerService(asset_name, config_path, delta_time_usec, service_container)) {
+        std::cout << "simulator register done" << std::endl;
         return true;
     }
     else {
@@ -27,12 +33,12 @@ bool HakoniwaDroneService::registerService(std::string& asset_name, std::string&
 
 bool HakoniwaDroneService::startService()
 {
-    return HakoniwaSimulator::startService();
+    return simulator_->startService();
 }
 
 bool HakoniwaDroneService::stopService()
 {
-    bool ret = HakoniwaSimulator::stopService();
+    bool ret = simulator_->stopService();
     if (ret == false) {
         std::cerr << "ERROR: " << "HakoniwaSimulator::stopService() error" << std::endl;
     }
@@ -48,12 +54,3 @@ bool HakoniwaDroneService::isStarted()
     return HakoniwaConductor::isStarted();
 }
 
-bool HakoniwaDroneService::setTransferPduFromHakoniwaToService(ServicePduDataIdType pdu_id, int channel_id)
-{
-    return HakoniwaSimulator::setTransferPduFromHakoniwaToService(pdu_id, channel_id);
-}
-
-bool HakoniwaDroneService::setTransferPduFromServiceToHakoniwa(ServicePduDataIdType pdu_id, int channel_id)
-{
-    return HakoniwaSimulator::setTransferPduFromServiceToHakoniwa(pdu_id, channel_id);
-}

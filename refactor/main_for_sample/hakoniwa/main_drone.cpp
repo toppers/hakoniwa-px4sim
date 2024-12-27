@@ -40,23 +40,24 @@ int main(int argc, const char* argv[])
 
     std::string asset_name = "drone";
     std::string config_path = custom_json_path;
+    std::cout << "asset_name: " << asset_name << std::endl;
     auto hako_drone_service = HakoniwaDroneService::getInstance();    
     hako_drone_service->registerService(
         asset_name, 
         config_path, 
         1000, 20000, 
         service_container);
+    std::cout << "HakoniwaDroneService::registerService() done" << std::endl;
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_COLLISION, 2);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_DISTURBANCE, 4);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_TAKEOFF, 5);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_MOVE, 6);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_LAND, 7);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_GAME_CTRL, 8);
 
-    hako_drone_service->setTransferPduFromHakoniwaToService(SERVICE_PDU_DATA_ID_TYPE_COLLISION, 2);
-    hako_drone_service->setTransferPduFromHakoniwaToService(SERVICE_PDU_DATA_ID_TYPE_DISTURBANCE, 4);
-    hako_drone_service->setTransferPduFromHakoniwaToService(SERVICE_PDU_DATA_ID_TYPE_TAKEOFF, 5);
-    hako_drone_service->setTransferPduFromHakoniwaToService(SERVICE_PDU_DATA_ID_TYPE_MOVE, 6);
-    hako_drone_service->setTransferPduFromHakoniwaToService(SERVICE_PDU_DATA_ID_TYPE_LAND, 7);
-    hako_drone_service->setTransferPduFromHakoniwaToService(SERVICE_PDU_DATA_ID_TYPE_GAME_CTRL, 8);
-
-    hako_drone_service->setTransferPduFromServiceToHakoniwa(SERVICE_PDU_DATA_ID_TYPE_ACTUATOR_CONTROLS, 0);
-    hako_drone_service->setTransferPduFromServiceToHakoniwa(SERVICE_PDU_DATA_ID_TYPE_POSITION, 1);
-    hako_drone_service->setTransferPduFromServiceToHakoniwa(SERVICE_PDU_DATA_ID_TYPE_BATTERY_STATUS, 9);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_ACTUATOR_CONTROLS, 0);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_POSITION, 1);
+    hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_BATTERY_STATUS, 9);
 
 
     hako_drone_service->startService();

@@ -155,6 +155,7 @@ void hako::service::impl::AircraftServiceContainer::resetService()
 
 bool hako::service::impl::AircraftServiceContainer::write_pdu(uint32_t index, ServicePduDataType& pdu)
 {
+    //TODO synchronize with pdu
     if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }
@@ -187,6 +188,7 @@ bool hako::service::impl::AircraftServiceContainer::write_pdu(uint32_t index, Se
 
 bool hako::service::impl::AircraftServiceContainer::read_pdu(uint32_t index, ServicePduDataType& pdu)
 {
+    //TODO synchronize with pdu
     if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
         return false;
     }

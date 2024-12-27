@@ -59,6 +59,10 @@ public:
     {
         return aircraft_container_.getAirCraft(index)->get_name();
     }
+    void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override
+    {
+        pdu_syncher_ = pdu_syncher;
+    }
 private:
     static const uint64_t gps_send_cycle = 10;
     bool lock_step_ = false;
@@ -69,6 +73,7 @@ private:
     MavLinkServiceContainer& mavlink_service_container_;
     AirCraftContainer& aircraft_container_;
     std::vector<AircraftInputType> aircraft_inputs_;
+    std::shared_ptr<IServicePduSyncher> pdu_syncher_;
 
     void send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec);
     void advanceTimeStepLockStep(uint32_t index, uint64_t& sitl_time_usec);

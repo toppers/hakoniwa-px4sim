@@ -35,6 +35,7 @@ private:
     ServicePduDataType cmd_land = { SERVICE_PDU_DATA_ID_TYPE_LAND };
     ServicePduDataType cmd_move = { SERVICE_PDU_DATA_ID_TYPE_MOVE };
     ServicePduDataType cmd_magnet = { SERVICE_PDU_DATA_ID_TYPE_MAGNET };
+    std::shared_ptr<IServicePduSyncher> pdu_syncher_;
 
 public:
     DroneServiceAPI(std::shared_ptr<IAirCraft> aircraft): aircraft_(aircraft)
@@ -167,6 +168,10 @@ public:
                 break;
         }
     }
+    void setServicePduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override
+    {
+        pdu_syncher_ = pdu_syncher;
+    }
 
 private:
     void write_back(MainStatusType status, int errcode, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) 
@@ -244,6 +249,11 @@ private:
         while (pdu_entry.is_busy.exchange(true)) {
             std::this_thread::yield(); // CPU負荷を軽減
         }
+        if (pdu_syncher_ != nullptr) {
+            //std::cout << "load: " << aircraft_->get_index() << std::endl;
+            pdu_syncher_->load(aircraft_->get_index(), pdu_entry.data);
+            pdu_entry.is_dirty.store(true);
+        }
         if (!pdu_entry.is_dirty) {
             pdu_entry.is_busy.store(false);
             ret = false;
@@ -255,7 +265,12 @@ private:
         if (!hako::service::drone_pdu_data_deep_copy(source_pdu, dest)) {
             throw std::runtime_error("read_cmd: deep copy failed");
         }
-
+#if 0
+        if (dest.id == SERVICE_PDU_DATA_ID_TYPE_TAKEOFF) {
+            std::cout << "takeoff: " << dest.pdu.takeoff.header.request << std::endl;
+            std::cout << "takeoff: " << dest.pdu.takeoff.height << std::endl;
+        }
+#endif
         // フラグをリセット
         pdu_entry.is_dirty.store(false);
         pdu_entry.is_busy.store(false);
@@ -280,6 +295,9 @@ private:
         // フラグをセット
         pdu_entry.is_dirty.store(true);
         pdu_entry.is_busy.store(false);
+        if (pdu_syncher_ != nullptr) {
+            pdu_syncher_->flush(aircraft_->get_index(), pdu_entry.data);
+        }
     }
 };
 

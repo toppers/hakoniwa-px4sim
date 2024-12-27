@@ -9,6 +9,7 @@
 #include "aircraft/iaircraft_container.hpp"
 #include "controller/iaircraft_mixer.hpp"
 #include "controller/aircraft_controller_container.hpp"
+#include "service/iservice_pdu_syncher.hpp"
 #include <array>
 #include <stdexcept>
 #include <memory>
@@ -75,6 +76,9 @@ public:
         pdu_data_[pdu.id].data.pdu = pdu.pdu;
         pdu_data_[pdu.id].is_dirty.store(true);
         pdu_data_[pdu.id].is_busy.store(false);
+        if (pdu_syncher_ != nullptr) {
+            pdu_syncher_->flush(aircraft_->get_index(), pdu);
+        }
         return true;
     }
 
@@ -84,6 +88,9 @@ public:
         }
         while (pdu_data_[pdu.id].is_busy.exchange(true)) {
             std::this_thread::yield();
+        }
+        if (pdu_syncher_ != nullptr) {
+            pdu_syncher_->load(aircraft_->get_index(), pdu_data_[pdu.id].data);
         }
         pdu.pdu = pdu_data_[pdu.id].data.pdu;
         pdu_data_[pdu.id].is_dirty.store(false);
@@ -97,11 +104,18 @@ public:
         while (pdu_data_[pdu.id].is_busy.exchange(true)) {
             std::this_thread::yield();
         }
+        if (pdu_syncher_ != nullptr) {
+            pdu_syncher_->load(aircraft_->get_index(), pdu_data_[pdu.id].data);
+        }
         pdu.pdu = pdu_data_[pdu.id].data.pdu;
         pdu_data_[pdu.id].is_busy.store(false);
     }
     std::string getRobotName() const {
         return aircraft_->get_name();
+    }
+    void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) {
+        pdu_syncher_ = pdu_syncher;
+        drone_service_operation_->setServicePduSyncher(pdu_syncher);
     }
 private:
     uint64_t simulation_time_usec_ = 0;
@@ -115,6 +129,7 @@ private:
     mi_aircraft_control_out_t controller_outputs_ = {};
     PwmDuty pwm_duty_ = {};
     std::unique_ptr<IDroneServiceOperation> drone_service_operation_;
+    std::shared_ptr<IServicePduSyncher> pdu_syncher_;
 
     void reset()
     {

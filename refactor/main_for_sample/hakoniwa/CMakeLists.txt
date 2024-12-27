@@ -43,6 +43,7 @@ foreach(TARGET ${TARGETS})
         PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
         PRIVATE ${MAVLINK_SOURCE_DIR}/all
         PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
+        PRIVATE ${HAKO_CORE_SOURCE_DIR}
     )
     target_compile_features(${TARGET} PRIVATE cxx_std_17)
     target_link_libraries(${TARGET} 

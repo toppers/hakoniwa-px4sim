@@ -44,6 +44,7 @@ target_include_directories(hako_drone_core
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${HAKO_CORE_SOURCE_DIR}
     PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
+    PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
     )
 
 target_compile_features(hako_drone_core PRIVATE cxx_std_17)

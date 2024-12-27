@@ -23,6 +23,7 @@ public:
     virtual bool write_pdu(ServicePduDataType& pdu) = 0;
     virtual bool read_pdu(ServicePduDataType& pdu) = 0;
     virtual void peek_pdu(ServicePduDataType& pdu) = 0;
+
 };
 
 }

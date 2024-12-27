@@ -19,8 +19,7 @@ public:
 
     virtual bool isStarted() = 0;
 
-    virtual bool setTransferPduFromHakoniwaToService(ServicePduDataIdType pdu_id, int channel_id) = 0;
-    virtual bool setTransferPduFromServiceToHakoniwa(ServicePduDataIdType pdu_id, int channel_id) = 0;
+    virtual void setPduIdMap(ServicePduDataIdType pdu_id, int channel_id) = 0;
 };
 } // namespace hako::drone
 

@@ -74,10 +74,15 @@ public:
         // nothing to do
         (void)pdu_data;
     }
+    void setServicePduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override
+    {
+        pdu_syncher_ = pdu_syncher;
+    }
 private:
     bool radio_control_on_ = false;
     int button_check_count[GAME_CTRL_BUTTON_NUM] = {};
     bool lastButtonState[GAME_CTRL_BUTTON_NUM] = {};
+    std::shared_ptr<IServicePduSyncher> pdu_syncher_;
 
     bool is_button_state_change(int button, uint32_t index)
     {

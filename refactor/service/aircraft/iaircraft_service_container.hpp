@@ -22,6 +22,8 @@ public:
 
     virtual uint32_t getNumServices() = 0;
     virtual std::string getRobotName(uint32_t index) = 0;
+
+    virtual void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) = 0;
 };
 
 } // namespace hako::service::aircraft

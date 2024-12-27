@@ -1,15 +1,26 @@
 #include "hakoniwa/impl/hakoniwa_conductor.hpp"
 #include "include/hako_conductor.h"
+#include <iostream>
+#include <fstream>
+#include "nlohmann/json.hpp"
 
 using namespace hako::drone::impl;
 
 bool HakoniwaConductor::isStarted_ = false;
+#define HAKO_CONFIG_DEFAULT_PATH "/etc/hakoniwa/cpp_core_config.json"
 
 bool HakoniwaConductor::startService(uint64_t delta_time_usec, uint64_t max_delay_usec)
 {
     if (isStarted_) {
         return false;
     }
+#if 1
+    const char* env_path = std::getenv("HAKO_CONFIG_PATH");
+    std::string config_path = (env_path != nullptr) ? env_path : HAKO_CONFIG_DEFAULT_PATH;
+    std::cout << "INFO: hako_config_load() load " << config_path << std::endl;
+    std::ifstream ifs(config_path);
+    auto param = nlohmann::json::parse(ifs);
+#endif
     if (hako_conductor_start(delta_time_usec, max_delay_usec) != 0) {
         isStarted_ = true;
         return true;

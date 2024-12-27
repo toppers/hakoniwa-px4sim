@@ -100,6 +100,13 @@ public:
         }
         return drone_services_[index]->getRobotName();
     }
+
+    void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override {
+        for (auto& drone_service : drone_services_) {
+            drone_service->setPduSyncher(pdu_syncher);
+        }
+
+    }
 private:
     std::vector<std::shared_ptr<DroneService>> drone_services_;
 };

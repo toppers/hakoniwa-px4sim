@@ -2,6 +2,7 @@
 #define _ISERVICE_CONTAINER_HPP_
 
 #include "service/iservice_pdu_types.hpp"
+#include "service/iservice_pdu_syncher.hpp"
 
 namespace hako::service {
 
@@ -21,6 +22,8 @@ public:
 
     virtual uint32_t getNumServices() = 0;
     virtual std::string getRobotName(uint32_t index) = 0;
+
+    virtual void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) = 0;
 };
 
 } // namespace hako::service

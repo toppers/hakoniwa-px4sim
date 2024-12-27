@@ -99,6 +99,8 @@ bool HakoniwaPduAccessor::write(std::string& robot_name, int channel_id, Service
             HAKO_CPP2PDU(pdu_data, status_magnet, HakoStatusMagnetHolder, ret, ptr);
             break;
         case SERVICE_PDU_DATA_ID_TYPE_POSITION:
+            //std::cout << "HAKO_CPP2PDU: position: (" << pdu_data.pdu.position.linear.x << ", " << pdu_data.pdu.position.linear.y << ", " << pdu_data.pdu.position.linear.z << ")" << std::endl;
+            //std::cout << "HAKO_CPP2PDU: angle: (" << pdu_data.pdu.position.angular.x << ", " << pdu_data.pdu.position.angular.y << ", " << pdu_data.pdu.position.angular.z << ")" << std::endl;
             HAKO_CPP2PDU(pdu_data, position, Twist, ret, ptr);
             break;
         case SERVICE_PDU_DATA_ID_TYPE_ACTUATOR_CONTROLS:
@@ -108,10 +110,20 @@ bool HakoniwaPduAccessor::write(std::string& robot_name, int channel_id, Service
             throw std::runtime_error("Failed to write PDU: robot_name = " + robot_name + 
                                     ", channel_id = " + std::to_string(channel_id));
     }
-    if (hako_asset_pdu_write(robot_name.c_str(), channel_id, (const char*)ptr, static_cast<size_t>(pdu_data_size)) != 0) {
+    if (hako_asset_pdu_write(robot_name.c_str(), channel_id, (const char*)hako_get_top_ptr_pdu(ptr), static_cast<size_t>(pdu_data_size)) != 0) {
         hako_destroy_pdu(ptr);
         throw std::runtime_error("Failed to write PDU: robot_name = " + robot_name + 
                                     ", channel_id = " + std::to_string(channel_id));
+    }
+    else {
+#if 0
+        std::cout << "success write pdu: robot_name = " << robot_name << ", channel_id = " << channel_id << " pdu size: " << pdu_data_size << std::endl;
+        if (pdu_data.id == SERVICE_PDU_DATA_ID_TYPE_POSITION) {
+            Hako_Twist *test = static_cast<Hako_Twist*>(ptr);
+            std::cout << "HAKO_CPP2PDU: position: (" << test->linear.x << ", " << test->linear.y << ", " << test->linear.z << ")" << std::endl;
+            std::cout << "HAKO_CPP2PDU: angle: (" << test->angular.x << ", " << test->angular.y << ", " << test->angular.z << ")" << std::endl;
+        }
+#endif
     }
     hako_destroy_pdu(ptr);
     return true;
