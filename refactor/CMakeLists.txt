@@ -5,12 +5,12 @@ project(hakoniwa-px4sim-root
     DESCRIPTION "hakoniwa-drone-core project"
     LANGUAGES C CXX
 )
-if (DEFINED HAKO_CLIENT_OPTION_FILEPATH)
-    message(STATUS "HAKO_CLIENT_OPTION_FILEPATH=${HAKO_CLIENT_OPTION_FILEPATH}")
-    include(${HAKO_CLIENT_OPTION_FILEPATH})
+if (DEFINED HAKO_DRONE_OPTION_FILEPATH)
+    message(STATUS "HAKO_DRONE_OPTION_FILEPATH=${HAKO_DRONE_OPTION_FILEPATH}")
+    include(${HAKO_DRONE_OPTION_FILEPATH})
 else()
-    message(STATUS "HAKO_CLIENT_OPTION_FILEPATH is not defined. Use default options.")
-    set(HAKO_CLIENT_OPTION_FILEPATH "${PROJECT_SOURCE_DIR}/cmake-options/default-cmake-options.cmake")
+    message(STATUS "HAKO_DRONE_OPTION_FILEPATH is not defined. Use default options.")
+    set(HAKO_DRONE_OPTION_FILEPATH "${PROJECT_SOURCE_DIR}/cmake-options/default-cmake-options.cmake")
     include(cmake-options/default-cmake-options.cmake)
 endif()
 
