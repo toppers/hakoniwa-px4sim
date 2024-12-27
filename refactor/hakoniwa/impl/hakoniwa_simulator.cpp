@@ -37,19 +37,21 @@ static hako_asset_callbacks_t my_callback = {
 bool HakoniwaSimulator::registerService(std::string& asset_name, std::string& config_path, uint64_t delta_time_usec, std::shared_ptr<IServiceContainer> service_container)
 {
     HakoniwaSimulator::service_container_ = service_container;
+    std::cout << "asset_name = " << asset_name << std::endl;
+    std::cout << "config_path = " << config_path << std::endl;
     int ret = hako_asset_register(asset_name.c_str(), config_path.c_str(), &my_callback, delta_time_usec, HAKO_ASSET_MODEL_CONTROLLER);
     if (ret == 0) {
+        std::cout << "before init" << std::endl;
+        ret = HakoniwaPduAccessor::init();
+        if (!ret) {
+            throw std::runtime_error("Failed to initialize HakoniwaPduAccessor");
+        }
         return true;
     }
     else {
         std::cerr << "ERROR: " << "hako_asset_register() error: " << std::endl;
         return false;
     }
-    ret = HakoniwaPduAccessor::init();
-    if (!ret) {
-        throw std::runtime_error("Failed to initialize HakoniwaPduAccessor");
-    }
-
 }
 
 bool HakoniwaSimulator::startService()
@@ -94,9 +96,10 @@ void HakoniwaSimulator::transferPduFromHakoniwaToservice()
             int channel_id = it->second;
             if (HakoniwaPduAccessor::read(robot_name, channel_id, pdu_data)) {
                 service_container_->write_pdu(i, pdu_data);
+                //std::cout << "success read pdu: robot_name = " << robot_name << ", channel_id = " << channel_id << std::endl;
             }
             else {
-                throw std::runtime_error("Failed to read pdu: robot_name = " + robot_name + ", channel_id = " + std::to_string(channel_id));
+                //nothing to do
             }
         }
     }
@@ -115,6 +118,9 @@ void HakoniwaSimulator::transferPduFromServiceToHakoniwa()
                 bool ret = HakoniwaPduAccessor::write(robot_name, channel_id, pdu_data);
                 if (!ret) {
                     throw std::runtime_error("Failed to write pdu: robot_name = " + robot_name + ", channel_id = " + std::to_string(channel_id));
+                }
+                else {
+                    //std::cout << "success write pdu: robot_name = " << robot_name << ", channel_id = " << channel_id << std::endl;
                 }
             }
             else {
