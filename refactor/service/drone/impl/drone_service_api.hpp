@@ -145,8 +145,14 @@ public:
             case MAIN_STATUS_LANDING:
             case MAIN_STATUS_MOVING:
                 if (is_operation_done()) {
+                    //std::cout << "Operation is done" << std::endl;
                     write_back(status, 0, pdu_data);
                     state.done();
+                }
+                else {
+                    //std::cout << "Operation is not done" << std::endl;
+                    //std::cout << "target: (" << target_pos_x << ", " << target_pos_y << ", " << target_pos_z << ", " << target_yaw_deg << ")" << std::endl;
+                    //std::cout << "current: (" << drone_pos.pdu.position.linear.x << ", " << -drone_pos.pdu.position.linear.y << ", " << -drone_pos.pdu.position.linear.z << ", " << RADIAN2DEGREE(drone_pos.pdu.position.angular.z) << ")" << std::endl;
                 }
                 break;
             case MAIN_STATUS_CANCELING:
@@ -231,23 +237,22 @@ private:
     }
     bool read_cmd(ServicePduDataType& dest, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data)
     {
+        bool ret = true;
         auto& pdu_entry = pdu_data[dest.id];
 
         // 排他制御を行いながらデータにアクセス
         while (pdu_entry.is_busy.exchange(true)) {
             std::this_thread::yield(); // CPU負荷を軽減
         }
-        // 更新がなければ処理をスキップ
         if (!pdu_entry.is_dirty) {
             pdu_entry.is_busy.store(false);
-            return false;
+            ret = false;
         }
         // データを取得
         const auto& source_pdu = pdu_entry.data;
 
         // deep copy
-        bool ret = hako::service::drone_pdu_data_deep_copy(source_pdu, dest);
-        if (!ret) {
+        if (!hako::service::drone_pdu_data_deep_copy(source_pdu, dest)) {
             throw std::runtime_error("read_cmd: deep copy failed");
         }
 
@@ -255,7 +260,7 @@ private:
         pdu_entry.is_dirty.store(false);
         pdu_entry.is_busy.store(false);
 
-        return true;
+        return ret;
     }
     void write_cmd(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data, const ServicePduDataType& src)
     {

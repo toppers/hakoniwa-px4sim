@@ -202,6 +202,9 @@ void DroneService::write_back_pdu()
     pos_pdu_data.pdu.position.angular.x = dangle.data.x;
     pos_pdu_data.pdu.position.angular.y = -dangle.data.y;
     pos_pdu_data.pdu.position.angular.z = -dangle.data.z;
+
+    //std::cout << "Drone Position: (" << dpos.data.x << ", " << dpos.data.y << ", " << dpos.data.z << ")" << std::endl;
+    //std::cout << "Drone Angle: (" << dangle.data.x << ", " << dangle.data.y << ", " << dangle.data.z << ")" << std::endl;
     write_pdu(pos_pdu_data);
 
 }
