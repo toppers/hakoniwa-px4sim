@@ -37,7 +37,7 @@ jobs:
         run: |
           cd refactor
           set BASE_PATH=%cd%
-          cmake -G "Visual Studio 17 2022" -A x64 -DHAKO_CLIENT_OPTION_FILEPATH="%BASE_PATH%\cmake-options\win-cmake-options.cmake" .
+          cmake -G "Visual Studio 17 2022" -A x64 -DHAKO_CLIENT_OPTION_FILEPATH=%BASE_PATH%"\cmake-options\win-cmake-options.cmake" .
           cmake --build . --config Release
           cd test
           set DRONE_CONFIG1_DIR=aircraft\\test-data\\drone-config1
