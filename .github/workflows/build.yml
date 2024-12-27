@@ -51,7 +51,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           cd refactor
-          cmake -D HAKO_CLIENT_OPTION_FILEPATH=cmake-options/linux-cmake-options.cmake .
+          cmake -D HAKO_CLIENT_OPTION_FILEPATH=`pwd`/cmake-options/linux-cmake-options.cmake .
           make
           cd test
           export DRONE_CONFIG1_DIR=aircraft/test-data/drone-config1
