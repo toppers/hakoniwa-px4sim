@@ -22,20 +22,27 @@ std::vector<hako::asset::Robot> HakoniwaPduAccessor::robots_;
 
 bool HakoniwaPduAccessor::init()
 {
+    std::cout << "HakoniwaPduAccessor::init()" << std::endl;
     bool success = hako_asset_get_pdus(robots_);
     if (success) {
         create_map();
+    }
+    else {
+        throw std::runtime_error("Failed to get PDUs");
     }
     return success;
 }
 
 void HakoniwaPduAccessor::create_map()
 {
+    std::cout << "HakoniwaPduAccessor::create_map()" << std::endl;
     for (auto robot : robots_) {
         for (auto reader : robot.pdu_readers) {
+            std::cout << "reader: robot_name = " << robot.name << ", channel_id = " << reader.channel_id << ", pdu_size = " << reader.pdu_size << std::endl;
             pdu_map_[{robot.name, reader.channel_id}] = reader.pdu_size;
         }
         for (auto writer : robot.pdu_writers) {
+            std::cout << "writer: robot_name = " << robot.name << ", channel_id = " << writer.channel_id << ", pdu_size = " << writer.pdu_size << std::endl;
             pdu_map_[{robot.name, writer.channel_id}] = writer.pdu_size;
         }
     }
@@ -57,7 +64,7 @@ bool HakoniwaPduAccessor::write(std::string& robot_name, int channel_id, Service
 {
     CompositeKey key{robot_name, channel_id};
     if (pdu_map_.find(key) == pdu_map_.end()) {
-        throw std::runtime_error("Failed to access PDU: robot_name = " + robot_name + 
+        throw std::runtime_error("Failed to write PDU: robot_name = " + robot_name + 
                                  ", channel_id = " + std::to_string(channel_id));
     }    
     int ret = -1;
@@ -113,17 +120,22 @@ bool HakoniwaPduAccessor::write(std::string& robot_name, int channel_id, Service
 #define HAKO_PDU2CPP(_pdu_data, pdu_field, pdu_type, _ret, _ptr)                                \
 do {                                                                                \
     void* base_ptr = hako_get_base_ptr_pdu(_ptr);                                                    \
-    _ret = hako_convert_pdu2cpp_##pdu_type(*static_cast<Hako_##pdu_type*>(base_ptr), _pdu_data.pdu.pdu_field); \
-    if (_ret < 0) {                                                                 \
-        throw std::runtime_error("Failed to convert pdu to cpp data: " #pdu_field); \
+    if (base_ptr == nullptr) {                                                      \
+        _ret = -1;                                                                  \
     }                                                                               \
+    else {                                                                          \
+        _ret = hako_convert_pdu2cpp_##pdu_type(*static_cast<Hako_##pdu_type*>(base_ptr), _pdu_data.pdu.pdu_field); \
+        if (_ret < 0) {                                                                 \
+            throw std::runtime_error("Failed to convert pdu to cpp data: " #pdu_field); \
+        }                                                                               \
+    }   \
 } while (0)
 
 bool HakoniwaPduAccessor::read(std::string& robot_name, int channel_id, ServicePduDataType& pdu_data)
 {
     CompositeKey key{robot_name, channel_id};
     if (pdu_map_.find(key) == pdu_map_.end()) {
-        throw std::runtime_error("Failed to access PDU: robot_name = " + robot_name + 
+        throw std::runtime_error("Failed to read PDU: robot_name = " + robot_name + 
                                  ", channel_id = " + std::to_string(channel_id));
     }    
     int ret = -1;
@@ -135,8 +147,8 @@ bool HakoniwaPduAccessor::read(std::string& robot_name, int channel_id, ServiceP
     }
     if (hako_asset_pdu_read(robot_name.c_str(), channel_id, (char*)ptr, static_cast<size_t>(pdu_data_size)) != 0) {
         free(ptr);
-        throw std::runtime_error("Failed to read PDU: robot_name = " + robot_name + 
-                                    ", channel_id = " + std::to_string(channel_id));
+        //nothing to do
+        return false;
     }
     switch (pdu_data.id) {
         case SERVICE_PDU_DATA_ID_TYPE_TAKEOFF:
@@ -174,9 +186,12 @@ bool HakoniwaPduAccessor::read(std::string& robot_name, int channel_id, ServiceP
             break;
         default:
             free(ptr);
-            throw std::runtime_error("Failed to read PDU: robot_name = " + robot_name + 
+            throw std::runtime_error("Invalid Pdu Id: " +std::to_string(pdu_data.id) + " failed to read PDU: robot_name = " + robot_name + 
                                     ", channel_id = " + std::to_string(channel_id));
     }
     free(ptr);
+    if (ret < 0) {
+        return false;
+    }
     return true;
 }
