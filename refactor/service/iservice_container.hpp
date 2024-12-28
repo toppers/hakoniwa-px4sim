@@ -3,6 +3,7 @@
 
 #include "service/iservice_pdu_types.hpp"
 #include "service/iservice_pdu_syncher.hpp"
+#include <memory>
 
 namespace hako::service {
 
