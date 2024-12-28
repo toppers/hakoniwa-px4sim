@@ -1,0 +1,4 @@
+simple-pid>=2.0.0
+pandas
+numpy
+matplotlib

@@ -1,15 +1,18 @@
-[submodule "thirdparty/mavlink_c_library_v2"]
-	path = thirdparty/mavlink_c_library_v2
+[submodule "hakoniwa/third-party/c_library_v2"]
+	path = hakoniwa/third-party/c_library_v2
 	url = https://github.com/mavlink/c_library_v2.git
-[submodule "thirdparty/hakoniwa-ros2pdu"]
-	path = thirdparty/hakoniwa-ros2pdu
-	url = https://github.com/toppers/hakoniwa-ros2pdu.git
-[submodule "thirdparty/glm"]
-	path = thirdparty/glm
-	url = https://github.com/g-truc/glm.git
-[submodule "thirdparty/nolman"]
-	path = thirdparty/nolman
-	url = https://github.com/nlohmann/json.git
-[submodule "thirdparty/hakoniwa-core-cpp-client"]
-	path = thirdparty/hakoniwa-core-cpp-client
+[submodule "hakoniwa/third-party/hakoniwa-core-cpp-client"]
+	path = hakoniwa/third-party/hakoniwa-core-cpp-client
 	url = https://github.com/toppers/hakoniwa-core-cpp-client.git
+[submodule "hakoniwa/third-party/hakoniwa-ros2pdu"]
+	path = hakoniwa/third-party/hakoniwa-ros2pdu
+	url = https://github.com/toppers/hakoniwa-ros2pdu.git
+[submodule "hakoniwa/third-party/glm"]
+	path = hakoniwa/third-party/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "hakoniwa/third-party/hakoniwa-python-simasset-plugin"]
+	path = hakoniwa/third-party/hakoniwa-python-simasset-plugin
+	url = https://github.com/toppers/hakoniwa-python-simasset-plugin.git
+[submodule "px4/PX4-Autopilot"]
+	path = px4/PX4-Autopilot
+	url = https://github.com/PX4/PX4-Autopilot.git

@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_PX4_CSV_LOGGER
+	bool "px4_csv_logger"
+	default y
+	---help---
+		Enable support for px4_csv_logger

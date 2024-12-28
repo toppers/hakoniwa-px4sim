@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_PX4_HAKONIWA
+	bool "px4_hakoniwa"
+	default y
+	---help---
+		Enable support for px4_hakoniwa
