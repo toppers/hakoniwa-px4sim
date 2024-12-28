@@ -47,6 +47,11 @@ public:
             service_container_->advanceTimeStep();
         }
     }
+    void reset() {
+        if (isStarted_) {
+            service_container_->resetService();
+        }
+    }
     bool flush(uint32_t index, ServicePduDataType& pdu) override {
         if (isStarted_) {
             std::string robot_name = service_container_->getRobotName(index);

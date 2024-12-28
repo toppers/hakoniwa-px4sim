@@ -2,6 +2,7 @@
 #include "hakoniwa/impl/hakoniwa_pdu_accessor.hpp"
 #include "include/hako_asset.h"
 #include <thread>
+#include <errno.h>
 
 using namespace hako::drone::impl;
 std::shared_ptr<HakoniwaSimulator> HakoniwaSimulator::instance_;
@@ -12,6 +13,8 @@ static int my_on_initialize(hako_asset_context_t*)
 }
 static int my_on_reset(hako_asset_context_t*)
 {
+    auto simulator = HakoniwaSimulator::getInstance();
+    simulator->reset();
     return 0;
 }
 static int my_on_simulation_step(hako_asset_context_t*)
@@ -61,7 +64,18 @@ bool HakoniwaSimulator::startService()
     mtx_.unlock();
     service_container_->startService(delta_time_usec_);
     do {
-        (void)hako_asset_start();
+        int err = hako_asset_start();
+        if (err == EINTR) {
+            // continue
+        }
+        else if (err == EINVAL) {
+            // wait for state change
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        else {
+            std::cerr << "ERROR: " << "hako_asset_start() error: " << err << std::endl;
+            return false;
+        }
         mtx_.lock();
         do_task = isStarted_;
         mtx_.unlock();
