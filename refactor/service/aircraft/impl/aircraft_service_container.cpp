@@ -231,6 +231,8 @@ void hako::service::impl::AircraftServiceContainer::write_back_pdu(uint32_t inde
     pos_pdu_data.pdu.position.angular.x = dangle.data.x;
     pos_pdu_data.pdu.position.angular.y = -dangle.data.y;
     pos_pdu_data.pdu.position.angular.z = -dangle.data.z;
+
+    //std::cout << "INFO: AircraftServiceContainer::write_back_pdu: pos: (" << pos_pdu_data.pdu.position.linear.x << ", " << pos_pdu_data.pdu.position.linear.y << ", " << pos_pdu_data.pdu.position.linear.z << ")" << std::endl;
     pdu_synchers_[index]->flush(index, pos_pdu_data);
 
 }

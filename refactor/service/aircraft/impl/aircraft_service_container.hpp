@@ -78,8 +78,7 @@ public:
     void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override
     {
         for (auto& aircraft : aircraft_container_.getAllAirCrafts()) {
-            (void)aircraft;
-            pdu_synchers_.push_back(pdu_syncher);
+            pdu_synchers_[aircraft->get_index()] = pdu_syncher;
         }
     }
 private:

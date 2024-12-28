@@ -54,7 +54,7 @@ int main(int argc, const char* argv[])
     hako_drone_service->registerService(
         asset_name, 
         config_path, 
-        1000, 20000, 
+        3000, 20000, 
         aircraft_service);
     std::cout << "HakoniwaDroneService::registerService() done" << std::endl;
     hako_drone_service->setPduIdMap(SERVICE_PDU_DATA_ID_TYPE_COLLISION, 2);

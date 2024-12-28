@@ -56,7 +56,9 @@ public:
         if (isStarted_) {
             std::string robot_name = service_container_->getRobotName(index);
             int channel_id = channel_id_map_[pdu.id];
-            return HakoniwaPduAccessor::write(robot_name, channel_id, pdu);
+            bool ret = HakoniwaPduAccessor::write(robot_name, channel_id, pdu);
+            //std::cout << "flush: robot_name = " << robot_name << ", channel_id = " << channel_id << ", id = " << pdu.id << ", ret = " << ret << std::endl;
+            return ret;
         }
         else {
             return false;
