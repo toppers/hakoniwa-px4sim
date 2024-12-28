@@ -41,7 +41,8 @@ endif()
 target_include_directories(hako_service 
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${GLM_SOURCE_DIR}
-    PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
+    #PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
+    PRIVATE ${nlohmann_json_SOURCE_DIR}/single_include
     PRIVATE ${MAVLINK_SOURCE_DIR}/all
     PRIVATE ${ROS2PDU_SOURCE_DIR}/pdu/types
     )

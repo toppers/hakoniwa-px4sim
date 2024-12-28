@@ -18,9 +18,23 @@ set(HAKO_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 set(MAVLINK_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/mavlink_c_library_v2")
 set(ROS2PDU_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/hakoniwa-ros2pdu")
 set(GLM_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/glm")
-set(NOLMAN_JSON_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/nolman/single_include")
+#set(NOLMAN_JSON_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/nolman/single_include")
 set(HAKO_CORE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../thirdparty/hakoniwa-core-cpp-client/src")
 #link_directories(/usr/local/lib/hakoniwa)
+include(FetchContent)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND EXISTS "/etc/os-release")
+    FetchContent_Declare(
+        json
+        URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+    )
+else()
+    FetchContent_Declare(
+        json
+        URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    )
+endif()
+FetchContent_MakeAvailable(json)
 
 add_subdirectory(comm)
 add_subdirectory(mavlink)

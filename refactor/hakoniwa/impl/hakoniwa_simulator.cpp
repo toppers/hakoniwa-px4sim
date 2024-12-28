@@ -34,7 +34,6 @@ bool HakoniwaSimulator::registerService(std::string& asset_name, std::string& co
     std::cout << "config_path = " << config_path << std::endl;
     int ret = hako_asset_register(asset_name.c_str(), config_path.c_str(), &my_callback, delta_time_usec, HAKO_ASSET_MODEL_CONTROLLER);
     if (ret == 0) {
-        std::cout << "before init" << std::endl;
         ret = HakoniwaPduAccessor::init();
         if (!ret) {
             throw std::runtime_error("Failed to initialize HakoniwaPduAccessor");

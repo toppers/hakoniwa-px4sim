@@ -24,11 +24,14 @@ else()
     )
 endif()
 
+MESSAGE(STATUS "nlohmann_json_SOURCE_DIR=${nlohmann_json_SOURCE_DIR}")
 
 target_include_directories(hako_aircraft 
     PRIVATE ${HAKO_SOURCE_DIR}
     PRIVATE ${GLM_SOURCE_DIR}
-    PRIVATE ${NOLMAN_JSON_SOURCE_DIR})
+    #PRIVATE ${NOLMAN_JSON_SOURCE_DIR}
+    PRIVATE ${nlohmann_json_SOURCE_DIR}/single_include
+    )
 
 target_compile_features(hako_aircraft PRIVATE cxx_std_17)
 
