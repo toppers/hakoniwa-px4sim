@@ -10,6 +10,7 @@ public:
     virtual ~IAircraftServiceContainer() = default;
     virtual bool startService(uint64_t deltaTimeUsec) = 0;
     virtual bool startService(bool lockStep, uint64_t deltaTimeUsec) = 0;
+    virtual bool setRealTimeStepUsec(uint64_t deltaTimeUsec) = 0;
     virtual void advanceTimeStep(uint32_t index) = 0;
     virtual void stopService() = 0;
     virtual void resetService() = 0;

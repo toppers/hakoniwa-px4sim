@@ -35,15 +35,11 @@ int main(int argc, const char* argv[])
     auto aircraft_service = std::make_unique<hako::service::impl::AircraftServiceContainer>(mavlink_service_container, aircraft_container);
     aircraft_service->startService(true, 3000);
     HakoLogger::enable();
+    aircraft_service->setRealTimeStepUsec(real_sleep_msec * 1000);
 
     while (true) {
         HakoLogger::set_time_usec(aircraft_service->getSitlTimeUsec(0));
-        //std::cout << "INFO: simulation time(usec)=" << time_usec << std::endl;
-        for (int i = 0; i < aircraft_num; i++) {
-            aircraft_service->advanceTimeStep(i);
-        }
-        //sleep for real time
-        std::this_thread::sleep_for(std::chrono::milliseconds(real_sleep_msec));
+        aircraft_service->advanceTimeStep();
     }
     return 0;
 }

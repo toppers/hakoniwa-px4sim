@@ -31,6 +31,10 @@ public:
         }
         return true;
     }
+    bool setRealTimeStepUsec(uint64_t deltaTimeUsec) override {
+        (void)deltaTimeUsec;
+        return true;
+    }
 
     void advanceTimeStep(uint32_t index) override {
         if (index >= drone_services_.size()) {

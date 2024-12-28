@@ -32,11 +32,20 @@ public:
     {
         return startService(true, deltaTimeUsec);
     }
+    bool setRealTimeStepUsec(uint64_t deltaTimeUsec) override
+    {
+        //std::cout << "INFO: AircraftServiceContainer::setRealTimeStepUsec: deltaTimeUsec=" << deltaTimeUsec << std::endl;
+        delta_real_time_usec_ = deltaTimeUsec;
+        return true;
+    }
     void advanceTimeStep(uint32_t index) override;
     void advanceTimeStep() override
     {
         for (uint32_t i = 0; i < aircraft_container_.getAllAirCrafts().size(); i++) {
             advanceTimeStep(i);
+        }
+        if (delta_real_time_usec_ > 0) {
+            std::this_thread::sleep_for(std::chrono::microseconds(delta_real_time_usec_));
         }
     }
     void stopService() override
@@ -86,6 +95,7 @@ private:
     bool lock_step_ = false;
     uint64_t delta_time_usec_ = 0;
     uint64_t activated_time_usec_ = 0;
+    uint64_t delta_real_time_usec_ = 0;
     std::vector<uint64_t> send_count_;
     std::vector<uint64_t> sitl_simulation_time_usec_;
     MavLinkServiceContainer& mavlink_service_container_;
