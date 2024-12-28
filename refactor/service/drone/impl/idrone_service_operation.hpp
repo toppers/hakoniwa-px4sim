@@ -7,11 +7,6 @@
 #include <array>
 
 namespace hako::service::impl {
-typedef struct {
-    std::atomic<bool> is_busy;
-    std::atomic<bool> is_dirty;
-    ServicePduDataType data;
-} HakoniwaDronePduDataControlType;
 
 class IDroneServiceOperation {
 public:

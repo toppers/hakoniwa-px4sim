@@ -34,6 +34,7 @@ void hako::service::impl::AircraftServiceContainer::advanceTimeStep(uint32_t ind
     if (index >= static_cast<uint32_t>(aircraft_container_.getAllAirCrafts().size())) {
         throw std::runtime_error("Invalid index for advanceTimeStep : " + std::to_string(index));
     }
+    setup_aircraft_inputs(index);
     uint64_t sitl_time_usec = 0;
     if (lock_step_) {
         advanceTimeStepLockStep(index, sitl_time_usec);
@@ -41,6 +42,7 @@ void hako::service::impl::AircraftServiceContainer::advanceTimeStep(uint32_t ind
     else {
         advanceTimeStepFreeRun(index, sitl_time_usec);
     }
+    write_back_pdu(index);
     if (sitl_time_usec > sitl_simulation_time_usec_[index]) {
         sitl_simulation_time_usec_[index] = sitl_time_usec;
     }
@@ -153,63 +155,82 @@ void hako::service::impl::AircraftServiceContainer::resetService()
     }
 }
 
-bool hako::service::impl::AircraftServiceContainer::write_pdu(uint32_t index, ServicePduDataType& pdu)
+void hako::service::impl::AircraftServiceContainer::setup_aircraft_inputs(uint32_t index)
 {
-    //TODO synchronize with pdu
-    if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
-        return false;
-    }
-
-    if (pdu.id == SERVICE_PDU_DATA_ID_TYPE_DISTURBANCE) {
-        aircraft_inputs_[index].disturbance.values.d_temp.value = pdu.pdu.disturbance.d_temp.value;
-        aircraft_inputs_[index].disturbance.values.d_wind.x = pdu.pdu.disturbance.d_wind.value.x;
-        aircraft_inputs_[index].disturbance.values.d_wind.y = pdu.pdu.disturbance.d_wind.value.y;
-        aircraft_inputs_[index].disturbance.values.d_wind.z = pdu.pdu.disturbance.d_wind.value.z;
-    }
-    else if (pdu.id == SERVICE_PDU_DATA_ID_TYPE_COLLISION) {
-        aircraft_inputs_[index].collision.collision = pdu.pdu.collision.collision;
-        aircraft_inputs_[index].collision.contact_num = pdu.pdu.collision.contact_num;
-        aircraft_inputs_[index].collision.relative_velocity.x = pdu.pdu.collision.relative_velocity.x;
-        aircraft_inputs_[index].collision.relative_velocity.y = pdu.pdu.collision.relative_velocity.y;
-        aircraft_inputs_[index].collision.relative_velocity.z = pdu.pdu.collision.relative_velocity.z;
-        aircraft_inputs_[index].collision.restitution_coefficient = pdu.pdu.collision.restitution_coefficient;
-        for (int i = 0; i < MAX_CONTAT_NUM; i++) {
-            aircraft_inputs_[index].collision.contact_position[i].x = pdu.pdu.collision.contact_position[i].x;
-            aircraft_inputs_[index].collision.contact_position[i].y = pdu.pdu.collision.contact_position[i].y;
-            aircraft_inputs_[index].collision.contact_position[i].z = pdu.pdu.collision.contact_position[i].z;
+    aircraft_inputs_[index].manual.control = false;
+    if (aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().has_collision_detection()) {
+        ServicePduDataType pdu_data = { SERVICE_PDU_DATA_ID_TYPE_COLLISION };
+        pdu_synchers_[index]->load(index, pdu_data);
+        aircraft_inputs_[index].collision.collision = pdu_data.pdu.collision.collision;
+        if (aircraft_inputs_[index].collision.collision) {
+            aircraft_inputs_[index].collision.contact_num = pdu_data.pdu.collision.contact_num;
+            aircraft_inputs_[index].collision.relative_velocity.x = pdu_data.pdu.collision.relative_velocity.x;
+            aircraft_inputs_[index].collision.relative_velocity.y = -pdu_data.pdu.collision.relative_velocity.y;
+            aircraft_inputs_[index].collision.relative_velocity.z = -pdu_data.pdu.collision.relative_velocity.z;
+            aircraft_inputs_[index].collision.restitution_coefficient = pdu_data.pdu.collision.restitution_coefficient;
+            for (int i = 0; i < aircraft_inputs_[index].collision.contact_num; i++) {
+                aircraft_inputs_[index].collision.contact_position[i].x = pdu_data.pdu.collision.contact_position[i].x;
+                aircraft_inputs_[index].collision.contact_position[i].y = -pdu_data.pdu.collision.contact_position[i].y;
+                aircraft_inputs_[index].collision.contact_position[i].z = -pdu_data.pdu.collision.contact_position[i].z;
+            }
         }
     }
-    else {
-        std::cerr << "ERROR: write_pdu() Invalid PDU ID: " << pdu.id  << std::endl;
-        return false;
+    if (aircraft_container_.getAllAirCrafts()[index]->is_enabled_disturbance()) {
+        ServicePduDataType pdu_data = { SERVICE_PDU_DATA_ID_TYPE_DISTURBANCE };
+        pdu_synchers_[index]->load(index, pdu_data);
+        //temperature
+        aircraft_inputs_[index].disturbance.values.d_temp.value = pdu_data.pdu.disturbance.d_temp.value;
+        //wind
+        aircraft_inputs_[index].disturbance.values.d_wind.x = pdu_data.pdu.disturbance.d_wind.value.x;
+        aircraft_inputs_[index].disturbance.values.d_wind.y = pdu_data.pdu.disturbance.d_wind.value.y;
+        aircraft_inputs_[index].disturbance.values.d_wind.z = pdu_data.pdu.disturbance.d_wind.value.z;
     }
-    return true;
 }
 
-bool hako::service::impl::AircraftServiceContainer::read_pdu(uint32_t index, ServicePduDataType& pdu)
+void hako::service::impl::AircraftServiceContainer::write_back_pdu(uint32_t index)
 {
-    //TODO synchronize with pdu
-    if (index >= static_cast<uint32_t>(aircraft_inputs_.size())) {
-        return false;
+    // collision write back
+    ServicePduDataType col_pdu_data = { SERVICE_PDU_DATA_ID_TYPE_COLLISION };
+    col_pdu_data.pdu.collision.collision = false;
+    pdu_synchers_[index]->flush(index, col_pdu_data);
+
+    // battery write back
+    ServicePduDataType bat_pdu_data = { SERVICE_PDU_DATA_ID_TYPE_BATTERY_STATUS };
+    auto battery = aircraft_container_.getAllAirCrafts()[index]->get_battery_dynamics();
+    if (battery != nullptr) {
+        auto status = battery->get_status();
+        bat_pdu_data.pdu.battery_status.full_voltage = status.full_voltage;
+        bat_pdu_data.pdu.battery_status.curr_voltage = status.curr_voltage;
+        bat_pdu_data.pdu.battery_status.curr_temp = status.temperature;
+        bat_pdu_data.pdu.battery_status.cycles = status.cycles;
+        bat_pdu_data.pdu.battery_status.status = status.status;
     }
-    switch (pdu.id) {
-        case SERVICE_PDU_DATA_ID_TYPE_ACTUATOR_CONTROLS:
-            pdu.pdu.actuator_controls.controls[0] = aircraft_inputs_[index].controls[0];
-            pdu.pdu.actuator_controls.controls[1] = aircraft_inputs_[index].controls[1];
-            pdu.pdu.actuator_controls.controls[2] = aircraft_inputs_[index].controls[2];
-            pdu.pdu.actuator_controls.controls[3] = aircraft_inputs_[index].controls[3];
-            break;
-        case SERVICE_PDU_DATA_ID_TYPE_POSITION:
-            pdu.pdu.position.linear.x = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[0];
-            pdu.pdu.position.linear.y = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[1];
-            pdu.pdu.position.linear.z = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos().data[2];
-            pdu.pdu.position.angular.x = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[0];
-            pdu.pdu.position.angular.y = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[1];
-            pdu.pdu.position.angular.z = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle().data[2];
-            break;
-        default:
-            std::cerr << "ERROR: read_pdu() Invalid PDU ID: " << pdu.id  << std::endl;
-            return false;
+    else {
+        bat_pdu_data.pdu.battery_status.full_voltage = 0;
+        bat_pdu_data.pdu.battery_status.curr_voltage = 0;
+        bat_pdu_data.pdu.battery_status.curr_temp = 0;
+        bat_pdu_data.pdu.battery_status.cycles = 0;
+        bat_pdu_data.pdu.battery_status.status = 0;
     }
-    return true;
+    pdu_synchers_[index]->flush(index, bat_pdu_data);
+
+    // control write back
+    ServicePduDataType actuator_pdu_data = { SERVICE_PDU_DATA_ID_TYPE_ACTUATOR_CONTROLS };
+    for (int i = 0; i < ROTOR_NUM; i++) {
+        actuator_pdu_data.pdu.actuator_controls.controls[i] = aircraft_inputs_[index].controls[i];
+    }
+    pdu_synchers_[index]->flush(index, actuator_pdu_data);
+
+    // position write back
+    ServicePduDataType pos_pdu_data = { SERVICE_PDU_DATA_ID_TYPE_POSITION };
+    DronePositionType dpos = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_pos();
+    DroneEulerType dangle = aircraft_container_.getAllAirCrafts()[index]->get_drone_dynamics().get_angle();
+    pos_pdu_data.pdu.position.linear.x = dpos.data.x;
+    pos_pdu_data.pdu.position.linear.y = -dpos.data.y;
+    pos_pdu_data.pdu.position.linear.z = -dpos.data.z;
+    pos_pdu_data.pdu.position.angular.x = dangle.data.x;
+    pos_pdu_data.pdu.position.angular.y = -dangle.data.y;
+    pos_pdu_data.pdu.position.angular.z = -dangle.data.z;
+    pdu_synchers_[index]->flush(index, pos_pdu_data);
+
 }

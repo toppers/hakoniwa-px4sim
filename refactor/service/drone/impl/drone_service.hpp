@@ -10,7 +10,7 @@
 #include "controller/iaircraft_mixer.hpp"
 #include "controller/aircraft_controller_container.hpp"
 #include "service/iservice_pdu_syncher.hpp"
-#include "service/drone/impl/drone_service_pdu_syncher.hpp"
+#include "service/impl/service_pdu_syncher.hpp"
 #include <array>
 #include <stdexcept>
 #include <memory>
@@ -27,7 +27,7 @@ public:
         : aircraft_(aircraft), controller_(controller) {
         simulation_time_usec_ = 0;
         delta_time_usec_ = 0;
-        pdu_syncher_ = std::make_shared<DroneServicePduSyncher>();
+        pdu_syncher_ = std::make_shared<ServicePduSyncher>();
         if (controller_->is_radio_control()) {
             drone_service_operation_ = std::make_unique<DroneServiceRC>(aircraft_);
         }

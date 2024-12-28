@@ -5,6 +5,7 @@
 #include "aircraft/impl/aircraft_container.hpp"
 #include "mavlink/mavlink_service.hpp"
 #include "mavlink/mavlink_service_container.hpp"
+#include "service/impl/service_pdu_syncher.hpp"
 
 using namespace hako::mavlink;
 using namespace hako::aircraft;
@@ -18,6 +19,10 @@ public:
         {
             if (mavlink_service_container.getServices().size() != aircraft_container.getAllAirCrafts().size()) {
                 throw std::runtime_error("MavLinkServiceContainer size is not equal to AirCraftContainer size");
+            }
+            for (auto& aircraft : aircraft_container_.getAllAirCrafts()) {
+                (void)aircraft;
+                pdu_synchers_.push_back(std::make_shared<ServicePduSyncher>());
             }
         }
     ~AircraftServiceContainer() = default;
@@ -42,13 +47,24 @@ public:
     uint64_t getSimulationTimeUsec(uint32_t index) override;
     uint64_t getSitlTimeUsec(uint32_t index) override;
 
-    virtual bool write_pdu(uint32_t index, ServicePduDataType& pdu) override;
-    virtual bool read_pdu(uint32_t index, ServicePduDataType& message) override;
+    virtual bool write_pdu(uint32_t index, ServicePduDataType& pdu) override
+    {
+        if (index >= pdu_synchers_.size()) {
+            throw std::runtime_error("write_pdu index out of range");
+        }
+        return pdu_synchers_[index]->flush(index, pdu);
+    }
+    virtual bool read_pdu(uint32_t index, ServicePduDataType& message) override
+    {
+        if (index >= pdu_synchers_.size()) {
+            throw std::runtime_error("read_pdu index out of range");
+        }
+        return pdu_synchers_[index]->load(index, message);
+
+    }
     virtual void peek_pdu(uint32_t index, ServicePduDataType& message) override
     {
-        (void)index;
-        (void)message;
-        throw std::runtime_error("Not implemented");
+        read_pdu(index, message);
     }
 
     uint32_t getNumServices() override
@@ -61,7 +77,10 @@ public:
     }
     void setPduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override
     {
-        pdu_syncher_ = pdu_syncher;
+        for (auto& aircraft : aircraft_container_.getAllAirCrafts()) {
+            (void)aircraft;
+            pdu_synchers_.push_back(pdu_syncher);
+        }
     }
 private:
     static const uint64_t gps_send_cycle = 10;
@@ -73,11 +92,15 @@ private:
     MavLinkServiceContainer& mavlink_service_container_;
     AirCraftContainer& aircraft_container_;
     std::vector<AircraftInputType> aircraft_inputs_;
-    std::shared_ptr<IServicePduSyncher> pdu_syncher_;
+    std::vector<std::shared_ptr<IServicePduSyncher>> pdu_synchers_;
 
     void send_sensor_data(IAirCraft& aircraft, uint64_t activated_time_usec);
     void advanceTimeStepLockStep(uint32_t index, uint64_t& sitl_time_usec);
     void advanceTimeStepFreeRun(uint32_t index, uint64_t& sitl_time_usec);
+
+    void setup_aircraft_inputs(uint32_t index);
+    void write_back_pdu(uint32_t index);
+
 };
 } // namespace hako::service
 #endif /* _AIRCRAFT_SERVICE_CONTAINER_HPP_ */

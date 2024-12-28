@@ -1,16 +1,24 @@
-#ifndef _DRONE_SERVICE_PDU_SYNCHER_HPP_
-#define _DRONE_SERVICE_PDU_SYNCHER_HPP_
+#ifndef _SERVICE_PDU_SYNCHER_HPP_
+#define _SERVICE_PDU_SYNCHER_HPP_
 
 #include "service/iservice_pdu_syncher.hpp"
-#include "service/drone/impl/idrone_service_operation.hpp"
+#include <atomic>
+#include <thread>
 
 using namespace hako::service;
 
 namespace hako::service::impl {
-class DroneServicePduSyncher : public IServicePduSyncher {
+
+typedef struct {
+    std::atomic<bool> is_busy;
+    std::atomic<bool> is_dirty;
+    ServicePduDataType data;
+} HakoniwaDronePduDataControlType;
+
+class ServicePduSyncher : public IServicePduSyncher {
 public:
-    DroneServicePduSyncher() {}
-    virtual ~DroneServicePduSyncher() {}
+    ServicePduSyncher() {}
+    virtual ~ServicePduSyncher() {}
     virtual bool flush(uint32_t index, ServicePduDataType& pdu)
     {
         (void)index;
@@ -45,4 +53,4 @@ private:
 };
 } // namespace hako::service::drone::impl
 
-#endif /* _DRONE_SERVICE_PDU_SYNCHER_HPP_ */
+#endif /* _SERVICE_PDU_SYNCHER_HPP_ */

@@ -11,10 +11,12 @@ else()
 endif()
 
 set(TARGETS
-    hako_drone
+    hako_dronesim
+    hako_px4sim
 )
 
-add_executable(hako_drone main_drone.cpp)
+add_executable(hako_dronesim main_drone.cpp)
+add_executable(hako_px4sim main_px4.cpp)
 
 foreach(TARGET ${TARGETS})
     MESSAGE(STATUS "TARGET: ${TARGET}")
