@@ -29,6 +29,7 @@ static hako_asset_callbacks_t my_callback = {
 
 bool HakoniwaSimulator::registerService(std::string& asset_name, std::string& config_path, uint64_t delta_time_usec, std::shared_ptr<IServiceContainer> service_container)
 {
+    delta_time_usec_ = delta_time_usec;
     HakoniwaSimulator::service_container_ = service_container;
     std::cout << "asset_name = " << asset_name << std::endl;
     std::cout << "config_path = " << config_path << std::endl;
@@ -58,7 +59,7 @@ bool HakoniwaSimulator::startService()
     isStarted_ = true;
     do_task = true;
     mtx_.unlock();
-
+    service_container_->startService(delta_time_usec_);
     do {
         (void)hako_asset_start();
         mtx_.lock();

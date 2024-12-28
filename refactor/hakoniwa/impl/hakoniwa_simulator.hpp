@@ -9,8 +9,10 @@
 #include "service/iservice_container.hpp"
 #include "service/iservice_pdu_syncher.hpp"
 #include "hakoniwa/impl/hakoniwa_pdu_accessor.hpp"
+#include "logger/impl/hako_logger.hpp"
 
 using namespace hako::service;
+using namespace hako::logger;
 
 namespace hako::drone::impl {
 class HakoniwaSimulator : public IServicePduSyncher{
@@ -40,6 +42,8 @@ public:
 
     void advanceTimeStep() {
         if (isStarted_) {
+            HakoLogger::set_time_usec(service_container_->getSimulationTimeUsec(0));
+            //std::cout << "simtime = " << service_container_->getSimulationTimeUsec(0) << std::endl;
             service_container_->advanceTimeStep();
         }
     }
@@ -70,6 +74,7 @@ private:
     std::mutex mtx_;
     bool isStarted_;
     std::map<ServicePduDataIdType, int> channel_id_map_;
+    uint64_t delta_time_usec_;
 };
 } // namespace hako::drone
 

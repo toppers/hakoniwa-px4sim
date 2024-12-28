@@ -43,6 +43,7 @@ public:
     ~DroneService() override = default;
 
     bool startService(uint64_t deltaTimeUsec) override {
+        std::cout << "DroneService::startService: " << deltaTimeUsec << std::endl;
         delta_time_usec_ = deltaTimeUsec;
         simulation_time_usec_ = 0;
         is_service_available_ = true;

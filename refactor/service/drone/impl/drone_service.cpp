@@ -88,6 +88,7 @@ void DroneService::advanceTimeStep()
     write_back_pdu();
 
     simulation_time_usec_ += delta_time_usec_;
+    //std::cout << "DroneService::advanceTimeStep: " << simulation_time_usec_ << std::endl;
 }
 
 void DroneService::setup_controller_inputs()
