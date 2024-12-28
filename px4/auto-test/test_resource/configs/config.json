@@ -1,8 +1,0 @@
-{
-    "px4_ipaddr": "127.0.0.1",
-    "px4_portno": 18570,
-    "my_ipaddr": "192.168.11.33", 
-    "my_portno": 54001,
-    "qgc_ipaddr": "192.168.11.56",
-    "qgc_portno": 14550
-}

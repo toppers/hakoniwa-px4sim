@@ -32,35 +32,47 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         run: brew install googletest
   
-      - name: Build and hakoniwa-px4sim on Windows
+      - name: Build and Test on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          cmake -G "Visual Studio 17 2022" -A x64 .
+          cd src
+          set BASE_PATH=%cd%
+          cmake -G "Visual Studio 17 2022" -A x64 -DHAKO_DRONE_OPTION_FILEPATH="cmake-options\win-cmake-options.cmake" .
           cmake --build . --config Release
-
-      # Build and Test drone_physics on Windows with Visual Studio
-      - name: Build and Test drone_physics on Windows
-        if: startsWith(matrix.os, 'windows')
-        shell: cmd
-        run: |
-          cd drone_physics
-          cmake -G "Visual Studio 17 2022" -A x64 .
-          cmake --build . --config Release
+          cd test
+          set DRONE_CONFIG1_DIR=aircraft\\test-data\\drone-config1
+          set DRONE_CONFIG2_DIR=aircraft\\test-data\\drone-config2
+          echo DRONE_CONFIG1_DIR=%DRONE_CONFIG1_DIR%
+          echo DRONE_CONFIG2_DIR=%DRONE_CONFIG2_DIR%          
           ctest -C Release --output-on-failure
-      
-      - name: Build and Test hakoniwa-px4sim/drone_physics on ubuntu
+
+
+
+      - name: Build and Test on Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-            cd drone_physics && cmake -D HAKO_CLIENT_OPTION_FILEPATH=../cmake-options/linux-cmake-options.cmake . && make  && make test
+          cd src
+          cmake -D HAKO_DRONE_OPTION_FILEPATH=`pwd`/cmake-options/linux-cmake-options.cmake .
+          make
+          cd test
+          export DRONE_CONFIG1_DIR=aircraft/test-data/drone-config1
+          export DRONE_CONFIG2_DIR=aircraft/test-data/drone-config2
+          echo "DRONE_CONFIG1_DIR is $DRONE_CONFIG1_DIR"
+          echo "DRONE_CONFIG2_DIR is $DRONE_CONFIG2_DIR"          
+          ctest --output-on-failure
 
-      - name: Build and Test hakoniwa-px4sim/drone_physics on macOs
+      - name: Build and Test on MacOS
         if: startsWith(matrix.os, 'macos')
         run: |
-            cd drone_physics && cmake . && make && make test
+          cd src
+          cmake .
+          make
+          cd test
+          export DRONE_CONFIG1_DIR=aircraft/test-data/drone-config1
+          export DRONE_CONFIG2_DIR=aircraft/test-data/drone-config2
+          echo "DRONE_CONFIG1_DIR is $DRONE_CONFIG1_DIR"
+          echo "DRONE_CONFIG2_DIR is $DRONE_CONFIG2_DIR"          
+          ctest --output-on-failure
   
-      - name: Build and Test hakoniwa-px4sim/hakoniwa
-        if: ${{ matrix.os != 'windows-latest' }}
-        run: |
-          cd hakoniwa && bash build.bash  && cd cmake-build && test/hako-px4sim-test
+          
 
-  
