@@ -11,12 +11,12 @@ else()
 endif()
 
 set(TARGETS 
-    px4sim
-    drone_api
+    aircraft_service
+    drone_service
 )
 
-add_executable(px4sim main_px4sim.cpp)
-add_executable(drone_api main_drone_api.cpp)
+add_executable(aircraft_service main_aircraft_service.cpp)
+add_executable(drone_service main_drone_service.cpp)
 
 foreach(TARGET ${TARGETS})
     MESSAGE(STATUS "TARGET: ${TARGET}")
