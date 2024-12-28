@@ -20,14 +20,14 @@ using namespace hako::controller;
 namespace hako::service::impl {
 
 
-class DroneService : public IDroneService {
+class DroneService : public IDroneService, public IServicePduSyncher {
 public:
     DroneService(std::shared_ptr<IAirCraft> aircraft, std::shared_ptr<IAircraftController> controller)
         : aircraft_(aircraft), controller_(controller) {
         simulation_time_usec_ = 0;
         delta_time_usec_ = 0;
         if (controller_->is_radio_control()) {
-            drone_service_operation_ = std::make_unique<DroneServiceRC>();
+            drone_service_operation_ = std::make_unique<DroneServiceRC>(aircraft_);
         }
         else {
             drone_service_operation_ = std::make_unique<DroneServiceAPI>(aircraft_);
@@ -66,49 +66,71 @@ public:
         return simulation_time_usec_;
     }
 
+    bool flush(uint32_t index, ServicePduDataType& pdu) override {
+        if (index != aircraft_->get_index()) {
+            throw std::out_of_range("flush index out of range: " + std::to_string(index));
+        }
+        return write_pdu(pdu);
+    }
+    bool load(uint32_t index, ServicePduDataType& pdu) override {
+        if (index != aircraft_->get_index()) {
+            throw std::out_of_range("load index out of range: " + std::to_string(index));
+        }
+        return read_pdu(pdu);
+    }
     bool write_pdu(ServicePduDataType& pdu) override {
         if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
             throw std::out_of_range("write_pdu id out of range");
         }
-        while (pdu_data_[pdu.id].is_busy.exchange(true)) {
-            std::this_thread::yield();
-        }
-        pdu_data_[pdu.id].data.pdu = pdu.pdu;
-        pdu_data_[pdu.id].is_dirty.store(true);
-        pdu_data_[pdu.id].is_busy.store(false);
         if (pdu_syncher_ != nullptr) {
-            pdu_syncher_->flush(aircraft_->get_index(), pdu);
+            return pdu_syncher_->flush(aircraft_->get_index(), pdu);
         }
-        return true;
+        else {
+            while (pdu_data_[pdu.id].is_busy.exchange(true)) {
+                std::this_thread::yield();
+            }
+            pdu_data_[pdu.id].data.pdu = pdu.pdu;
+            pdu_data_[pdu.id].is_dirty.store(true);
+            pdu_data_[pdu.id].is_busy.store(false);
+            return true;
+        }
     }
 
     bool read_pdu(ServicePduDataType& pdu) override {
         if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
             throw std::out_of_range("read_pdu id out of range");
         }
-        while (pdu_data_[pdu.id].is_busy.exchange(true)) {
-            std::this_thread::yield();
-        }
         if (pdu_syncher_ != nullptr) {
-            pdu_syncher_->load(aircraft_->get_index(), pdu_data_[pdu.id].data);
+            return pdu_syncher_->load(aircraft_->get_index(), pdu);
         }
-        pdu.pdu = pdu_data_[pdu.id].data.pdu;
-        pdu_data_[pdu.id].is_dirty.store(false);
-        pdu_data_[pdu.id].is_busy.store(false);
-        return true;
+        else
+        {
+            while (pdu_data_[pdu.id].is_busy.exchange(true)) {
+                std::this_thread::yield();
+            }
+            pdu.pdu = pdu_data_[pdu.id].data.pdu;
+            pdu_data_[pdu.id].is_dirty.store(false);
+            pdu_data_[pdu.id].is_busy.store(false);
+            return true;
+        }
     }
     void peek_pdu(ServicePduDataType& pdu) override {
         if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
-            throw std::out_of_range("peek_pdu id out of range");
-        }
-        while (pdu_data_[pdu.id].is_busy.exchange(true)) {
-            std::this_thread::yield();
+            throw std::out_of_range("read_pdu id out of range");
         }
         if (pdu_syncher_ != nullptr) {
             pdu_syncher_->load(aircraft_->get_index(), pdu_data_[pdu.id].data);
         }
-        pdu.pdu = pdu_data_[pdu.id].data.pdu;
-        pdu_data_[pdu.id].is_busy.store(false);
+        else {
+            if (pdu.id >= HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM) {
+                throw std::out_of_range("peek_pdu id out of range");
+            }
+            while (pdu_data_[pdu.id].is_busy.exchange(true)) {
+                std::this_thread::yield();
+            }
+            pdu.pdu = pdu_data_[pdu.id].data.pdu;
+            pdu_data_[pdu.id].is_busy.store(false);
+        }
     }
     std::string getRobotName() const {
         return aircraft_->get_name();

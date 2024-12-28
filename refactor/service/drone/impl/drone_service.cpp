@@ -101,7 +101,7 @@ void DroneService::setup_controller_inputs()
     DroneVelocityBodyFrameType velocity = aircraft_->get_drone_dynamics().get_vel_body_frame();
     DroneAngularVelocityBodyFrameType angular_velocity = aircraft_->get_gyro().sensor_value();
 
-    drone_service_operation_->setup_controller_inputs(controller_inputs_, pdu_data_);
+    drone_service_operation_->setup_controller_inputs(controller_inputs_);
     controller_inputs_.max_rpm = aircraft_->get_rpm_max(0);
     controller_inputs_.pos_x = pos.data.x;
     controller_inputs_.pos_y = pos.data.y;
@@ -157,7 +157,7 @@ void DroneService::write_back_pdu()
 {
     //write game control pdu
     if (drone_service_operation_->can_advanceTimeStep_for_controller()) {
-        drone_service_operation_->write_controller_pdu(pdu_data_);
+        drone_service_operation_->write_controller_pdu();
     }
     
     // collision write back

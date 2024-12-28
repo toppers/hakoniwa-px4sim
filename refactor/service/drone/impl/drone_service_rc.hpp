@@ -3,6 +3,7 @@
 
 #include "service/drone/impl/idrone_service_operation.hpp"
 #include "service/drone/impl/drone_service.hpp"
+#include "aircraft/iaircraft.hpp"
 #include <cstdint>
 #include <thread>
 
@@ -17,9 +18,14 @@ namespace hako::service::impl {
 #define GAME_CTRL_AXIS_LEFT_RIGHT       2
 #define GAME_CTRL_AXIS_FORWARD_BACK     3
 
+using namespace hako::aircraft;
+
 class DroneServiceRC: public IDroneServiceOperation {
+private:
+    std::shared_ptr<IAirCraft> aircraft_;
+
 public:
-    DroneServiceRC() {}
+    DroneServiceRC(std::shared_ptr<IAirCraft> aircraft): aircraft_(aircraft) {}
     ~DroneServiceRC() {}
 
     void reset() override
@@ -31,23 +37,15 @@ public:
         }
     }
     bool can_advanceTimeStep_for_controller() override { return radio_control_on_; }
-    void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override
+    void setup_controller_inputs(mi_aircraft_control_in_t& in) override
     {
-        auto& pdu_entry = pdu_data[SERVICE_PDU_DATA_ID_TYPE_GAME_CTRL];
-
-        // 排他制御を行いながらデータにアクセス
-        while (pdu_entry.is_busy.exchange(true)) {
-            std::this_thread::yield(); // CPU負荷を軽減
-        }
-
-        // 更新がなければ処理をスキップ
-        if (!pdu_entry.is_dirty) {
-            pdu_entry.is_busy.store(false);
+        ServicePduDataType game_pdu = { SERVICE_PDU_DATA_ID_TYPE_GAME_CTRL };
+        if (!pdu_syncher_->load(aircraft_->get_index(), game_pdu)) {
             return;
         }
 
         // データを取得
-        const auto& game_in = pdu_entry.data.pdu.game_ctrl;
+        const auto& game_in = game_pdu.pdu.game_ctrl;
 
         // ボタン状態の変更をチェック
         if (is_button_state_change(game_in.button[GAME_CTRL_BUTTON_RADIO_CONTROL], GAME_CTRL_BUTTON_RADIO_CONTROL)) {
@@ -63,16 +61,10 @@ public:
             in.target.throttle.power = game_in.axis[GAME_CTRL_AXIS_UP_DOWN];
             in.target.direction_velocity.r = game_in.axis[GAME_CTRL_AXIS_LR_RR];
         }
-
-        // フラグをリセット
-        pdu_entry.is_dirty.store(false);
-        pdu_entry.is_busy.store(false);
     }
 
-    void write_controller_pdu(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override 
+    void write_controller_pdu() override 
     {
-        // nothing to do
-        (void)pdu_data;
     }
     void setServicePduSyncher(std::shared_ptr<IServicePduSyncher> pdu_syncher) override
     {

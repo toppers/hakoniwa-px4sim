@@ -75,7 +75,7 @@ public:
     {
         this->index = _index;
     }
-    int get_index()
+    uint32_t get_index()
     {
         return this->index;
     }

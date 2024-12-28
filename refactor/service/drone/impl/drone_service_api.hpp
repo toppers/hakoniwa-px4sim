@@ -67,11 +67,11 @@ public:
         state.reset();
         prev_status = MAIN_STATUS_LANDED;
     }
-    void setup_controller_inputs(mi_aircraft_control_in_t& in, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override
+    void setup_controller_inputs(mi_aircraft_control_in_t& in) override
     {
-        (void)read_cmd(drone_pos, pdu_data);
+        pdu_syncher_->load(aircraft_->get_index(), drone_pos);
         if (state.get_status() == MAIN_STATUS_LANDED) {
-            if (read_cmd(cmd_takeoff, pdu_data) && cmd_takeoff.pdu.takeoff.header.request) {
+            if (pdu_syncher_->load(aircraft_->get_index(), cmd_takeoff) && cmd_takeoff.pdu.takeoff.header.request) {
                 state.takeoff();
                 prev_status = state.get_status();
                 in.target_pos_z = -cmd_takeoff.pdu.takeoff.height;
@@ -85,7 +85,7 @@ public:
             }
         }
         else if (state.get_status() == MAIN_STATUS_HOVERING) {
-            if (read_cmd(cmd_land, pdu_data) && cmd_land.pdu.land.header.request) {
+            if (pdu_syncher_->load(aircraft_->get_index(), cmd_land) && cmd_land.pdu.land.header.request) {
                 state.land();
                 prev_status = state.get_status();
                 in.target_pos_z = -cmd_land.pdu.land.height;
@@ -97,7 +97,7 @@ public:
                 std::cout << "land: x = " << in.target_pos_x << std::endl;
                 std::cout << "land: y = " << in.target_pos_y << std::endl;
             }
-            else if (read_cmd(cmd_move, pdu_data) && cmd_move.pdu.move.header.request) {
+            else if (pdu_syncher_->load(aircraft_->get_index(), cmd_move) && cmd_move.pdu.move.header.request) {
                 std::cout << "START MOVE" << std::endl;
                 state.move();
                 prev_status = state.get_status();
@@ -115,7 +115,7 @@ public:
             }
         }
         else if (state.get_status() == MAIN_STATUS_MOVING) {
-            if (read_cmd(cmd_move, pdu_data) && !cmd_move.pdu.move.header.request) {
+            if (pdu_syncher_->load(aircraft_->get_index(), cmd_move) && !cmd_move.pdu.move.header.request) {
                 std::cout << "Move event is canceled" << std::endl;
                 in.target_pos_x = drone_pos.pdu.position.linear.x;
                 in.target_pos_y = -drone_pos.pdu.position.linear.y;
@@ -137,7 +137,7 @@ public:
         target_yaw_deg = in.target_yaw_deg;
     }
 
-    void write_controller_pdu(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) override 
+    void write_controller_pdu() override 
     {
         auto status = state.get_status();
         switch (status)
@@ -147,7 +147,7 @@ public:
             case MAIN_STATUS_MOVING:
                 if (is_operation_done()) {
                     //std::cout << "Operation is done" << std::endl;
-                    write_back(status, 0, pdu_data);
+                    write_back(status, 0);
                     state.done();
                 }
                 else {
@@ -158,7 +158,7 @@ public:
                 break;
             case MAIN_STATUS_CANCELING:
                 //cancel event is done.
-                write_back(prev_status, -1, pdu_data);
+                write_back(prev_status, -1);
                 state.done();
                 break;
             case MAIN_STATUS_LANDED:
@@ -174,25 +174,25 @@ public:
     }
 
 private:
-    void write_back(MainStatusType status, int errcode, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data) 
+    void write_back(MainStatusType status, int errcode) 
     {
         if (status == MAIN_STATUS_TAKINGOFF) {
             cmd_takeoff.pdu.takeoff.header.request = false;
             cmd_takeoff.pdu.takeoff.header.result = true;
             cmd_takeoff.pdu.takeoff.header.result_code = errcode;
-            write_cmd(pdu_data, cmd_takeoff);
+            pdu_syncher_->flush(aircraft_->get_index(), cmd_takeoff);
         }
         else if (status == MAIN_STATUS_LANDING) {
             cmd_land.pdu.land.header.request = false;
             cmd_land.pdu.land.header.result = true;
             cmd_land.pdu.land.header.result_code = errcode;
-            write_cmd(pdu_data, cmd_land);
+            pdu_syncher_->flush(aircraft_->get_index(), cmd_land);
         }
         else if (status == MAIN_STATUS_MOVING) {
             cmd_move.pdu.move.header.request = false;
             cmd_move.pdu.move.header.result = true;
             cmd_move.pdu.move.header.result_code = errcode;
-            write_cmd(pdu_data, cmd_move);
+            pdu_syncher_->flush(aircraft_->get_index(), cmd_move);
         }
         else {
             // nothing to do
@@ -239,65 +239,6 @@ private:
             -drone_pos.pdu.position.linear.y, 
             -drone_pos.pdu.position.linear.z, 
             RADIAN2DEGREE(drone_pos.pdu.position.angular.z));
-    }
-    bool read_cmd(ServicePduDataType& dest, std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data)
-    {
-        bool ret = true;
-        auto& pdu_entry = pdu_data[dest.id];
-
-        // 排他制御を行いながらデータにアクセス
-        while (pdu_entry.is_busy.exchange(true)) {
-            std::this_thread::yield(); // CPU負荷を軽減
-        }
-        if (pdu_syncher_ != nullptr) {
-            //std::cout << "load: " << aircraft_->get_index() << std::endl;
-            pdu_syncher_->load(aircraft_->get_index(), pdu_entry.data);
-            pdu_entry.is_dirty.store(true);
-        }
-        if (!pdu_entry.is_dirty) {
-            pdu_entry.is_busy.store(false);
-            ret = false;
-        }
-        // データを取得
-        const auto& source_pdu = pdu_entry.data;
-
-        // deep copy
-        if (!hako::service::drone_pdu_data_deep_copy(source_pdu, dest)) {
-            throw std::runtime_error("read_cmd: deep copy failed");
-        }
-#if 0
-        if (dest.id == SERVICE_PDU_DATA_ID_TYPE_TAKEOFF) {
-            std::cout << "takeoff: " << dest.pdu.takeoff.header.request << std::endl;
-            std::cout << "takeoff: " << dest.pdu.takeoff.height << std::endl;
-        }
-#endif
-        // フラグをリセット
-        pdu_entry.is_dirty.store(false);
-        pdu_entry.is_busy.store(false);
-
-        return ret;
-    }
-    void write_cmd(std::array<HakoniwaDronePduDataControlType, HAKONIWA_DRONE_PDU_DATA_ID_TYPE_NUM>& pdu_data, const ServicePduDataType& src)
-    {
-        auto& pdu_entry = pdu_data[src.id];
-
-        // 排他制御を行いながらデータにアクセス
-        while (pdu_entry.is_busy.exchange(true)) {
-            std::this_thread::yield(); // CPU負荷を軽減
-        }
-
-        // deep copy
-        bool ret = hako::service::drone_pdu_data_deep_copy(src, pdu_entry.data);
-        if (!ret) {
-            throw std::runtime_error("write_cmd: deep copy failed");
-        }
-
-        // フラグをセット
-        pdu_entry.is_dirty.store(true);
-        pdu_entry.is_busy.store(false);
-        if (pdu_syncher_ != nullptr) {
-            pdu_syncher_->flush(aircraft_->get_index(), pdu_entry.data);
-        }
     }
 };
 
