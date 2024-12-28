@@ -35,7 +35,7 @@ jobs:
       - name: Build and Test on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          cd refactor
+          cd src
           set BASE_PATH=%cd%
           cmake -G "Visual Studio 17 2022" -A x64 -DHAKO_DRONE_OPTION_FILEPATH="cmake-options\win-cmake-options.cmake" .
           cmake --build . --config Release
@@ -51,7 +51,7 @@ jobs:
       - name: Build and Test on Ubuntu
         if: startsWith(matrix.os, 'ubuntu')
         run: |
-          cd refactor
+          cd src
           cmake -D HAKO_DRONE_OPTION_FILEPATH=`pwd`/cmake-options/linux-cmake-options.cmake .
           make
           cd test
@@ -64,7 +64,7 @@ jobs:
       - name: Build and Test on MacOS
         if: startsWith(matrix.os, 'macos')
         run: |
-          cd refactor
+          cd src
           cmake .
           make
           cd test
