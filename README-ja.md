@@ -2,6 +2,18 @@
 
 [![Build](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml)
 
+
+# 🚨【重要なお知らせ / Important Notice】🚨
+
+このリポジトリは、かつて Hakoniwa Drone Simulator の PX4 対応版として開発されましたが、
+現在は後継の [`hakoniwa-drone-core`](https://github.com/toppers/hakoniwa-drone-core) に完全移行しています。
+
+本リポジトリの内容は**アーカイブ目的**で残されており、**今後の更新やサポートは行われません**。
+新規プロジェクトでの利用や参照は、必ず以下の後継リポジトリをご確認ください。
+
+👉 https://github.com/toppers/hakoniwa-drone-core
+
+------
 このリポジトリは、PX4と連携可能なドローンのプラントモデル用シミュレーション環境です。このシミュレーション環境は、ドローンの動作を物理式ベースで正確にモデル化し、C言語で実装しています。
 
 # 📚 マニュアルへのリンクはこちら 📚
