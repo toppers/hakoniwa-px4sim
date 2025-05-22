@@ -2,6 +2,18 @@ English ｜ [日本語](README-ja.md)
 
 [![Build](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml/badge.svg)](https://github.com/toppers/hakoniwa-px4sim/actions/workflows/build.yml)
 
+
+# 🚨【Important Notice】🚨  
+This repository was originally developed as the PX4-compatible version of the Hakoniwa Drone Simulator.  
+However, development has now **fully transitioned** to its successor: [`hakoniwa-drone-core`](https://github.com/toppers/hakoniwa-drone-core).
+
+This repository is preserved **for archival purposes only**, and **no further updates or support will be provided**.  
+For all new projects or references, please make sure to use the following repository:
+
+👉 https://github.com/toppers/hakoniwa-drone-core
+
+----
+
 This repository is a simulation environment for drone plant models that can be integrated with PX4. This simulation environment accurately models drone behavior based on physical equations and is implemented in C language.
 
 
